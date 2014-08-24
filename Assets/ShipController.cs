@@ -17,14 +17,16 @@ public class ShipController : MonoBehaviour
 	{
 		if( flyingPath.Count > 0 )
 		{
+
 			if( timer < 1f )
 			{
 				int goFromIdx =(int)( timer * (flyingPath.Count)) ;
-				int goToIdx =(int)( timer * (flyingPath.Count + 1)) ;
+				int goToIdx =(int)( timer * flyingPath.Count + 1f) ;
 			
-				timer += Time.deltaTime * speed;
+				timer += Time.deltaTime * speed / (flyingPath[goToIdx] - flyingPath[goFromIdx]).sqrMagnitude;
 
 				transform.position = Vector3.Lerp( flyingPath[goFromIdx], flyingPath[goToIdx], timer * flyingPath.Count - goFromIdx);
+
 			}
 			else
 			{
@@ -45,15 +47,11 @@ public class ShipController : MonoBehaviour
 
 			                                        //Interpolate.NewCatmullRom( new Vector3[] { transform.position, goToPos }, 10, false ).GetEnumerator();
 
-//			flyingPath.Clear();
+			flyingPath.Clear();
 			timer = 0f;
 
-			//while( curve.MoveNext() )
-			//	flyingPath.Add( (Vector3) curve.Current );
-			flyingPath.Add( new Vector3( 5f, 0f, 5f));
-			flyingPath.Add( new Vector3( 0f, 0f, -5f));
-			flyingPath.Add( new Vector3( -5f, 0f, -0f));
-			flyingPath.Add( new Vector3( -0f, 0f, -5f));
+			while( curve.MoveNext() )
+				flyingPath.Add( (Vector3) curve.Current );
 
 			for( int i = 0; i < flyingPath.Count - 1; i++ )
 			{

@@ -9,9 +9,9 @@ public class Engine : Device
 	// normalized speed (no speed, half speed, full speed
 	private float _currentSpeed;
 
-	// speed setter
-	public void SetSpeed(float speed)
+	public float Speed
 	{
-
+		get{ return _currentSpeed; }
+		set{ _currentSpeed = Mathf.Clamp01(value);}
 	}
 }
