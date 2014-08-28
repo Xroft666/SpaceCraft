@@ -9,7 +9,9 @@ public class WorldGenerator : MonoBehaviour
 
 	void Start () 
 	{
+
 		PerlinNoise noise = new PerlinNoise(Random.Range(0, 100));
+
 		for( int i = -100; i < 100; i++ )
 			for( int j = -100; j < 100; j++ )
 		{
