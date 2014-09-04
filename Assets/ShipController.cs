@@ -59,6 +59,9 @@ public class ShipController : MonoBehaviour
 			}
 		}        
 
-
+		if( Input.GetKeyUp(KeyCode.Space) )
+		{
+			Debug.Log("Weapon fired");
+		}
 	}
 }
