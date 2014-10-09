@@ -53,7 +53,6 @@ namespace Voxel2D{
 				}
 			}
 			if(counter>0){
-				print(counter+" "+sum+" "+sum/counter);
 				return sum/counter;
 			}else{
 				Debug.LogWarning("Trying to get center of empty voxel system");
@@ -84,6 +83,19 @@ namespace Voxel2D{
 		}
 
 		#region set&get
+		public void SetVoxelGrid(VoxelData[,] grid){
+			voxelGrid = grid;
+			for (int x = 0; x < voxelGrid.GetLength(0); x++) {
+				for (int y = 0; y < voxelGrid.GetLength(1); y++) {
+					if(voxelGrid[x,y].GetID() != null){
+						voxelCount++;
+						totalMass += 1; //TODO: add correct mass
+					}
+				}
+			}
+			UpdateMass();
+		}
+
 		public void SetVoxel(int x, int y, int ID)
 		{
 			voxelGrid [x, y] = new VoxelData (ID);
