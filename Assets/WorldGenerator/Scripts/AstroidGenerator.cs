@@ -17,7 +17,7 @@ public class AstroidGenerator : MonoBehaviour {
 	{
 
 		
-		int astroidSize = 40;
+		int astroidSize = 25;
 		map = new int[astroidSize,astroidSize];
 	
 		GenerationProcedures GP = new GenerationProcedures(ref map);
@@ -34,6 +34,7 @@ public class AstroidGenerator : MonoBehaviour {
 		VoxelData[,] VD = VoxelUtility.IntToVoxelData(map);
 
 		VoxelSystem v = g.AddComponent<VoxelSystem>();
+		g.AddComponent<AstroidImpacter>();
 		v.SetVoxelGrid(VD);
 		v.SetMesh(VoxelMeshGenerator.VoxelToMesh(v.GetVoxelData()));
 

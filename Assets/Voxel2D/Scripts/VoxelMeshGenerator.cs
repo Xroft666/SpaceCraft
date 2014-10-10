@@ -30,7 +30,7 @@ namespace Voxel2D
 
 			mesh.RecalculateBounds();
 			mesh.RecalculateNormals();
-			mesh.Optimize();
+			//mesh.Optimize();
 
 			mesh.name = "Generated Mesh";
 
