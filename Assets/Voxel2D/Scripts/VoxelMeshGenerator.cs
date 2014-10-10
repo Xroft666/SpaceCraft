@@ -7,7 +7,7 @@ namespace Voxel2D
 	public static class VoxelMeshGenerator 
 	{
 		
-		
+		//TODO: make this multithreaded
 		public static Mesh VoxelToMesh (VoxelData[,] voxels)
 		{
 			Mesh mesh = new Mesh();

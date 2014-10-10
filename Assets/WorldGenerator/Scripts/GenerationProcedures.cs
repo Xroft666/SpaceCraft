@@ -1,20 +1,28 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+
 namespace WorldGen{
-	public static class GenerationProcedures{
+	public class GenerationProcedures{
 
-		
+		int[,] map;
 
-		
-		static void RunIteration(CellularAutomata c, int rounds){
+		public GenerationProcedures(ref int[,] map)
+		{
+			this.map = map;
+		}
+
+		void RunIteration(CellularAutomata c, int rounds)
+		{
 			for (int i=0; i<rounds; i++) {
 				c.nextIteration();
 			}
 		}
 		
-		public static int[,] method1(int voxelSize){
-			CellularAutomata CA = new CellularAutomata(voxelSize,voxelSize);
+		public void GenAstroid()
+		{
+
+			CellularAutomata CA = new CellularAutomata(ref map);
 			CellularAutomata.CaveConfig.SquareRules rules = CA.caveConfig.squareRules;
 			CA.neighborType = CellularAutomata.NeighborType.Square;
 			
@@ -45,7 +53,7 @@ namespace WorldGen{
 			rounds = 2;
 			RunIteration (CA,rounds);
 
-			return CA.GetMap();
+			map = CA.GetMap();
 		}
 
 		/*

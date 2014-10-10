@@ -1,49 +1,49 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Threading;
 using Voxel2D;
 using WorldGen;
 
 public class AstroidGenerator : MonoBehaviour {
 	
-	
+	int[,] map;
 	
 	// Use this for initialization
 	void Start () {
-		testFunction();
+		StartCoroutine(Generate());
 	}
 	
-	void testFunction()
+	IEnumerator Generate()
 	{
-		GameObject g = new GameObject();
+
 		
-		
-		VoxelSystem v = g.AddComponent<VoxelSystem>();
-		
-		int astroidSize = 30;
-		
-		int[,] map = GenerationProcedures.method1(astroidSize);
-		
-		VoxelData[,] VD = new VoxelData[astroidSize,astroidSize];
-		
-		for (int x = 0; x < astroidSize; x++) {
-			for (int y = 0; y < astroidSize; y++) {
-				if(map[x,y] != 0){
-					VD[x,y] = new VoxelData(1);
-				}
-			}
-		}
-		
-		v.SetVoxelGrid(VD);
-		
-		
-		
-		v.SetMesh(VoxelMeshGenerator.VoxelToMesh(v.GetVoxelData()));
-		
-		g.rigidbody2D.angularVelocity = 100;
-		
-		//g.rigidbody2D.centerOfMass = new Vector2(10,10);
-	}
+		int astroidSize = 40;
+		map = new int[astroidSize,astroidSize];
 	
+		GenerationProcedures GP = new GenerationProcedures(ref map);
+
+		Thread thread;
+		thread = new Thread(GP.GenAstroid);
+    	thread.Start();
+		while(thread.IsAlive){
+			yield return new WaitForEndOfFrame();
+		}
+
+
+		GameObject g = new GameObject();
+		VoxelData[,] VD = VoxelUtility.IntToVoxelData(map);
+
+		VoxelSystem v = g.AddComponent<VoxelSystem>();
+		v.SetVoxelGrid(VD);
+		v.SetMesh(VoxelMeshGenerator.VoxelToMesh(v.GetVoxelData()));
+
+		//HACK: just for tests
+		g.rigidbody2D.angularVelocity = 100;
+
+	}
+
+
+
 	// Update is called once per frame
 	void Update () {
 		

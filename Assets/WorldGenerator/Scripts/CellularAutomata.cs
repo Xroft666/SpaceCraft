@@ -1,19 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-
 namespace WorldGen{
 	public class CellularAutomata{
 		
 		private int[,] map;
+		private System.Random rand;
 		
 		public int seed;
+		
+		
 		
 		public enum NeighborType{Adjecent,Square,Circle};
 		public NeighborType neighborType;
 		
 		private int iterationCounter = 0;
-
+		
 		#region classType
 		
 		
@@ -55,21 +57,20 @@ namespace WorldGen{
 		public CaveConfig caveConfig = new CaveConfig();
 		
 		// Use this for initialization
-		public CellularAutomata (int mapWidth, int mapHeight) {
-			map = new int[mapWidth, mapHeight];
-			seed = Random.Range(int.MaxValue,int.MinValue);
-
-			//caveConfig = new CaveConfig();
-
+		public CellularAutomata (ref int[,] map) {
+			this.map = map;
+			
+			System.Random rand = new System.Random();
+			
+			seed = rand.Next();
+			
 			generateNoise(this.seed);
 		}
 		
 		public CellularAutomata (int mapWidth, int mapHeight, int seed) {
 			map = new int[mapWidth, mapHeight];
 			this.seed = seed;
-
-			//caveConfig = new CaveConfig();
-
+			
 			generateNoise(this.seed);
 		}
 		
@@ -77,13 +78,11 @@ namespace WorldGen{
 		
 		private void generateNoise(float seed)
 		{
-			Random.seed = (int)seed;
-			
-			Debug.Log ("generating noise");
+			rand = new System.Random((int)seed);
 			
 			for (int x=0; x<map.GetLength(0); x++) {
 				for(int y=0;y<map.GetLength(1);y++){
-					int r = Random.Range(0,2);
+					int r = Mathf.RoundToInt((float)rand.NextDouble());
 					map[x,y] = r;
 				}
 			}
@@ -105,19 +104,18 @@ namespace WorldGen{
 		}
 		
 		void GenerateDigital(){
-			int[,] map = this.map.Clone () as int[,];
+			int[,] mapClone = this.map.Clone () as int[,];
 			//int numTilesRadius = Mathf.RoundToInt(Mathf.Pow (squareRules.radius * 2 + 1, 2))-1;
 			caveConfig.squareRules.bt = Mathf.RoundToInt (caveConfig.squareRules.blackChangeThreshold * (Mathf.Pow(caveConfig.squareRules.radius * 2 + 1,2)));
 			caveConfig.squareRules.wt = Mathf.RoundToInt (caveConfig.squareRules.whileChangeThreshold * (Mathf.Pow(caveConfig.squareRules.radius * 2 + 1,2)));
 			
 			
-			for (int x=0; x<map.GetLength(0); x++) {
-				for(int y=0;y<map.GetLength(1);y++){
+			for (int x=0; x<mapClone.GetLength(0); x++) {
+				for(int y=0;y<mapClone.GetLength(1);y++){
 					
 					int blockCount = 0;
-					float counter2 = 0;
 					int[] counter = new int[2];
-					int current = map[x,y];
+					int current = mapClone[x,y];
 					
 					if (neighborType == NeighborType.Adjecent) {
 						
@@ -135,9 +133,9 @@ namespace WorldGen{
 						}
 						
 						if(current == 0 && counter[1] >= caveConfig.adjecentRules.blackChangeThreshold){
-							map[x,y] = 1;
+							mapClone[x,y] = 1;
 						}else if(current== 1 && counter[0] >= caveConfig.adjecentRules.whileChangeThreshold){
-							map[x,y] = 0;
+							mapClone[x,y] = 0;
 						}
 						
 					}else if(neighborType == NeighborType.Square){
@@ -150,13 +148,12 @@ namespace WorldGen{
 							}
 						}
 						
-						counter2 = counter2/blockCount;
 						
 						
 						if(current == 0 && counter[1] >= caveConfig.squareRules.bt){
-							map[x,y] = 1;
+							mapClone[x,y] = 1;
 						}else if(current== 1 && counter[0] >= caveConfig.squareRules.wt){
-							map[x,y] = 0;
+							mapClone[x,y] = 0;
 						}
 						
 					}
@@ -165,7 +162,13 @@ namespace WorldGen{
 				}	
 			}
 			
-			this.map = map;
+			for (int x = 0; x < map.GetLength(0); x++) {
+				for (int y = 0; y < map.GetLength(1); y++) {
+					this.map[x,y] = mapClone[x,y];
+				}
+			}
+			
+			//this.map = map;
 			
 		}
 		
@@ -181,7 +184,6 @@ namespace WorldGen{
 		
 		public void nextIteration(){
 			iterationCounter++;
-			Debug.Log(caveConfig.squareRules.whileChangeThreshold);
 			GenerateDigital();
 		}
 		
