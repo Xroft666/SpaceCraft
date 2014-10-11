@@ -55,7 +55,7 @@ public class AstroidImpacter : MonoBehaviour {
 		forceToAdd = -deltaVelocityThis.normalized*impactEnergyThis;
 		forcePoint = col.contacts[0].point;
 
-		print(impactEnergyThis);
+		//print(impactEnergyThis);
 
 		//TODO: use material based impact threshhold
 		if(totalImpactEnergy-energyAbsorbed>impactEnergyThreshHold){
@@ -68,11 +68,13 @@ public class AstroidImpacter : MonoBehaviour {
 
 				int[] vox = voxel.GetClosestVoxelIndex(pos);
 				if(vox != null){
+					if(VoxelDestroyed != null){
+						VoxelDestroyed(voxel,new Vector2(vox[0],vox[1]));
+					}
 					voxel.RemoveVoxel(vox[0],vox[1]);
 					voxel.SetMesh(Voxel2D.VoxelMeshGenerator.VoxelToMesh(voxel.GetVoxelData()));
 					//TODO: use material based impact threshhold
 					energyAbsorbed += impactEnergyThreshHold;
-					VoxelDestroyed(voxel,new Vector2(vox[0],vox[1]));
 				}
 			}
 		}else{

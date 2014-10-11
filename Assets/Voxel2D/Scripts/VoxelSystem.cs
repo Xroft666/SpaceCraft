@@ -101,7 +101,9 @@ namespace Voxel2D{
 			UpdateMass();
 			if(voxelCount == 0){
 				Debug.LogWarning("The newly created voxel system is empty, deleting");
-				VoxelSystemDestroyed(this);
+				if(VoxelSystemDestroyed != null){
+					VoxelSystemDestroyed(this);
+				}
 				Destroy(gameObject);
 			}
 		}
@@ -231,7 +233,9 @@ namespace Voxel2D{
 				UpdateMass();
 				if(voxelCount == 0){
 					Debug.Log("Voxel system empty, deleting");
-					VoxelSystemDestroyed(this);
+					if(VoxelSystemDestroyed != null){
+						VoxelSystemDestroyed(this);
+					}
 					Destroy(gameObject);
 				}
 			}
