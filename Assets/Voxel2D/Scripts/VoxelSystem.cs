@@ -82,6 +82,7 @@ namespace Voxel2D{
 				col.SetPath(i,colGen.vertexPaths[i].ToArray());
 				yield return new WaitForEndOfFrame();
 			}
+			rigidbody2D.WakeUp();
 		}
 		
 		#region set&get
@@ -178,11 +179,13 @@ namespace Voxel2D{
 
 			if(minVoxel.x < 0 || minVoxel.y < 0){
 				Debug.LogError("No voxel in range of collision!");
+				return null;
+			}else{
+				int[] index = new int[2];
+				index[0] = (int)minVoxel.x;
+				index[1] = (int)minVoxel.y;
+				return index;
 			}
-			int[] index = new int[2];
-			index[0] = (int)minVoxel.x;
-			index[1] = (int)minVoxel.y;
-			return index;
 		}
 		public void SetMesh(Mesh mesh)
 		{
@@ -205,17 +208,21 @@ namespace Voxel2D{
 		public bool IsVoxelEmpty(int x,int y)
 		{
 			if (voxelGrid [x, y] == null) {
-				return false;			
+				return true;			
 			} else {
-				return true;
+				return false;
 			}
 		}
 		
 		public void RemoveVoxel(int x,int y){
-			totalMass -= 1; //TODO:use correct mass
-			UpdateMass();
-			voxelGrid [x, y] = null;
-			voxelCount--;
+			if(voxelGrid [x, y] == null){
+				Debug.LogError("Voxel doesnt exist");
+			}else{
+				voxelGrid [x, y] = null;
+				voxelCount--;
+				totalMass -= 1; //TODO:use correct mass
+				UpdateMass();
+			}
 		}
 
 		

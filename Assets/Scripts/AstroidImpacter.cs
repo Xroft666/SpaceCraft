@@ -5,6 +5,12 @@ public class AstroidImpacter : MonoBehaviour {
 
 	Voxel2D.VoxelSystem voxel;
 
+	Vector2 forceToAdd;
+	Vector2 forcePoint;
+
+	//HACK: should be calculated based on element stats
+	private float impactEnergyThreshHold = 2000;
+
 	// Use this for initialization
 	void Awake () {
 		voxel = GetComponent<Voxel2D.VoxelSystem>();
@@ -12,22 +18,60 @@ public class AstroidImpacter : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+
 	}
 
+	void FixedUpdate(){
+		if(forceToAdd != Vector2.zero){
+			rigidbody2D.AddForceAtPosition(forceToAdd,forcePoint);
+			forceToAdd = Vector2.zero;
+		}
+	}
 
 	void OnCollisionEnter2D(Collision2D col){ //TODO: do this process for each impact point
+		float energyAbsorbed = 0;
 
-		for (int i = 0; i < col.contacts.Length; i++) {
-			Vector2 pos = col.contacts[i].point;
+		Vector2 deltaVelocityThis = rigidbody2D.velocity-voxel.previousVelocity[0];
+		float massThis = voxel.totalMass;
+		float impactEnergyThis = (massThis*Mathf.Pow(deltaVelocityThis.magnitude,2))*0.5f;
 
-			pos = transform.InverseTransformPoint(pos);
-			pos.x = Mathf.Round(pos.x);
-			pos.y = Mathf.Round(pos.y);
+		Voxel2D.VoxelSystem voxelOther;
+		Vector2 deltaVelocityOther = Vector2.zero;
+		float massOther = 0;
+		float impactEnergyOther = 0;
 
-			int[] vox = voxel.GetClosestVoxelIndex(pos);
-			voxel.RemoveVoxel(vox[0],vox[1]);
-			voxel.SetMesh(Voxel2D.VoxelMeshGenerator.VoxelToMesh(voxel.GetVoxelData()));
+		voxelOther = col.gameObject.GetComponent<Voxel2D.VoxelSystem>();
+		if(voxelOther != null){
+			deltaVelocityOther = voxelOther.rigidbody2D.velocity-voxelOther.previousVelocity[0];
+			massOther = voxelOther.totalMass;
+			impactEnergyOther = (massOther*Mathf.Pow(deltaVelocityOther.magnitude,2))*0.5f;
 		}
+
+		float totalImpactEnergy = impactEnergyThis+impactEnergyOther;
+
+		forceToAdd = -deltaVelocityThis.normalized*impactEnergyThis;
+		forcePoint = col.contacts[0].point;
+
+		print(impactEnergyThis);
+
+		if(totalImpactEnergy-energyAbsorbed>impactEnergyThreshHold){
+			for (int i = 0; i < col.contacts.Length; i++) {
+				Vector2 pos = col.contacts[i].point;
+
+				pos = transform.InverseTransformPoint(pos);
+				pos.x = Mathf.Round(pos.x);
+				pos.y = Mathf.Round(pos.y);
+
+				int[] vox = voxel.GetClosestVoxelIndex(pos);
+				if(vox != null){
+					voxel.RemoveVoxel(vox[0],vox[1]);
+					voxel.SetMesh(Voxel2D.VoxelMeshGenerator.VoxelToMesh(voxel.GetVoxelData()));
+					energyAbsorbed += impactEnergyThreshHold;
+				}
+			}
+		}else{
+			//print("too low energy");
+		}
+
 	}
 }
