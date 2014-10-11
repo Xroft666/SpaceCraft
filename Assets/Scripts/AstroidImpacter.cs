@@ -3,13 +3,16 @@ using System.Collections;
 
 public class AstroidImpacter : MonoBehaviour {
 
+	public delegate void VoxelDestroyedAction(Voxel2D.VoxelSystem voxelSystem, Vector2 localPosition);
+	public static event VoxelDestroyedAction VoxelDestroyed;
+
 	Voxel2D.VoxelSystem voxel;
 
 	Vector2 forceToAdd;
 	Vector2 forcePoint;
 
 	//HACK: should be calculated based on element stats
-	private float impactEnergyThreshHold = 2000;
+	private float impactEnergyThreshHold = 1000;
 
 	// Use this for initialization
 	void Awake () {
@@ -28,7 +31,7 @@ public class AstroidImpacter : MonoBehaviour {
 		}
 	}
 
-	void OnCollisionEnter2D(Collision2D col){ //TODO: do this process for each impact point
+	void OnCollisionEnter2D(Collision2D col){ //TODO: include angular velocity
 		float energyAbsorbed = 0;
 
 		Vector2 deltaVelocityThis = rigidbody2D.velocity-voxel.previousVelocity[0];
@@ -54,6 +57,7 @@ public class AstroidImpacter : MonoBehaviour {
 
 		print(impactEnergyThis);
 
+		//TODO: use material based impact threshhold
 		if(totalImpactEnergy-energyAbsorbed>impactEnergyThreshHold){
 			for (int i = 0; i < col.contacts.Length; i++) {
 				Vector2 pos = col.contacts[i].point;
@@ -66,7 +70,9 @@ public class AstroidImpacter : MonoBehaviour {
 				if(vox != null){
 					voxel.RemoveVoxel(vox[0],vox[1]);
 					voxel.SetMesh(Voxel2D.VoxelMeshGenerator.VoxelToMesh(voxel.GetVoxelData()));
+					//TODO: use material based impact threshhold
 					energyAbsorbed += impactEnergyThreshHold;
+					VoxelDestroyed(voxel,vox);
 				}
 			}
 		}else{

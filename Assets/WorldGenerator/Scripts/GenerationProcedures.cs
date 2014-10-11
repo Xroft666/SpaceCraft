@@ -22,7 +22,7 @@ namespace WorldGen{
 		public void GenAstroid()
 		{
 
-			CellularAutomata CA = new CellularAutomata(ref map, 1337);
+			CellularAutomata CA = new CellularAutomata(ref map);
 			CellularAutomata.CaveConfig.SquareRules rules = CA.caveConfig.squareRules;
 			CA.neighborType = CellularAutomata.NeighborType.Square;
 			

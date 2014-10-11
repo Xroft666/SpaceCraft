@@ -7,7 +7,8 @@ using WorldGen;
 
 public class AstroidGenerator : MonoBehaviour {
 
-	List<Vector2> AstroidList = new List<Vector2>();
+	//HACK
+	public List<Vector2> AstroidList = new List<Vector2>();
 
 	int[,] map;
 	
@@ -18,31 +19,34 @@ public class AstroidGenerator : MonoBehaviour {
 	
 	IEnumerator Generate()
 	{
-
+		foreach(Vector2 pos in AstroidList){
 		
-		int astroidSize = 50;
-		map = new int[astroidSize,astroidSize];
-	
-		GenerationProcedures GP = new GenerationProcedures(ref map);
+			int astroidSize = 30;
+			map = new int[astroidSize,astroidSize];
+		
+			GenerationProcedures GP = new GenerationProcedures(ref map);
 
-		Thread thread;
-		thread = new Thread(GP.GenAstroid);
-    	thread.Start();
-		while(thread.IsAlive){
-			yield return new WaitForEndOfFrame();
+			Thread thread;
+			thread = new Thread(GP.GenAstroid);
+	    	thread.Start();
+			while(thread.IsAlive){
+				yield return new WaitForEndOfFrame();
+			}
+
+
+			GameObject g = new GameObject();
+			g.transform.position = pos;
+			g.transform.name = "Astroid "+Random.seed;
+			VoxelData[,] VD = VoxelUtility.IntToVoxelData(map);
+
+			VoxelSystem v = g.AddComponent<VoxelSystem>();
+			g.AddComponent<AstroidImpacter>();
+			v.SetVoxelGrid(VD);
+			v.SetMesh(VoxelMeshGenerator.VoxelToMesh(v.GetVoxelData()));
+
+			//HACK: just for tests
+			//g.rigidbody2D.angularVelocity = 100;
 		}
-
-
-		GameObject g = new GameObject();
-		VoxelData[,] VD = VoxelUtility.IntToVoxelData(map);
-
-		VoxelSystem v = g.AddComponent<VoxelSystem>();
-		g.AddComponent<AstroidImpacter>();
-		v.SetVoxelGrid(VD);
-		v.SetMesh(VoxelMeshGenerator.VoxelToMesh(v.GetVoxelData()));
-
-		//HACK: just for tests
-		//g.rigidbody2D.angularVelocity = 100;
 
 	}
 
