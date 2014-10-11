@@ -80,7 +80,7 @@ namespace Voxel2D{
 			}
 
 			col.pathCount = colGen.vertexPaths.Count;
-			for(int i=0;i<col.pathCount;i++){
+			for(int i=0;i<colGen.vertexPaths.Count;i++){
 				col.SetPath(i,colGen.vertexPaths[i].ToArray());
 				yield return new WaitForEndOfFrame();
 			}
@@ -92,7 +92,7 @@ namespace Voxel2D{
 			voxelGrid = grid;
 			for (int x = 0; x < voxelGrid.GetLength(0); x++) {
 				for (int y = 0; y < voxelGrid.GetLength(1); y++) {
-					if(voxelGrid[x,y].GetID() != null){
+					if(!IsVoxelEmpty(x,y)){
 						voxelCount++;
 						totalMass += 1; //TODO: add correct mass
 					}
