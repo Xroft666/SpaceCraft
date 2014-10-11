@@ -97,6 +97,10 @@ namespace Voxel2D{
 				}
 			}
 			UpdateMass();
+			if(voxelCount == 0){
+				Debug.LogWarning("The newly created voxel system is empty, deleting");
+				Destroy(gameObject);
+			}
 		}
 		
 		public void SetVoxel(int x, int y, int ID)
@@ -222,6 +226,10 @@ namespace Voxel2D{
 				voxelCount--;
 				totalMass -= 1; //TODO:use correct mass
 				UpdateMass();
+				if(voxelCount == 0){
+					Debug.Log("Voxel system empty, deleting");
+					Destroy(gameObject);
+				}
 			}
 		}
 
