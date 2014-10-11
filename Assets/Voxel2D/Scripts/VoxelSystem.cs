@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Threading;
 
 namespace Voxel2D{
 	[RequireComponent(typeof(PolygonCollider2D))]
@@ -40,7 +41,7 @@ namespace Voxel2D{
 		/// Gets the center.
 		/// </summary>
 		/// <returns>The average position of voxels.</returns>
-		private Vector2 GetCenter(){	//TODO: take mass of voxel type into the calculation
+		private Vector2 GetCenter(){	//TODO: take mass of voxel type into the calculation	
 			int counter = 0;
 			Vector2 sum = Vector2.zero;
 			
@@ -65,19 +66,20 @@ namespace Voxel2D{
 			rigidbody2D.mass = totalMass;
 		}
 		
-		private void GenerateCollider(Mesh mesh){	//TODO: generate propper collider
-			Vector2[] colliderPoints;
-			int pathCounter = 0;
-			
-			GetComponent<PolygonCollider2D>().pathCount = Mathf.RoundToInt(mesh.vertices.Length/4);
-			
-			for(int i=0;i<mesh.vertices.Length;i+=4){
-				colliderPoints = new Vector2[4];
-				for(int c=0;c<4;c++){
-					colliderPoints[c] = mesh.vertices[i+c];
-				}
-				GetComponent<PolygonCollider2D>().SetPath(pathCounter,colliderPoints);
-				pathCounter++;
+		private IEnumerator GenerateCollider(Mesh mesh){	//TODO: generate propper collider
+			PolygonColliderGenerator colGen = new PolygonColliderGenerator(voxelGrid.GetLength(0),VoxelUtility.VoxelDataToBool(GetVoxelData()));
+			PolygonCollider2D col = GetComponent<PolygonCollider2D>();
+			//colGen.UpdateMeshCollider();
+			Thread t = new Thread(colGen.UpdateMeshCollider);
+			t.Start();
+			while(t.IsAlive){
+				yield return new WaitForEndOfFrame();
+			}
+
+			col.pathCount = colGen.vertexPaths.Count;
+			for(int i=0;i<col.pathCount;i++){
+				col.SetPath(i,colGen.vertexPaths[i].ToArray());
+				yield return new WaitForEndOfFrame();
 			}
 		}
 		
@@ -133,7 +135,7 @@ namespace Voxel2D{
 					Vector2 c = localPos+new Vector2(x,y);
 					c = new Vector2(Mathf.RoundToInt(c.x),Mathf.RoundToInt(c.y));
 					if(GetVoxel((int)c.x,(int)c.y) != null){
-						float dist = Vector3.Magnitude(c-localPos);
+						float dist = (c-localPos).sqrMagnitude;
 						if(dist < minDist){
 							minDist = dist;
 							minVoxel = c;
@@ -152,7 +154,7 @@ namespace Voxel2D{
 		public void SetMesh(Mesh mesh)
 		{
 			GetComponent<MeshFilter>().sharedMesh = mesh;
-			GenerateCollider(mesh);
+			StartCoroutine(GenerateCollider(mesh));
 			rigidbody2D.centerOfMass = GetCenter();
 			
 		}

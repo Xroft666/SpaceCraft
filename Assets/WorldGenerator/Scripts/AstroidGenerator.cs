@@ -17,7 +17,7 @@ public class AstroidGenerator : MonoBehaviour {
 	{
 
 		
-		int astroidSize = 25;
+		int astroidSize = 50;
 		map = new int[astroidSize,astroidSize];
 	
 		GenerationProcedures GP = new GenerationProcedures(ref map);
@@ -39,7 +39,7 @@ public class AstroidGenerator : MonoBehaviour {
 		v.SetMesh(VoxelMeshGenerator.VoxelToMesh(v.GetVoxelData()));
 
 		//HACK: just for tests
-		g.rigidbody2D.angularVelocity = 100;
+		//g.rigidbody2D.angularVelocity = 100;
 
 	}
 

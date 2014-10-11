@@ -22,22 +22,11 @@ namespace WorldGen{
 		public void GenAstroid()
 		{
 
-			CellularAutomata CA = new CellularAutomata(ref map);
+			CellularAutomata CA = new CellularAutomata(ref map, 1337);
 			CellularAutomata.CaveConfig.SquareRules rules = CA.caveConfig.squareRules;
 			CA.neighborType = CellularAutomata.NeighborType.Square;
 			
 			CA.ClearMapEdges(2);
-			
-			/*
-			rules.blackChangeThreshold = 0.5f;
-			rules.whileChangeThreshold = 0.5f;
-			rules.radius = 3;
-			RunIteration (CA,3);
-			
-			rules.blackChangeThreshold = 0.6f;
-			rules.whileChangeThreshold = 0.6f;
-			rules.radius = 2;
-			RunIteration (CA,3);*/
 
 			int rounds = 0;
 

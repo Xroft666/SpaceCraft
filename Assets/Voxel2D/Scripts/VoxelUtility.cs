@@ -6,7 +6,6 @@ namespace Voxel2D{
 		
 		public static VoxelData[,] IntToVoxelData(int[,] map)
 		{
-			//TODO: create a voxel utility class and make this into a method
 			int sx = map.GetLength(0);
 			int sy = map.GetLength(1);
 
@@ -19,6 +18,22 @@ namespace Voxel2D{
 				}
 			}
 			return VD;
+		}
+
+		public static bool[,] VoxelDataToBool(VoxelData[,] map)
+		{
+			int sx = map.GetLength(0);
+			int sy = map.GetLength(1);
+			
+			bool[,] binaryMap = new bool[sx,sy];
+			for (int x = 0; x < sx; x++) {
+				for (int y = 0; y < sy; y++) {
+					if(map[x,y] != null){
+						binaryMap[x,y] = true;
+					}
+				}
+			}
+			return binaryMap;
 		}
 	}
 }

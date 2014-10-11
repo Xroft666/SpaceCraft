@@ -57,22 +57,21 @@ namespace WorldGen{
 		public CaveConfig caveConfig = new CaveConfig();
 		
 		// Use this for initialization
-		public CellularAutomata (ref int[,] map) {
+		public CellularAutomata (ref int[,] map, int seed = -1) {
 			this.map = map;
-			
-			System.Random rand = new System.Random();
-			
-			seed = rand.Next();
+
+			if(seed == -1){
+				System.Random rand = new System.Random();
+				this.seed = rand.Next();
+			}else{
+				this.seed = seed;
+			}
+
 			
 			generateNoise(this.seed);
 		}
 		
-		public CellularAutomata (int mapWidth, int mapHeight, int seed) {
-			map = new int[mapWidth, mapHeight];
-			this.seed = seed;
-			
-			generateNoise(this.seed);
-		}
+
 		
 		
 		

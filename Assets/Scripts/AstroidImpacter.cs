@@ -16,7 +16,7 @@ public class AstroidImpacter : MonoBehaviour {
 	}
 
 
-	void OnCollisionEnter2D(Collision2D col){
+	void OnCollisionEnter2D(Collision2D col){ //TODO: do this process for each impact point
 		Vector2 pos = col.contacts[0].point;
 
 		pos = transform.InverseTransformPoint(pos);
