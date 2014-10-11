@@ -9,7 +9,9 @@ namespace Voxel2D{
 	[RequireComponent(typeof(MeshRenderer))]
 	[RequireComponent(typeof(MeshFilter))]
 	public class VoxelSystem : MonoBehaviour {
-		
+		public delegate void VoxelSystemDestroyedAction(Voxel2D.VoxelSystem voxelSystem);
+		public static event VoxelSystemDestroyedAction VoxelSystemDestroyed;
+
 		private VoxelData[,] voxelGrid;
 		
 		public Vector2[] previousVelocity { get; private set;}
@@ -99,6 +101,7 @@ namespace Voxel2D{
 			UpdateMass();
 			if(voxelCount == 0){
 				Debug.LogWarning("The newly created voxel system is empty, deleting");
+				VoxelSystemDestroyed(this);
 				Destroy(gameObject);
 			}
 		}
@@ -228,6 +231,7 @@ namespace Voxel2D{
 				UpdateMass();
 				if(voxelCount == 0){
 					Debug.Log("Voxel system empty, deleting");
+					VoxelSystemDestroyed(this);
 					Destroy(gameObject);
 				}
 			}
