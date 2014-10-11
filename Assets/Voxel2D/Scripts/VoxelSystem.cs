@@ -217,8 +217,7 @@ namespace Voxel2D{
 			voxelGrid [x, y] = null;
 			voxelCount--;
 		}
-		
-		
+
 		
 	}
 }

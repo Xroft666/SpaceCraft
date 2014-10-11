@@ -17,17 +17,17 @@ public class AstroidImpacter : MonoBehaviour {
 
 
 	void OnCollisionEnter2D(Collision2D col){ //TODO: do this process for each impact point
-		Vector2 pos = col.contacts[0].point;
 
-		pos = transform.InverseTransformPoint(pos);
-		pos.x = Mathf.Round(pos.x);
-		pos.y = Mathf.Round(pos.y);
+		for (int i = 0; i < col.contacts.Length; i++) {
+			Vector2 pos = col.contacts[i].point;
 
+			pos = transform.InverseTransformPoint(pos);
+			pos.x = Mathf.Round(pos.x);
+			pos.y = Mathf.Round(pos.y);
 
-		int[] vox = voxel.GetClosestVoxelIndex(pos);
-		voxel.RemoveVoxel(vox[0],vox[1]);
-		
-		voxel.SetMesh(Voxel2D.VoxelMeshGenerator.VoxelToMesh(voxel.GetVoxelData()));
-		
+			int[] vox = voxel.GetClosestVoxelIndex(pos);
+			voxel.RemoveVoxel(vox[0],vox[1]);
+			voxel.SetMesh(Voxel2D.VoxelMeshGenerator.VoxelToMesh(voxel.GetVoxelData()));
+		}
 	}
 }

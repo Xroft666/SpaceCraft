@@ -1,11 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using Voxel2D;
 using WorldGen;
 
 public class AstroidGenerator : MonoBehaviour {
-	
+
+	List<Vector2> AstroidList = new List<Vector2>();
+
 	int[,] map;
 	
 	// Use this for initialization
