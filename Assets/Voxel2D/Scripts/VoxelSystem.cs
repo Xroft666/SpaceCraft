@@ -17,7 +17,9 @@ namespace Voxel2D{
 		public Vector2[] previousVelocity { get; private set;}
 		public int voxelCount{ get; private set; }
 		public float totalMass{get;private set;}
-		
+
+		public bool isDestroying{get;private set;}
+
 		// Use this for initialization
 		void Awake () 
 		{
@@ -104,6 +106,7 @@ namespace Voxel2D{
 				if(VoxelSystemDestroyed != null){
 					VoxelSystemDestroyed(this);
 				}
+				isDestroying = true;
 				Destroy(gameObject);
 			}
 		}
@@ -236,6 +239,7 @@ namespace Voxel2D{
 					if(VoxelSystemDestroyed != null){
 						VoxelSystemDestroyed(this);
 					}
+					isDestroying = true;
 					Destroy(gameObject);
 				}
 			}
