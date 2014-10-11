@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace Voxel2D{
@@ -66,7 +67,7 @@ namespace Voxel2D{
 			rigidbody2D.mass = totalMass;
 		}
 		
-		private IEnumerator GenerateCollider(Mesh mesh){	//TODO: generate propper collider
+		private IEnumerator GenerateCollider(Mesh mesh){
 			PolygonColliderGenerator colGen = new PolygonColliderGenerator(voxelGrid.GetLength(0),VoxelUtility.VoxelDataToBool(GetVoxelData()));
 			PolygonCollider2D col = GetComponent<PolygonCollider2D>();
 			//colGen.UpdateMeshCollider();
@@ -130,26 +131,58 @@ namespace Voxel2D{
 		public int[] GetClosestVoxelIndex(Vector2 localPos){
 			float minDist = float.PositiveInfinity;
 			Vector2 minVoxel = new Vector2(-1,-1);
-			for (int x = -1; x <= 1; x++) {
-				for (int y = -1; y <= 1; y++) {
-					Vector2 c = localPos+new Vector2(x,y);
-					c = new Vector2(Mathf.RoundToInt(c.x),Mathf.RoundToInt(c.y));
-					if(GetVoxel((int)c.x,(int)c.y) != null){
-						float dist = (c-localPos).sqrMagnitude;
-						if(dist < minDist){
-							minDist = dist;
-							minVoxel = c;
+
+			for(int radius = 0; radius < 5; radius++){
+				for (int i = -radius; i <= radius; i++) {
+					List<Vector2> pos = new List<Vector2>();
+
+					Vector2 cx0 = localPos+new Vector2(i,0);
+					cx0 = new Vector2(Mathf.RoundToInt(cx0.x),Mathf.RoundToInt(cx0.y));
+					if(VoxelUtility.IsPointInBounds(voxelGrid,cx0)){ 
+						pos.Add(cx0);
+					}
+
+					Vector2 cx1 = localPos+new Vector2(i,radius-1);
+					cx1 = new Vector2(Mathf.RoundToInt(cx1.x),Mathf.RoundToInt(cx1.y));
+					if(VoxelUtility.IsPointInBounds(voxelGrid,cx1)){ 
+						pos.Add(cx1);
+					}
+
+					Vector2 cy0 = localPos+new Vector2(0,i);
+					cy0 = new Vector2(Mathf.RoundToInt(cy0.x),Mathf.RoundToInt(cy0.y));
+					if(VoxelUtility.IsPointInBounds(voxelGrid,cy0)){ 
+						pos.Add(cy0);
+					}
+
+					Vector2 cy1 = localPos+new Vector2(radius-1,i);
+					cy1 = new Vector2(Mathf.RoundToInt(cy1.x),Mathf.RoundToInt(cy1.y));
+					if(VoxelUtility.IsPointInBounds(voxelGrid,cy1)){ 
+						pos.Add(cy1);
+					}
+
+					for(int j=0;j<pos.Count;j++){
+						if(GetVoxel((int)pos[j].x,(int)pos[j].y) != null){
+							float dist = (pos[j]-localPos).sqrMagnitude;
+							if(dist < minDist){
+								minDist = dist;
+								minVoxel = pos[j];
+							}
 						}
 					}
+
+				}
+				if(minVoxel.x != -1){
+					break;
 				}
 			}
+
 			if(minVoxel.x < 0 || minVoxel.y < 0){
 				Debug.LogError("No voxel in range of collision!");
 			}
-			int[] i = new int[2];
-			i[0] = (int)minVoxel.x;
-			i[1] = (int)minVoxel.y;
-			return i;
+			int[] index = new int[2];
+			index[0] = (int)minVoxel.x;
+			index[1] = (int)minVoxel.y;
+			return index;
 		}
 		public void SetMesh(Mesh mesh)
 		{

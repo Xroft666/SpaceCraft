@@ -35,5 +35,17 @@ namespace Voxel2D{
 			}
 			return binaryMap;
 		}
+	
+	
+		public static bool IsPointInBounds(VoxelData[,] map, Vector2 point){
+			int[] i = new int[]{(int)point.x,(int)point.y};
+			Vector2 m = new Vector2(map.GetLength(0), map.GetLength(1));
+			if(i[0]>0 && i[0]<m.x && i[1]>0 && i[1]<m.y){
+				return true;
+			}else{
+				return false;
+			}
+		}
+	
 	}
 }
