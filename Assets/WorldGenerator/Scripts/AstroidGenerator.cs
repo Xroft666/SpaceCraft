@@ -40,10 +40,8 @@ public class AstroidGenerator : MonoBehaviour {
 			VoxelData[,] VD = VoxelUtility.IntToVoxelData(map);
 
 			VoxelSystem v = g.AddComponent<VoxelSystem>();
-			g.AddComponent<VoxelImpacter>();
-			g.AddComponent<VoxelTextureHandler>();
 			v.SetVoxelGrid(VD);
-			v.SetMesh(VoxelMeshGenerator.VoxelToMesh(v.GetVoxelData()));
+
 
 			//HACK: just for tests
 			//g.rigidbody2D.angularVelocity = 100;

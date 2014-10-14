@@ -12,17 +12,17 @@ namespace Voxel2D{
 	public class VoxelSystem : MonoBehaviour {
 		public delegate void VoxelSystemDestroyedAction(Voxel2D.VoxelSystem voxelSystem);
 		public static event VoxelSystemDestroyedAction VoxelSystemDestroyed;
-
+		
 		private VoxelData[,] voxelGrid;
 		
 		public Vector2[] previousVelocity { get; private set;}
 		public int voxelCount{ get; private set; }
 		public float totalMass{get;private set;}
-
+		
 		public bool isDestroying{get;private set;}
-
-
-		 
+		
+		
+		
 		private IslandDetector.Region[] mIslands = null;
 		private IslandDetector.Region[] mSeaRegions = null;
 		
@@ -31,6 +31,9 @@ namespace Voxel2D{
 		{
 			//voxelGrid = new VoxelData[10, 10];
 			previousVelocity = new Vector2[3];
+
+			gameObject.AddComponent<VoxelImpacter>();
+			gameObject.AddComponent<VoxelTextureHandler>();
 		}
 		
 		// Update is called once per frame
@@ -86,7 +89,7 @@ namespace Voxel2D{
 			while(t.IsAlive){
 				yield return new WaitForEndOfFrame();
 			}
-
+			
 			col.pathCount = colGen.vertexPaths.Count;
 			for(int i=0;i<colGen.vertexPaths.Count;i++){
 				col.SetPath(i,colGen.vertexPaths[i].ToArray());
@@ -94,7 +97,7 @@ namespace Voxel2D{
 			}
 			rigidbody2D.WakeUp();
 		}
-
+		
 		private void FillVoxelGrid(VoxelData[,] grid){
 			voxelGrid = grid;
 			for (int x = 0; x < voxelGrid.GetLength(0); x++) {
@@ -114,12 +117,42 @@ namespace Voxel2D{
 				isDestroying = true;
 				Destroy(gameObject);
 			}
+			SetMesh(VoxelMeshGenerator.VoxelToMesh(GetVoxelData()));
 		}
-
+		
 		#region set&get
-		public void SetVoxelGrid(VoxelData[,] grid){
-			FillVoxelGrid(grid);
+		public void SetVoxelGrid(VoxelData[,] grid){	//TODO: messy code, clean!
+			
+			List<bool[,]> islands = VoxelIslandDetector.findIslands(VoxelUtility.VoxelDataToBool(grid));
+			//Debug.Log(islands.Count);
+			if(islands.Count>0){
+				List<VoxelData[,]> voxelIslands = new List<VoxelData[,]>();
+				for(int i=0;i<islands.Count;i++){
+					voxelIslands.Add (new VoxelData[grid.GetLength(0),grid.GetLength(1)]);
+					
+					for (int x = 0; x < grid.GetLength(0); x++) {
+						for (int y = 0; y < grid.GetLength(1); y++) {
+							if(islands[i][x,y]){
+								voxelIslands[i][x,y] = grid[x,y];
+							}
+						}
+					}
+					if(i==0){
+						FillVoxelGrid(voxelIslands[i]);
+					}else{
+						GameObject g = new GameObject("Astroid Piece "+Random.seed);
+						g.transform.position = transform.position;
+						VoxelSystem v = g.AddComponent<VoxelSystem>();
+						v.SetVoxelGrid(voxelIslands[i]);
 
+					}
+				}
+			}else{
+				Debug.LogWarning("Requested generation of empty voxel system, deleting");
+			}
+			
+			
+			/*
 			bool[,] boolGrid = VoxelUtility.VoxelDataToBool(grid);
 			bool isNotEmpty = VoxelIslandDetector.CalculateIslandStartingPoints(boolGrid,out mIslands,out mSeaRegions);
 			if(!isNotEmpty){
@@ -127,14 +160,16 @@ namespace Voxel2D{
 				isDestroying = true;
 				Destroy(gameObject);
 			}
+			 */
+			
 			/*
 			List<bool[,]> islandGrids = new List<bool[,]>();
 			islandGrids[0] = new bool[grid.GetLength(0),grid.GetLength(1)];
 			foreach(int i=0;i<mIslands[0].mPointAtBorder){
 
 			}
-			*/
-
+			 */
+			
 		}
 		
 		public void SetVoxel(int x, int y, int ID)
@@ -143,6 +178,7 @@ namespace Voxel2D{
 			voxelCount++;
 			totalMass += 1; //TODO: add correct mass
 			UpdateMass();
+			SetMesh(VoxelMeshGenerator.VoxelToMesh(GetVoxelData()));
 		}
 		public VoxelData GetVoxel(int x, int y)
 		{
@@ -152,7 +188,7 @@ namespace Voxel2D{
 				return null;
 			}
 		}
-
+		
 		public int GetVoxelID(int x, int y)
 		{
 			return voxelGrid [x, y].GetID();
@@ -161,7 +197,7 @@ namespace Voxel2D{
 		{
 			return (VoxelData[,])voxelGrid.Clone();
 		}
-
+		
 		/// <summary>
 		/// Gets the closest voxel.
 		/// </summary>
@@ -170,35 +206,35 @@ namespace Voxel2D{
 		public int[] GetClosestVoxelIndex(Vector2 localPos){
 			float minDist = float.PositiveInfinity;
 			Vector2 minVoxel = new Vector2(-1,-1);
-
+			
 			for(int radius = 0; radius < 5; radius++){
 				for (int i = -radius; i <= radius; i++) {
 					List<Vector2> pos = new List<Vector2>();
-
+					
 					Vector2 cx0 = localPos+new Vector2(i,0);
 					cx0 = new Vector2(Mathf.RoundToInt(cx0.x),Mathf.RoundToInt(cx0.y));
 					if(VoxelUtility.IsPointInBounds(voxelGrid,cx0)){ 
 						pos.Add(cx0);
 					}
-
+					
 					Vector2 cx1 = localPos+new Vector2(i,radius-1);
 					cx1 = new Vector2(Mathf.RoundToInt(cx1.x),Mathf.RoundToInt(cx1.y));
 					if(VoxelUtility.IsPointInBounds(voxelGrid,cx1)){ 
 						pos.Add(cx1);
 					}
-
+					
 					Vector2 cy0 = localPos+new Vector2(0,i);
 					cy0 = new Vector2(Mathf.RoundToInt(cy0.x),Mathf.RoundToInt(cy0.y));
 					if(VoxelUtility.IsPointInBounds(voxelGrid,cy0)){ 
 						pos.Add(cy0);
 					}
-
+					
 					Vector2 cy1 = localPos+new Vector2(radius-1,i);
 					cy1 = new Vector2(Mathf.RoundToInt(cy1.x),Mathf.RoundToInt(cy1.y));
 					if(VoxelUtility.IsPointInBounds(voxelGrid,cy1)){ 
 						pos.Add(cy1);
 					}
-
+					
 					for(int j=0;j<pos.Count;j++){
 						if(GetVoxel((int)pos[j].x,(int)pos[j].y) != null){
 							float dist = (pos[j]-localPos).sqrMagnitude;
@@ -208,13 +244,13 @@ namespace Voxel2D{
 							}
 						}
 					}
-
+					
 				}
 				if(minVoxel.x != -1){
 					break;
 				}
 			}
-
+			
 			if(minVoxel.x < 0 || minVoxel.y < 0){
 				Debug.LogError("No voxel in range of collision!");
 				return null;
@@ -260,6 +296,7 @@ namespace Voxel2D{
 				voxelCount--;
 				totalMass -= 1; //TODO:use correct mass
 				UpdateMass();
+				SetMesh(VoxelMeshGenerator.VoxelToMesh(GetVoxelData()));
 				if(voxelCount == 0){
 					Debug.Log("Voxel system empty, deleting");
 					if(VoxelSystemDestroyed != null){
@@ -270,7 +307,7 @@ namespace Voxel2D{
 				}
 			}
 		}
-
+		
 		
 	}
 }

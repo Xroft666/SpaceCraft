@@ -74,7 +74,7 @@ namespace Voxel2D{
 							VoxelDestroyed(voxel,new Vector2(vox[0],vox[1]));
 						}
 						voxel.RemoveVoxel(vox[0],vox[1]);
-						voxel.SetMesh(Voxel2D.VoxelMeshGenerator.VoxelToMesh(voxel.GetVoxelData()));
+						//voxel.SetMesh(Voxel2D.VoxelMeshGenerator.VoxelToMesh(voxel.GetVoxelData()));
 						//TODO: use material based impact threshhold
 						energyAbsorbed += impactEnergyThreshHold;
 					}
