@@ -52,7 +52,6 @@ public class PolygonColliderGenerator{
 	/// </returns>
 	public void UpdateMeshCollider() {
 		
-		
 		bool anyIslandsFound = CalculateIslandStartingPoints(mBinaryImage, out mIslands, out mSeaRegions);
         if (!anyIslandsFound) {
 			Debug.LogError("Error: No opaque pixel (and thus no island region) has been found in the texture image - is your mAlphaOpaqueThreshold parameter too high?. Stopping collider generation.");

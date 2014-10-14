@@ -21,6 +21,11 @@ namespace Voxel2D{
 
 		public bool isDestroying{get;private set;}
 
+
+		 
+		private IslandDetector.Region[] mIslands = null;
+		private IslandDetector.Region[] mSeaRegions = null;
+		
 		// Use this for initialization
 		void Awake () 
 		{
@@ -89,9 +94,8 @@ namespace Voxel2D{
 			}
 			rigidbody2D.WakeUp();
 		}
-		
-		#region set&get
-		public void SetVoxelGrid(VoxelData[,] grid){
+
+		private void FillVoxelGrid(VoxelData[,] grid){
 			voxelGrid = grid;
 			for (int x = 0; x < voxelGrid.GetLength(0); x++) {
 				for (int y = 0; y < voxelGrid.GetLength(1); y++) {
@@ -110,6 +114,27 @@ namespace Voxel2D{
 				isDestroying = true;
 				Destroy(gameObject);
 			}
+		}
+
+		#region set&get
+		public void SetVoxelGrid(VoxelData[,] grid){
+			FillVoxelGrid(grid);
+
+			bool[,] boolGrid = VoxelUtility.VoxelDataToBool(grid);
+			bool isNotEmpty = VoxelIslandDetector.CalculateIslandStartingPoints(boolGrid,out mIslands,out mSeaRegions);
+			if(!isNotEmpty){
+				Debug.LogWarning("Requested generation of empty voxel system, deleting");
+				isDestroying = true;
+				Destroy(gameObject);
+			}
+			/*
+			List<bool[,]> islandGrids = new List<bool[,]>();
+			islandGrids[0] = new bool[grid.GetLength(0),grid.GetLength(1)];
+			foreach(int i=0;i<mIslands[0].mPointAtBorder){
+
+			}
+			*/
+
 		}
 		
 		public void SetVoxel(int x, int y, int ID)

@@ -15,10 +15,10 @@ public class RuntimeAlphaMeshCollider : MonoBehaviour {
 	
 	protected int mUpdateCounter = 0;
 	
-	public bool mUseBinaryImageInsteadOfTexture = false; ///< When set to true, the mUsedTexture is ignored and the mBinaryImage attribute is used directly.
+	public bool mUseBinaryImageInsteadOfTexture = false; 
 	public bool mOutputColliderInNormalizedSpace = true;
 	public Texture2D mUsedTexture = null;
-	public bool [,] mBinaryImage = null; ///< If you want to set the collider-image directly, set mUseBinaryImageInsteadOfTexture=true and fill this attribute accordingly.
+	public bool [,] mBinaryImage = null;
 	public float mAlphaOpaqueThreshold = 0.1f;
 	public int mMaxNumberOfIslands = 10;
 	public int mMinPixelCountToIncludeIsland = 200;
