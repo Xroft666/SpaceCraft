@@ -3,7 +3,13 @@ using System.Collections;
 
 namespace Voxel2D{
 	public static class VoxelUtility {
-		
+
+
+		/// <summary>
+		/// Converts and INT array to and voxel data array
+		/// </summary>
+		/// <returns>The voxel data array.</returns>
+		/// <param name="map">Int map.</param>
 		public static VoxelData[,] IntToVoxelData(int[,] map)
 		{
 			int sx = map.GetLength(0);
@@ -13,7 +19,7 @@ namespace Voxel2D{
 			for (int x = 0; x < sx; x++) {
 				for (int y = 0; y < sy; y++) {
 					if(map[x,y] != 0){
-						VD[x,y] = new VoxelData(1);
+						VD[x,y] = new VoxelData(map[x,y]);
 					}
 				}
 			}

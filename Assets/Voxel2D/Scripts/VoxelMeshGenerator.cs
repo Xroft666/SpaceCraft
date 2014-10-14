@@ -19,7 +19,7 @@ namespace Voxel2D
 			for (int x=0; x<voxels.GetLength(0); x++) {
 				for (int y=0; y<voxels.GetLength(1); y++) {
 					if (voxels [x, y] != null) {
-						AddQuad(ref vertices,ref triangles, ref uv, x,y);
+						AddQuad(ref vertices,ref triangles, ref uv, x,y,voxels[x,y].GetID());
 					}
 				}
 			}
@@ -37,20 +37,23 @@ namespace Voxel2D
 			return mesh;
 		}
 		
-		private static void AddQuad (ref List<Vector3> vertices, ref List<int> triangles, ref List<Vector2> uv, int x, int y)
+		private static void AddQuad (ref List<Vector3> vertices, ref List<int> triangles, ref List<Vector2> uv, int x, int y, int ID)
 		{
 			//index of current length to add reference vertices from
 			int startIndex = vertices.Count;
-			
+			Rect rect = TextureHolder.Instance.TileAtlastRects[ID];
+
 			vertices.Add(new Vector3(x-0.5f,y-0.5f));
 			vertices.Add(new Vector3(x-0.5f,y+0.5f));
 			vertices.Add(new Vector3(x+0.5f,y+0.5f));
 			vertices.Add(new Vector3(x+0.5f,y-0.5f));
-			
-			uv.Add(new Vector2(0,0));
-			uv.Add(new Vector2(0,1));
-			uv.Add(new Vector2(1,1));
-			uv.Add(new Vector2(1,0));
+
+
+
+			uv.Add(new Vector2(rect.xMin,rect.yMin));
+			uv.Add(new Vector2(rect.xMin,rect.yMax));
+			uv.Add(new Vector2(rect.xMax,rect.yMin));
+			uv.Add(new Vector2(rect.xMax,rect.yMax));
 
 			//tri 1
 			triangles.Add(startIndex+0);

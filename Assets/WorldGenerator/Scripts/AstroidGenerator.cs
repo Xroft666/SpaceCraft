@@ -41,6 +41,7 @@ public class AstroidGenerator : MonoBehaviour {
 
 			VoxelSystem v = g.AddComponent<VoxelSystem>();
 			g.AddComponent<VoxelImpacter>();
+			g.AddComponent<VoxelTextureHandler>();
 			v.SetVoxelGrid(VD);
 			v.SetMesh(VoxelMeshGenerator.VoxelToMesh(v.GetVoxelData()));
 
