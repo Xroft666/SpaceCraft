@@ -8,6 +8,7 @@ namespace Voxel2D{
 	[RequireComponent(typeof(Rigidbody2D))]
 	[RequireComponent(typeof(MeshRenderer))]
 	[RequireComponent(typeof(MeshFilter))]
+	//[RequireComponent(typeof(VoxelImpacter))]
 	public class VoxelSystem : MonoBehaviour {
 		public delegate void VoxelSystemDestroyedAction(Voxel2D.VoxelSystem voxelSystem);
 		public static event VoxelSystemDestroyedAction VoxelSystemDestroyed;

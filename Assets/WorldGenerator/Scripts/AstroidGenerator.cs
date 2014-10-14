@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -40,7 +40,7 @@ public class AstroidGenerator : MonoBehaviour {
 			VoxelData[,] VD = VoxelUtility.IntToVoxelData(map);
 
 			VoxelSystem v = g.AddComponent<VoxelSystem>();
-			g.AddComponent<AstroidImpacter>();
+			g.AddComponent<VoxelImpacter>();
 			v.SetVoxelGrid(VD);
 			v.SetMesh(VoxelMeshGenerator.VoxelToMesh(v.GetVoxelData()));
 
