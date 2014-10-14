@@ -20,6 +20,7 @@ namespace Voxel2D{
 				for (int y = 0; y < sy; y++) {
 					if(map[x,y] != 0){
 						VD[x,y] = new VoxelData(map[x,y]);
+						//Debug.Log(VD[x,y].GetID());
 					}
 				}
 			}
