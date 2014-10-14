@@ -47,7 +47,7 @@ namespace WorldGen{
 			OreVeinGenerator v = new OreVeinGenerator();
 
 			//int[,] tmpMap =v.GenerateOreVeins(map,0.5f,1,3,new int[]{1});
-
+			map = v.GenerateOreVeins(map,0.2f,1,2,new int[]{1});
 			map = v.GenerateOreVeins(map,0.1f,1,3,new int[]{1});
 		}
 

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class TextureHolder : MonoBehaviour {
 
 	public List<Texture2D> TileTextures = new List<Texture2D>();
+	public int MaxAtlasSize;
 
 	public Texture2D TileTextureAtlas {get;private set;}
 	public Rect[] TileAtlastRects {get;private set;}
@@ -17,8 +18,8 @@ public class TextureHolder : MonoBehaviour {
 		}else{
 			Destroy(gameObject);
 		}
-		TileTextureAtlas = new Texture2D(64,64);
-		TileAtlastRects = TileTextureAtlas.PackTextures(TileTextures.ToArray(),0,2048,false);
+		TileTextureAtlas = new Texture2D(MaxAtlasSize,MaxAtlasSize);
+		TileAtlastRects = TileTextureAtlas.PackTextures(TileTextures.ToArray(),0,MaxAtlasSize,false);
 		TileMaterial = new Material(Shader.Find("Diffuse"));
 		TileMaterial.mainTexture = TileTextureAtlas;
 	}
