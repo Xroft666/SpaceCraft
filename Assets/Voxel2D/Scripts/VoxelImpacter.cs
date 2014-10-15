@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using MaterialSystem;
 
 namespace Voxel2D{
 	public class VoxelImpacter : MonoBehaviour {
@@ -28,7 +29,7 @@ namespace Voxel2D{
 		
 		void FixedUpdate(){
 			if(forceToAdd != Vector2.zero){
-				rigidbody2D.AddForceAtPosition(forceToAdd,forcePoint);
+				//rigidbody2D.AddForceAtPosition(forceToAdd,forcePoint);
 				forceToAdd = Vector2.zero;
 			}
 		}
@@ -76,14 +77,17 @@ namespace Voxel2D{
 							if(VoxelDestroyed != null){
 								VoxelDestroyed(voxel,voxNotNull);
 							}
-							int voxelID = voxel.GetVoxel(voxNotNull.x,voxNotNull.y).GetID();
+							VoxelData theVoxel = voxel.GetVoxel(voxNotNull.x,voxNotNull.y);
+
+							energyAbsorbed += theVoxel.stats.destructionEnergy;
+
+							int voxelID = theVoxel.GetID();
 							VoxelUtility.CreateFragment(voxelID, col.contacts[i].point, voxel);
 							voxel.RemoveVoxel(voxNotNull.x,voxNotNull.y);
 
 
 
 							//TODO: use material based impact threshhold
-							energyAbsorbed += impactEnergyThreshHold;
 						}
 					}
 				}
