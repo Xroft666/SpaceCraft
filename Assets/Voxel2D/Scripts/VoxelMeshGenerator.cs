@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Voxel2D
 {
@@ -67,6 +68,22 @@ namespace Voxel2D
 			
 		}
 		
-		
+		public static IEnumerator GeneratePolygonCollider(VoxelSystem voxel){
+			PolygonColliderGenerator colGen = new PolygonColliderGenerator(voxel.GetGridSize(),VoxelUtility.VoxelDataToBool(voxel.GetVoxelData()));
+			
+			Thread t = new Thread(colGen.UpdateMeshCollider);
+			t.Start();
+			while(t.IsAlive){
+				yield return new WaitForEndOfFrame();
+			}
+			
+			PolygonCollider2D col = voxel.gameObject.GetComponent<PolygonCollider2D>();
+			col.pathCount = colGen.vertexPaths.Count;
+			for(int i=0;i<colGen.vertexPaths.Count;i++){
+				col.SetPath(i,colGen.vertexPaths[i].ToArray());
+				yield return new WaitForEndOfFrame();
+			}
+			voxel.rigidbody2D.WakeUp();
+		}
 	}
 }

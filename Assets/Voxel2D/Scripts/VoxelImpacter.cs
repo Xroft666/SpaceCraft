@@ -4,7 +4,7 @@ using System.Collections;
 namespace Voxel2D{
 	public class VoxelImpacter : MonoBehaviour {
 		
-		public delegate void VoxelDestroyedAction(Voxel2D.VoxelSystem voxelSystem, Vector2 localPosition);
+		public delegate void VoxelDestroyedAction(Voxel2D.VoxelSystem voxelSystem, IntVector2 localPosition);
 		public static event VoxelDestroyedAction VoxelDestroyed;
 		
 		Voxel2D.VoxelSystem voxel;
@@ -58,7 +58,7 @@ namespace Voxel2D{
 			forcePoint = col.contacts[0].point;
 			
 			//print(impactEnergyThis);
-			
+
 			//TODO: use material based impact threshhold
 			if(totalImpactEnergy-energyAbsorbed>impactEnergyThreshHold){
 				for (int i = 0; i < col.contacts.Length; i++) {
@@ -68,12 +68,13 @@ namespace Voxel2D{
 					pos.x = Mathf.Round(pos.x);
 					pos.y = Mathf.Round(pos.y);
 					
-					int[] vox = voxel.GetClosestVoxelIndex(pos);
-					if(vox != null){
+					IntVector2? vox = voxel.GetClosestVoxelIndex(pos);
+					if(vox!=null){
+						IntVector2 voxNotNull = vox.Value;
 						if(VoxelDestroyed != null){
-							VoxelDestroyed(voxel,new Vector2(vox[0],vox[1]));
+							VoxelDestroyed(voxel,voxNotNull);
 						}
-						voxel.RemoveVoxel(vox[0],vox[1]);
+						voxel.RemoveVoxel(voxNotNull.x,voxNotNull.y);
 						//voxel.SetMesh(Voxel2D.VoxelMeshGenerator.VoxelToMesh(voxel.GetVoxelData()));
 						//TODO: use material based impact threshhold
 						energyAbsorbed += impactEnergyThreshHold;

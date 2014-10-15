@@ -8,7 +8,6 @@ namespace Voxel2D{
 	[RequireComponent(typeof(Rigidbody2D))]
 	[RequireComponent(typeof(MeshRenderer))]
 	[RequireComponent(typeof(MeshFilter))]
-	//[RequireComponent(typeof(VoxelImpacter))]
 	public class VoxelSystem : MonoBehaviour {
 		public delegate void VoxelSystemDestroyedAction(Voxel2D.VoxelSystem voxelSystem);
 		public static event VoxelSystemDestroyedAction VoxelSystemDestroyed;
@@ -75,27 +74,25 @@ namespace Voxel2D{
 			}
 			
 		}
-		
+
+		private void VoxelSystemUpdated(bool removed){
+			UpdateMass();
+
+
+			if(voxelCount == 0){
+				Debug.LogWarning("The newly created voxel system is empty, deleting");
+				if(VoxelSystemDestroyed != null){
+					VoxelSystemDestroyed(this);
+				}
+				isDestroying = true;
+				Destroy(gameObject);
+			}
+
+			SetMesh(VoxelMeshGenerator.VoxelToMesh(GetVoxelData()));
+		}
+
 		private void UpdateMass(){
 			rigidbody2D.mass = totalMass;
-		}
-		
-		private IEnumerator GenerateCollider(Mesh mesh){
-			PolygonColliderGenerator colGen = new PolygonColliderGenerator(voxelGrid.GetLength(0),VoxelUtility.VoxelDataToBool(GetVoxelData()));
-			PolygonCollider2D col = GetComponent<PolygonCollider2D>();
-			//colGen.UpdateMeshCollider();
-			Thread t = new Thread(colGen.UpdateMeshCollider);
-			t.Start();
-			while(t.IsAlive){
-				yield return new WaitForEndOfFrame();
-			}
-			
-			col.pathCount = colGen.vertexPaths.Count;
-			for(int i=0;i<colGen.vertexPaths.Count;i++){
-				col.SetPath(i,colGen.vertexPaths[i].ToArray());
-				yield return new WaitForEndOfFrame();
-			}
-			rigidbody2D.WakeUp();
 		}
 		
 		private void FillVoxelGrid(VoxelData[,] grid){
@@ -108,78 +105,23 @@ namespace Voxel2D{
 					}
 				}
 			}
-			UpdateMass();
-			if(voxelCount == 0){
-				Debug.LogWarning("The newly created voxel system is empty, deleting");
-				if(VoxelSystemDestroyed != null){
-					VoxelSystemDestroyed(this);
-				}
-				isDestroying = true;
-				Destroy(gameObject);
-			}
-			SetMesh(VoxelMeshGenerator.VoxelToMesh(GetVoxelData()));
+			VoxelSystemUpdated(true);
 		}
 		
 		#region set&get
 		public void SetVoxelGrid(VoxelData[,] grid){	//TODO: messy code, clean!
-			
-			List<bool[,]> islands = VoxelIslandDetector.findIslands(VoxelUtility.VoxelDataToBool(grid));
-			//Debug.Log(islands.Count);
-			if(islands.Count>0){
-				List<VoxelData[,]> voxelIslands = new List<VoxelData[,]>();
-				for(int i=0;i<islands.Count;i++){
-					voxelIslands.Add (new VoxelData[grid.GetLength(0),grid.GetLength(1)]);
-					
-					for (int x = 0; x < grid.GetLength(0); x++) {
-						for (int y = 0; y < grid.GetLength(1); y++) {
-							if(islands[i][x,y]){
-								voxelIslands[i][x,y] = grid[x,y];
-							}
-						}
-					}
-					if(i==0){
-						FillVoxelGrid(voxelIslands[i]);
-					}else{
-						GameObject g = new GameObject("Astroid Piece "+Random.seed);
-						g.transform.position = transform.position;
-						VoxelSystem v = g.AddComponent<VoxelSystem>();
-						v.SetVoxelGrid(voxelIslands[i]);
-
-					}
-				}
+			VoxelData[,] v = VoxelIslandDetector.SplitIslands(grid,this);
+			if(v != null){
+				FillVoxelGrid(v);
 			}else{
-				Debug.LogWarning("Requested generation of empty voxel system, deleting");
-			}
-			
-			
-			/*
-			bool[,] boolGrid = VoxelUtility.VoxelDataToBool(grid);
-			bool isNotEmpty = VoxelIslandDetector.CalculateIslandStartingPoints(boolGrid,out mIslands,out mSeaRegions);
-			if(!isNotEmpty){
 				Debug.LogWarning("Requested generation of empty voxel system, deleting");
 				isDestroying = true;
 				Destroy(gameObject);
-			}
-			 */
-			
-			/*
-			List<bool[,]> islandGrids = new List<bool[,]>();
-			islandGrids[0] = new bool[grid.GetLength(0),grid.GetLength(1)];
-			foreach(int i=0;i<mIslands[0].mPointAtBorder){
 
 			}
-			 */
 			
 		}
-		
-		public void SetVoxel(int x, int y, int ID)
-		{
-			voxelGrid [x, y] = new VoxelData (ID);
-			voxelCount++;
-			totalMass += 1; //TODO: add correct mass
-			UpdateMass();
-			SetMesh(VoxelMeshGenerator.VoxelToMesh(GetVoxelData()));
-		}
+
 		public VoxelData GetVoxel(int x, int y)
 		{
 			if(voxelGrid [x, y] != null){
@@ -203,41 +145,42 @@ namespace Voxel2D{
 		/// </summary>
 		/// <returns>The closest voxel.</returns>
 		/// <param name="localPos">Local position.</param>
-		public int[] GetClosestVoxelIndex(Vector2 localPos){
+		public IntVector2 GetClosestVoxelIndex(IntVector2 localPos){
 			float minDist = float.PositiveInfinity;
-			Vector2 minVoxel = new Vector2(-1,-1);
+			IntVector2 minVoxel = new IntVector2(-1,-1);
+
 			
 			for(int radius = 0; radius < 5; radius++){
 				for (int i = -radius; i <= radius; i++) {
-					List<Vector2> pos = new List<Vector2>();
+					List<IntVector2> pos = new List<IntVector2>();
 					
-					Vector2 cx0 = localPos+new Vector2(i,0);
-					cx0 = new Vector2(Mathf.RoundToInt(cx0.x),Mathf.RoundToInt(cx0.y));
+					IntVector2 cx0 = localPos+new IntVector2(i,0);
+					cx0 = new IntVector2(Mathf.RoundToInt(cx0.x),Mathf.RoundToInt(cx0.y));
 					if(VoxelUtility.IsPointInBounds(voxelGrid,cx0)){ 
 						pos.Add(cx0);
 					}
 					
-					Vector2 cx1 = localPos+new Vector2(i,radius-1);
-					cx1 = new Vector2(Mathf.RoundToInt(cx1.x),Mathf.RoundToInt(cx1.y));
+					IntVector2 cx1 = localPos+new IntVector2(i,radius-1);
+					cx1 = new IntVector2(Mathf.RoundToInt(cx1.x),Mathf.RoundToInt(cx1.y));
 					if(VoxelUtility.IsPointInBounds(voxelGrid,cx1)){ 
 						pos.Add(cx1);
 					}
 					
-					Vector2 cy0 = localPos+new Vector2(0,i);
-					cy0 = new Vector2(Mathf.RoundToInt(cy0.x),Mathf.RoundToInt(cy0.y));
+					IntVector2 cy0 = localPos+new IntVector2(0,i);
+					cy0 = new IntVector2(Mathf.RoundToInt(cy0.x),Mathf.RoundToInt(cy0.y));
 					if(VoxelUtility.IsPointInBounds(voxelGrid,cy0)){ 
 						pos.Add(cy0);
 					}
 					
-					Vector2 cy1 = localPos+new Vector2(radius-1,i);
-					cy1 = new Vector2(Mathf.RoundToInt(cy1.x),Mathf.RoundToInt(cy1.y));
+					IntVector2 cy1 = localPos+new IntVector2(radius-1,i);
+					cy1 = new IntVector2(Mathf.RoundToInt(cy1.x),Mathf.RoundToInt(cy1.y));
 					if(VoxelUtility.IsPointInBounds(voxelGrid,cy1)){ 
 						pos.Add(cy1);
 					}
 					
 					for(int j=0;j<pos.Count;j++){
 						if(GetVoxel((int)pos[j].x,(int)pos[j].y) != null){
-							float dist = (pos[j]-localPos).sqrMagnitude;
+							float dist = ((Vector2)(pos[j]-localPos)).sqrMagnitude;
 							if(dist < minDist){
 								minDist = dist;
 								minVoxel = pos[j];
@@ -253,18 +196,15 @@ namespace Voxel2D{
 			
 			if(minVoxel.x < 0 || minVoxel.y < 0){
 				Debug.LogError("No voxel in range of collision!");
-				return null;
+				return minVoxel;
 			}else{
-				int[] index = new int[2];
-				index[0] = (int)minVoxel.x;
-				index[1] = (int)minVoxel.y;
-				return index;
+				return minVoxel;
 			}
 		}
 		public void SetMesh(Mesh mesh)
 		{
 			GetComponent<MeshFilter>().sharedMesh = mesh;
-			StartCoroutine(GenerateCollider(mesh));
+			StartCoroutine(VoxelMeshGenerator.GeneratePolygonCollider(this));// GenerateCollider(mesh));
 			rigidbody2D.centerOfMass = GetCenter();
 			
 		}
@@ -278,7 +218,7 @@ namespace Voxel2D{
 			return voxelGrid.GetLength(0);
 		}
 		#endregion set&get
-		
+
 		public bool IsVoxelEmpty(int x,int y)
 		{
 			if (voxelGrid [x, y] == null) {
@@ -287,24 +227,27 @@ namespace Voxel2D{
 				return false;
 			}
 		}
-		
-		public void RemoveVoxel(int x,int y){
+
+		public void AddVoxel(int x, int y, int ID)
+		{
 			if(voxelGrid [x, y] == null){
+				voxelGrid [x, y] = new VoxelData (ID);
+				voxelCount++;
+				totalMass += 1; //TODO: add correct mass
+				VoxelSystemUpdated(false);
+			}else{
+				Debug.LogError("Voxel allready contains data, delete voxel before adding");
+			}
+		}
+
+		public void RemoveVoxel(int x,int y){
+			if(VoxelUtility.IsPointInBounds(GetVoxelData(),new Vector2(x,y)) && voxelGrid [x, y] == null){
 				Debug.LogError("Voxel doesnt exist");
 			}else{
 				voxelGrid [x, y] = null;
 				voxelCount--;
 				totalMass -= 1; //TODO:use correct mass
-				UpdateMass();
-				SetMesh(VoxelMeshGenerator.VoxelToMesh(GetVoxelData()));
-				if(voxelCount == 0){
-					Debug.Log("Voxel system empty, deleting");
-					if(VoxelSystemDestroyed != null){
-						VoxelSystemDestroyed(this);
-					}
-					isDestroying = true;
-					Destroy(gameObject);
-				}
+				VoxelSystemUpdated(true);
 			}
 		}
 		
