@@ -53,8 +53,9 @@ namespace Voxel2D
 
 			uv.Add(new Vector2(rect.xMin,rect.yMin));
 			uv.Add(new Vector2(rect.xMin,rect.yMax));
-			uv.Add(new Vector2(rect.xMax,rect.yMin));
 			uv.Add(new Vector2(rect.xMax,rect.yMax));
+			uv.Add(new Vector2(rect.xMax,rect.yMin));
+
 
 			//tri 1
 			triangles.Add(startIndex+0);
