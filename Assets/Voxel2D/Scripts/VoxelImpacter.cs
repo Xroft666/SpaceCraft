@@ -34,6 +34,7 @@ namespace Voxel2D{
 		}
 		
 		void OnCollisionEnter2D(Collision2D col){ //TODO: include angular velocity
+
 			float energyAbsorbed = 0;
 			
 			Vector2 deltaVelocityThis = rigidbody2D.velocity-voxel.previousVelocity[0];
@@ -62,22 +63,28 @@ namespace Voxel2D{
 			//TODO: use material based impact threshhold
 			if(totalImpactEnergy-energyAbsorbed>impactEnergyThreshHold){
 				for (int i = 0; i < col.contacts.Length; i++) {
-					Vector2 pos = col.contacts[i].point;
-					
-					pos = transform.InverseTransformPoint(pos);
-					pos.x = Mathf.Round(pos.x);
-					pos.y = Mathf.Round(pos.y);
-					
-					IntVector2? vox = voxel.GetClosestVoxelIndex(pos);
-					if(vox!=null){
-						IntVector2 voxNotNull = vox.Value;
-						if(VoxelDestroyed != null){
-							VoxelDestroyed(voxel,voxNotNull);
+					if(col.contacts[i].collider.tag != "VoxelFragment"){
+						Vector2 pos = col.contacts[i].point;
+						
+						pos = transform.InverseTransformPoint(pos);
+						pos.x = Mathf.Round(pos.x);
+						pos.y = Mathf.Round(pos.y);
+						
+						IntVector2? vox = voxel.GetClosestVoxelIndex(pos,5);
+						if(vox!=null){
+							IntVector2 voxNotNull = vox.Value;
+							if(VoxelDestroyed != null){
+								VoxelDestroyed(voxel,voxNotNull);
+							}
+							int voxelID = voxel.GetVoxel(voxNotNull.x,voxNotNull.y).GetID();
+							VoxelUtility.CreateFragment(voxelID, col.contacts[i].point, voxel);
+							voxel.RemoveVoxel(voxNotNull.x,voxNotNull.y);
+
+
+
+							//TODO: use material based impact threshhold
+							energyAbsorbed += impactEnergyThreshHold;
 						}
-						voxel.RemoveVoxel(voxNotNull.x,voxNotNull.y);
-						//voxel.SetMesh(Voxel2D.VoxelMeshGenerator.VoxelToMesh(voxel.GetVoxelData()));
-						//TODO: use material based impact threshhold
-						energyAbsorbed += impactEnergyThreshHold;
 					}
 				}
 			}else{
@@ -85,5 +92,8 @@ namespace Voxel2D{
 			}
 			
 		}
+
+
+
 	}
 }

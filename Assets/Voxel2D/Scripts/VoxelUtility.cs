@@ -53,6 +53,22 @@ namespace Voxel2D{
 				return false;
 			}
 		}
+
+		public static void CreateFragment(int voxelID, Vector3 colPoint, VoxelSystem voxel){
+			GameObject frag = new GameObject(voxel.gameObject.name+" Fragment");
+			frag.transform.position = colPoint;
+			frag.transform.rotation = voxel.transform.rotation;
+			frag.tag = "VoxelFragment";
+			
+			GameObject parent = GameObject.Find("FragmentHolder");
+			if(parent == null){
+				parent = new GameObject("FragmentHolder");
+			}
+			frag.transform.parent = parent.transform;
+			
+			VoxelFragment f = frag.AddComponent<VoxelFragment>();
+			f.Init(voxelID);
+		}
 	
 	}
 }

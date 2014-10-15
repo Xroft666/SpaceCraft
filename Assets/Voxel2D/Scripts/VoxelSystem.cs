@@ -31,6 +31,8 @@ namespace Voxel2D{
 			//voxelGrid = new VoxelData[10, 10];
 			previousVelocity = new Vector2[3];
 
+			rigidbody2D.angularDrag = 0;
+
 			gameObject.AddComponent<VoxelImpacter>();
 			gameObject.AddComponent<VoxelTextureHandler>();
 		}
@@ -76,19 +78,28 @@ namespace Voxel2D{
 		}
 
 		private void VoxelSystemUpdated(bool removed){
-			UpdateMass();
-
-
 			if(voxelCount == 0){
 				Debug.LogWarning("The newly created voxel system is empty, deleting");
-				if(VoxelSystemDestroyed != null){
-					VoxelSystemDestroyed(this);
-				}
-				isDestroying = true;
-				Destroy(gameObject);
+				DestroyVoxelSystem();
+			}else if(voxelCount == 1){
+				Debug.Log("Turning voxel system into voxel fragment");
+				IntVector2 pos = GetClosestVoxelIndex(new IntVector2(0,0),GetGridSize());
+				int voxelID = GetVoxel(pos.x,pos.y).GetID();
+				VoxelUtility.CreateFragment(voxelID,transform.TransformPoint(new Vector3(pos.x,pos.y,0)),this);
+				DestroyVoxelSystem();
 			}
+			else{
+				UpdateMass();
+				SetMesh(VoxelMeshGenerator.VoxelToMesh(GetVoxelData()));
+			}
+		}
 
-			SetMesh(VoxelMeshGenerator.VoxelToMesh(GetVoxelData()));
+		private void DestroyVoxelSystem(){
+			if(VoxelSystemDestroyed != null){
+				VoxelSystemDestroyed(this);
+			}
+			isDestroying = true;
+			Destroy(gameObject);
 		}
 
 		private void UpdateMass(){
@@ -145,12 +156,12 @@ namespace Voxel2D{
 		/// </summary>
 		/// <returns>The closest voxel.</returns>
 		/// <param name="localPos">Local position.</param>
-		public IntVector2 GetClosestVoxelIndex(IntVector2 localPos){
+		public IntVector2 GetClosestVoxelIndex(IntVector2 localPos, int radiusToCheck){
 			float minDist = float.PositiveInfinity;
 			IntVector2 minVoxel = new IntVector2(-1,-1);
 
 			
-			for(int radius = 0; radius < 5; radius++){
+			for(int radius = 0; radius < radiusToCheck; radius++){
 				for (int i = -radius; i <= radius; i++) {
 					List<IntVector2> pos = new List<IntVector2>();
 					
