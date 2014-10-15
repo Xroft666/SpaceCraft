@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using MaterialSystem;
 
 namespace Voxel2D{
 	[RequireComponent(typeof(PolygonCollider2D))]
@@ -15,6 +16,8 @@ namespace Voxel2D{
 		private VoxelData[,] voxelGrid;
 		
 		public Vector2[] previousVelocity { get; private set;}
+		public float[] previousAngularVelocity { get; private set;}
+
 		public int voxelCount{ get; private set; }
 		public float totalMass{get;private set;}
 		
@@ -30,6 +33,7 @@ namespace Voxel2D{
 		{
 			//voxelGrid = new VoxelData[10, 10];
 			previousVelocity = new Vector2[3];
+			previousAngularVelocity = new float[3];
 
 			rigidbody2D.angularDrag = 0;
 
@@ -48,6 +52,10 @@ namespace Voxel2D{
 			previousVelocity [2] = previousVelocity [1];
 			previousVelocity [1] = previousVelocity [0];
 			previousVelocity [0] = rigidbody2D.velocity;
+
+			previousAngularVelocity [2] = previousAngularVelocity [1];
+			previousAngularVelocity [1] = previousAngularVelocity [0];
+			previousAngularVelocity [0] = rigidbody2D.angularVelocity;
 		}
 		
 		
@@ -57,14 +65,15 @@ namespace Voxel2D{
 		/// </summary>
 		/// <returns>The average position of voxels.</returns>
 		private Vector2 GetCenter(){	//TODO: take mass of voxel type into the calculation	
-			int counter = 0;
+			float counter = 0;
 			Vector2 sum = Vector2.zero;
 			
 			for (int x=0; x<voxelGrid.GetLength(0); x++) {
 				for (int y=0; y<voxelGrid.GetLength(0); y++) {
 					if(!IsVoxelEmpty(x,y)){
-						sum += new Vector2(x,y);
-						counter++;
+						float mass = MaterialSystem.ElementList.Instance.elements[GetVoxelID(x,y)].mass;
+						sum += new Vector2(x*mass,y*mass);
+						counter += mass;
 					}
 				}
 			}
@@ -112,7 +121,7 @@ namespace Voxel2D{
 				for (int y = 0; y < voxelGrid.GetLength(1); y++) {
 					if(!IsVoxelEmpty(x,y)){
 						voxelCount++;
-						totalMass += 1; //TODO: add correct mass
+						totalMass += MaterialSystem.ElementList.Instance.elements[GetVoxelID(x,y)].mass; //TODO: add correct mass
 					}
 				}
 			}
@@ -126,8 +135,7 @@ namespace Voxel2D{
 				FillVoxelGrid(v);
 			}else{
 				Debug.LogWarning("Requested generation of empty voxel system, deleting");
-				isDestroying = true;
-				Destroy(gameObject);
+				DestroyVoxelSystem();
 
 			}
 			
@@ -215,9 +223,8 @@ namespace Voxel2D{
 		public void SetMesh(Mesh mesh)
 		{
 			GetComponent<MeshFilter>().sharedMesh = mesh;
-			StartCoroutine(VoxelMeshGenerator.GeneratePolygonCollider(this));// GenerateCollider(mesh));
+			StartCoroutine(VoxelMeshGenerator.GeneratePolygonCollider(this));
 			rigidbody2D.centerOfMass = GetCenter();
-			
 		}
 		
 		public void SetGridSize(int size)
@@ -244,7 +251,7 @@ namespace Voxel2D{
 			if(voxelGrid [x, y] == null){
 				voxelGrid [x, y] = new VoxelData (ID);
 				voxelCount++;
-				totalMass += 1; //TODO: add correct mass
+				totalMass += MaterialSystem.ElementList.Instance.elements[GetVoxelID(x,y)].mass; //TODO: add correct mass
 				VoxelSystemUpdated(false);
 			}else{
 				Debug.LogError("Voxel allready contains data, delete voxel before adding");
@@ -255,9 +262,9 @@ namespace Voxel2D{
 			if(VoxelUtility.IsPointInBounds(GetVoxelData(),new Vector2(x,y)) && voxelGrid [x, y] == null){
 				Debug.LogError("Voxel doesnt exist");
 			}else{
+				totalMass -= MaterialSystem.ElementList.Instance.elements[GetVoxelID(x,y)].mass; //TODO:use correct mass
 				voxelGrid [x, y] = null;
 				voxelCount--;
-				totalMass -= 1; //TODO:use correct mass
 				VoxelSystemUpdated(true);
 			}
 		}

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using MaterialSystem;
 
 namespace Voxel2D{
 	[RequireComponent(typeof(BoxCollider2D))]
@@ -17,7 +18,7 @@ namespace Voxel2D{
 			Mesh mesh = VoxelMeshGenerator.VoxelToMesh(vox);
 			GetComponent<MeshFilter>().sharedMesh = mesh;
 
-			//TODO: set mass
+			rigidbody2D.mass = ElementList.Instance.elements[ID].mass;
 
 			gameObject.AddComponent<VoxelTextureHandler>();
 
