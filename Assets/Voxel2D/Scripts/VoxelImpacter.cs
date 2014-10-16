@@ -19,7 +19,7 @@ namespace Voxel2D{
 		// Use this for initialization
 		void Awake () {
 			voxel = GetComponent<Voxel2D.VoxelSystem>();
-			print(voxel);
+			//print(voxel);
 		}
 		
 		// Update is called once per frame

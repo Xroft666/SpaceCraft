@@ -12,7 +12,7 @@ namespace Voxel2D{
 	public class VoxelSystem : MonoBehaviour {
 		public delegate void VoxelSystemDestroyedAction(Voxel2D.VoxelSystem voxelSystem);
 		public static event VoxelSystemDestroyedAction VoxelSystemDestroyed;
-		
+
 		private VoxelData[,] voxelGrid;
 		
 		public Vector2[] previousVelocity { get; private set;}
@@ -64,7 +64,7 @@ namespace Voxel2D{
 		/// Gets the center.
 		/// </summary>
 		/// <returns>The average position of voxels.</returns>
-		private Vector2 GetCenter(){	//TODO: take mass of voxel type into the calculation	
+		public Vector2 GetCenter(){	//TODO: take mass of voxel type into the calculation	
 			float counter = 0;
 			Vector2 sum = Vector2.zero;
 			

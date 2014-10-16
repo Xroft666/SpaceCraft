@@ -45,9 +45,18 @@ namespace Voxel2D{
 	
 	
 		public static bool IsPointInBounds(VoxelData[,] map, Vector2 point){
-			int[] i = new int[]{(int)point.x,(int)point.y};
+			int[] i = new int[]{Mathf.RoundToInt(point.x),Mathf.RoundToInt(point.y)};
 			Vector2 m = new Vector2(map.GetLength(0), map.GetLength(1));
 			if(i[0]>0 && i[0]<m.x && i[1]>0 && i[1]<m.y){
+				return true;
+			}else{
+				return false;
+			}
+		}
+
+		public static bool IsPointInBounds(int size, Vector2 point){
+			int[] i = new int[]{Mathf.RoundToInt(point.x),Mathf.RoundToInt(point.y)};
+			if(i[0]>0 && i[0]<size && i[1]>0 && i[1]<size){
 				return true;
 			}else{
 				return false;
@@ -69,6 +78,32 @@ namespace Voxel2D{
 			VoxelFragment f = frag.AddComponent<VoxelFragment>();
 			f.Init(voxelID);
 		}
-	
+
+		public static bool NextToVoxel(VoxelData[,] map, IntVector2 pos){
+
+			if(IsPointInBounds(map.GetLength(0),new Vector2(pos.x+1,pos.y))){
+				if(map[pos.x+1,pos.y] != null){
+					return true;
+				}
+			}
+			if(IsPointInBounds(map.GetLength(0),new Vector2(pos.x-1,pos.y))){
+				if(map[pos.x-1,pos.y] != null){
+					return true;
+				}
+			}
+			if(IsPointInBounds(map.GetLength(0),new Vector2(pos.x,pos.y+1))){
+				if(map[pos.x,pos.y+1] != null){
+					return true;
+				}
+			}
+			if(IsPointInBounds(map.GetLength(0),new Vector2(pos.x,pos.y-1))){
+				if(map[pos.x,pos.y-1] != null){
+					return true;
+				}
+			}
+			return false;
+
+		}
+
 	}
 }

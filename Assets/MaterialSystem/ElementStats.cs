@@ -11,7 +11,7 @@ namespace MaterialSystem{
 		public int ID;
 
 		public float temperature;	//temperature
-		public float fragmentionRate;	//increases each impact, overall strength is (hardness*flexibility)*(1-fragmentationRate)
+		public float fragmention;	//increases each impact, overall strength is (hardness*flexibility)*(1-fragmentationRate)
 
 		/// <summary>
 		/// Gets the energy required to break this voxel
@@ -20,7 +20,7 @@ namespace MaterialSystem{
 		public float destructionEnergy {
 			get{
 				ElementSpecs e = ElementList.Instance.elements[ID];
-				return e.flexibility*e.hardness*(1-fragmentionRate);
+				return e.flexibility*e.hardness*(1-fragmention);
 			}
 		}
 	
