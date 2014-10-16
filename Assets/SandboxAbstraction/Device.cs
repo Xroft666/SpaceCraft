@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace SpaceSandbox
 {
+	[System.Serializable]
 	public class Device : Entity 
 	{
 		public List<Resource> resources = new List<Resource>();
