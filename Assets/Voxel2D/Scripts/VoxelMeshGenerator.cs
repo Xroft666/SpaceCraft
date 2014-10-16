@@ -42,7 +42,7 @@ namespace Voxel2D
 		{
 			//index of current length to add reference vertices from
 			int startIndex = vertices.Count;
-			Rect rect = TextureHolder.Instance.TileAtlastRects[ID-1];
+			Rect rect = TextureHolder.Instance.TileAtlastRects[ID];
 
 			vertices.Add(new Vector3(x-0.5f,y-0.5f));
 			vertices.Add(new Vector3(x-0.5f,y+0.5f));

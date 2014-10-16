@@ -4,6 +4,12 @@ using System.Collections;
 namespace MaterialSystem{
 	[System.Serializable]
 	public class ElementSpecs{
+		//Utility
+		public string name;
+		public int ID;
+		public Texture2D texture;
+
+
 		public float mass;
 
 		//strength			strength = hardness*flexibility

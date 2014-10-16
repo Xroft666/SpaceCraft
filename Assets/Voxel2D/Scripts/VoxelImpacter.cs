@@ -71,8 +71,8 @@ namespace Voxel2D{
 						pos.x = Mathf.Round(pos.x);
 						pos.y = Mathf.Round(pos.y);
 						
-						IntVector2? vox = voxel.GetClosestVoxelIndex(pos,5);
-						if(vox!=null){
+						IntVector2? vox = voxel.GetClosestVoxelIndex(pos,7);
+						if(vox.Value.x >=0){
 							IntVector2 voxNotNull = vox.Value;
 							if(VoxelDestroyed != null){
 								VoxelDestroyed(voxel,voxNotNull);
