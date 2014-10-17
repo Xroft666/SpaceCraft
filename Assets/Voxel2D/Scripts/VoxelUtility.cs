@@ -19,7 +19,7 @@ namespace Voxel2D{
 			for (int x = 0; x < sx; x++) {
 				for (int y = 0; y < sy; y++) {
 					if(map[x,y] != 0){
-						VD[x,y] = new VoxelData(map[x,y]);
+						VD[x,y] = new VoxelData(map[x,y], new IntVector2(x,y));
 						//Debug.Log(VD[x,y].GetID());
 					}
 				}
@@ -63,7 +63,7 @@ namespace Voxel2D{
 			}
 		}
 
-		public static void CreateFragment(int voxelID, Vector3 colPoint, VoxelSystem voxel){
+		public static GameObject CreateFragment(int voxelID, Vector3 colPoint, VoxelSystem voxel){
 			GameObject frag = new GameObject(voxel.gameObject.name+" Fragment");
 			frag.transform.position = colPoint;
 			frag.transform.rotation = voxel.transform.rotation;
@@ -77,6 +77,7 @@ namespace Voxel2D{
 			
 			VoxelFragment f = frag.AddComponent<VoxelFragment>();
 			f.Init(voxelID);
+			return frag;
 		}
 
 		public static bool NextToVoxel(VoxelData[,] map, IntVector2 pos){

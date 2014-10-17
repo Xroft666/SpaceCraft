@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using MaterialSystem;
 
 namespace Voxel2D{
@@ -15,7 +16,9 @@ namespace Voxel2D{
 		
 		//HACK: should be calculated based on element stats
 		private float impactEnergyThreshHold = 1000;
-		
+
+		private List<GameObject> fragmentList = new List<GameObject>();
+
 		// Use this for initialization
 		void Awake () {
 			voxel = GetComponent<Voxel2D.VoxelSystem>();
@@ -23,8 +26,11 @@ namespace Voxel2D{
 		}
 		
 		// Update is called once per frame
-		void Update () {
-			
+		void LateUpdate () {
+			foreach(GameObject g in fragmentList){
+				g.SetActive(true);
+			}
+			fragmentList.Clear();
 		}
 		
 		void FixedUpdate(){
@@ -35,7 +41,7 @@ namespace Voxel2D{
 		}
 		
 		void OnCollisionEnter2D(Collision2D col){ //TODO: include angular velocity
-
+			
 			float energyAbsorbed = 0;
 			
 			Vector2 deltaVelocityThis = rigidbody2D.velocity-voxel.previousVelocity[0];
@@ -61,43 +67,74 @@ namespace Voxel2D{
 			
 			//print(impactEnergyThis);
 
-			//TODO: use material based impact threshhold
-			if(totalImpactEnergy-energyAbsorbed>impactEnergyThreshHold){
+			IEnumerator<IntVector2>[] testList = new IEnumerator<IntVector2>[col.contacts.Length];
+			for(int i=0;i<testList.Length;i++){
+				Vector2 pos = PosGlobalToLocal(col.contacts[i].point);
+				testList[i] = voxel.GetClosestVoxelIndexIE(pos,15).GetEnumerator();
+			}
+
+			//TODO;: use material based impact threshhold
+			int loopCounter = 50;
+			while(totalImpactEnergy-energyAbsorbed > 0 && loopCounter >0){
+				loopCounter--;
 				for (int i = 0; i < col.contacts.Length; i++) {
 					if(col.contacts[i].collider.tag != "VoxelFragment"){
-						Vector2 pos = col.contacts[i].point;
-						
-						pos = transform.InverseTransformPoint(pos);
-						pos.x = Mathf.Round(pos.x);
-						pos.y = Mathf.Round(pos.y);
-						
-						IntVector2? vox = voxel.GetClosestVoxelIndex(pos,7);
-						if(vox.Value.x >=0){
-							IntVector2 voxNotNull = vox.Value;
-							if(VoxelDestroyed != null){
-								VoxelDestroyed(voxel,voxNotNull);
+						if(testList[i].MoveNext()){
+							IntVector2 test = testList[i].Current;
+
+							if(DestroyCollidingVoxel(col.contacts[i].point,totalImpactEnergy,ref energyAbsorbed, test)){
+
+							}else{
+								break;
 							}
-							VoxelData theVoxel = voxel.GetVoxel(voxNotNull.x,voxNotNull.y);
-
-							energyAbsorbed += theVoxel.stats.destructionEnergy;
-
-							int voxelID = theVoxel.GetID();
-							VoxelUtility.CreateFragment(voxelID, col.contacts[i].point, voxel);
-							voxel.RemoveVoxel(voxNotNull.x,voxNotNull.y);
-
-
-
-							//TODO: use material based impact threshhold
 						}
+
 					}
 				}
-			}else{
-				//print("too low energy");
 			}
+			
 			
 		}
 
+		bool DestroyCollidingVoxel(Vector2 colPoint, float totalImpactEnergy, ref float energyAbsorbed, IntVector2 pos){
+			//Vector2 pos = PosGlobalToLocal(colPoint);
+			
+			VoxelData vox = voxel.GetVoxel(pos.x,pos.y);
+			if(vox != null){
+				if(VoxelDestroyed != null){
+					VoxelDestroyed(voxel,vox.GetPosition());
+				}
+				
+				if(totalImpactEnergy-energyAbsorbed>vox.stats.destructionEnergy){
+					energyAbsorbed += vox.stats.destructionEnergy;
+					
+					int voxelID = vox.GetID();
+					//print(voxelID);
+						GameObject fragment = VoxelUtility.CreateFragment(voxelID, colPoint, voxel);
+					//fragment.SetActive(false);
+					//fragmentList.Add(fragment);
 
+					IntVector2 iv2 = vox.GetPosition();
+					voxel.RemoveVoxel(iv2.x,iv2.y);
+					return true;
+					
+					
+					//TODO: use material based impact threshhold
+				}else{
+					energyAbsorbed = totalImpactEnergy;
+				}
+			}
+			return false;
+		}
 
+		Vector2 PosGlobalToLocal(Vector2 pos){
+			pos = transform.InverseTransformPoint(pos);
+			pos.x = Mathf.Round(pos.x);
+			pos.y = Mathf.Round(pos.y);
+			return pos;
+		}
+		
+		
+		
 	}
 }

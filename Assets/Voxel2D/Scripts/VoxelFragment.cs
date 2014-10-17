@@ -12,7 +12,7 @@ namespace Voxel2D{
 		public VoxelData voxel {get;private set;}
 
 		public void Init(int ID){
-			voxel = new VoxelData(ID);
+			voxel = new VoxelData(ID, new IntVector2(0,0));
 			VoxelData[,] vox = new VoxelData[1,1];
 			vox[0,0] = voxel;
 			Mesh mesh = VoxelMeshGenerator.VoxelToMesh(vox);
