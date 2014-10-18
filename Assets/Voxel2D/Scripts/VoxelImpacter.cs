@@ -105,12 +105,14 @@ namespace Voxel2D{
 		
 		void CreateFragments(List<VoxelData> fragmentList){
 			foreach(VoxelData vox in fragmentList){
-				GameObject fragment = VoxelUtility.CreateFragment(vox.GetID(),PosLocalToGlobal(vox.GetPosition()), voxel);
-				voxel.RemoveVoxel(vox.GetPosition().x,vox.GetPosition().y);
+				if(vox != null){
+					GameObject fragment = VoxelUtility.CreateFragment(vox.GetID(),PosLocalToGlobal(vox.GetPosition()), voxel);
+					voxel.RemoveVoxel(vox.GetPosition().x,vox.GetPosition().y);
 
-				//event call
-				if(VoxelDestroyed != null){
-					VoxelDestroyed(voxel,vox.GetPosition());
+					//event call
+					if(VoxelDestroyed != null){
+						VoxelDestroyed(voxel,vox.GetPosition());
+					}
 				}
 			}
 		}
