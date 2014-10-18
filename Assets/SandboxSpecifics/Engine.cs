@@ -70,7 +70,7 @@ public class Engine : Device
 
 		particle.startSpeed = 50;
 		particle.startLifetime = 0.1f;
-		particle.transform.eulerAngles = new Vector3(rotation+90,90,0);
+		particle.transform.localRotation = Quaternion.Euler(new Vector3(rotation+90,90,0));
 	}
 
 }
