@@ -118,7 +118,7 @@ namespace Voxel2D{
 					voxel,
 					new Vector2(x,y),
 					100f,
-					270f
+					0f
 				});
 				vox.deviceList.Add(e);
 				deviceList.Add(e);

@@ -12,7 +12,7 @@ public class Engine : Device
 	private bool enabled = false;
 
 	public Vector2 position = Vector2.zero;
-	public float rotation = 0;
+
 
 	private VoxelSystem voxel;
 	private Rigidbody2D body;
