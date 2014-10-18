@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System.Threading;
 using MaterialSystem;
 
 namespace Voxel2D{
@@ -10,11 +12,7 @@ namespace Voxel2D{
 		
 		Voxel2D.VoxelSystem voxel;
 		
-		Vector2 forceToAdd;
-		Vector2 forcePoint;
-		
-		//HACK: should be calculated based on element stats
-		private float impactEnergyThreshHold = 1000;
+		private List<GameObject> fragmentList = new List<GameObject>();
 		
 		// Use this for initialization
 		void Awake () {
@@ -23,21 +21,102 @@ namespace Voxel2D{
 		}
 		
 		// Update is called once per frame
-		void Update () {
+		void LateUpdate () {
+			foreach(GameObject g in fragmentList){
+				g.SetActive(true);
+			}
+			fragmentList.Clear();
+		}
+		
+		
+		
+		void OnCollisionEnter2D(Collision2D col){ 
+			
+			StartCoroutine(HandleCollision(col));
 			
 		}
 		
-		void FixedUpdate(){
-			if(forceToAdd != Vector2.zero){
-				//rigidbody2D.AddForceAtPosition(forceToAdd,forcePoint);
-				forceToAdd = Vector2.zero;
+		IEnumerator HandleCollision(Collision2D col){	//TODO: include angular velocity
+			
+			float totalImpactEnergy = calculateTotalImpactForce(col);
+			
+			List<VoxelData> voxelList = new List<VoxelData>();
+			
+			
+			//extract local colission points
+			List<Vector2> colPos = new List<Vector2>();
+			for(int i=0;i<col.contacts.Length;i++){
+				if(col.contacts[i].collider.tag != "VoxelFragment"){
+					colPos.Add(PosGlobalToLocal(col.contacts[i].point));
+				}
+			}
+			
+			object[] o = new object[]{
+				totalImpactEnergy,
+				colPos.ToArray(),
+				voxelList
+			};
+			
+			Thread t = new Thread(() => CollectVoxels(o));
+			t.Start(o);
+			while(!t.IsAlive){
+				yield return new WaitForEndOfFrame();
+			}
+			
+			//wait (hopefully) for collider to be generated //TODO: base this on event
+			yield return new WaitForEndOfFrame();
+			CreateFragments(voxelList);
+		}
+		
+		void CollectVoxels(object[] o){
+			
+			float totalImpactEnergy = (float)o[0];
+			Vector2[] colPos = (Vector2[])o[1];
+			List<VoxelData> voxelList = (List<VoxelData>)o[2];
+			
+			float energyAbsorbed =0;
+			
+			IEnumerator<IntVector2>[] ClosestVoxelIEnum = new IEnumerator<IntVector2>[colPos.Length];
+			for(int i=0;i<ClosestVoxelIEnum.Length;i++){
+				ClosestVoxelIEnum[i] = voxel.GetClosestVoxelIndexIE(colPos[i],15).GetEnumerator();
+			}
+			int loopCounter = 50;
+			while(totalImpactEnergy-energyAbsorbed > 0 && loopCounter >0){
+				loopCounter--;
+				for (int i = 0; i < colPos.Length; i++) {
+					if(ClosestVoxelIEnum[i].MoveNext()){
+						IntVector2 closestVoxel = ClosestVoxelIEnum[i].Current;
+						VoxelData vox = voxel.GetVoxel(closestVoxel.x,closestVoxel.y);
+						if(vox != null){
+							if(totalImpactEnergy-energyAbsorbed>vox.stats.destructionEnergy){
+								energyAbsorbed += vox.stats.destructionEnergy;
+								voxelList.Add(vox);
+							}else{
+								//add fragment value voxel stats
+								energyAbsorbed = totalImpactEnergy;
+							}
+						}
+					}else{
+						break;
+					}
+				}
 			}
 		}
 		
-		void OnCollisionEnter2D(Collision2D col){ //TODO: include angular velocity
+		void CreateFragments(List<VoxelData> fragmentList){
+			foreach(VoxelData vox in fragmentList){
+				GameObject fragment = VoxelUtility.CreateFragment(vox.GetID(),PosLocalToGlobal(vox.GetPosition()), voxel);
+				voxel.RemoveVoxel(vox.GetPosition().x,vox.GetPosition().y);
 
+				//event call
+				if(VoxelDestroyed != null){
+					VoxelDestroyed(voxel,vox.GetPosition());
+				}
+			}
+		}
+		
+		float calculateTotalImpactForce(Collision2D col){
 			float energyAbsorbed = 0;
-			
 			Vector2 deltaVelocityThis = rigidbody2D.velocity-voxel.previousVelocity[0];
 			float massThis = voxel.totalMass;
 			float impactEnergyThis = (massThis*Mathf.Pow(deltaVelocityThis.magnitude,2))*0.5f;
@@ -54,50 +133,19 @@ namespace Voxel2D{
 				impactEnergyOther = (massOther*Mathf.Pow(deltaVelocityOther.magnitude,2))*0.5f;
 			}
 			
-			float totalImpactEnergy = impactEnergyThis+impactEnergyOther;
-			
-			forceToAdd = -deltaVelocityThis.normalized*impactEnergyThis;
-			forcePoint = col.contacts[0].point;
-			
-			//print(impactEnergyThis);
-
-			//TODO: use material based impact threshhold
-			if(totalImpactEnergy-energyAbsorbed>impactEnergyThreshHold){
-				for (int i = 0; i < col.contacts.Length; i++) {
-					if(col.contacts[i].collider.tag != "VoxelFragment"){
-						Vector2 pos = col.contacts[i].point;
-						
-						pos = transform.InverseTransformPoint(pos);
-						pos.x = Mathf.Round(pos.x);
-						pos.y = Mathf.Round(pos.y);
-						
-						IntVector2? vox = voxel.GetClosestVoxelIndex(pos,7);
-						if(vox.Value.x >=0){
-							IntVector2 voxNotNull = vox.Value;
-							if(VoxelDestroyed != null){
-								VoxelDestroyed(voxel,voxNotNull);
-							}
-							VoxelData theVoxel = voxel.GetVoxel(voxNotNull.x,voxNotNull.y);
-
-							energyAbsorbed += theVoxel.stats.destructionEnergy;
-
-							int voxelID = theVoxel.GetID();
-							VoxelUtility.CreateFragment(voxelID, col.contacts[i].point, voxel);
-							voxel.RemoveVoxel(voxNotNull.x,voxNotNull.y);
-
-
-
-							//TODO: use material based impact threshhold
-						}
-					}
-				}
-			}else{
-				//print("too low energy");
-			}
-			
+			return impactEnergyThis+impactEnergyOther;
 		}
-
-
-
+		
+		Vector2 PosGlobalToLocal(Vector2 pos){
+			pos = transform.InverseTransformPoint(pos);
+			pos.x = Mathf.Round(pos.x);
+			pos.y = Mathf.Round(pos.y);
+			return pos;
+		}
+		
+		Vector2 PosLocalToGlobal(IntVector2 pos){
+			return transform.TransformPoint(new Vector3(pos.x,pos.y,0));
+		}
+		
 	}
 }

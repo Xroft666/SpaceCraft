@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using SpaceSandbox;
@@ -73,7 +73,7 @@ namespace Voxel2D{
 				}
 			}else if(Input.GetMouseButtonDown(1)){
 				if(VoxelUtility.IsPointInBounds(voxel.GetGridSize(),localPos)){
-					if(VoxelUtility.NextToVoxel(voxel.GetVoxelData(),RL)){
+					if(VoxelUtility.IsPosNextToVoxel(voxel.GetVoxelData(),RL)){
 						if(voxel.IsVoxelEmpty(RL.x,RL.y)){
 							AddSelectedVoxelType(RL.x,RL.y);
 						}
