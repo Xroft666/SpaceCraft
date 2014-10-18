@@ -63,9 +63,9 @@ namespace Voxel2D{
 			}
 		}
 
-		public static GameObject CreateFragment(int voxelID, Vector3 colPoint, VoxelSystem voxel){
+		public static GameObject CreateFragment(int voxelID, Vector3 position, VoxelSystem voxel){
 			GameObject frag = new GameObject(voxel.gameObject.name+" Fragment");
-			frag.transform.position = colPoint;
+			frag.transform.position = position;
 			frag.transform.rotation = voxel.transform.rotation;
 			frag.tag = "VoxelFragment";
 			
@@ -77,10 +77,13 @@ namespace Voxel2D{
 			
 			VoxelFragment f = frag.AddComponent<VoxelFragment>();
 			f.Init(voxelID);
+
+			frag.rigidbody2D.velocity = voxel.rigidbody2D.velocity+new Vector2(Random.Range(-50,50),Random.Range(-50,50));
+			frag.rigidbody2D.angularVelocity = voxel.rigidbody2D.angularDrag + Random.Range(-100,100);
 			return frag;
 		}
 
-		public static bool NextToVoxel(VoxelData[,] map, IntVector2 pos){
+		public static bool IsPosNextToVoxel(VoxelData[,] map, IntVector2 pos){
 
 			if(IsPointInBounds(map.GetLength(0),new Vector2(pos.x+1,pos.y))){
 				if(map[pos.x+1,pos.y] != null){

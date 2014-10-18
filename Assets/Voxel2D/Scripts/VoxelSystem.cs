@@ -12,7 +12,10 @@ namespace Voxel2D{
 	public class VoxelSystem : MonoBehaviour {
 		public delegate void VoxelSystemDestroyedAction(Voxel2D.VoxelSystem voxelSystem);
 		public static event VoxelSystemDestroyedAction VoxelSystemDestroyed;
-		
+
+		public delegate void VoxelUpdatedAction(Voxel2D.VoxelSystem voxelSystem);
+		public static event VoxelUpdatedAction VoxelUpdated;
+
 		private VoxelData[,] voxelGrid;
 		
 		public Vector2[] previousVelocity { get; private set;}
@@ -102,8 +105,9 @@ namespace Voxel2D{
 			}else if(voxelCount == 1){
 				Debug.Log("Turning voxel system into voxel fragment");
 				IntVector2 pos = GetClosestVoxelIndex(new IntVector2(0,0),GetGridSize());
+				Vector3 tPos = transform.TransformPoint(new Vector3(pos.x,pos.y,0));
 				int voxelID = GetVoxel(pos.x,pos.y).GetID();
-				VoxelUtility.CreateFragment(voxelID,transform.TransformPoint(new Vector3(pos.x,pos.y,0)),this);
+				VoxelUtility.CreateFragment(voxelID,tPos,this);
 				DestroyVoxelSystem();
 			}
 			else{
@@ -308,7 +312,7 @@ namespace Voxel2D{
 		
 		public void RemoveVoxel(int x,int y){
 			if(IsVoxelEmpty(x,y) || !VoxelUtility.IsPointInBounds(GetVoxelData(),new Vector2(x,y))){
-				Debug.LogError("Voxel doesnt exist");
+				//Debug.LogError("Voxel doesnt exist");
 			}else{
 				totalMass -= MaterialSystem.ElementList.Instance.elements[GetVoxelID(x,y)].mass; //TODO:use correct mass
 				voxelGrid [x, y] = null;

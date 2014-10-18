@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using MaterialSystem;
 
 namespace Voxel2D{
@@ -11,14 +12,8 @@ namespace Voxel2D{
 		
 		Voxel2D.VoxelSystem voxel;
 		
-		Vector2 forceToAdd;
-		Vector2 forcePoint;
-		
-		//HACK: should be calculated based on element stats
-		private float impactEnergyThreshHold = 1000;
-
 		private List<GameObject> fragmentList = new List<GameObject>();
-
+		
 		// Use this for initialization
 		void Awake () {
 			voxel = GetComponent<Voxel2D.VoxelSystem>();
@@ -33,17 +28,95 @@ namespace Voxel2D{
 			fragmentList.Clear();
 		}
 		
-		void FixedUpdate(){
-			if(forceToAdd != Vector2.zero){
-				//rigidbody2D.AddForceAtPosition(forceToAdd,forcePoint);
-				forceToAdd = Vector2.zero;
+		
+		
+		void OnCollisionEnter2D(Collision2D col){ 
+			
+			StartCoroutine(HandleCollision(col));
+			
+		}
+		
+		IEnumerator HandleCollision(Collision2D col){	//TODO: include angular velocity
+			
+			float totalImpactEnergy = calculateTotalImpactForce(col);
+			
+			List<VoxelData> voxelList = new List<VoxelData>();
+			
+			
+			//extract local colission points
+			List<Vector2> colPos = new List<Vector2>();
+			for(int i=0;i<col.contacts.Length;i++){
+				if(col.contacts[i].collider.tag != "VoxelFragment"){
+					colPos.Add(PosGlobalToLocal(col.contacts[i].point));
+				}
+			}
+			
+			object[] o = new object[]{
+				totalImpactEnergy,
+				colPos.ToArray(),
+				voxelList
+			};
+			
+			Thread t = new Thread(() => CollectVoxels(o));
+			t.Start(o);
+			while(!t.IsAlive){
+				yield return new WaitForEndOfFrame();
+			}
+			
+			//wait (hopefully) for collider to be generated //TODO: base this on event
+			yield return new WaitForEndOfFrame();
+			CreateFragments(voxelList);
+		}
+		
+		void CollectVoxels(object[] o){
+			
+			float totalImpactEnergy = (float)o[0];
+			Vector2[] colPos = (Vector2[])o[1];
+			List<VoxelData> voxelList = (List<VoxelData>)o[2];
+			
+			float energyAbsorbed =0;
+			
+			IEnumerator<IntVector2>[] ClosestVoxelIEnum = new IEnumerator<IntVector2>[colPos.Length];
+			for(int i=0;i<ClosestVoxelIEnum.Length;i++){
+				ClosestVoxelIEnum[i] = voxel.GetClosestVoxelIndexIE(colPos[i],15).GetEnumerator();
+			}
+			int loopCounter = 50;
+			while(totalImpactEnergy-energyAbsorbed > 0 && loopCounter >0){
+				loopCounter--;
+				for (int i = 0; i < colPos.Length; i++) {
+					if(ClosestVoxelIEnum[i].MoveNext()){
+						IntVector2 closestVoxel = ClosestVoxelIEnum[i].Current;
+						VoxelData vox = voxel.GetVoxel(closestVoxel.x,closestVoxel.y);
+						if(vox != null){
+							if(totalImpactEnergy-energyAbsorbed>vox.stats.destructionEnergy){
+								energyAbsorbed += vox.stats.destructionEnergy;
+								voxelList.Add(vox);
+							}else{
+								//add fragment value voxel stats
+								energyAbsorbed = totalImpactEnergy;
+							}
+						}
+					}else{
+						break;
+					}
+				}
 			}
 		}
 		
-		void OnCollisionEnter2D(Collision2D col){ //TODO: include angular velocity
-			
+		void CreateFragments(List<VoxelData> fragmentList){
+			foreach(VoxelData vox in fragmentList){
+				GameObject fragment = VoxelUtility.CreateFragment(vox.GetID(),PosLocalToGlobal(vox.GetPosition()), voxel);
+				voxel.RemoveVoxel(vox.GetPosition().x,vox.GetPosition().y);
+
+				//event call
+				if(VoxelDestroyed != null){
+					VoxelDestroyed(voxel,vox.GetPosition());
+				}
+			}
+		}
+		
+		float calculateTotalImpactForce(Collision2D col){
 			float energyAbsorbed = 0;
-			
 			Vector2 deltaVelocityThis = rigidbody2D.velocity-voxel.previousVelocity[0];
 			float massThis = voxel.totalMass;
 			float impactEnergyThis = (massThis*Mathf.Pow(deltaVelocityThis.magnitude,2))*0.5f;
@@ -60,73 +133,9 @@ namespace Voxel2D{
 				impactEnergyOther = (massOther*Mathf.Pow(deltaVelocityOther.magnitude,2))*0.5f;
 			}
 			
-			float totalImpactEnergy = impactEnergyThis+impactEnergyOther;
-			
-			forceToAdd = -deltaVelocityThis.normalized*impactEnergyThis;
-			forcePoint = col.contacts[0].point;
-			
-			//print(impactEnergyThis);
-
-			IEnumerator<IntVector2>[] testList = new IEnumerator<IntVector2>[col.contacts.Length];
-			for(int i=0;i<testList.Length;i++){
-				Vector2 pos = PosGlobalToLocal(col.contacts[i].point);
-				testList[i] = voxel.GetClosestVoxelIndexIE(pos,15).GetEnumerator();
-			}
-
-			//TODO;: use material based impact threshhold
-			int loopCounter = 50;
-			while(totalImpactEnergy-energyAbsorbed > 0 && loopCounter >0){
-				loopCounter--;
-				for (int i = 0; i < col.contacts.Length; i++) {
-					if(col.contacts[i].collider.tag != "VoxelFragment"){
-						if(testList[i].MoveNext()){
-							IntVector2 test = testList[i].Current;
-
-							if(DestroyCollidingVoxel(col.contacts[i].point,totalImpactEnergy,ref energyAbsorbed, test)){
-
-							}else{
-								break;
-							}
-						}
-
-					}
-				}
-			}
-			
-			
+			return impactEnergyThis+impactEnergyOther;
 		}
-
-		bool DestroyCollidingVoxel(Vector2 colPoint, float totalImpactEnergy, ref float energyAbsorbed, IntVector2 pos){
-			//Vector2 pos = PosGlobalToLocal(colPoint);
-			
-			VoxelData vox = voxel.GetVoxel(pos.x,pos.y);
-			if(vox != null){
-				if(VoxelDestroyed != null){
-					VoxelDestroyed(voxel,vox.GetPosition());
-				}
-				
-				if(totalImpactEnergy-energyAbsorbed>vox.stats.destructionEnergy){
-					energyAbsorbed += vox.stats.destructionEnergy;
-					
-					int voxelID = vox.GetID();
-					//print(voxelID);
-						GameObject fragment = VoxelUtility.CreateFragment(voxelID, colPoint, voxel);
-					//fragment.SetActive(false);
-					//fragmentList.Add(fragment);
-
-					IntVector2 iv2 = vox.GetPosition();
-					voxel.RemoveVoxel(iv2.x,iv2.y);
-					return true;
-					
-					
-					//TODO: use material based impact threshhold
-				}else{
-					energyAbsorbed = totalImpactEnergy;
-				}
-			}
-			return false;
-		}
-
+		
 		Vector2 PosGlobalToLocal(Vector2 pos){
 			pos = transform.InverseTransformPoint(pos);
 			pos.x = Mathf.Round(pos.x);
@@ -134,7 +143,9 @@ namespace Voxel2D{
 			return pos;
 		}
 		
-		
+		Vector2 PosLocalToGlobal(IntVector2 pos){
+			return transform.TransformPoint(new Vector3(pos.x,pos.y,0));
+		}
 		
 	}
 }
