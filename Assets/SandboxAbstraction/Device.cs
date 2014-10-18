@@ -11,9 +11,11 @@ namespace SpaceSandbox
 		public delegate void DeviceCallback( object[] output );
 		public DeviceCallback outputCallback;
 
-		public virtual void OnStart(){}
+		public virtual void OnStart(params object[] input){}
 		public virtual void OnUpdate(){}
+		public virtual void OnDelete(){}
 		
 		public virtual void OnActivate(params object[] input){}
+		public virtual void OnDeactivate(params object[] input){}
 	}
 }

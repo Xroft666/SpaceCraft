@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using MaterialSystem;
+using SpaceSandbox;
 
 namespace Voxel2D{
 	/// <summary>
@@ -9,6 +11,8 @@ namespace Voxel2D{
 	public class VoxelData{
 
 		public ElementStats stats;
+
+		public List<Device> deviceList = new List<Device>();
 
 		IntVector2 position;
 
@@ -34,6 +38,12 @@ namespace Voxel2D{
 
 		public void SetPosition(IntVector2 pos){
 			position = pos;
+		}
+
+		public void OnDelete(){
+			foreach(Device d in deviceList){
+				d.OnDelete();
+			}
 		}
 	}
 }

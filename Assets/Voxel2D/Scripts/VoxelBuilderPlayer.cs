@@ -33,8 +33,10 @@ namespace Voxel2D{
 					//voxel.AddVoxel(x+5,y+5,2);
 				}
 			}
-			
+
 			voxel.SetVoxelGrid(VoxelUtility.IntToVoxelData(startShip));
+			Vector2 center = voxel.GetCenter();
+			Camera.main.transform.position = transform.TransformPoint(new Vector3(center.x,center.y,-10));
 		}
 
 		void FixedUpdate(){
@@ -48,8 +50,6 @@ namespace Voxel2D{
 		void Update () {
 			CheckInput();
 			
-			Vector2 center = voxel.GetCenter();
-			Camera.main.transform.position = transform.TransformPoint(new Vector3(center.x,center.y,-10));
 		}
 		
 		void CheckInput(){
@@ -87,6 +87,15 @@ namespace Voxel2D{
 				selectedID--;
 			}
 
+			if(Input.GetKeyDown(KeyCode.W)){
+				foreach(Device d in deviceList){
+					d.OnActivate();
+				}
+			}else if(Input.GetKeyUp(KeyCode.W)){
+				foreach(Device d in deviceList){
+					d.OnDeactivate();
+				}
+			} 
 
 		}
 
@@ -102,13 +111,16 @@ namespace Voxel2D{
 				voxel.AddVoxel(x,y,3);
 				break;
 			case 4:
+				VoxelData vox = voxel.AddVoxel(x,y,3);
+			
 				Engine e = new Engine();
-				e.OnActivate(new object[]{
+				e.OnStart(new object[]{
 					voxel,
 					new Vector2(x,y),
-					100f
+					100f,
+					270f
 				});
-				e.enabled = true;
+				vox.deviceList.Add(e);
 				deviceList.Add(e);
 				break;
 			}

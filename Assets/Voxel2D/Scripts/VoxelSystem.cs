@@ -298,15 +298,17 @@ namespace Voxel2D{
 			}
 		}
 		
-		public void AddVoxel(int x, int y, int ID)
+		public VoxelData AddVoxel(int x, int y, int ID)
 		{
 			if(VoxelUtility.IsPointInBounds(GetVoxelData(),new Vector2(x,y)) && IsVoxelEmpty(x,y)){
 				voxelGrid [x, y] = new VoxelData (ID,new IntVector2(x,y));
 				voxelCount++;
 				totalMass += MaterialSystem.ElementList.Instance.elements[GetVoxelID(x,y)].mass; //TODO: add correct mass
 				wasDataChanged = true;
+				return voxelGrid[x,y];
 			}else{
 				Debug.LogError("Voxel allready contains data, delete voxel before adding");
+				return null;
 			}
 		}
 		
