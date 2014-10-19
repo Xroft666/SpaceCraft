@@ -11,7 +11,7 @@ namespace Voxel2D{
 		int selectedID = 0;
 
 		//HACK ALL OVER DA PLACE!!
-		public List<VoxelData> deviceList = new List<VoxelData>();
+//		public List<VoxelData> deviceList = new List<VoxelData>();
 
 		// Use this for initialization
 		void Start () {
@@ -41,7 +41,7 @@ namespace Voxel2D{
 
 		void FixedUpdate(){
 			//rigidbody2D.angularVelocity = 10;
-			foreach(VoxelData d in deviceList){
+			foreach(VoxelData d in voxel.voxelGrid){
 				d.OnUpdate();
 			}
 		}
@@ -88,11 +88,11 @@ namespace Voxel2D{
 			}
 
 			if(Input.GetKeyDown(KeyCode.W)){
-				foreach(VoxelData d in deviceList){
+				foreach(VoxelData d in voxel.voxelGrid){
 					d.OnActivate();
 				}
 			}else if(Input.GetKeyUp(KeyCode.W)){
-				foreach(VoxelData d in deviceList){
+				foreach(VoxelData d in voxel.voxelGrid){
 					d.OnDeactivate();
 				}
 			} 
@@ -125,7 +125,7 @@ namespace Voxel2D{
 				});
 				voxel.AddVoxel(e);
 //				vox.deviceList.Add(e);
-				deviceList.Add(e);
+//				deviceList.Add(e);
 				break;
 			}
 		}

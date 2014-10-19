@@ -16,7 +16,7 @@ namespace Voxel2D{
 		public delegate void VoxelUpdatedAction(Voxel2D.VoxelSystem voxelSystem);
 		public static event VoxelUpdatedAction VoxelUpdated;
 
-		private VoxelData[,] voxelGrid;
+		public VoxelData[,] voxelGrid;
 		
 		public Vector2[] previousVelocity { get; private set;}
 		public float[] previousAngularVelocity { get; private set;}
