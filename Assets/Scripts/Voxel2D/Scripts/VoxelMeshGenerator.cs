@@ -52,12 +52,30 @@ namespace Voxel2D
 			int deviceID = TextureHolder.Instance.GetDeviceIndex(vox.deviceName);
 			Rect deviceRect = TextureHolder.Instance.DeviceAtlasRects[deviceID];
 			Color elementColor = MaterialSystem.ElementList.Instance.elements[vox.GetElementID()].color;
-			
-			vertices.Add(new Vector3(x-0.5f,y-0.5f));
-			vertices.Add(new Vector3(x-0.5f,y+0.5f));
-			vertices.Add(new Vector3(x+0.5f,y+0.5f));
-			vertices.Add(new Vector3(x+0.5f,y-0.5f));
-			
+
+			if(vox.rotation == 0) {
+				vertices.Add(new Vector3(x-0.5f,y-0.5f));
+				vertices.Add(new Vector3(x-0.5f,y+0.5f));
+				vertices.Add(new Vector3(x+0.5f,y+0.5f));
+				vertices.Add(new Vector3(x+0.5f,y-0.5f));
+			}else if(vox.rotation == 90) {
+				vertices.Add(new Vector3(x-0.5f,y+0.5f));
+				vertices.Add(new Vector3(x+0.5f,y+0.5f));
+				vertices.Add(new Vector3(x+0.5f,y-0.5f));
+				vertices.Add(new Vector3(x-0.5f,y-0.5f));
+			}else if(vox.rotation == 180) {
+				vertices.Add(new Vector3(x+0.5f,y+0.5f));
+				vertices.Add(new Vector3(x+0.5f,y-0.5f));
+				vertices.Add(new Vector3(x-0.5f,y-0.5f));
+				vertices.Add(new Vector3(x-0.5f,y+0.5f));
+			}else if(vox.rotation == 270) {
+				vertices.Add(new Vector3(x+0.5f,y-0.5f));
+				vertices.Add(new Vector3(x-0.5f,y-0.5f));
+				vertices.Add(new Vector3(x-0.5f,y+0.5f));
+				vertices.Add(new Vector3(x+0.5f,y+0.5f));
+			}else{
+				Debug.LogError("voxelData has invalid rotation");
+			}
 			
 			
 			uv.Add(new Vector2(deviceRect.xMin,deviceRect.yMin));
