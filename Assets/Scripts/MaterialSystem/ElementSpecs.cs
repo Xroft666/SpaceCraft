@@ -8,6 +8,7 @@ namespace MaterialSystem{
 		public string name;
 		public int ID;
 		public Texture2D texture;
+		public Color color;
 
 
 		public float mass;

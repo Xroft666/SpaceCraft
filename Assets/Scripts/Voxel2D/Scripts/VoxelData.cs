@@ -12,24 +12,25 @@ namespace Voxel2D{
 
 		public ElementStats stats;
 
-		public List<Device> deviceList = new List<Device>();
+		public Device device;
 
 		IntVector2 position;
 
-		int ID;
+		int elementID;
 		
-		public VoxelData(int ID, IntVector2 pos){
-			this.ID = ID;
+		public VoxelData(int elementID, IntVector2 pos, Device device){
+			this.elementID = elementID;
 			position = pos;
-			stats = new ElementStats(ID);
+			stats = new ElementStats(elementID);
+			this.device = device;
 		}
 		
-		public void SetID(int ID){
-			this.ID = ID;
+		public void SetElementID(int ID){
+			this.elementID = ID;
 		}
 		
-		public int GetID(){
-			return ID;
+		public int GetElementID(){
+			return elementID;
 		}
 
 		public IntVector2 GetPosition(){
@@ -41,9 +42,7 @@ namespace Voxel2D{
 		}
 
 		public void OnDelete(){
-			foreach(Device d in deviceList){
-				d.OnDelete();
-			}
+			device.OnDelete();
 		}
 	}
 }

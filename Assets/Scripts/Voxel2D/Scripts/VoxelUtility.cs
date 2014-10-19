@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 namespace Voxel2D{
@@ -10,7 +10,7 @@ namespace Voxel2D{
 		/// </summary>
 		/// <returns>The voxel data array.</returns>
 		/// <param name="map">Int map.</param>
-		public static VoxelData[,] IntToVoxelData(int[,] map)
+		public static VoxelData[,] IntToVoxelData(int[,] map, SpaceSandbox.Device device)
 		{
 			int sx = map.GetLength(0);
 			int sy = map.GetLength(1);
@@ -19,7 +19,7 @@ namespace Voxel2D{
 			for (int x = 0; x < sx; x++) {
 				for (int y = 0; y < sy; y++) {
 					if(map[x,y] != 0){
-						VD[x,y] = new VoxelData(map[x,y], new IntVector2(x,y));
+						VD[x,y] = new VoxelData(map[x,y], new IntVector2(x,y), device);
 						//Debug.Log(VD[x,y].GetID());
 					}
 				}
@@ -63,7 +63,7 @@ namespace Voxel2D{
 			}
 		}
 
-		public static GameObject CreateFragment(int voxelID, Vector3 position, VoxelSystem voxel){
+		public static GameObject CreateFragment(VoxelData vox, Vector3 position, VoxelSystem voxel){
 			GameObject frag = new GameObject(voxel.gameObject.name+" Fragment");
 			frag.transform.position = position;
 			frag.transform.rotation = voxel.transform.rotation;
@@ -76,7 +76,7 @@ namespace Voxel2D{
 			frag.transform.parent = parent.transform;
 			
 			VoxelFragment f = frag.AddComponent<VoxelFragment>();
-			f.Init(voxelID);
+			f.Init(vox.GetElementID(),vox.device);
 
 			frag.rigidbody2D.velocity = voxel.rigidbody2D.velocity+new Vector2(Random.Range(-50,50),Random.Range(-50,50));
 			frag.rigidbody2D.angularVelocity = voxel.rigidbody2D.angularDrag + Random.Range(-100,100);

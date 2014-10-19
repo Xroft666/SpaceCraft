@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -106,8 +106,8 @@ namespace Voxel2D{
 				Debug.Log("Turning voxel system into voxel fragment");
 				IntVector2 pos = GetClosestVoxelIndex(new IntVector2(0,0),GetGridSize());
 				Vector3 tPos = transform.TransformPoint(new Vector3(pos.x,pos.y,0));
-				int voxelID = GetVoxel(pos.x,pos.y).GetID();
-				VoxelUtility.CreateFragment(voxelID,tPos,this);
+				VoxelData vox = GetVoxel(pos.x,pos.y);
+				VoxelUtility.CreateFragment(vox,tPos,this);
 				DestroyVoxelSystem();
 			}
 			else{
@@ -166,7 +166,7 @@ namespace Voxel2D{
 		public int GetVoxelID(int x, int y)
 		{
 			if(!IsVoxelEmpty(x,y) && VoxelUtility.IsPointInBounds(GetVoxelData(),new Vector2(x,y))){
-				return voxelGrid [x, y].GetID();
+				return voxelGrid [x, y].GetElementID();
 			}else{
 				return -1;
 			}
@@ -298,10 +298,10 @@ namespace Voxel2D{
 			}
 		}
 		
-		public VoxelData AddVoxel(int x, int y, int ID)
+		public VoxelData AddVoxel(int x, int y, int ID, SpaceSandbox.Device device)
 		{
 			if(VoxelUtility.IsPointInBounds(GetVoxelData(),new Vector2(x,y)) && IsVoxelEmpty(x,y)){
-				voxelGrid [x, y] = new VoxelData (ID,new IntVector2(x,y));
+				voxelGrid [x, y] = new VoxelData (ID,new IntVector2(x,y),device);
 				voxelCount++;
 				totalMass += MaterialSystem.ElementList.Instance.elements[GetVoxelID(x,y)].mass; //TODO: add correct mass
 				wasDataChanged = true;

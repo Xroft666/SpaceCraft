@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -16,11 +16,12 @@ namespace Voxel2D
 			List<Vector3> vertices = new List<Vector3>();
 			List<int> triangles = new List<int>();
 			List<Vector2> uv = new List<Vector2>();
+			List<Color> color = new List<Color>();
 			
 			for (int x=0; x<voxels.GetLength(0); x++) {
 				for (int y=0; y<voxels.GetLength(1); y++) {
 					if (voxels [x, y] != null) {
-						AddQuad(ref vertices,ref triangles, ref uv, x,y,voxels[x,y].GetID());
+						AddQuad(ref vertices,ref triangles, ref uv,ref color, x,y,voxels[x,y]);
 					}
 				}
 			}
@@ -28,45 +29,52 @@ namespace Voxel2D
 			mesh.vertices = vertices.ToArray();
 			mesh.triangles = triangles.ToArray();
 			mesh.uv = uv.ToArray();
-
+			mesh.colors = color.ToArray();
+			
 			mesh.RecalculateBounds();
 			mesh.RecalculateNormals();
 			//mesh.Optimize();
-
+			
 			mesh.name = "Generated Mesh";
-
-
-//			MeshHelper.Subdivide(mesh);
-//			MeshHelper.Subdivide(mesh);
-
-
+			
+			
+			//			MeshHelper.Subdivide(mesh);
+			//			MeshHelper.Subdivide(mesh);
+			
+			
 			return mesh;
 		}
 		
-		private static void AddQuad (ref List<Vector3> vertices, ref List<int> triangles, ref List<Vector2> uv, int x, int y, int ID)
+		private static void AddQuad (ref List<Vector3> vertices, ref List<int> triangles, ref List<Vector2> uv,ref List<Color> color, int x, int y, VoxelData vox)
 		{
 			//index of current length to add reference vertices from
 			int startIndex = vertices.Count;
-			Rect rect = TextureHolder.Instance.TileAtlastRects[ID];
-
+			int deviceID = TextureHolder.Instance.GetDeviceIndex(vox.device.deviceName);
+			Rect deviceRect = TextureHolder.Instance.DeviceAtlasRects[deviceID];
+			Color elementColor = MaterialSystem.ElementList.Instance.elements[vox.GetElementID()].color;
+			
 			vertices.Add(new Vector3(x-0.5f,y-0.5f));
 			vertices.Add(new Vector3(x-0.5f,y+0.5f));
 			vertices.Add(new Vector3(x+0.5f,y+0.5f));
 			vertices.Add(new Vector3(x+0.5f,y-0.5f));
-
-
-
-			uv.Add(new Vector2(rect.xMin,rect.yMin));
-			uv.Add(new Vector2(rect.xMin,rect.yMax));
-			uv.Add(new Vector2(rect.xMax,rect.yMax));
-			uv.Add(new Vector2(rect.xMax,rect.yMin));
-
-
+			
+			
+			
+			uv.Add(new Vector2(deviceRect.xMin,deviceRect.yMin));
+			uv.Add(new Vector2(deviceRect.xMin,deviceRect.yMax));
+			uv.Add(new Vector2(deviceRect.xMax,deviceRect.yMax));
+			uv.Add(new Vector2(deviceRect.xMax,deviceRect.yMin));
+			
+			for (int i = 0; i < 4; i++) {
+				color.Add(elementColor);
+			}
+			
+			
 			//tri 1
 			triangles.Add(startIndex+0);
 			triangles.Add(startIndex+1);
 			triangles.Add(startIndex+2);
-
+			
 			//tri 2
 			triangles.Add(startIndex+0); 
 			triangles.Add(startIndex+2); 

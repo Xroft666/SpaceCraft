@@ -5,7 +5,8 @@ namespace Voxel2D{
 	public class VoxelTextureHandler:MonoBehaviour{
 
 		void Awake(){
-			renderer.material = TextureHolder.Instance.TileMaterial;
+
+			renderer.sharedMaterial = TextureHolder.Instance.DeviceMaterial;
 		}
 	
 	}

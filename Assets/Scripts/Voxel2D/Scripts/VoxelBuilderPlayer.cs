@@ -34,7 +34,7 @@ namespace Voxel2D{
 				}
 			}
 
-			voxel.SetVoxelGrid(VoxelUtility.IntToVoxelData(startShip));
+			voxel.SetVoxelGrid(VoxelUtility.IntToVoxelData(startShip, new Ore()));
 			Vector2 center = voxel.GetCenter();
 			Camera.main.transform.position = transform.TransformPoint(new Vector3(center.x,center.y,-10));
 		}
@@ -102,25 +102,25 @@ namespace Voxel2D{
 		void AddSelectedVoxelType(int x,int y){
 			switch(selectedID){
 			case 1:
-				voxel.AddVoxel(x,y,1);
+				voxel.AddVoxel(x,y,1, new Ore());
 				break;
 			case 2:
-				voxel.AddVoxel(x,y,2);
+				voxel.AddVoxel(x,y,2, new Ore());
 				break;
 			case 3:
-				voxel.AddVoxel(x,y,3);
+				voxel.AddVoxel(x,y,3, new Ore());
 				break;
 			case 4:
-				VoxelData vox = voxel.AddVoxel(x,y,3);
 			
 				Engine e = new Engine();
 				e.OnStart(new object[]{
 					voxel,
 					new Vector2(x,y),
-					100f,
+					1000f,
 					0f
 				});
-				vox.deviceList.Add(e);
+				VoxelData vox = voxel.AddVoxel(x,y,3,e);
+
 				deviceList.Add(e);
 				break;
 			}

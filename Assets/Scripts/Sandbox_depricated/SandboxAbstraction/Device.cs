@@ -7,6 +7,7 @@ namespace SpaceSandbox
 	public class Device : Entity 
 	{
 		public List<Resource> resources = new List<Resource>();
+		public string deviceName;
 
 		public delegate void DeviceCallback( object[] output );
 		public DeviceCallback outputCallback;

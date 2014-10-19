@@ -1,11 +1,11 @@
-﻿using UnityEngine;
+using UnityEngine;
 using SpaceSandbox;
 using Voxel2D;
 
 public class Engine : Device 
 {
 	// engine force in newtons
-	public float pullForce = 1000;
+	public float pullForce = 0;
 
 	public float Speed;
 
@@ -18,6 +18,10 @@ public class Engine : Device
 	private Rigidbody2D body;
 
 	private ParticleSystem particle;
+	
+	public Engine(){
+		deviceName = "Engine";
+	}
 
 	public override void OnStart(params object[] input){
 		voxel = input[0] as VoxelSystem;
@@ -32,6 +36,8 @@ public class Engine : Device
 		g.transform.parent = voxel.transform;
 		g.transform.localPosition = new Vector3(pos.x,pos.y,0);
 		particle = g.AddComponent<ParticleSystem>();
+
+		deviceName = "Engine";
 
 		ParticleSetup();
 	}
