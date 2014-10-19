@@ -37,7 +37,7 @@ public class AstroidGenerator : MonoBehaviour {
 			GameObject g = new GameObject();
 			g.transform.position = pos;
 			g.transform.name = "Astroid "+Random.seed;
-			VoxelData[,] VD = VoxelUtility.IntToVoxelData(map, new Ore());
+			VoxelData[,] VD = VoxelUtility.IntToVoxelDataOre(map, new Ore());
 
 			VoxelSystem v = g.AddComponent<VoxelSystem>();
 			v.SetVoxelGrid(VD);

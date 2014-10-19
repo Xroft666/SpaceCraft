@@ -10,7 +10,7 @@ namespace Voxel2D{
 		/// </summary>
 		/// <returns>The voxel data array.</returns>
 		/// <param name="map">Int map.</param>
-		public static VoxelData[,] IntToVoxelData(int[,] map, SpaceSandbox.Device device)
+		public static VoxelData[,] IntToVoxelDataOre(int[,] map)
 		{
 			int sx = map.GetLength(0);
 			int sy = map.GetLength(1);
@@ -19,7 +19,7 @@ namespace Voxel2D{
 			for (int x = 0; x < sx; x++) {
 				for (int y = 0; y < sy; y++) {
 					if(map[x,y] != 0){
-						VD[x,y] = new VoxelData(map[x,y], new IntVector2(x,y), device);
+						VD[x,y] = new Ore(map[x,y], new IntVector2(x,y),0);
 						//Debug.Log(VD[x,y].GetID());
 					}
 				}

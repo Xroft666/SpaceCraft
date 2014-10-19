@@ -22,7 +22,7 @@ namespace Voxel2D{
 
 		int elementID;
 		
-		public VoxelData(int elementID, IntVector2 pos, int rotation, VoxelSystem voxel){
+		public VoxelData(int elementID, IntVector2 pos, int rotation){
 			this.elementID = elementID;		
 			this.rotation = rotation;
 			this.voxel = voxel;

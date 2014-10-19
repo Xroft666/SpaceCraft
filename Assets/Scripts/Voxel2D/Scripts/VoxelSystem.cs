@@ -297,7 +297,7 @@ namespace Voxel2D{
 				return false;
 			}
 		}
-		
+		/*
 		public VoxelData AddVoxel(int x, int y, int ID, VoxelData voxel)
 		{
 			if(VoxelUtility.IsPointInBounds(GetVoxelData(),new Vector2(x,y)) && IsVoxelEmpty(x,y)){
@@ -310,7 +310,7 @@ namespace Voxel2D{
 				Debug.LogError("Voxel allready contains data, delete voxel before adding");
 				return null;
 			}
-		}
+		}*/
 
 		public VoxelData AddVoxel( VoxelData voxel )
 		{
