@@ -11,13 +11,16 @@ namespace Voxel2D{
 	public class VoxelData{
 
 		public ElementStats stats;
-
-		public List<Device> deviceList = new List<Device>();
+//		public List<Device> deviceList = new List<Device>();
 
 		IntVector2 position;
 
 		int ID;
-		
+
+		public VoxelData() 
+		{
+		}
+
 		public VoxelData(int ID, IntVector2 pos){
 			this.ID = ID;
 			position = pos;
@@ -40,10 +43,24 @@ namespace Voxel2D{
 			position = pos;
 		}
 
-		public void OnDelete(){
-			foreach(Device d in deviceList){
-				d.OnDelete();
-			}
-		}
+//		public void OnDelete(){
+//			foreach(Device d in deviceList){
+//				d.OnDelete();
+//			}
+//		}
+
+		#region Voxels Interface
+
+		public delegate void DeviceCallback( object[] output );
+		public DeviceCallback outputCallback;
+		
+		public virtual void OnStart(params object[] input){}
+		public virtual void OnUpdate(){}
+		public virtual void OnDelete(){}
+		
+		public virtual void OnActivate(params object[] input){}
+		public virtual void OnDeactivate(params object[] input){}
+
+		#endregion
 	}
 }

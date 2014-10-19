@@ -311,6 +311,25 @@ namespace Voxel2D{
 				return null;
 			}
 		}
+
+		public VoxelData AddVoxel( VoxelData voxel )
+		{
+			IntVector2 pos = voxel.GetPosition();
+
+			if(VoxelUtility.IsPointInBounds(GetVoxelData(),new Vector2(pos.x,pos.y)) && IsVoxelEmpty(pos.x,pos.y))
+			{
+				voxelGrid [pos.x, pos.y] = voxel;
+				voxelCount++;
+				totalMass += MaterialSystem.ElementList.Instance.elements[GetVoxelID(pos.x,pos.y)].mass; //TODO: add correct mass
+				wasDataChanged = true;
+				return voxelGrid[pos.x,pos.y];
+			}
+			else
+			{
+				Debug.LogError("Voxel allready contains data, delete voxel before adding");
+				return null;
+			}
+		}
 		
 		public void RemoveVoxel(int x,int y){
 			if(IsVoxelEmpty(x,y) || !VoxelUtility.IsPointInBounds(GetVoxelData(),new Vector2(x,y))){

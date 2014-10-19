@@ -2,7 +2,7 @@
 using SpaceSandbox;
 using Voxel2D;
 
-public class Engine : Device 
+public class Engine : VoxelData 
 {
 	// engine force in newtons
 	public float pullForce = 1000;
@@ -12,7 +12,7 @@ public class Engine : Device
 	private bool enabled = false;
 
 	public Vector2 position = Vector2.zero;
-
+	public float rotation = 0f;
 
 	private VoxelSystem voxel;
 	private Rigidbody2D body;
