@@ -10,7 +10,7 @@ namespace Voxel2D{
 		/// </summary>
 		/// <returns>The voxel data array.</returns>
 		/// <param name="map">Int map.</param>
-		public static VoxelData[,] IntToVoxelDataOre(int[,] map)
+		public static VoxelData[,] IntToVoxelDataOre(int[,] map,VoxelSystem voxel)
 		{
 			int sx = map.GetLength(0);
 			int sy = map.GetLength(1);
@@ -19,7 +19,7 @@ namespace Voxel2D{
 			for (int x = 0; x < sx; x++) {
 				for (int y = 0; y < sy; y++) {
 					if(map[x,y] != 0){
-						VD[x,y] = new Ore(map[x,y], new IntVector2(x,y),0);
+						VD[x,y] = new Ore(map[x,y], new IntVector2(x,y),0,voxel);
 						//Debug.Log(VD[x,y].GetID());
 					}
 				}
@@ -76,7 +76,7 @@ namespace Voxel2D{
 			frag.transform.parent = parent.transform;
 			
 			VoxelFragment f = frag.AddComponent<VoxelFragment>();
-			f.Init(vox.GetElementID(),vox.device);
+			f.Init(vox);
 
 			frag.rigidbody2D.velocity = voxel.rigidbody2D.velocity+new Vector2(Random.Range(-50,50),Random.Range(-50,50));
 			frag.rigidbody2D.angularVelocity = voxel.rigidbody2D.angularDrag + Random.Range(-100,100);

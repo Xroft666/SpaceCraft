@@ -18,11 +18,11 @@ namespace Voxel2D{
 
 		public VoxelSystem voxel;
 
-		IntVector2 position;
+		protected IntVector2 position;
 
 		int elementID;
 		
-		public VoxelData(int elementID, IntVector2 pos, int rotation){
+		public VoxelData(int elementID, IntVector2 pos, int rotation, VoxelSystem voxel){
 			this.elementID = elementID;		
 			this.rotation = rotation;
 			this.voxel = voxel;

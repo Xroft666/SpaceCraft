@@ -12,14 +12,15 @@ namespace Voxel2D{
 
 		public VoxelData voxel {get;private set;}
 
-		public void Init(int ID, Device device){
-			voxel = new VoxelData(ID, new IntVector2(0,0), device);
-			VoxelData[,] vox = new VoxelData[1,1];
-			vox[0,0] = voxel;
-			Mesh mesh = VoxelMeshGenerator.VoxelToMesh(vox);
+		public void Init(VoxelData vox){
+			voxel = vox;
+			vox.voxel = null;
+			VoxelData[,] voxelGrid = new VoxelData[1,1];
+			voxelGrid[0,0] = vox;
+			Mesh mesh = VoxelMeshGenerator.VoxelToMesh(voxelGrid);
 			GetComponent<MeshFilter>().sharedMesh = mesh;
 
-			rigidbody2D.mass = ElementList.Instance.elements[ID].mass;
+			rigidbody2D.mass = ElementList.Instance.elements[voxel.GetElementID()].mass;
 
 			gameObject.AddComponent<VoxelTextureHandler>();
 

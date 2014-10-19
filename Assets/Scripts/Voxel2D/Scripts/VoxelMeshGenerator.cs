@@ -49,7 +49,7 @@ namespace Voxel2D
 		{
 			//index of current length to add reference vertices from
 			int startIndex = vertices.Count;
-			int deviceID = TextureHolder.Instance.GetDeviceIndex(vox.device.deviceName);
+			int deviceID = TextureHolder.Instance.GetDeviceIndex(vox.deviceName);
 			Rect deviceRect = TextureHolder.Instance.DeviceAtlasRects[deviceID];
 			Color elementColor = MaterialSystem.ElementList.Instance.elements[vox.GetElementID()].color;
 			

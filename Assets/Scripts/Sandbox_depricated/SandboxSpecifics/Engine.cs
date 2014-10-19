@@ -11,35 +11,32 @@ public class Engine : VoxelData
 
 	private bool enabled = false;
 
-	public Vector2 position = Vector2.zero;
+
 	public float rotation = 0f;
 
-	private VoxelSystem voxel;
 	private Rigidbody2D body;
 
 	private ParticleSystem particle;
 	
-	public Engine(int elementID, Voxel2D.IntVector2 pos, int rotation, float pullForce):base(elementID,pos,rotation){
+	public Engine(int elementID, Voxel2D.IntVector2 pos, int rotation, VoxelSystem voxel, float pullForce):base(elementID,pos,rotation, voxel){
 		deviceName = "Engine";
+		this.pullForce = pullForce;
+
+		body = voxel.rigidbody2D;
+		
+		GameObject g = new GameObject("Engine particle");
+		g.transform.parent = voxel.transform;
+		g.transform.localPosition = new Vector3(position.x,position.y,0);
+		particle = g.AddComponent<ParticleSystem>();
+		
+		deviceName = "Engine";
+		
+		ParticleSetup();
 	}
 
 	public override void OnStart(params object[] input){
-		voxel = input[0] as VoxelSystem;
-		Vector2 pos = (Vector2)input[1];
-		pullForce = (float)input[2];
-		rotation = (float)input[3];
 
-		position = pos;
-		body = voxel.rigidbody2D;
 
-		GameObject g = new GameObject("Engine particle");
-		g.transform.parent = voxel.transform;
-		g.transform.localPosition = new Vector3(pos.x,pos.y,0);
-		particle = g.AddComponent<ParticleSystem>();
-
-		deviceName = "Engine";
-
-		ParticleSetup();
 	}
 
 	public override void OnActivate(params object[] input)
@@ -63,8 +60,10 @@ public class Engine : VoxelData
 			Vector3 v = Quaternion.Euler(0,0,-rotation)*new Vector3(0,1,0);
 
 			Vector3 direction = voxel.transform.TransformDirection(v)*pullForce;
-			
-			body.AddForceAtPosition(direction,voxel.transform.TransformPoint(position));
+
+			Vector3 pos = new Vector3(position.x,position.y,0);
+
+			body.AddForceAtPosition(direction,voxel.transform.TransformPoint(pos));
 		}
 	}
 
