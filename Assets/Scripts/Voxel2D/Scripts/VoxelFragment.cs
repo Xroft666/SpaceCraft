@@ -15,6 +15,8 @@ namespace Voxel2D{
 		public void Init(VoxelData vox){
 			voxel = vox;
 			vox.voxel = null;
+
+			//for mesh creation
 			VoxelData[,] voxelGrid = new VoxelData[1,1];
 			voxelGrid[0,0] = vox;
 			Mesh mesh = VoxelMeshGenerator.VoxelToMesh(voxelGrid);

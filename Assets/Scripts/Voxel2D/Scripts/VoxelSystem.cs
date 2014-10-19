@@ -336,6 +336,7 @@ namespace Voxel2D{
 				//Debug.LogError("Voxel doesnt exist");
 			}else{
 				totalMass -= MaterialSystem.ElementList.Instance.elements[GetVoxelID(x,y)].mass; //TODO:use correct mass
+				voxelGrid [x, y].OnDelete();
 				voxelGrid [x, y] = null;
 				voxelCount--;
 				wasDataChanged = true;

@@ -40,7 +40,6 @@ namespace Voxel2D{
 		}
 
 		void FixedUpdate(){
-			//rigidbody2D.angularVelocity = 10;
 			foreach(VoxelData d in voxel.voxelGrid)
 				if( d != null )
 					d.OnUpdate();

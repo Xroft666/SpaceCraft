@@ -9,7 +9,5 @@ public class Ore :  VoxelData{
 		deviceName = "Ore";
 	}
 
-	public override void OnStart(params object[] input){
-		deviceName = "Ore";
-	}
+
 }
