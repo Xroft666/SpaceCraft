@@ -35,6 +35,11 @@ namespace Voxel2D
 
 			mesh.name = "Generated Mesh";
 
+
+//			MeshHelper.Subdivide(mesh);
+//			MeshHelper.Subdivide(mesh);
+
+
 			return mesh;
 		}
 		
