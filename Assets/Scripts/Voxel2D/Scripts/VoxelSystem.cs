@@ -16,7 +16,7 @@ namespace Voxel2D{
 		public delegate void VoxelUpdatedAction(Voxel2D.VoxelSystem voxelSystem);
 		public static event VoxelUpdatedAction VoxelUpdated;
 
-		private VoxelData[,] voxelGrid;
+		public VoxelData[,] voxelGrid;
 		
 		public Vector2[] previousVelocity { get; private set;}
 		public float[] previousAngularVelocity { get; private set;}
@@ -298,15 +298,34 @@ namespace Voxel2D{
 			}
 		}
 		
-		public VoxelData AddVoxel(int x, int y, int ID, SpaceSandbox.Device device)
+		public VoxelData AddVoxel(int x, int y, int ID, VoxelData voxel)
 		{
 			if(VoxelUtility.IsPointInBounds(GetVoxelData(),new Vector2(x,y)) && IsVoxelEmpty(x,y)){
-				voxelGrid [x, y] = new VoxelData (ID,new IntVector2(x,y),device);
+				voxelGrid [x, y] = new VoxelData (ID,new IntVector2(x,y),voxel);
 				voxelCount++;
 				totalMass += MaterialSystem.ElementList.Instance.elements[GetVoxelID(x,y)].mass; //TODO: add correct mass
 				wasDataChanged = true;
 				return voxelGrid[x,y];
 			}else{
+				Debug.LogError("Voxel allready contains data, delete voxel before adding");
+				return null;
+			}
+		}
+
+		public VoxelData AddVoxel( VoxelData voxel )
+		{
+			IntVector2 pos = voxel.GetPosition();
+
+			if(VoxelUtility.IsPointInBounds(GetVoxelData(),new Vector2(pos.x,pos.y)) && IsVoxelEmpty(pos.x,pos.y))
+			{
+				voxelGrid [pos.x, pos.y] = voxel;
+				voxelCount++;
+				totalMass += MaterialSystem.ElementList.Instance.elements[GetVoxelID(pos.x,pos.y)].mass; //TODO: add correct mass
+				wasDataChanged = true;
+				return voxelGrid[pos.x,pos.y];
+			}
+			else
+			{
 				Debug.LogError("Voxel allready contains data, delete voxel before adding");
 				return null;
 			}

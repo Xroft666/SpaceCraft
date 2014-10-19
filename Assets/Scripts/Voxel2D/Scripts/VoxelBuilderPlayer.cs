@@ -11,7 +11,7 @@ namespace Voxel2D{
 		int selectedID = 0;
 
 		//HACK ALL OVER DA PLACE!!
-		public List<Device> deviceList = new List<Device>();
+//		public List<VoxelData> deviceList = new List<VoxelData>();
 
 		// Use this for initialization
 		void Start () {
@@ -41,9 +41,9 @@ namespace Voxel2D{
 
 		void FixedUpdate(){
 			//rigidbody2D.angularVelocity = 10;
-			foreach(Device d in deviceList){
-				d.OnUpdate();
-			}
+			foreach(VoxelData d in voxel.voxelGrid)
+				if( d != null )
+					d.OnUpdate();
 		}
 
 		// Update is called once per frame
@@ -81,20 +81,22 @@ namespace Voxel2D{
 				}
 			}
 
-			if(Input.GetKeyDown(KeyCode.KeypadPlus)){
+			if(Input.GetKeyDown(KeyCode.N)){
 				selectedID++;
-			}else if(Input.GetKeyDown(KeyCode.KeypadMinus)){
+			}else if(Input.GetKeyDown(KeyCode.P)){
 				selectedID--;
 			}
 
 			if(Input.GetKeyDown(KeyCode.W)){
-				foreach(Device d in deviceList){
-					d.OnActivate();
-				}
+				foreach(VoxelData d in voxel.voxelGrid)
+					if( d != null )
+						d.OnActivate();
+
 			}else if(Input.GetKeyUp(KeyCode.W)){
-				foreach(Device d in deviceList){
-					d.OnDeactivate();
-				}
+				foreach(VoxelData d in voxel.voxelGrid)
+					if( d != null )
+						d.OnDeactivate();
+
 			} 
 
 		}
@@ -111,17 +113,14 @@ namespace Voxel2D{
 				voxel.AddVoxel(x,y,3, new Ore());
 				break;
 			case 4:
+
 			
-				Engine e = new Engine();
-				e.OnStart(new object[]{
-					voxel,
-					new Vector2(x,y),
-					1000f,
-					0f
-				});
+				Engine e = new Engine(3,new IntVector2(x,y),0,voxel,1000);
+
+
 				VoxelData vox = voxel.AddVoxel(x,y,3,e);
 
-				deviceList.Add(e);
+				//deviceList.Add(e);
 				break;
 			}
 		}

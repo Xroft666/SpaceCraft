@@ -8,31 +8,31 @@ public class ShipController : MonoBehaviour
 //	private float timer = 0f;
 //	private float speed = 0.05f;
 
-	List<EntityRepresentation> engines = new List<EntityRepresentation>();
-
-	void Start()
-	{
-		EntityRepresentation[] entities = GetComponentsInChildren<EntityRepresentation>() ;
-		for( int i = 0; i < entities.Length; i++ )
-			if( (entities[i].detailToRepresent as Engine) != null )
-				engines.Add(entities[i]);
-	}
-
-	void Update()
-	{
-		float vert = Input.GetAxis("Vertical");
-		float horiz = Input.GetAxis("Horizontal");
-
-		if( vert != 0.0f )
-		foreach( EntityRepresentation repr in engines )
-		{
-			Engine engine = repr.detailToRepresent as Engine;
-			float speed = engine.Speed;
-
-			speed += vert * Time.deltaTime;
-			engine.OnActivate(Mathf.Clamp01(speed));
-		}
-	}
+//	List<EntityRepresentation> engines = new List<EntityRepresentation>();
+//
+//	void Start()
+//	{
+//		EntityRepresentation[] entities = GetComponentsInChildren<EntityRepresentation>() ;
+//		for( int i = 0; i < entities.Length; i++ )
+//			if( (entities[i].detailToRepresent as Engine) != null )
+//				engines.Add(entities[i]);
+//	}
+//
+//	void Update()
+//	{
+//		float vert = Input.GetAxis("Vertical");
+//		float horiz = Input.GetAxis("Horizontal");
+//
+//		if( vert != 0.0f )
+//		foreach( EntityRepresentation repr in engines )
+//		{
+//			Engine engine = repr.detailToRepresent as Engine;
+//			float speed = engine.Speed;
+//
+//			speed += vert * Time.deltaTime;
+//			engine.OnActivate(Mathf.Clamp01(speed));
+//		}
+//	}
 
 //	void Update()
 //	{

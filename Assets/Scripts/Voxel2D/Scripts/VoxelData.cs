@@ -10,19 +10,24 @@ namespace Voxel2D{
 	/// </summary>
 	public class VoxelData{
 
+		public string deviceName;
+
 		public ElementStats stats;
 
-		public Device device;
+		public int rotation;
+
+		public VoxelSystem voxel;
 
 		IntVector2 position;
 
 		int elementID;
 		
-		public VoxelData(int elementID, IntVector2 pos, Device device){
-			this.elementID = elementID;
+		public VoxelData(int elementID, IntVector2 pos, int rotation, VoxelSystem voxel){
+			this.elementID = elementID;		
+			this.rotation = rotation;
+			this.voxel = voxel;
 			position = pos;
 			stats = new ElementStats(elementID);
-			this.device = device;
 		}
 		
 		public void SetElementID(int ID){
@@ -41,8 +46,21 @@ namespace Voxel2D{
 			position = pos;
 		}
 
-		public void OnDelete(){
-			device.OnDelete();
-		}
+
+
+		#region Voxels Interface
+
+		public delegate void DeviceCallback( object[] output );
+		public DeviceCallback outputCallback;
+		
+		public virtual void OnStart(params object[] input){}
+		public virtual void OnUpdate(){}
+		public virtual void OnDelete(){}
+		
+		public virtual void OnActivate(params object[] input){}
+		public virtual void OnDeactivate(params object[] input){}
+
+		#endregion
+
 	}
 }

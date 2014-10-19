@@ -1,10 +1,11 @@
 using UnityEngine;
 using System.Collections;
 using SpaceSandbox;
+using Voxel2D;
 
-public class Ore : Device {
+public class Ore :  VoxelData{
 
-	public Ore(){
+	public Ore(int elementID, Voxel2D.IntVector2 pos, int rotation, VoxelSystem voxel, float pullForce):base(elementID,pos,rotation,voxel){
 		deviceName = "Ore";
 	}
 
