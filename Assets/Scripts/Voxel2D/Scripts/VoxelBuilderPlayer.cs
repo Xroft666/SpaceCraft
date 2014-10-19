@@ -41,9 +41,9 @@ namespace Voxel2D{
 
 		void FixedUpdate(){
 			//rigidbody2D.angularVelocity = 10;
-			foreach(VoxelData d in voxel.voxelGrid){
-				d.OnUpdate();
-			}
+			foreach(VoxelData d in voxel.voxelGrid)
+				if( d != null )
+					d.OnUpdate();
 		}
 
 		// Update is called once per frame
@@ -81,20 +81,22 @@ namespace Voxel2D{
 				}
 			}
 
-			if(Input.GetKeyDown(KeyCode.KeypadPlus)){
+			if(Input.GetKeyDown(KeyCode.N)){
 				selectedID++;
-			}else if(Input.GetKeyDown(KeyCode.KeypadMinus)){
+			}else if(Input.GetKeyDown(KeyCode.P)){
 				selectedID--;
 			}
 
 			if(Input.GetKeyDown(KeyCode.W)){
-				foreach(VoxelData d in voxel.voxelGrid){
-					d.OnActivate();
-				}
+				foreach(VoxelData d in voxel.voxelGrid)
+					if( d != null )
+						d.OnActivate();
+
 			}else if(Input.GetKeyUp(KeyCode.W)){
-				foreach(VoxelData d in voxel.voxelGrid){
-					d.OnDeactivate();
-				}
+				foreach(VoxelData d in voxel.voxelGrid)
+					if( d != null )
+						d.OnDeactivate();
+
 			} 
 
 		}
