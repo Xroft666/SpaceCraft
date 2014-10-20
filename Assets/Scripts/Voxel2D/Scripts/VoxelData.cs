@@ -28,6 +28,7 @@ namespace Voxel2D{
 			this.voxel = voxel;
 			position = pos;
 			stats = new ElementStats(elementID);
+			deviceName = this.GetType().Name;
 		}
 		
 		public void SetElementID(int ID){
@@ -56,7 +57,9 @@ namespace Voxel2D{
 		public virtual void OnStart(params object[] input){}
 		public virtual void OnUpdate(){}
 		public virtual void OnDelete(){}
-		
+
+		public virtual void OnChange(){}
+
 		public virtual void OnActivate(params object[] input){}
 		public virtual void OnDeactivate(params object[] input){}
 

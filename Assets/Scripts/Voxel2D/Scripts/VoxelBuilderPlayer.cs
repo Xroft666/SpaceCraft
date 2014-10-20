@@ -3,12 +3,25 @@ using System.Collections;
 using System.Collections.Generic;
 using SpaceSandbox;
 
+
 namespace Voxel2D{
 	public class VoxelBuilderPlayer : MonoBehaviour {
 		
 		VoxelSystem voxel;
 
-		int selectedID = 0;
+		enum device
+			{
+			engine,
+			ore,
+			wall,
+			floor,
+			shipcontroller
+			}
+
+		int selectedElementID = 0;
+		int selectedRotation = 0;
+		device selectedDevice = device.floor;
+
 
 		//HACK ALL OVER DA PLACE!!
 //		public List<VoxelData> deviceList = new List<VoxelData>();
@@ -39,15 +52,18 @@ namespace Voxel2D{
 			Camera.main.transform.position = transform.TransformPoint(new Vector3(center.x,center.y,-10));
 		}
 
-		void FixedUpdate(){
-			foreach(VoxelData d in voxel.voxelGrid)
-				if( d != null )
-					d.OnUpdate();
-		}
 
 		// Update is called once per frame
 		void Update () {
 			CheckInput();
+			selectedElementID = Mathf.Clamp(selectedElementID,1,MaterialSystem.ElementList.Instance.elements.Count-1);
+			//Mathf.Clamp(selectedDevice,0,System.Enum.GetValues(typeof(device)).Length);
+			if(selectedDevice.GetHashCode() <0){
+				selectedDevice++;
+			}else if(selectedDevice.GetHashCode() >System.Enum.GetValues(typeof(device)).Length-1){
+				selectedDevice--;
+			}
+			selectedRotation = Mathf.Clamp(selectedRotation,0,270);
 			
 		}
 		
@@ -80,55 +96,54 @@ namespace Voxel2D{
 				}
 			}
 
-			if(Input.GetKeyDown(KeyCode.N)){
-				selectedID++;
-			}else if(Input.GetKeyDown(KeyCode.P)){
-				selectedID--;
+			if(Input.GetKeyDown(KeyCode.U)){
+				selectedElementID++;
+			}else if(Input.GetKeyDown(KeyCode.J)){
+				selectedElementID--;
 			}
 
-			if(Input.GetKeyDown(KeyCode.W)){
-				foreach(VoxelData d in voxel.voxelGrid)
-					if( d != null )
-						d.OnActivate();
+			if(Input.GetKeyDown(KeyCode.O)){
+				selectedRotation += 90;
+			}else if(Input.GetKeyDown(KeyCode.L)){
+				selectedRotation -= 90;
+			}
 
-			}else if(Input.GetKeyUp(KeyCode.W)){
-				foreach(VoxelData d in voxel.voxelGrid)
-					if( d != null )
-						d.OnDeactivate();
+			if(Input.GetKeyDown(KeyCode.I)){
+				selectedDevice++;
+			}else if(Input.GetKeyDown(KeyCode.K)){
+				selectedDevice--;
+			}
 
-			} 
+
 
 		}
 
 		void AddSelectedVoxelType(int x,int y){
-			switch(selectedID){
-			case 1:
-				Ore o1 = new Ore(1,new IntVector2(x,y),0,voxel);
-				voxel.AddVoxel(o1);
-				break;
-			case 2:
-				Ore o2 = new Ore(2,new IntVector2(x,y),0,voxel);
-				voxel.AddVoxel(o2);
-				break;
-			case 3:
-				Ore o3 = new Ore(2,new IntVector2(x,y),0,voxel);
-				voxel.AddVoxel(o3);
-				break;
-			case 4:
+			VoxelData VD = null;
 
-			
-				Engine e = new Engine(3,new IntVector2(x,y),0,voxel,1000);
-
-
-				VoxelData vox = voxel.AddVoxel(e);
-
-				//deviceList.Add(e);
+			switch(selectedDevice){
+			case device.engine:
+				VD = new Engine(selectedElementID,new IntVector2(x,y),selectedRotation,voxel,1000);
 				break;
+			case device.floor:
+				VD = new Floor(selectedElementID,new IntVector2(x,y),selectedRotation,voxel);
+				break;
+			case device.ore:
+					VD = new Ore(selectedElementID,new IntVector2(x,y),selectedRotation,voxel);
+				break;
+			case device.shipcontroller:
+					VD = new ShipController(selectedElementID,new IntVector2(x,y),selectedRotation,voxel);
+				break;
+			case device.wall:
+					VD = new Wall(selectedElementID,new IntVector2(x,y),selectedRotation,voxel);
+					break;
 			}
+			voxel.AddVoxel(VD);
+
 		}
 
 		void OnGUI(){
-			GUI.Label(new Rect(Screen.width/2,0,150,20),"Selected block "+selectedID);
+			GUI.Label(new Rect(Screen.width/2-150,0,300,20),"element: "+selectedElementID+" device: "+selectedDevice.ToString()+" rotation: "+selectedRotation);
 		}
 
 	}

@@ -10,6 +10,8 @@ namespace MaterialSystem{
 
 		public int ID;
 
+		public float sizeModifier; 	//how much of the full size the object is
+
 		public float temperature;	//temperature
 		public float fragmention;	//increases each impact, overall strength is (hardness*flexibility)*(1-fragmentationRate)
 

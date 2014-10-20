@@ -57,6 +57,11 @@ namespace Voxel2D{
 		void FixedUpdate () 
 		{
 			UpdateVelocityMemory();
+			foreach(VoxelData v in voxelGrid){
+				if(v != null){
+					v.OnUpdate();
+				}
+			}
 		}
 		
 		void UpdateVelocityMemory()

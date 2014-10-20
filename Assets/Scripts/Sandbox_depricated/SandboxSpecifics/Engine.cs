@@ -14,7 +14,6 @@ public class Engine : VoxelData
 	private ParticleSystem particle;
 	
 	public Engine(int elementID, Voxel2D.IntVector2 pos, int rotation, VoxelSystem voxel, float pullForce):base(elementID,pos,rotation, voxel){
-		deviceName = "Engine";
 		this.engineForce = pullForce;
 
 		body = voxel.rigidbody2D;
