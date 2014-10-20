@@ -9,7 +9,6 @@ public class ShipController : VoxelData {
 
 	public ShipController(int elementID, Voxel2D.IntVector2 pos, int rotation, VoxelSystem voxel):base(elementID,pos,rotation, voxel){
 		stats.sizeModifier = 1;
-		
 		foreach(VoxelData sc in voxel.GetVoxelData()){
 			if(sc is ShipController){
 				

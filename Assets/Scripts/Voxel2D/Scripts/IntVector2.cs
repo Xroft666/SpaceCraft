@@ -41,5 +41,9 @@ namespace Voxel2D
 			return new IntVector2((int)value.x, (int)value.y);
 		}
 
+		public string ToString(){
+			return x+","+y;
+		}
+
     }
 }

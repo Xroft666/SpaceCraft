@@ -238,29 +238,54 @@ namespace Voxel2D{
 		}
 
 		public IEnumerable<IntVector2> GetClosestVoxelIndexIE(IntVector2 localPos, int radiusToCheck){
+			if(VoxelUtility.IsPointInBounds(voxelGrid, localPos) && !IsVoxelEmpty(localPos.x,localPos.y)){
+				yield return localPos;
+			}
+			for(int radius = 1; radius < radiusToCheck; radius++){
+				for (int i = 0; i <= radius; i++) {
+					if(i!=0 && i!= radius){
+						IntVector2 cx0 = localPos+new IntVector2(-i,radius);
+						if(VoxelUtility.IsPointInBounds(voxelGrid,cx0) && !IsVoxelEmpty(cx0.x,cx0.y)){ 
+							yield return cx0;
+						}
+						
+						IntVector2 cx1 = localPos+new IntVector2(radius,i);
+						if(VoxelUtility.IsPointInBounds(voxelGrid,cx1) && !IsVoxelEmpty(cx1.x,cx1.y)){ 
+							yield return cx1;
+						}
+						
+						IntVector2 cy0 = localPos+new IntVector2(i,-radius);
+						if(VoxelUtility.IsPointInBounds(voxelGrid,cy0) && !IsVoxelEmpty(cy0.x,cy0.y)){ 
+							yield return cy0;
+						}
+						
+						IntVector2 cy1 = localPos+new IntVector2(-radius,-i);
+						if(VoxelUtility.IsPointInBounds(voxelGrid,cy1) && !IsVoxelEmpty(cy1.x,cy1.y)){ 
+							yield return cy1;
+						}
+					}		
+					{
+						IntVector2 cx0 = localPos+new IntVector2(i,radius);
+						if(VoxelUtility.IsPointInBounds(voxelGrid,cx0) && !IsVoxelEmpty(cx0.x,cx0.y)){ 
+							yield return cx0;
+						}
+						
+						IntVector2 cx1 = localPos+new IntVector2(radius,-i);
+						if(VoxelUtility.IsPointInBounds(voxelGrid,cx1) && !IsVoxelEmpty(cx1.x,cx1.y)){ 
+							yield return cx1;
+						}
+						
+						IntVector2 cy0 = localPos+new IntVector2(-i,-radius);
+						if(VoxelUtility.IsPointInBounds(voxelGrid,cy0) && !IsVoxelEmpty(cy0.x,cy0.y)){ 
+							yield return cy0;
+						}
+						
+						IntVector2 cy1 = localPos+new IntVector2(-radius,i);
+						if(VoxelUtility.IsPointInBounds(voxelGrid,cy1) && !IsVoxelEmpty(cy1.x,cy1.y)){ 
+							yield return cy1;
+						}
+					}
 
-			for(int radius = 0; radius < radiusToCheck; radius++){
-				for (int i = -radius; i <= radius; i++) {
-					
-					IntVector2 cx0 = localPos+new IntVector2(i,-radius);
-					if(VoxelUtility.IsPointInBounds(voxelGrid,cx0) && !IsVoxelEmpty(cx0.x,cx0.y)){ 
-						yield return cx0;
-					}
-					
-					IntVector2 cx1 = localPos+new IntVector2(i,radius);
-					if(VoxelUtility.IsPointInBounds(voxelGrid,cx1) && !IsVoxelEmpty(cx1.x,cx1.y)){ 
-						yield return cx1;
-					}
-					
-					IntVector2 cy0 = localPos+new IntVector2(-radius,i);
-					if(VoxelUtility.IsPointInBounds(voxelGrid,cy0) && !IsVoxelEmpty(cy0.x,cy0.y)){ 
-						yield return cy0;
-					}
-					
-					IntVector2 cy1 = localPos+new IntVector2(radius,i);
-					if(VoxelUtility.IsPointInBounds(voxelGrid,cy1) && !IsVoxelEmpty(cy1.x,cy1.y)){ 
-						yield return cy1;
-					}
 					
 				}
 
