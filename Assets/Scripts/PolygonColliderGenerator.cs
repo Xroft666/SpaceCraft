@@ -21,12 +21,12 @@ public class PolygonColliderGenerator{
 	public bool mOutputColliderInNormalizedSpace = true;
 	public bool [,] mBinaryImage = null; //< If you want to set the collider-image directly, set mUseBinaryImageInsteadOfTexture=true and fill this attribute accordingly.
 	public int mMaxNumberOfIslands = 10;
-	public int mMinPixelCountToIncludeIsland = 0;
-	public float mColliderThickness = 100.0f;
+	public int mMinPixelCountToIncludeIsland = 1;
+	public float mColliderThickness = 0.0f;
 	public int gridSize = 0;
 	
 	public float mVertexReductionDistanceTolerance = 0.0f;
-	public int mMaxPointCountPerIsland = 2000;
+	public int mMaxPointCountPerIsland = 100;
 	
 	protected PolygonOutlineFromImageFrontend mOutlineAlgorithm = new PolygonOutlineFromImageFrontend();
 	protected IslandDetector mIslandDetector = new IslandDetector();
@@ -115,8 +115,8 @@ public class PolygonColliderGenerator{
 				List<Vector2> unreducedOutlineVertices;
 	            mOutlineAlgorithm.UnreducedOutlineFromBinaryImage(out unreducedOutlineVertices, binaryImage, island.mPointAtBorder, true, mOutputColliderInNormalizedSpace, true);
 				
-				List<Vector2> reducedVertices = mOutlineAlgorithm.ReduceOutline(unreducedOutlineVertices, true);
-				outlineVerticesAtIsland.Add(reducedVertices);
+				//List<Vector2> reducedVertices = mOutlineAlgorithm.ReduceOutline(unreducedOutlineVertices, true);
+				outlineVerticesAtIsland.Add(unreducedOutlineVertices);
 			}
         }
 		return outlineVerticesAtIsland.Count > 0;

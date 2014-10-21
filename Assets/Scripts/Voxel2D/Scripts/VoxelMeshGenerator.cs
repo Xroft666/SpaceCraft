@@ -108,7 +108,7 @@ namespace Voxel2D
 			while(t.IsAlive){
 				yield return new WaitForEndOfFrame();
 			}
-			
+
 			PolygonCollider2D col = voxel.gameObject.GetComponent<PolygonCollider2D>();
 			col.pathCount = colGen.vertexPaths.Count;
 			for(int i=0;i<colGen.vertexPaths.Count;i++){

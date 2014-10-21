@@ -15,7 +15,8 @@ namespace Voxel2D{
 			ore,
 			wall,
 			floor,
-			shipcontroller
+			shipcontroller,
+			laser
 		}
 		
 		int selectedElementID = 0;
@@ -139,6 +140,10 @@ namespace Voxel2D{
 			case device.wall:
 				VD = new Wall(selectedElementID,new IntVector2(x,y),selectedRotation,voxel);
 				break;
+			case device.laser:
+				VD = new Laser(selectedElementID,new IntVector2(x,y),selectedRotation,voxel,100);
+				break;
+				
 			}
 			voxel.AddVoxel(VD);
 			
