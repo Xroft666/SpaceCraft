@@ -125,7 +125,7 @@ namespace Voxel2D{
 			float energyAbsorbed = 0;
 			Vector2 deltaVelocityThis = rigidbody2D.velocity-voxel.previousVelocity[0];
 			float massThis = voxel.totalMass;
-			float impactEnergyThis = (massThis*Mathf.Pow(deltaVelocityThis.magnitude,2))*0.5f;
+			float impactEnergyThis = PhysicsFormulas.KineticEnergy(massThis,deltaVelocityThis);
 			
 			Voxel2D.VoxelSystem voxelOther;
 			Vector2 deltaVelocityOther = Vector2.zero;
@@ -136,7 +136,7 @@ namespace Voxel2D{
 			if(voxelOther != null){
 				deltaVelocityOther = voxelOther.rigidbody2D.velocity-voxelOther.previousVelocity[0];
 				massOther = voxelOther.totalMass;
-				impactEnergyOther = (massOther*Mathf.Pow(deltaVelocityOther.magnitude,2))*0.5f;
+				impactEnergyOther = PhysicsFormulas.KineticEnergy(massOther,deltaVelocityOther);
 			}
 
 			return impactEnergyThis+impactEnergyOther;
