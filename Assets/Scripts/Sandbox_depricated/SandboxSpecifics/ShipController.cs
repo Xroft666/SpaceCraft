@@ -60,51 +60,59 @@ public class ShipController : VoxelData {
 		List<Engine> rightEngines = new List<Engine>();
 		List<Engine> allEngines = new List<Engine>();
 
+		CollectThrusters(ref leftEngines, ref rightEngines, ref allEngines);
+		InputThrusters(ref leftEngines, ref rightEngines, ref allEngines);
+	}
 
+	public void CollectThrusters(ref List<Engine> left, ref List<Engine> right, ref List<Engine> all)
+	{
 		foreach(VoxelData e in voxel.GetVoxelData())
 		{
 			Voxel2D.IntVector2 pos = GetPosition();
 			if(e is Engine)
 			{
 				Voxel2D.IntVector2 engPos = e.GetPosition();
-
-				allEngines.Add((Engine)e);
-
+				
+				all.Add((Engine)e);
+				
 				if( engPos.x < pos.x )
 				{
-					leftEngines.Add((Engine)e);
+					left.Add((Engine)e);
 					continue;
 				}
 				if( engPos.x > pos.x )
 				{
-					rightEngines.Add((Engine)e);
+					right.Add((Engine)e);
 					continue;
 				}
 			}
 		}
+	}
 
+	public void InputThrusters(ref List<Engine> left, ref List<Engine> right, ref List<Engine> all )
+	{
 		if(Input.GetKeyDown(KeyCode.W))
-			foreach(Engine e in allEngines)
+			foreach(Engine e in all)
 				e.OnActivate();
-
+		
 		if(Input.GetKeyUp(KeyCode.W))
-			foreach(Engine e in allEngines)
+			foreach(Engine e in all)
 				e.OnDeactivate();
-
+		
 		if(Input.GetKeyDown(KeyCode.A))
-			foreach(Engine e in rightEngines)
+			foreach(Engine e in right)
 				e.OnActivate();
 		
 		if(Input.GetKeyUp(KeyCode.A))
-			foreach(Engine e in rightEngines)
+			foreach(Engine e in right)
 				e.OnDeactivate();
-
+		
 		if(Input.GetKeyDown(KeyCode.D))
-			foreach(Engine e in leftEngines)
+			foreach(Engine e in left)
 				e.OnActivate();
 		
 		if(Input.GetKeyUp(KeyCode.D))
-			foreach(Engine e in leftEngines)
+			foreach(Engine e in left)
 				e.OnDeactivate();
 	}
 	
