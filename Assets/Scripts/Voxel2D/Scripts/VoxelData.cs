@@ -55,6 +55,7 @@ namespace Voxel2D{
 		public DeviceCallback outputCallback;
 		
 		public virtual void OnStart(params object[] input){}
+		public virtual void OnFixedUpdate(){}
 		public virtual void OnUpdate(){}
 		public virtual void OnDelete(){}
 

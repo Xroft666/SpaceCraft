@@ -60,15 +60,21 @@ namespace Voxel2D{
 				VoxelSystemWasUpdated(true);
 				wasDataChanged = false;
 			}
+
+			foreach(VoxelData v in voxelGrid){
+				if(v != null){
+					v.OnUpdate();
+				}
+			}
 		}
 		
-		// Update is called once per frame
+		// Update is called once per physics tick
 		void FixedUpdate () 
 		{
 			UpdateVelocityMemory();
 			foreach(VoxelData v in voxelGrid){
 				if(v != null){
-					v.OnUpdate();
+					v.OnFixedUpdate();
 				}
 			}
 		}
