@@ -16,7 +16,8 @@ namespace Voxel2D{
 			wall,
 			floor,
 			shipcontroller,
-			laser
+			laser,
+			cannon
 		}
 		
 		int selectedElementID = 0;
@@ -126,7 +127,7 @@ namespace Voxel2D{
 			
 			switch(selectedDevice){
 			case device.engine:
-				VD = new Engine(selectedElementID,new IntVector2(x,y),selectedRotation,voxel,1000);
+				VD = new Engine(selectedElementID,new IntVector2(x,y),selectedRotation,voxel,10000);
 				break;
 			case device.floor:
 				VD = new Floor(selectedElementID,new IntVector2(x,y),selectedRotation,voxel);
@@ -142,6 +143,9 @@ namespace Voxel2D{
 				break;
 			case device.laser:
 				VD = new Laser(selectedElementID,new IntVector2(x,y),selectedRotation,voxel,100);
+				break;
+			case device.cannon:
+				VD = new Cannon(selectedElementID,new IntVector2(x,y),selectedRotation,voxel,100000,20);
 				break;
 				
 			}

@@ -39,7 +39,7 @@ namespace Voxel2D{
 			
 			float totalImpactEnergy = calculateTotalImpactForce(col);
 			if(totalImpactEnergy >0){
-				
+				print(totalImpactEnergy);
 				List<VoxelData> voxelList = new List<VoxelData>();
 				
 				
@@ -93,7 +93,7 @@ namespace Voxel2D{
 								energyAbsorbed += vox.stats.destructionEnergy;
 								voxelList.Add(vox);
 							}else{
-								//add fragment value voxel stats
+								vox.stats.addFragmentation(totalImpactEnergy-energyAbsorbed);
 								energyAbsorbed = totalImpactEnergy;
 							}
 						}
@@ -121,7 +121,7 @@ namespace Voxel2D{
 			}
 		}
 		
-		float calculateTotalImpactForce(Collision2D col){	//TODO: use col.relative velocity and current relative velocity to calculate energy
+		float calculateTotalImpactForce(Collision2D col){	//TODO: use col.relative velocity and current relative velocity to calculate energy 
 			float energyAbsorbed = 0;
 			Vector2 deltaVelocityThis = rigidbody2D.velocity-voxel.previousVelocity[0];
 			float massThis = voxel.totalMass;
@@ -138,7 +138,6 @@ namespace Voxel2D{
 				massOther = voxelOther.totalMass;
 				impactEnergyOther = PhysicsFormulas.KineticEnergy(massOther,deltaVelocityOther);
 			}
-
 			return impactEnergyThis+impactEnergyOther;
 		}
 		

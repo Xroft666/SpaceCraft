@@ -15,7 +15,9 @@ public class TextureHolder : MonoBehaviour {
 	public Rect[] DeviceAtlasRects {get;private set;}
 	public Material DeviceMaterial {get;private set;}
 
-	
+	//HACK, move somewhere else
+	public GameObject bulletPrefab;
+
 	public static TextureHolder Instance;
 	void Awake(){
 		if(Instance == null){
