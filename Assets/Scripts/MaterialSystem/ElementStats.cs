@@ -6,7 +6,9 @@ namespace MaterialSystem{
 	public class ElementStats{
 		public ElementStats(int ID){
 			this.ID = ID;
+			e = ElementList.Instance.elements[ID];
 		}
+		private ElementSpecs e;
 
 		public int ID;
 
@@ -21,12 +23,15 @@ namespace MaterialSystem{
 		/// <value>The destruction energy.</value>
 		public float destructionEnergy {
 			get{
-				ElementSpecs e = ElementList.Instance.elements[ID];
 				return e.flexibility*e.hardness*(1-fragmention)*sizeModifier;
 			}
 		}
 	
-	
+		public float mass{
+			get{
+				return e.mass*sizeModifier;
+			}
+		}
 	
 	
 	

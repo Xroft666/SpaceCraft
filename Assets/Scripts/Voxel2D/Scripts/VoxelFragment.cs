@@ -22,7 +22,7 @@ namespace Voxel2D{
 			Mesh mesh = VoxelMeshGenerator.VoxelToMesh(voxelGrid);
 			GetComponent<MeshFilter>().sharedMesh = mesh;
 
-			rigidbody2D.mass = ElementList.Instance.elements[voxel.GetElementID()].mass;
+			rigidbody2D.mass = vox.stats.mass;
 
 			gameObject.AddComponent<VoxelTextureHandler>();
 

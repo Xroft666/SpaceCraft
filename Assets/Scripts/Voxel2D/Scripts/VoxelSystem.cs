@@ -10,11 +10,20 @@ namespace Voxel2D{
 	[RequireComponent(typeof(MeshRenderer))]
 	[RequireComponent(typeof(MeshFilter))]
 	public class VoxelSystem : MonoBehaviour {
+		#region events
 		public delegate void VoxelSystemDestroyedAction(Voxel2D.VoxelSystem voxelSystem);
 		public static event VoxelSystemDestroyedAction VoxelSystemDestroyed;
 
-		public delegate void VoxelUpdatedAction(Voxel2D.VoxelSystem voxelSystem);
-		public static event VoxelUpdatedAction VoxelUpdated;
+		public delegate void VoxelSystemUpdatedAction(Voxel2D.VoxelSystem voxelSystem);
+		public event VoxelSystemUpdatedAction VoxelSystemUpdated;
+
+		public delegate void VoxelAddedAction(VoxelData VD);
+		public event VoxelAddedAction VoxelAdded;
+
+		public delegate void VoxelRemovedAction(VoxelData VD);
+		public event VoxelRemovedAction VoxelRemoved;
+
+		#endregion events
 
 		public VoxelData[,] voxelGrid;
 		
@@ -48,7 +57,7 @@ namespace Voxel2D{
 		
 		void Update(){
 			if(wasDataChanged){
-				VoxelSystemUpdated(true);
+				VoxelSystemWasUpdated(true);
 				wasDataChanged = false;
 			}
 		}
@@ -88,7 +97,7 @@ namespace Voxel2D{
 			for (int x=0; x<voxelGrid.GetLength(0); x++) {
 				for (int y=0; y<voxelGrid.GetLength(0); y++) {
 					if(!IsVoxelEmpty(x,y) && VoxelUtility.IsPointInBounds(GetVoxelData(),new Vector2(x,y))){
-						float mass = MaterialSystem.ElementList.Instance.elements[GetVoxelID(x,y)].mass;
+						float mass = GetVoxel(x,y).stats.mass;
 						sum += new Vector2(x*mass,y*mass);
 						counter += mass;
 					}
@@ -103,7 +112,10 @@ namespace Voxel2D{
 			
 		}
 		
-		private void VoxelSystemUpdated(bool removed){
+		private void VoxelSystemWasUpdated(bool removed){
+			if(VoxelSystemUpdated != null){
+				VoxelSystemUpdated(this);
+			}
 			if(voxelCount == 0){
 				Debug.LogWarning("The newly created voxel system is empty, deleting");
 				DestroyVoxelSystem();
@@ -139,7 +151,7 @@ namespace Voxel2D{
 				for (int y = 0; y < voxelGrid.GetLength(1); y++) {
 					if(!IsVoxelEmpty(x,y) && VoxelUtility.IsPointInBounds(GetVoxelData(),new Vector2(x,y))){
 						voxelCount++;
-						totalMass += MaterialSystem.ElementList.Instance.elements[GetVoxelID(x,y)].mass; //TODO: add correct mass
+						totalMass += GetVoxel(x,y).stats.mass; //TODO: add correct mass
 					}
 				}
 			}
@@ -327,20 +339,6 @@ namespace Voxel2D{
 				return false;
 			}
 		}
-		/*
-		public VoxelData AddVoxel(int x, int y, int ID, VoxelData voxel)
-		{
-			if(VoxelUtility.IsPointInBounds(GetVoxelData(),new Vector2(x,y)) && IsVoxelEmpty(x,y)){
-				voxelGrid [x, y] = new VoxelData (ID,new IntVector2(x,y),voxel);
-				voxelCount++;
-				totalMass += MaterialSystem.ElementList.Instance.elements[GetVoxelID(x,y)].mass; //TODO: add correct mass
-				wasDataChanged = true;
-				return voxelGrid[x,y];
-			}else{
-				Debug.LogError("Voxel allready contains data, delete voxel before adding");
-				return null;
-			}
-		}*/
 
 		public VoxelData AddVoxel( VoxelData voxel )
 		{
@@ -350,8 +348,12 @@ namespace Voxel2D{
 			{
 				voxelGrid [pos.x, pos.y] = voxel;
 				voxelCount++;
-				totalMass += MaterialSystem.ElementList.Instance.elements[GetVoxelID(pos.x,pos.y)].mass; //TODO: add correct mass
+				totalMass += voxel.stats.mass; //TODO: add correct mass
 				wasDataChanged = true;
+				if(VoxelAdded!=null){
+					VoxelAdded(voxel);
+				}
+				NeighbourUpdate(voxel);
 				return voxelGrid[pos.x,pos.y];
 			}
 			else
@@ -365,12 +367,32 @@ namespace Voxel2D{
 			if(IsVoxelEmpty(x,y) || !VoxelUtility.IsPointInBounds(GetVoxelData(),new Vector2(x,y))){
 				//Debug.LogError("Voxel doesnt exist");
 			}else{
-				totalMass -= MaterialSystem.ElementList.Instance.elements[GetVoxelID(x,y)].mass; //TODO:use correct mass
+				totalMass -= GetVoxel(x,y).stats.mass; //TODO:use correct mass
+				if(VoxelRemoved!=null){
+					VoxelRemoved(voxelGrid [x, y]);
+				}
+				NeighbourUpdate(voxelGrid [x, y]);
 				voxelGrid [x, y].OnDelete();
 				voxelGrid [x, y] = null;
 				voxelCount--;
 				wasDataChanged = true;
 			}
+		}
+
+		private void NeighbourUpdate(VoxelData vox){
+			IntVector2 pos = vox.GetPosition();
+			if(VoxelUtility.IsPointInBounds(GetGridSize(),pos) && !IsVoxelEmpty(pos.x,pos.y+1)){
+				GetVoxel(pos.x,pos.y+1).OnNeighbourChange();
+			} 
+			if(VoxelUtility.IsPointInBounds(GetGridSize(),pos) && !IsVoxelEmpty(pos.x,pos.y-1)){
+				GetVoxel(pos.x,pos.y-1).OnNeighbourChange();
+			} 
+			if(VoxelUtility.IsPointInBounds(GetGridSize(),pos) && !IsVoxelEmpty(pos.x+1,pos.y)){
+				GetVoxel(pos.x+1,pos.y).OnNeighbourChange();
+			} 
+			if(VoxelUtility.IsPointInBounds(GetGridSize(),pos) && !IsVoxelEmpty(pos.x-1,pos.y)){
+				GetVoxel(pos.x-1,pos.y).OnNeighbourChange();
+			} 
 		}
 		
 		

@@ -58,7 +58,8 @@ namespace Voxel2D{
 		public virtual void OnUpdate(){}
 		public virtual void OnDelete(){}
 
-		public virtual void OnChange(){}
+		public virtual void OnNeighbourChange(){}
+		public virtual void OnSystemChange(){}
 
 		public virtual void OnActivate(params object[] input){}
 		public virtual void OnDeactivate(params object[] input){}
