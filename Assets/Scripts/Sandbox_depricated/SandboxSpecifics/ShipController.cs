@@ -20,32 +20,70 @@ public class ShipController : VoxelData {
 		}
 	}
 	
-	private void findEngines(ref List<Engine> engineList){
-		foreach(VoxelData e in voxel.GetVoxelData()){
-			if(e is Engine){
-				engineList.Add((Engine)e);
-			}
-		}
-	}
+//	private void findEngines(ref List<Engine> engineList){
+//		foreach(VoxelData e in voxel.GetVoxelData()){
+//			if(e is Engine){
+//				engineList.Add((Engine)e);
+//			}
+//		}
+//	}
 	
 	public override void OnUpdate(){
 		if(delete){
 			voxel.RemoveVoxel(position.x,position.y);
 		}
 
-		
-		List<Engine> engineList = new List<Engine>();
-		findEngines(ref engineList);
-		if(Input.GetKey(KeyCode.W)){
-			foreach(Engine e in engineList){
-				e.OnActivate();
-			}			
-		}else{
-			foreach(Engine e in engineList){
-				e.OnDeactivate();
+
+		List<Engine> leftEngines = new List<Engine>();
+		List<Engine> rightEngines = new List<Engine>();
+		List<Engine> allEngines = new List<Engine>();
+
+
+		foreach(VoxelData e in voxel.GetVoxelData())
+		{
+			Voxel2D.IntVector2 pos = GetPosition();
+			if(e is Engine)
+			{
+				Voxel2D.IntVector2 engPos = e.GetPosition();
+
+				allEngines.Add((Engine)e);
+
+				if( engPos.x < pos.x )
+				{
+					leftEngines.Add((Engine)e);
+					continue;
+				}
+				if( engPos.x > pos.x )
+				{
+					rightEngines.Add((Engine)e);
+					continue;
+				}
 			}
-			
-		} 
+		}
+
+		if(Input.GetKeyDown(KeyCode.W))
+			foreach(Engine e in allEngines)
+				e.OnActivate();
+
+		if(Input.GetKeyUp(KeyCode.W))
+			foreach(Engine e in allEngines)
+				e.OnDeactivate();
+
+		if(Input.GetKeyDown(KeyCode.A))
+			foreach(Engine e in rightEngines)
+				e.OnActivate();
+		
+		if(Input.GetKeyUp(KeyCode.A))
+			foreach(Engine e in rightEngines)
+				e.OnDeactivate();
+
+		if(Input.GetKeyDown(KeyCode.D))
+			foreach(Engine e in leftEngines)
+				e.OnActivate();
+		
+		if(Input.GetKeyUp(KeyCode.D))
+			foreach(Engine e in leftEngines)
+				e.OnDeactivate();
 	}
 	
 }
