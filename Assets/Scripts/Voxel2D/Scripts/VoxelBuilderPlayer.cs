@@ -20,7 +20,7 @@ namespace Voxel2D{
 			cannon
 		}
 		
-		int selectedElementID = 0;
+		int selectedElementID = 1;
 		int selectedRotation = 0;
 		device selectedDevice = device.floor;
 		
@@ -52,6 +52,11 @@ namespace Voxel2D{
 			voxel.AddVoxel(new Engine(2, new IntVector2(12,7),0,voxel,1000));
 			voxel.AddVoxel( new Engine(2, new IntVector2(10,7),0,voxel,1000));
 			
+			voxel.AddVoxel(new Cannon(selectedElementID,new IntVector2(12,16),selectedRotation,voxel,1000000,200));
+			voxel.AddVoxel(new Cannon(selectedElementID,new IntVector2(10,16),selectedRotation,voxel,1000000,200));
+
+			voxel.AddVoxel(new Laser(selectedElementID,new IntVector2(11,16),selectedRotation,voxel,100));
+
 			Vector2 center = voxel.GetCenter();
 			Camera.main.transform.position = transform.TransformPoint(new Vector3(center.x,center.y,-10));
 		}
@@ -85,7 +90,7 @@ namespace Voxel2D{
 						if(islands.Count == 1){
 							
 						}else{
-							VoxelData[,] vox = VoxelIslandDetector.SplitIslands(voxel.GetVoxelData(),voxel);
+							VoxelData[,] vox = VoxelIslandDetector.SplitAndReturnFirstIslands(voxel.GetVoxelData(),voxel);
 							voxel.SetVoxelGrid(vox);
 						}
 					}
@@ -127,7 +132,7 @@ namespace Voxel2D{
 			
 			switch(selectedDevice){
 			case device.engine:
-				VD = new Engine(selectedElementID,new IntVector2(x,y),selectedRotation,voxel,10000);
+				VD = new Engine(selectedElementID,new IntVector2(x,y),selectedRotation,voxel,1000);
 				break;
 			case device.floor:
 				VD = new Floor(selectedElementID,new IntVector2(x,y),selectedRotation,voxel);
@@ -145,7 +150,7 @@ namespace Voxel2D{
 				VD = new Laser(selectedElementID,new IntVector2(x,y),selectedRotation,voxel,100);
 				break;
 			case device.cannon:
-				VD = new Cannon(selectedElementID,new IntVector2(x,y),selectedRotation,voxel,100000,20);
+				VD = new Cannon(selectedElementID,new IntVector2(x,y),selectedRotation,voxel,1000000,200);
 				break;
 				
 			}

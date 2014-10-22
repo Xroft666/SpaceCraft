@@ -13,18 +13,18 @@ namespace Voxel2D{
 		#region events
 		public delegate void VoxelSystemDestroyedAction(Voxel2D.VoxelSystem voxelSystem);
 		public static event VoxelSystemDestroyedAction VoxelSystemDestroyed;
-
+		
 		public delegate void VoxelSystemUpdatedAction(Voxel2D.VoxelSystem voxelSystem);
 		public event VoxelSystemUpdatedAction VoxelSystemUpdated;
-
+		
 		public delegate void VoxelAddedAction(VoxelData VD);
 		public event VoxelAddedAction VoxelAdded;
-
+		
 		public delegate void VoxelRemovedAction(VoxelData VD);
 		public event VoxelRemovedAction VoxelRemoved;
-
+		
 		#endregion events
-
+		
 		public VoxelData[,] voxelGrid;
 		
 		public Vector2[] previousVelocity { get; private set;}
@@ -41,6 +41,7 @@ namespace Voxel2D{
 		private IslandDetector.Region[] mSeaRegions = null;
 		
 		private bool wasDataChanged = false;
+		
 		
 		// Use this for initialization
 		void Awake () 
@@ -60,7 +61,7 @@ namespace Voxel2D{
 				VoxelSystemWasUpdated(true);
 				wasDataChanged = false;
 			}
-
+			
 			foreach(VoxelData v in voxelGrid){
 				if(v != null){
 					v.OnUpdate();
@@ -135,7 +136,9 @@ namespace Voxel2D{
 			}
 			else{
 				UpdateMass();
-				SetMesh(VoxelMeshGenerator.VoxelToMesh(GetVoxelData()));
+				if(voxelCount >0){
+					SetMesh(VoxelMeshGenerator.VoxelToMesh(GetVoxelData()));
+				}
 			}
 		}
 		
@@ -166,7 +169,7 @@ namespace Voxel2D{
 		
 		#region set&get
 		public void SetVoxelGrid(VoxelData[,] grid){	//TODO: messy code, clean!
-			VoxelData[,] v = VoxelIslandDetector.SplitIslands(grid,this);
+			VoxelData[,] v = VoxelIslandDetector.SplitAndReturnFirstIslands(grid,this);
 			if(v != null){
 				FillVoxelGrid(v);
 			}else{
@@ -254,7 +257,7 @@ namespace Voxel2D{
 				return minVoxel;
 			}
 		}
-
+		
 		public IEnumerable<IntVector2> GetClosestVoxelIndexIE(IntVector2 localPos, int radiusToCheck){
 			if(VoxelUtility.IsPointInBounds(voxelGrid, localPos) && !IsVoxelEmpty(localPos.x,localPos.y)){
 				yield return localPos;
@@ -303,12 +306,12 @@ namespace Voxel2D{
 							yield return cy1;
 						}
 					}
-
+					
 					
 				}
-
+				
 			}
-		
+			
 		}
 		
 		public VoxelData GetClosestVoxel(IntVector2 localPos,int radiusToCheck){
@@ -345,11 +348,11 @@ namespace Voxel2D{
 				return false;
 			}
 		}
-
+		
 		public VoxelData AddVoxel( VoxelData voxel )
 		{
 			IntVector2 pos = voxel.GetPosition();
-
+			
 			if(VoxelUtility.IsPointInBounds(GetVoxelData(),new Vector2(pos.x,pos.y)) && IsVoxelEmpty(pos.x,pos.y))
 			{
 				voxelGrid [pos.x, pos.y] = voxel;
@@ -382,9 +385,27 @@ namespace Voxel2D{
 				voxelGrid [x, y] = null;
 				voxelCount--;
 				wasDataChanged = true;
+				
+				RemoveVoxelIsland(VoxelIslandDetector.SplitAndReturnOtherIslands(GetVoxelData(),this));
 			}
 		}
-
+		
+		public void RemoveVoxelIsland(List<bool[,]> islandList){
+			if(islandList != null && islandList.Count>0){
+				foreach(bool[,] island in islandList){
+					for (int x = 0; x < island.GetLength(0); x++) {
+						for (int y = 0; y < island.GetLength(1); y++) {
+							if(island[x,y] == true){
+								voxelGrid[x,y].OnChangedSystem();
+								voxelGrid[x,y] = null;
+								voxelCount--;
+							}
+						}
+					}
+				}
+			}
+		}
+		
 		private void NeighbourUpdate(VoxelData vox){
 			IntVector2 pos = vox.GetPosition();
 			if(VoxelUtility.IsPointInBounds(GetGridSize(),pos) && !IsVoxelEmpty(pos.x,pos.y+1)){
