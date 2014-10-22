@@ -51,12 +51,29 @@ public class Laser :  VoxelData{
 			RaycastHit2D hit = Physics2D.Raycast(globalPos+direction.normalized*1f, direction,range);
 			if(hit.collider!=null){
 				lr.SetPosition(1,new Vector3(hit.point.x,hit.point.y,0)+direction.normalized*0.5f);
+				VoxelSystem voxelOther = hit.collider.gameObject.GetComponent<VoxelSystem>();
+				if(voxelOther != null){
+					Vector2 pos = PosGlobalToLocal(hit.point,hit.collider.transform);
+
+					VoxelData vox = voxelOther.GetVoxel((int)pos.x,(int)pos.y);
+					if(vox!=null){
+						vox.stats.addThermalEnergy(watt);
+					}
+				}
 			}else{
 				lr.SetPosition(1,globalPos+direction.normalized*range);
 			}
 		}else{
 			lr.gameObject.SetActive(false);
 		}
+	}
+
+	Vector2 PosGlobalToLocal(Vector2 pos, Transform trans){
+		pos = trans
+			.InverseTransformPoint(pos);
+		pos.x = Mathf.Round(pos.x);
+		pos.y = Mathf.Round(pos.y);
+		return pos;
 	}
 
 }

@@ -54,6 +54,7 @@ namespace Voxel2D{
 			
 			gameObject.AddComponent<VoxelImpacter>();
 			gameObject.AddComponent<VoxelTextureHandler>();
+			gameObject.AddComponent<PropertyOverlay>();
 		}
 		
 		void Update(){
@@ -160,10 +161,14 @@ namespace Voxel2D{
 				for (int y = 0; y < voxelGrid.GetLength(1); y++) {
 					if(!IsVoxelEmpty(x,y) && VoxelUtility.IsPointInBounds(GetVoxelData(),new Vector2(x,y))){
 						voxelCount++;
-						totalMass += GetVoxel(x,y).stats.mass; //TODO: add correct mass
+						totalMass += GetVoxel(x,y).stats.mass; 
+						GetVoxel(x,y).OnNeighbourChange();
 					}
 				}
 			}
+
+
+
 			wasDataChanged = true;
 		}
 		
@@ -336,7 +341,11 @@ namespace Voxel2D{
 		}
 		public int GetGridSize()
 		{
-			return voxelGrid.GetLength(0);
+			if(voxelGrid != null){
+				return voxelGrid.GetLength(0);
+			}else{ 
+				return 0;
+			}
 		}
 		#endregion set&get
 		
@@ -408,16 +417,16 @@ namespace Voxel2D{
 		
 		private void NeighbourUpdate(VoxelData vox){
 			IntVector2 pos = vox.GetPosition();
-			if(VoxelUtility.IsPointInBounds(GetGridSize(),pos) && !IsVoxelEmpty(pos.x,pos.y+1)){
+			if(VoxelUtility.IsPointInBounds(GetGridSize(),new Vector2(pos.x,pos.y+1)) && !IsVoxelEmpty(pos.x,pos.y+1)){
 				GetVoxel(pos.x,pos.y+1).OnNeighbourChange();
 			} 
-			if(VoxelUtility.IsPointInBounds(GetGridSize(),pos) && !IsVoxelEmpty(pos.x,pos.y-1)){
+			if(VoxelUtility.IsPointInBounds(GetGridSize(),new Vector2(pos.x,pos.y-1)) && !IsVoxelEmpty(pos.x,pos.y-1)){
 				GetVoxel(pos.x,pos.y-1).OnNeighbourChange();
 			} 
-			if(VoxelUtility.IsPointInBounds(GetGridSize(),pos) && !IsVoxelEmpty(pos.x+1,pos.y)){
+			if(VoxelUtility.IsPointInBounds(GetGridSize(),new Vector2(pos.x+1,pos.y)) && !IsVoxelEmpty(pos.x+1,pos.y)){
 				GetVoxel(pos.x+1,pos.y).OnNeighbourChange();
 			} 
-			if(VoxelUtility.IsPointInBounds(GetGridSize(),pos) && !IsVoxelEmpty(pos.x-1,pos.y)){
+			if(VoxelUtility.IsPointInBounds(GetGridSize(),new Vector2(pos.x-1,pos.y)) && !IsVoxelEmpty(pos.x-1,pos.y)){
 				GetVoxel(pos.x-1,pos.y).OnNeighbourChange();
 			} 
 		}

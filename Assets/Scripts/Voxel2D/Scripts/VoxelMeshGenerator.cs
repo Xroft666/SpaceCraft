@@ -47,7 +47,7 @@ namespace Voxel2D
 		
 		private static void AddQuad (ref List<Vector3> vertices, ref List<int> triangles, ref List<Vector2> uv,ref List<Color> color, int x, int y, VoxelData vox)
 		{
-			//index of current length to add reference vertices from
+			// index of current length to add reference vertices from
 			int startIndex = vertices.Count;
 			int deviceID = TextureHolder.Instance.GetDeviceIndex(vox.deviceName);
 			Rect deviceRect = TextureHolder.Instance.DeviceAtlasRects[deviceID];
@@ -78,13 +78,19 @@ namespace Voxel2D
 			}
 			
 			
+			vox.vertexIndexes[0] = uv.Count;
 			uv.Add(new Vector2(deviceRect.xMin,deviceRect.yMin));
+			vox.vertexIndexes[1] = uv.Count;
 			uv.Add(new Vector2(deviceRect.xMin,deviceRect.yMax));
+			vox.vertexIndexes[2] = uv.Count;
 			uv.Add(new Vector2(deviceRect.xMax,deviceRect.yMax));
+			vox.vertexIndexes[3] = uv.Count;
 			uv.Add(new Vector2(deviceRect.xMax,deviceRect.yMin));
-			
+
+
+
 			for (int i = 0; i < 4; i++) {
-				color.Add(elementColor);
+				color.Add(Color.black);
 			}
 			
 			

@@ -25,6 +25,7 @@ namespace Voxel2D{
 			rigidbody2D.mass = vox.stats.mass;
 
 			gameObject.AddComponent<VoxelTextureHandler>();
+			gameObject.AddComponent<PropertyOverlay>();
 
 			rigidbody2D.angularDrag = 0;
 		}

@@ -16,6 +16,8 @@ namespace Voxel2D{
 
 		public int rotation;
 
+		public int[] vertexIndexes;
+
 		public VoxelSystem voxel;
 
 		protected IntVector2 position;
@@ -29,6 +31,8 @@ namespace Voxel2D{
 			position = pos;
 			stats = new ElementStats(elementID);
 			deviceName = this.GetType().Name;
+
+			vertexIndexes = new int[4];
 		}
 		
 		public void SetElementID(int ID){

@@ -8,7 +8,7 @@ namespace MaterialSystem{
 			this.ID = ID;
 			e = ElementList.Instance.elements[ID];
 		}
-		private ElementSpecs e;
+		public ElementSpecs e{get;private set;}
 
 		public int ID;
 
@@ -53,6 +53,17 @@ namespace MaterialSystem{
 			}
 		}
 
+
+		/// <summary>
+		/// Gets the thermal transfer rate per tick in joules
+		/// </summary>
+		/// <value>The thermal transfer.</value>
+		public float thermalTransfer{
+			get{
+				return temperature*e.thermalConductivity;
+			}
+		}
+
 		/// <summary>
 		/// Adds thermal energy in form of joules.
 		/// </summary>
@@ -68,7 +79,6 @@ namespace MaterialSystem{
 		public void removeThermalEnergy(float energy){
 			temperature-= energy/(mass*e.heatCapacity);
 		}
-	
 	
 	
 	}
