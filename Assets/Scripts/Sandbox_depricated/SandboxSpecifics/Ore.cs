@@ -18,23 +18,26 @@ public class Ore :  VoxelData{
 	
 	public override void OnUpdate(){
 
+
+
+
 		if(VDU!=null){
-			//Debug.Log("TEST");
-			VDU.stats.addThermalEnergy(stats.thermalTransfer);
-			stats.removeThermalEnergy(stats.thermalTransfer);
-		}
-		if(VDD!=null){
-			VDD.stats.addThermalEnergy(stats.thermalTransfer);
-			stats.removeThermalEnergy(stats.thermalTransfer);
+			stats.temperature = calculateNewTemp(this,VDU);
+			VDU.stats.temperature = calculateNewTemp(VDU,this);
 		}
 		if(VDR!=null){
-			VDR.stats.addThermalEnergy(stats.thermalTransfer);
+			stats.temperature = calculateNewTemp(this,VDR);
+			VDR.stats.temperature = calculateNewTemp(VDR,this);
+		}
+
+		/*if(VDD!=null){
+			VDD.stats.addThermalEnergy(stats.thermalTransfer);
 			stats.removeThermalEnergy(stats.thermalTransfer);
 		}
 		if(VDL!=null){
 			VDL.stats.addThermalEnergy(stats.thermalTransfer);
 			stats.removeThermalEnergy(stats.thermalTransfer);
-		}
+		}*/
 	}
 
 	public override void OnNeighbourChange(){
@@ -50,5 +53,19 @@ public class Ore :  VoxelData{
 		if(VoxelUtility.IsPointInBounds(voxel.GetGridSize(),new Vector2(position.x-1,position.y)) && !voxel.IsVoxelEmpty(position.x-1,position.y)){
 			VDL = voxel.GetVoxel(position.x-1,position.y);
 		}
+	}
+
+	/// <summary>
+	/// Returns the new temperature of t1	/// </summary>
+	/// <returns>The new temp.</returns>
+	/// <param name="t1">T1.</param>
+	/// <param name="t2">T2.</param>
+	private float calculateNewTemp(VoxelData t1, VoxelData t2){
+		float finalTemp = (t1.stats.temperature*t1.stats.totalHeatCapacity+t2.stats.temperature*t2.stats.totalHeatCapacity)/
+			(t1.stats.totalHeatCapacity+t2.stats.totalHeatCapacity);
+		float rate = Mathf.Min(t1.stats.e.thermalConductivity,t2.stats.e.thermalConductivity);
+		float tempThis = ((1-rate)*t1.stats.temperature+rate*finalTemp);
+
+		return tempThis;
 	}
 }

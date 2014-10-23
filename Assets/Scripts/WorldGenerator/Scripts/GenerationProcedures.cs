@@ -19,7 +19,7 @@ namespace WorldGen{
 			}
 		}
 		
-		public void GenAstroid()
+		public void GenAstroidType1()
 		{
 
 			CellularAutomata CA = new CellularAutomata(ref map);

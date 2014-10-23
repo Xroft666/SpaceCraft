@@ -55,7 +55,7 @@ namespace Voxel2D{
 			voxel.AddVoxel(new Cannon(selectedElementID,new IntVector2(12,16),selectedRotation,voxel,1000000,200));
 			voxel.AddVoxel(new Cannon(selectedElementID,new IntVector2(10,16),selectedRotation,voxel,1000000,200));
 
-			voxel.AddVoxel(new Laser(selectedElementID,new IntVector2(11,16),selectedRotation,voxel,100));
+			voxel.AddVoxel(new Laser(selectedElementID,new IntVector2(11,16),selectedRotation,voxel,100f));
 
 			Vector2 center = voxel.GetCenter();
 			Camera.main.transform.position = transform.TransformPoint(new Vector3(center.x,center.y,-10));

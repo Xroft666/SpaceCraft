@@ -27,7 +27,7 @@ public class AstroidGenerator : MonoBehaviour {
 			GenerationProcedures GP = new GenerationProcedures(ref map);
 
 			Thread thread;
-			thread = new Thread(GP.GenAstroid);
+			thread = new Thread(GP.GenAstroidType1);
 	    	thread.Start();
 			while(thread.IsAlive){
 				yield return new WaitForEndOfFrame();

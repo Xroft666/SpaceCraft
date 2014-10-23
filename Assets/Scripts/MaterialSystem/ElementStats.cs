@@ -14,7 +14,7 @@ namespace MaterialSystem{
 
 		public float sizeModifier = 0; 	//how much of the full size the object is
 
-		public float temperature{get; private set;}		//temperature	
+		public float temperature{get; set;}		//temperature	
 		public float fragmention{get; private set;}		//increases each impact, overall strength is (hardness*flexibility)*(1-fragmentationRate)
 
 
@@ -29,7 +29,7 @@ namespace MaterialSystem{
 		/// <value>The destruction energy.</value>
 		public float destructionEnergy {
 			get{
-				return e.flexibility*e.hardness*(1-fragmention)*sizeModifier;
+				return e.flexibility*e.hardness*(1-fragmention)*(1-(temperature/e.melting))*sizeModifier;
 			}
 		}
 
@@ -53,6 +53,15 @@ namespace MaterialSystem{
 			}
 		}
 
+		/// <summary>
+		/// Gets the total heat capacity of this block considering its mass.
+		/// </summary>
+		/// <value>The total heat capacity.</value>
+		public float totalHeatCapacity{
+			get{
+				return e.heatCapacity*mass;
+			}
+		}
 
 		/// <summary>
 		/// Gets the thermal transfer rate per tick in joules
@@ -69,7 +78,7 @@ namespace MaterialSystem{
 		/// </summary>
 		/// <param name="energy">Energy.</param>
 		public void addThermalEnergy(float energy){
-			temperature+= energy/(mass*e.heatCapacity);
+			temperature+= energy/(totalHeatCapacity);
 		}
 
 		/// <summary>
@@ -77,9 +86,8 @@ namespace MaterialSystem{
 		/// </summary>
 		/// <param name="energy">Energy.</param>
 		public void removeThermalEnergy(float energy){
-			temperature-= energy/(mass*e.heatCapacity);
+			temperature-= energy/(totalHeatCapacity);
 		}
-	
 	
 	}
 }

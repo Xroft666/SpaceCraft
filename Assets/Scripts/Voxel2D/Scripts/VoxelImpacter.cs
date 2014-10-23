@@ -39,7 +39,7 @@ namespace Voxel2D{
 			
 			float totalImpactEnergy = calculateTotalImpactForce(col);
 			if(totalImpactEnergy >0){
-				print(totalImpactEnergy);
+				//print(totalImpactEnergy);
 				List<VoxelData> voxelList = new List<VoxelData>();
 				
 				
