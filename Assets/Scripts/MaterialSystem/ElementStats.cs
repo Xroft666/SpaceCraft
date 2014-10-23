@@ -49,7 +49,7 @@ namespace MaterialSystem{
 		/// <value>The thermal radiation.</value>
 		public float thermalRadiation{
 			get{
-				return temperature*e.radiationRate;
+				return temperature*e.radiationRate*sizeModifier;
 			}
 		}
 

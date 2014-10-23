@@ -24,20 +24,22 @@ public class Ore :  VoxelData{
 		if(VDU!=null){
 			stats.temperature = calculateNewTemp(this,VDU);
 			VDU.stats.temperature = calculateNewTemp(VDU,this);
+		}else{
+			stats.removeThermalEnergy(stats.thermalRadiation);
 		}
 		if(VDR!=null){
 			stats.temperature = calculateNewTemp(this,VDR);
 			VDR.stats.temperature = calculateNewTemp(VDR,this);
+		}else{
+			stats.removeThermalEnergy(stats.thermalRadiation);
 		}
 
-		/*if(VDD!=null){
-			VDD.stats.addThermalEnergy(stats.thermalTransfer);
-			stats.removeThermalEnergy(stats.thermalTransfer);
+		if(VDD==null){
+			stats.removeThermalEnergy(stats.thermalRadiation);
 		}
-		if(VDL!=null){
-			VDL.stats.addThermalEnergy(stats.thermalTransfer);
-			stats.removeThermalEnergy(stats.thermalTransfer);
-		}*/
+		if(VDL==null){
+			stats.removeThermalEnergy(stats.thermalRadiation);
+		}
 	}
 
 	public override void OnNeighbourChange(){
