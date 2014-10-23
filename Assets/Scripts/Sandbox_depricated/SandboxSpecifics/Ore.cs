@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using SpaceSandbox;
 using Voxel2D;
+using MaterialSystem;
 
 public class Ore :  VoxelData{
 	
@@ -22,14 +23,14 @@ public class Ore :  VoxelData{
 
 
 		if(VDU!=null){
-			stats.temperature = calculateNewTemp(this,VDU);
-			VDU.stats.temperature = calculateNewTemp(VDU,this);
+			stats.temperature = PhysicsFormulas.ThermalConductivity(this,VDU);
+			VDU.stats.temperature = PhysicsFormulas.ThermalConductivity(VDU,this);
 		}else{
 			stats.removeThermalEnergy(stats.thermalRadiation);
 		}
 		if(VDR!=null){
-			stats.temperature = calculateNewTemp(this,VDR);
-			VDR.stats.temperature = calculateNewTemp(VDR,this);
+			stats.temperature = PhysicsFormulas.ThermalConductivity(this,VDR);
+			VDR.stats.temperature = PhysicsFormulas.ThermalConductivity(VDR,this);
 		}else{
 			stats.removeThermalEnergy(stats.thermalRadiation);
 		}
@@ -57,6 +58,7 @@ public class Ore :  VoxelData{
 		}
 	}
 
+	/*
 	/// <summary>
 	/// Returns the new temperature of t1	/// </summary>
 	/// <returns>The new temp.</returns>
@@ -69,5 +71,5 @@ public class Ore :  VoxelData{
 		float tempThis = ((1-rate)*t1.stats.temperature+rate*finalTemp);
 
 		return tempThis;
-	}
+	}*/
 }
