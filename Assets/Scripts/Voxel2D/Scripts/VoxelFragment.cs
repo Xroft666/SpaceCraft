@@ -19,6 +19,7 @@ namespace Voxel2D{
 			//for mesh creation
 			VoxelData[,] voxelGrid = new VoxelData[1,1];
 			voxelGrid[0,0] = vox;
+			vox.OnSystemChange(null);
 			Mesh mesh = VoxelMeshGenerator.VoxelToMesh(voxelGrid);
 			GetComponent<MeshFilter>().sharedMesh = mesh;
 

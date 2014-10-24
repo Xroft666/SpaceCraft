@@ -78,7 +78,7 @@ namespace Voxel2D{
 		/// <summary>
 		/// There was a change in the voxel system
 		/// </summary>
-		public virtual void OnSystemChange(){}
+		public virtual void OnSystemChange(VoxelSystem voxel){}
 
 		public virtual void OnActivate(params object[] input){}
 		public virtual void OnDeactivate(params object[] input){}
