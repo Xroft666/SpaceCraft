@@ -22,7 +22,14 @@ namespace Voxel2D{
 
 		protected IntVector2 position;
 
-		int elementID;
+		protected int elementID;
+
+		protected List<PhysicalProperty> propertyList = new List<PhysicalProperty>();
+
+		public VoxelData VDU{get;private set;}
+		public VoxelData VDD{get;private set;}
+		public VoxelData VDL{get;private set;}
+		public VoxelData VDR{get;private set;}
 		
 		public VoxelData(int elementID, IntVector2 pos, int rotation, VoxelSystem voxel){
 			this.elementID = elementID;		
@@ -51,6 +58,23 @@ namespace Voxel2D{
 			position = pos;
 		}
 
+		/// <summary>
+		/// Neighbour of voxel was changed
+		/// </summary>
+		public virtual void OnNeighbourChange(){
+			if(VoxelUtility.IsPointInBounds(voxel.GetGridSize(),new Vector2(position.x,position.y+1)) && !voxel.IsVoxelEmpty(position.x,position.y+1)){
+				VDU = voxel.GetVoxel(position.x,position.y+1);
+			} 
+			if(VoxelUtility.IsPointInBounds(voxel.GetGridSize(),new Vector2(position.x,position.y-1)) && !voxel.IsVoxelEmpty(position.x,position.y-1)){
+				VDD = voxel.GetVoxel(position.x,position.y-1);
+			} 
+			if(VoxelUtility.IsPointInBounds(voxel.GetGridSize(),new Vector2(position.x+1,position.y)) && !voxel.IsVoxelEmpty(position.x+1,position.y)){
+				VDR = voxel.GetVoxel(position.x+1,position.y);
+			} 
+			if(VoxelUtility.IsPointInBounds(voxel.GetGridSize(),new Vector2(position.x-1,position.y)) && !voxel.IsVoxelEmpty(position.x-1,position.y)){
+				VDL = voxel.GetVoxel(position.x-1,position.y);
+			}
+		}
 
 
 		#region Voxels Interface
@@ -60,7 +84,11 @@ namespace Voxel2D{
 		
 		public virtual void OnStart(params object[] input){}
 		public virtual void OnFixedUpdate(){}
-		public virtual void OnUpdate(){}
+		public virtual void OnUpdate(){
+			for(int i=0;i<propertyList.Count;i++){
+				propertyList[i].OnUpdate(this);
+			}
+		}
 
 		/// <summary>
 		/// Voxel was deleted
@@ -71,10 +99,7 @@ namespace Voxel2D{
 		/// </summary>
 		public virtual void OnChangedSystem(){}
 
-		/// <summary>
-		/// Neighbour of voxel was changed
-		/// </summary>
-		public virtual void OnNeighbourChange(){}
+
 		/// <summary>
 		/// There was a change in the voxel system
 		/// </summary>
