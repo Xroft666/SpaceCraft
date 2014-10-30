@@ -20,9 +20,9 @@ namespace Voxel2D{
 			cannon
 		}
 		
-		int selectedElementID = 1;
+		int selectedElementID = 0;
 		int selectedRotation = 0;
-		device selectedDevice = device.floor;
+		device selectedDevice = device.engine;
 		
 		// Use this for initialization
 		void Start () {
