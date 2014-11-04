@@ -46,7 +46,7 @@ namespace Voxel2D{
 		// Use this for initialization
 		void Awake () 
 		{
-			//voxelGrid = new VoxelData[10, 10];
+			voxelGrid = new VoxelData[0, 0];
 			previousVelocity = new Vector2[3];
 			previousAngularVelocity = new float[3];
 			
@@ -357,7 +357,15 @@ namespace Voxel2D{
 				return false;
 			}
 		}
-		
+
+		public bool CanAddVoxel(IntVector2 pos){
+			if(VoxelUtility.IsPointInBounds(GetVoxelData(),new Vector2(pos.x,pos.y)) && IsVoxelEmpty(pos.x,pos.y))
+			{
+				return true;
+			}
+			return false;
+		}
+
 		public VoxelData AddVoxel( VoxelData voxel )
 		{
 			IntVector2 pos = voxel.GetPosition();
@@ -380,7 +388,7 @@ namespace Voxel2D{
 				return null;
 			}
 		}
-		
+
 		public void RemoveVoxel(int x,int y){
 			if(IsVoxelEmpty(x,y) || !VoxelUtility.IsPointInBounds(GetVoxelData(),new Vector2(x,y))){
 				//Debug.LogError("Voxel doesnt exist");
