@@ -127,7 +127,7 @@ namespace Voxel2D{
 			if(voxelCount == 0){
 				Debug.LogWarning("The newly created voxel system is empty, deleting");
 				DestroyVoxelSystem();
-			}else if(voxelCount == 1){
+			}else if(voxelCount == -1){
 				Debug.Log("Turning voxel system into voxel fragment");
 				IntVector2 pos = GetClosestVoxelIndex(new IntVector2(0,0),GetGridSize());
 				Vector3 tPos = transform.TransformPoint(new Vector3(pos.x,pos.y,0));
@@ -148,6 +148,7 @@ namespace Voxel2D{
 				VoxelSystemDestroyed(this);
 			}
 			isDestroying = true;
+			Destroy(GetComponent<MeshFilter>().mesh);
 			Destroy(gameObject);
 		}
 		
@@ -330,6 +331,9 @@ namespace Voxel2D{
 		
 		public void SetMesh(Mesh mesh)
 		{
+			if(GetComponent<MeshFilter>().sharedMesh != null){
+				Destroy(GetComponent<MeshFilter>().mesh);
+			}
 			GetComponent<MeshFilter>().sharedMesh = mesh;
 			StartCoroutine(VoxelMeshGenerator.GeneratePolygonCollider(this));
 			rigidbody2D.centerOfMass = GetCenter();

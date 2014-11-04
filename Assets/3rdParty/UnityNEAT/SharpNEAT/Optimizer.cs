@@ -10,8 +10,8 @@ using System.IO;
 
 public class Optimizer : MonoBehaviour {
 
-    const int NUM_INPUTS = 5;
-    const int NUM_OUTPUTS = 2;
+    const int NUM_INPUTS = 1;
+    const int NUM_OUTPUTS = 4;
 
     public int Trials;
     public float TrialDuration;
@@ -36,6 +36,7 @@ public class Optimizer : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+	
         Utility.DebugLog = true;
         experiment = new SimpleExperiment();
         XmlDocument xmlConfig = new XmlDocument();
@@ -86,7 +87,7 @@ public class Optimizer : MonoBehaviour {
         _ea.UpdateEvent += new EventHandler(ea_UpdateEvent);
         _ea.PausedEvent += new EventHandler(ea_PauseEvent);
 
-        var evoSpeed = 25;
+        var evoSpeed = 1;
 
      //   Time.fixedDeltaTime = 0.045f;
         Time.timeScale = evoSpeed;       
@@ -166,6 +167,7 @@ public class Optimizer : MonoBehaviour {
     {
         UnitController ct = ControllerMap[box];
 
+		ct.Stop();
         Destroy(ct.gameObject);
     }
 
@@ -229,6 +231,6 @@ public class Optimizer : MonoBehaviour {
             RunBest();
         }
 
-        GUI.Button(new Rect(10, Screen.height - 70, 100, 60), string.Format("Generation: {0}\nFitness: {1:0.00}", Generation, Fitness));
+        GUI.Label(new Rect(10, Screen.height - 70, 60, 150), string.Format("Generation: {0}\nFitness: {1:0.00}", Generation, Fitness));
     }
 }
