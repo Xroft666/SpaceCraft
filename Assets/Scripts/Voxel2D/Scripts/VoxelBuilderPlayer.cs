@@ -52,10 +52,10 @@ namespace Voxel2D{
 			voxel.AddVoxel(new Engine(2, new IntVector2(12,7),0,voxel,1000));
 			voxel.AddVoxel( new Engine(2, new IntVector2(10,7),0,voxel,1000));
 			
-			voxel.AddVoxel(new Cannon(selectedElementID,new IntVector2(12,16),selectedRotation,voxel,1000000,200));
-			voxel.AddVoxel(new Cannon(selectedElementID,new IntVector2(10,16),selectedRotation,voxel,1000000,200));
+			voxel.AddVoxel(new Cannon(2,new IntVector2(12,16),selectedRotation,voxel,1000000,200));
+			voxel.AddVoxel(new Cannon(2,new IntVector2(10,16),selectedRotation,voxel,1000000,200));
 
-			voxel.AddVoxel(new Laser(selectedElementID,new IntVector2(11,16),selectedRotation,voxel,100f));
+			voxel.AddVoxel(new Laser(2,new IntVector2(11,16),selectedRotation,voxel,100f));
 
 			Vector2 center = voxel.GetCenter();
 			Camera.main.transform.position = transform.TransformPoint(new Vector3(center.x,center.y,-10));
