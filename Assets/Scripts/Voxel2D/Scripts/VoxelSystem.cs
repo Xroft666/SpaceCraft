@@ -55,6 +55,11 @@ namespace Voxel2D{
 			gameObject.AddComponent<VoxelImpacter>();
 			gameObject.AddComponent<VoxelTextureHandler>();
 			gameObject.AddComponent<PropertyOverlay>();
+
+			MeshFilter mFilter = GetComponent<MeshFilter>();
+			Mesh mesh = new Mesh();
+			mesh.MarkDynamic();
+			mFilter.sharedMesh = mesh;
 		}
 		
 		void Update(){
@@ -138,9 +143,21 @@ namespace Voxel2D{
 			else{
 				UpdateMass();
 				if(voxelCount >0){
-					SetMesh(VoxelMeshGenerator.VoxelToMesh(GetVoxelData()));
+
+					MeshFilter mFilter = GetComponent<MeshFilter>();
+					Mesh mesh = mFilter.sharedMesh;
+
+					VoxelMeshGenerator.VoxelToMesh(GetVoxelData(), ref mesh);
+					SetMesh(ref mesh);
 				}
 			}
+		}
+
+		void OnDestroy()
+		{
+			MeshFilter mFilter = GetComponent<MeshFilter>();
+			Mesh mesh = mFilter.sharedMesh;
+			Destroy(mesh);
 		}
 		
 		private void DestroyVoxelSystem(){
@@ -148,7 +165,12 @@ namespace Voxel2D{
 				VoxelSystemDestroyed(this);
 			}
 			isDestroying = true;
-			Destroy(GetComponent<MeshFilter>().mesh);
+
+			MeshFilter mFilter = GetComponent<MeshFilter>();
+			Destroy(mFilter.sharedMesh);
+
+//			mFilter.sharedMesh = null;
+
 			Destroy(gameObject);
 		}
 		
@@ -329,12 +351,8 @@ namespace Voxel2D{
 			}
 		}
 		
-		public void SetMesh(Mesh mesh)
+		public void SetMesh(ref Mesh mesh)
 		{
-			if(GetComponent<MeshFilter>().sharedMesh != null){
-				Destroy(GetComponent<MeshFilter>().mesh);
-			}
-			GetComponent<MeshFilter>().sharedMesh = mesh;
 			StartCoroutine(VoxelMeshGenerator.GeneratePolygonCollider(this));
 			rigidbody2D.centerOfMass = GetCenter();
 		}

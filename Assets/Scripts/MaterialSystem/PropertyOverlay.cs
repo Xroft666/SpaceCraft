@@ -22,7 +22,7 @@ namespace MaterialSystem{
 		
 		MeshFilter filter;
 		
-		Mesh mesh;
+//		Mesh mesh;
 		
 		void Awake(){
 			voxel = GetComponent<VoxelSystem>();
@@ -39,7 +39,11 @@ namespace MaterialSystem{
 		void Update () {
 			CheckInput();
 
-			mesh = filter.mesh;
+
+			if( filter.sharedMesh == null )
+				return;
+
+			Mesh mesh = filter.sharedMesh;
 			
 			Color[] colorArray = mesh.colors;
 			VoxelData[,] data = new VoxelData[0,0];
@@ -93,8 +97,9 @@ namespace MaterialSystem{
 					}
 				}
 			}
+
 			mesh.colors = colorArray;
-			
+			filter.sharedMesh = mesh;
 		}
 
 

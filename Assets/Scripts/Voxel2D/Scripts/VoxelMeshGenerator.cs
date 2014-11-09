@@ -9,9 +9,10 @@ namespace Voxel2D
 	{
 		
 		//TODO: make this multithreaded
-		public static Mesh VoxelToMesh (VoxelData[,] voxels)
+		public static Mesh VoxelToMesh (VoxelData[,] voxels, ref Mesh mesh)
 		{
-			Mesh mesh = new Mesh();
+//			Mesh mesh = new Mesh();
+			mesh.Clear();
 			
 			List<Vector3> vertices = new List<Vector3>();
 			List<int> triangles = new List<int>();

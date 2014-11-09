@@ -20,8 +20,18 @@ namespace Voxel2D{
 			VoxelData[,] voxelGrid = new VoxelData[1,1];
 			voxelGrid[0,0] = vox;
 			vox.OnSystemChange(null);
-			Mesh mesh = VoxelMeshGenerator.VoxelToMesh(voxelGrid);
-			GetComponent<MeshFilter>().sharedMesh = mesh;
+
+			MeshFilter mFilter = GetComponent<MeshFilter>();
+			Mesh mesh = mFilter.sharedMesh;
+
+			VoxelMeshGenerator.VoxelToMesh(voxelGrid, ref mesh);
+
+
+//			if( mFilter.sharedMesh != null )
+//			DestroyImmediate(mFilter.sharedMesh);
+
+//			mFilter.sharedMesh = null;
+//			mFilter.sharedMesh = mesh;
 
 			rigidbody2D.mass = vox.stats.mass;
 
