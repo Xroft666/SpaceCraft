@@ -104,4 +104,13 @@ public class CraftGenomeFactory : IGenomeFactory<CraftGenome>
 		return new CraftGenome(copyFrom, id, birthGeneration);
 	}
 
+	public uint NextGenomeId()
+	{
+		return _genomeIdGenerator.NextId;
+	}
+
+	public uint NextInnovationId()
+	{
+		return _innovationIdGenerator.NextId;
+	}
 }

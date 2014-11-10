@@ -73,18 +73,16 @@ public class CraftGenome : IGenome<CraftGenome>
 	public CraftGenome CreateOffspring(uint birthGeneration)
 	{
 //		// Make a new genome that is a copy of this one but with a new genome ID.
-//		NeatGenome offspring = _genomeFactory.CreateGenomeCopy(this, _genomeFactory.NextGenomeId(), birthGeneration);
+		CraftGenome offspring = _genomeFactory.CreateGenomeCopy(this, _genomeFactory.NextGenomeId(), birthGeneration);
 //		
 //		// Mutate the new genome.
-//		offspring.Mutate();
-//		return offspring;
-
-		return new CraftGenome();
+		offspring.Mutate();
+		return offspring;
 	}
 
 	public CraftGenome CreateOffspring(CraftGenome parent, uint birthGeneration)
 	{
-		return new CraftGenome();
+		return new CraftGenome(parent, _genomeFactory.NextGenomeId(), birthGeneration);
 	}
 
 	public CraftGenomeFactory GenomeFactory
@@ -99,5 +97,10 @@ public class CraftGenome : IGenome<CraftGenome>
 //			_evalInfo = new EvaluationInfo(_genomeFactory.NeatGenomeParameters.FitnessHistoryLength);
 //			_auxStateNeuronCount = CountAuxStateNodes();
 		}
+	}
+
+	private void Mutate()
+	{
+
 	}
 }
