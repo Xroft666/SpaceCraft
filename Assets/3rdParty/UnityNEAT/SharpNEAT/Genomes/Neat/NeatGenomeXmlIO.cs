@@ -25,6 +25,8 @@ using System.Xml;
 using SharpNeat.Network;
 using SharpNeat.Utility;
 
+using Voxel2D;
+
 namespace SharpNeat.Genomes.Neat
 {
     /// <summary>
@@ -479,8 +481,10 @@ namespace SharpNeat.Genomes.Neat
             }
             while(xr.Read());
 
+			List<VoxelRawData> readVoxelData = new List<VoxelRawData>();
+
             // Construct and return loaded NeatGenome.
-            return new NeatGenome(null, genomeId, birthGen, nGeneList, cGeneList, inputNodeCount, outputNodeCount, true);
+			return new NeatGenome(null, genomeId, birthGen, nGeneList, cGeneList, inputNodeCount, outputNodeCount, true, readVoxelData);
         }
 
         #endregion

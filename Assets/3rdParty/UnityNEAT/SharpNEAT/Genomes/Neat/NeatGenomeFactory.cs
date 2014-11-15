@@ -24,6 +24,8 @@ using SharpNeat.Core;
 using SharpNeat.Network;
 using SharpNeat.Utility;
 
+using Voxel2D;
+
 namespace SharpNeat.Genomes.Neat
 {
     /// <summary>
@@ -417,10 +419,14 @@ namespace SharpNeat.Genomes.Neat
             // Ensure connections are sorted.
             connectionGeneList.SortByInnovationId();
 
+
+
+			List<VoxelRawData> randomlyInitializedVoxels = new List<VoxelRawData>();
+
             // Create and return the completed genome object.
             return CreateGenome(_genomeIdGenerator.NextId, birthGeneration,
                                 neuronGeneList, connectionGeneList,
-                                _inputNeuronCount, _outputNeuronCount, false);
+			                    _inputNeuronCount, _outputNeuronCount, false, randomlyInitializedVoxels);
         }
 
         /// <summary>
@@ -572,10 +578,11 @@ namespace SharpNeat.Genomes.Neat
                                                ConnectionGeneList connectionGeneList, 
                                                int inputNeuronCount,
                                                int outputNeuronCount,
-                                               bool rebuildNeuronGeneConnectionInfo)
+                                               bool rebuildNeuronGeneConnectionInfo,
+		                                       List<VoxelRawData> voxelsData)
         {
             return new NeatGenome(this, id, birthGeneration, neuronGeneList, connectionGeneList,
-                                  inputNeuronCount, outputNeuronCount, rebuildNeuronGeneConnectionInfo);
+			                      inputNeuronCount, outputNeuronCount, rebuildNeuronGeneConnectionInfo, voxelsData);
         }
 
         /// <summary>

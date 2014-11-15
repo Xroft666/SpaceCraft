@@ -24,6 +24,8 @@ using SharpNeat.Core;
 using SharpNeat.Network;
 using SharpNeat.Utility;
 
+using Voxel2D;
+
 namespace SharpNeat.Genomes.Neat
 {
     /// <summary>
@@ -77,6 +79,13 @@ namespace SharpNeat.Genomes.Neat
 
         #endregion
 
+		#region VoxelData
+
+		List<VoxelRawData> _voxelsData;
+		int _voxelsCount;
+
+		#endregion
+
         #region Constructors
 
         /// <summary>
@@ -89,7 +98,8 @@ namespace SharpNeat.Genomes.Neat
                           ConnectionGeneList connectionGeneList, 
                           int inputNeuronCount,
                           int outputNeuronCount,
-                          bool rebuildNeuronGeneConnectionInfo)
+                          bool rebuildNeuronGeneConnectionInfo,
+		                  List<VoxelRawData> voxelsData )
         {
             _genomeFactory = genomeFactory;
             _id = id;
@@ -116,6 +126,9 @@ namespace SharpNeat.Genomes.Neat
                 _auxStateNeuronCount = CountAuxStateNodes();
             }
 
+			_voxelsData = voxelsData;
+			_voxelsCount = voxelsData.Count;
+
             Debug.Assert(PerformIntegrityCheck());
         }
 
@@ -140,6 +153,9 @@ namespace SharpNeat.Genomes.Neat
             _inputBiasOutputNeuronCount = copyFrom._inputBiasOutputNeuronCount;
             
             _evalInfo = new EvaluationInfo(copyFrom.EvaluationInfo.FitnessHistoryLength);
+
+			_voxelsData = copyFrom._voxelsData;
+			_voxelsCount = copyFrom._voxelsCount;
 
             Debug.Assert(PerformIntegrityCheck());
         }
@@ -235,6 +251,11 @@ namespace SharpNeat.Genomes.Neat
             get { return _cachedPhenome; }
             set { _cachedPhenome = value; }
         }
+
+		public List<VoxelRawData> VoxelData
+		{
+			get { return _voxelsData; }
+		}
 
         /// <summary>
         /// Asexual reproduction.
@@ -399,7 +420,7 @@ namespace SharpNeat.Genomes.Neat
             // - which returns correlation items in order.
             return _genomeFactory.CreateGenome(_genomeFactory.NextGenomeId(), birthGeneration,
                                                                neuronGeneList, connectionListBuilder.ConnectionGeneList,
-                                                               _inputNeuronCount, _outputNeuronCount, false);            
+                                                               _inputNeuronCount, _outputNeuronCount, false, parent.VoxelData);            
         }
 
         #endregion
@@ -515,6 +536,8 @@ namespace SharpNeat.Genomes.Neat
                     case 4:
                         success = structureChange = (null != Mutate_DeleteConnection());
                         break;
+					case 5: success = Mutate_AddVoxel();
+						break;
                     default:
                         throw new SharpNeatException(string.Format("NeatGenome.Mutate(): Unexpected outcome value [{0}]", outcome));
                 }
@@ -540,6 +563,14 @@ namespace SharpNeat.Genomes.Neat
             // Mutation succeeded. Check resulting genome.
             Debug.Assert(PerformIntegrityCheck());
         }
+
+		private bool Mutate_AddVoxel()
+		{
+			_voxelsData.Add( new VoxelRawData() );
+			_voxelsCount = _voxelsData.Count;
+
+			return true;
+		}
 
         /// <summary>
         /// Add a new node to the Genome. We do this by removing a connection at random and inserting a new

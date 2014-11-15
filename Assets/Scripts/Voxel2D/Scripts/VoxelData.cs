@@ -111,4 +111,18 @@ namespace Voxel2D{
 		#endregion
 
 	}
+
+	public struct VoxelRawData
+	{
+		public int deviceType;
+		public int materialType;
+
+		public int xPos;
+		public int yPos;
+		public int rotation;
+	
+//		protected List<PhysicalProperty> propertyList = new List<PhysicalProperty>();
+//		public string deviceName;		
+//		public ElementStats stats;
+	}
 }
