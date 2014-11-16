@@ -112,7 +112,7 @@ namespace Voxel2D{
 
 	}
 
-	public struct VoxelRawData
+	public class VoxelRawData
 	{
 		public VoxelRawData(int deviceType,
 		                    int materialType,

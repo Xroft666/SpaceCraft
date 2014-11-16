@@ -82,7 +82,7 @@ namespace SharpNeat.Genomes.Neat
 		#region VoxelData
 
 		List<VoxelRawData> _voxelsData;
-		int _voxelsCount;
+		int _voxelsGridOneSide = 4;
 
 		#endregion
 
@@ -127,7 +127,6 @@ namespace SharpNeat.Genomes.Neat
             }
 
 			_voxelsData = voxelsData;
-			_voxelsCount = voxelsData.Count;
 
             Debug.Assert(PerformIntegrityCheck());
         }
@@ -155,7 +154,6 @@ namespace SharpNeat.Genomes.Neat
             _evalInfo = new EvaluationInfo(copyFrom.EvaluationInfo.FitnessHistoryLength);
 
 			_voxelsData = copyFrom._voxelsData;
-			_voxelsCount = copyFrom._voxelsCount;
 
             Debug.Assert(PerformIntegrityCheck());
         }
@@ -536,8 +534,18 @@ namespace SharpNeat.Genomes.Neat
                     case 4:
                         success = structureChange = (null != Mutate_DeleteConnection());
                         break;
+
+					#region Voxels mutations
+
 					case 5: success = Mutate_AddVoxel();
 						break;
+					case 6: success = Mutate_RemoveVoxel();
+						break;
+					case 7: success = Mutate_ChangeVoxel();
+						break;
+
+					#endregion
+
                     default:
                         throw new SharpNeatException(string.Format("NeatGenome.Mutate(): Unexpected outcome value [{0}]", outcome));
                 }
@@ -566,16 +574,77 @@ namespace SharpNeat.Genomes.Neat
 
 		private bool Mutate_AddVoxel()
 		{
+			// here we want to add a new voxel.
+			// need to define what happens if new generated voxel overlaps already existing one
+			// and if there are already full pack of them
+
+			// i guess in the future, this func should garuantee to create a voxel if there is space
+
+			if( _voxelsData.Count >=  _voxelsGridOneSide * _voxelsGridOneSide )
+				return false;
+
+			int xPos = UnityEngine.Random.Range(0, _voxelsGridOneSide);
+			int yPos = UnityEngine.Random.Range(0, _voxelsGridOneSide);
+
+			for( int i = 0; i < _voxelsData.Count; i++ )
+				if( _voxelsData[i]._xPos == xPos && _voxelsData[i]._yPos == yPos )
+					return false;
+
 			int deviceType = UnityEngine.Random.Range(0, 5);
 			int material = UnityEngine.Random.Range(0, 5);
-			int xPos = UnityEngine.Random.Range(0, 5);
-			int yPos = UnityEngine.Random.Range(0, 5);
-			int rotation = UnityEngine.Random.Range(0, 4);
 
+			int rotation = UnityEngine.Random.Range(0, 4);
 			_voxelsData.Add( new VoxelRawData(deviceType, material, xPos, yPos, rotation) );
-			_voxelsCount = _voxelsData.Count;
 
 			return true;
+		}
+
+		private bool Mutate_RemoveVoxel()
+		{
+			// here we remove a voxel
+			// this function in the future should guarantee that one voxel should dissapear
+			// instead of skipping
+
+			if( _voxelsData.Count <= 0 )
+				return false;
+			
+			int xPos = UnityEngine.Random.Range(0, _voxelsGridOneSide);
+			int yPos = UnityEngine.Random.Range(0, _voxelsGridOneSide);
+
+			for( int i = 0; i < _voxelsData.Count; i++ )
+				if( _voxelsData[i]._xPos == xPos && _voxelsData[i]._yPos == yPos )
+				{
+					_voxelsData.RemoveAt(i);
+
+					return true;
+				}
+
+			return false;
+		}
+
+		private bool Mutate_ChangeVoxel()
+		{
+			// here we take one voxel and change it
+			// (or recreate it)
+			// and again, should guarantee that something to be changed, maybe later (instead of skipping)
+
+			if( _voxelsData.Count <= 0 )
+				return false;
+			
+			int xPos = UnityEngine.Random.Range(0, _voxelsGridOneSide);
+			int yPos = UnityEngine.Random.Range(0, _voxelsGridOneSide);
+			
+			for( int i = 0; i < _voxelsData.Count; i++ )
+				if( _voxelsData[i]._xPos == xPos && _voxelsData[i]._yPos == yPos )
+				{
+					_voxelsData[i]._deviceType = UnityEngine.Random.Range(0, 5);
+					_voxelsData[i]._materialType = UnityEngine.Random.Range(0, 5);
+					_voxelsData[i]._rotation = UnityEngine.Random.Range(0, 4);
+
+					return true;
+				}
+			
+			return false;
 		}
 
         /// <summary>

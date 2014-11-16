@@ -47,6 +47,8 @@ namespace SharpNeat.Genomes.Neat
         const double DefaultNodeAuxStateMutationProbability = 0.00;
         const double DefaultDeleteConnectionMutationProbability = 0.004;
 
+		const double DefaultAddVoxelDataMutationProbability = 0.1;
+		const double DefaultRemoveVoxelDataMutationProbability = 0.1;
 		const double DefaultChangeVoxelDataMutationProbability = 0.1;
 
         #endregion
@@ -66,7 +68,12 @@ namespace SharpNeat.Genomes.Neat
         double _nodeAuxStateMutationProbability;
         double _deleteConnectionMutationProbability;
 
+		#region Voxels Probabilities
+		double _addVoxelDataMutationProbability;
+		double _removeVoxelDataMutationProbability;
 		double _changeVoxelDataMutationProbability;
+
+		#endregion
 
         // RouletteWheelLayout representing the above five mutation probabilities.
         RouletteWheelLayout _rouletteWheelLayout;
@@ -103,7 +110,14 @@ namespace SharpNeat.Genomes.Neat
             _nodeAuxStateMutationProbability            = DefaultNodeAuxStateMutationProbability;
             _deleteConnectionMutationProbability        = DefaultDeleteConnectionMutationProbability;
 
+			#region Voxels Probabilities
+
+			_addVoxelDataMutationProbability			= DefaultAddVoxelDataMutationProbability;
+			_removeVoxelDataMutationProbability			= DefaultRemoveVoxelDataMutationProbability;
 			_changeVoxelDataMutationProbability 		= DefaultChangeVoxelDataMutationProbability;
+
+			#endregion
+
 
             _rouletteWheelLayout = CreateRouletteWheelLayout();
             _rouletteWheelLayoutNonDestructive = CreateRouletteWheelLayout_NonDestructive();
@@ -131,6 +145,8 @@ namespace SharpNeat.Genomes.Neat
             _nodeAuxStateMutationProbability            = copyFrom._nodeAuxStateMutationProbability;
             _deleteConnectionMutationProbability        = copyFrom._deleteConnectionMutationProbability;
 
+			_addVoxelDataMutationProbability			= copyFrom._addVoxelDataMutationProbability;
+			_removeVoxelDataMutationProbability			= copyFrom._removeVoxelDataMutationProbability;
 			_changeVoxelDataMutationProbability			= copyFrom._changeVoxelDataMutationProbability;
 
             _rouletteWheelLayout = new RouletteWheelLayout(copyFrom._rouletteWheelLayout);
@@ -331,6 +347,9 @@ namespace SharpNeat.Genomes.Neat
                     _addConnectionMutationProbability,
                     _nodeAuxStateMutationProbability,
                     _deleteConnectionMutationProbability,
+
+					_addVoxelDataMutationProbability,
+					_removeVoxelDataMutationProbability,
 					_changeVoxelDataMutationProbability
                 };
             return new RouletteWheelLayout(probabilities);
@@ -446,7 +465,10 @@ namespace SharpNeat.Genomes.Neat
             newParams._rouletteWheelLayout = newParams.CreateRouletteWheelLayout();
             newParams._rouletteWheelLayoutNonDestructive = newParams.CreateRouletteWheelLayout_NonDestructive();
 
-			newParams._changeVoxelDataMutationProbability = 0.1;
+
+			newParams._addVoxelDataMutationProbability = 0.05;
+			newParams._removeVoxelDataMutationProbability = 0.05;
+			newParams._changeVoxelDataMutationProbability = 0.05;
 
             newParams._connectionMutationInfoList = new ConnectionMutationInfoList(copyFrom._connectionMutationInfoList);
 
