@@ -28,11 +28,10 @@ public class SimpleEvaluator : IPhenomeEvaluator<IBlackBox> {
         this.optimizer = se;
     }
 
-    public IEnumerator Evaluate(IBlackBox box)
+    public IEnumerator Evaluate(IBlackBox box, params object[] blackBoxExtraData)
     {
         if (optimizer != null)
         {
-
             optimizer.Evaluate(box);
             yield return new WaitForSeconds(optimizer.TrialDuration);
             optimizer.StopEvaluation(box);

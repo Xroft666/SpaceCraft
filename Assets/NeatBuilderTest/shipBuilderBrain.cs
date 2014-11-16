@@ -17,6 +17,8 @@ public class shipBuilderBrain : UnitController {
 
 	bool invalid = false;
 
+	bool isRunning = false;
+
 	enum BlockType
 	{
 		engine
@@ -35,18 +37,78 @@ public class shipBuilderBrain : UnitController {
 	
 	// Update is called once per frame
 	void Update () {
-		
+		// testing goes here
+		// let's say we need to move the vessel from A to B through bunch of obstalces
+
+		// here we use the brain:
+		// let's assume that we have inputs:
+		// 	- sensors which tell where are the obstacles
+		//  the output would be:
+		//  - which direction to take
+
+		// and the fitness would be distance to the goal
+	}
+
+	IEnumerator StopCall(float seconds)
+	{
+		yield return new WaitForSeconds(seconds);
+		isRunning = false;
 	}
 	
-	public override void Activate(IBlackBox box){
+	public override void Activate(IBlackBox box, params object[] blackBoxExtraData){
 		this.box = box;
-		bool running = true;
-		//Debug.Log("-------------------------");
-		while(running){
-			running = NextStep();
-		}
-		//print("INVALID DNA "+voxelSystem.voxelCount);
+//		bool running = true;
+		isRunning = true;
+
+		GenerateVoxelSystem((List<VoxelRawData>) blackBoxExtraData[0]);
+
+		StartCoroutine( StopCall(5f) );
+//		while(running){
+//			running = NextStep();
+//		}
+
 		return;
+	}
+
+	private void GenerateVoxelSystem(List<VoxelRawData> voxelData)
+	{
+		foreach( VoxelRawData voxel in voxelData )
+		{
+			Voxel2D.IntVector2 localCoord = new Voxel2D.IntVector2(voxel._xPos, voxel._yPos);
+			
+			if(!takenPosition.ContainsKey(localCoord) && voxelSystem.CanAddVoxel(localCoord))
+			{
+				takenPosition.Add(localCoord,voxel._deviceType);
+				VoxelData vd = null;
+
+				switch( voxel._deviceType )
+				{
+				case 0:
+					vd = new Wall(1,localCoord,voxel._rotation,voxelSystem);
+					break;
+				case 1:
+					vd = new Cannon(1,localCoord,voxel._rotation,voxelSystem,10,1);
+					break;
+				case 2:
+					vd = new Laser(1,localCoord,voxel._rotation,voxelSystem,250);
+					break;
+				case 3:
+					vd = new Engine(1,localCoord,voxel._rotation,voxelSystem,100);
+					break;
+				case 4:
+					vd = new Wall(1,localCoord,voxel._rotation,voxelSystem);
+					break;
+				default:
+					break;
+				}
+
+				voxelSystem.AddVoxel(vd);
+			}
+			else
+			{
+				Debug.Log("GenerateVoxelSystem: voxel already taken");
+			}
+		}
 	}
 	
 	public override void Stop(){
@@ -58,7 +120,8 @@ public class shipBuilderBrain : UnitController {
 			return 0;
 		}
 		//Debug.Log("fitness "+voxelSystem.voxelCount);
-		return blockCounts[0]+blockCounts[1]*2+blockCounts[2]*3+blockCounts[3]*10;
+//		return blockCounts[0]+blockCounts[1]*2+blockCounts[2]*3+blockCounts[3]*10;
+		return voxelSystem.voxelCount;
 	}
 	
 	bool NextStep(){

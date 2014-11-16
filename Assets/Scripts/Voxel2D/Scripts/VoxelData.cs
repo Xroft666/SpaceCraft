@@ -114,12 +114,25 @@ namespace Voxel2D{
 
 	public struct VoxelRawData
 	{
-		public int deviceType;
-		public int materialType;
+		public VoxelRawData(int deviceType,
+		                    int materialType,
+		                    int xPos,
+		                    int yPos,
+		                    int rotation)
+		{
+			_deviceType = deviceType;
+			_materialType = materialType;
+			_xPos = xPos;
+			_yPos = yPos;
+			_rotation = rotation;
+		}
 
-		public int xPos;
-		public int yPos;
-		public int rotation;
+		public int _deviceType;
+		public int _materialType;
+
+		public int _xPos;
+		public int _yPos;
+		public int _rotation;
 	
 //		protected List<PhysicalProperty> propertyList = new List<PhysicalProperty>();
 //		public string deviceName;		

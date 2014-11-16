@@ -3,8 +3,8 @@ using System.Collections;
 using SharpNeat.Phenomes;
 
 public abstract class UnitController : MonoBehaviour {
-
-    public abstract void Activate(IBlackBox box);
+	
+	public abstract void Activate(IBlackBox box, params object[] blackBoxExtraData);
 
     public abstract void Stop();
 

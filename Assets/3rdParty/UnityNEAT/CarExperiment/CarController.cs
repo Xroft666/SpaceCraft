@@ -123,7 +123,7 @@ public class CarController : UnitController {
         this.IsRunning = false;
     }
 
-    public override void Activate(IBlackBox box)
+	public override void Activate(IBlackBox box, params object[] blackBoxExtraData)
     {
         this.box = box;
         this.IsRunning = true;

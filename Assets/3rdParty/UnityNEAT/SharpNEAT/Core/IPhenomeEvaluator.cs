@@ -40,7 +40,7 @@ namespace SharpNeat.Core
         /// <summary>
         /// Evaluate the provided phenome and return its fitness score.
         /// </summary>
-        IEnumerator Evaluate(TPhenome phenome);
+        IEnumerator Evaluate(TPhenome phenome, params object[] phenomeExtraData);
 
         FitnessInfo GetLastFitness(TPhenome phenome);
 

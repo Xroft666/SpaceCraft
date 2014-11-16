@@ -566,7 +566,13 @@ namespace SharpNeat.Genomes.Neat
 
 		private bool Mutate_AddVoxel()
 		{
-			_voxelsData.Add( new VoxelRawData() );
+			int deviceType = UnityEngine.Random.Range(0, 5);
+			int material = UnityEngine.Random.Range(0, 5);
+			int xPos = UnityEngine.Random.Range(0, 5);
+			int yPos = UnityEngine.Random.Range(0, 5);
+			int rotation = UnityEngine.Random.Range(0, 4);
+
+			_voxelsData.Add( new VoxelRawData(deviceType, material, xPos, yPos, rotation) );
 			_voxelsCount = _voxelsData.Count;
 
 			return true;

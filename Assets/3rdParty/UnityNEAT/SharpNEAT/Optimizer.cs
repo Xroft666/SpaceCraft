@@ -153,14 +153,18 @@ public class Optimizer : MonoBehaviour {
         }
     }
 
-    public void Evaluate(IBlackBox box)
+    public void Evaluate(IBlackBox box, params object[] blackBoxExtraData)
     {
         GameObject obj = Instantiate(Unit, Unit.transform.position, Unit.transform.rotation) as GameObject;
         UnitController controller = obj.GetComponent<UnitController>();
 
         ControllerMap.Add(box, controller);
 
-        controller.Activate(box);
+
+		// some how here, i need to get the original genome which contains all the data on voxels
+
+
+		controller.Activate(box, blackBoxExtraData);
     }
 
     public void StopEvaluation(IBlackBox box)
@@ -193,6 +197,10 @@ public class Optimizer : MonoBehaviour {
             return;
         }
 
+		// Here we can read the genome's info on the ships construction
+		// as long it is directly represented everything can just be converted into voxels
+
+
         // Get a genome decoder that can convert genomes to phenomes.
         var genomeDecoder = experiment.CreateGenomeDecoder();
 
@@ -204,7 +212,7 @@ public class Optimizer : MonoBehaviour {
 
         ControllerMap.Add(phenome, controller);
 
-        controller.Activate(phenome);
+        controller.Activate(phenome, genome.VoxelData);
     }
 
     public float GetFitness(IBlackBox box)
