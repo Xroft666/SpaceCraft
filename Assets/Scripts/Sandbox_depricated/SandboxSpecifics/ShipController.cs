@@ -77,24 +77,8 @@ public class ShipController : VoxelData {
 	{
 		foreach(VoxelData e in voxel.GetVoxelData())
 		{
-			Voxel2D.IntVector2 pos = GetPosition();
 			if(e is Engine)
 			{
-//				Voxel2D.IntVector2 engPos = e.GetPosition();
-//				
-//				all.Add((Engine)e);
-//				
-//				if( engPos.x < pos.x )
-//				{
-//					left.Add((Engine)e);
-//					continue;
-//				}
-//				if( engPos.x > pos.x )
-//				{
-//					right.Add((Engine)e);
-//					continue;
-//				}
-
 				switch(e.rotation)
 				{
 				case 0:

@@ -47,7 +47,76 @@ public class shipBuilderBrain : UnitController {
 		//  - which direction to take
 
 		// and the fitness would be distance to the goal
+
+		List<Engine> leftEngines = new List<Engine>();
+		List<Engine> rightEngines = new List<Engine>();
+		List<Engine> forwardEngines = new List<Engine>();
+		List<Engine> backwardEngines = new List<Engine>();
+		
+		CollectThrusters(ref leftEngines, ref rightEngines, ref forwardEngines, ref backwardEngines);
+		InputThrusters(ref leftEngines, ref rightEngines, ref forwardEngines, ref backwardEngines);
 	}
+
+	public void CollectThrusters(ref List<Engine> left, ref List<Engine> right, ref List<Engine> forward, ref List<Engine> backward)
+	{
+		foreach(VoxelData e in voxelSystem.GetVoxelData())
+		{
+			if(e is Engine)
+			{
+				switch(e.rotation)
+				{
+				case 0:
+					forward.Add((Engine)e);
+					break;
+				case 90:
+					left.Add((Engine)e);
+					break;
+				case 270:
+					right.Add((Engine)e);
+					break;
+				case 180:
+					backward.Add((Engine)e);
+					break;
+				}
+			}
+		}
+	}
+	
+	public void InputThrusters(ref List<Engine> left, ref List<Engine> right, ref List<Engine> forward, ref List<Engine> backward )
+	{
+		if(Input.GetKeyDown(KeyCode.W))
+			foreach(Engine e in forward)
+				e.OnActivate();
+		
+		if(Input.GetKeyUp(KeyCode.W))
+			foreach(Engine e in forward)
+				e.OnDeactivate();
+		
+		if(Input.GetKeyDown(KeyCode.S))
+			foreach(Engine e in backward)
+				e.OnActivate();
+		
+		if(Input.GetKeyUp(KeyCode.S))
+			foreach(Engine e in backward)
+				e.OnDeactivate();
+		
+		if(Input.GetKeyDown(KeyCode.A))
+			foreach(Engine e in right)
+				e.OnActivate();
+		
+		if(Input.GetKeyUp(KeyCode.A))
+			foreach(Engine e in right)
+				e.OnDeactivate();
+		
+		if(Input.GetKeyDown(KeyCode.D))
+			foreach(Engine e in left)
+				e.OnActivate();
+		
+		if(Input.GetKeyUp(KeyCode.D))
+			foreach(Engine e in left)
+				e.OnDeactivate();
+	}
+
 
 	IEnumerator StopCall(float seconds)
 	{
