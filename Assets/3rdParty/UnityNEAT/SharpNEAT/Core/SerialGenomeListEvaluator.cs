@@ -133,7 +133,12 @@ namespace SharpNeat.Core
                 }
                 else
                 {
-                    _phenomeEvaluator.Evaluate(phenome);
+					SharpNeat.Genomes.Neat.NeatGenome neatGene = genome as SharpNeat.Genomes.Neat.NeatGenome;
+					if( neatGene != null )
+						_phenomeEvaluator.Evaluate(phenome, neatGene.VoxelData);
+					else
+                    	_phenomeEvaluator.Evaluate(phenome);
+
                     FitnessInfo fitnessInfo = _phenomeEvaluator.GetLastFitness(phenome);
                     genome.EvaluationInfo.SetFitness(fitnessInfo._fitness);
                     genome.EvaluationInfo.AuxFitnessArr = fitnessInfo._auxFitnessArr;
@@ -161,7 +166,12 @@ namespace SharpNeat.Core
                 }
                 else
                 {
-                    _phenomeEvaluator.Evaluate(phenome);
+					SharpNeat.Genomes.Neat.NeatGenome neatGene = genome as SharpNeat.Genomes.Neat.NeatGenome;
+					if( neatGene != null )
+						_phenomeEvaluator.Evaluate(phenome, neatGene.VoxelData);
+					else
+						_phenomeEvaluator.Evaluate(phenome);
+            
                     FitnessInfo fitnessInfo = _phenomeEvaluator.GetLastFitness(phenome);
                     genome.EvaluationInfo.SetFitness(fitnessInfo._fitness);
                     genome.EvaluationInfo.AuxFitnessArr = fitnessInfo._auxFitnessArr;

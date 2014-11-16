@@ -57,7 +57,11 @@ namespace SharpNEAT.Core
                 }
                 else
                 {
-                    yield return Coroutiner.StartCoroutine(_phenomeEvaluator.Evaluate(phenome));
+					SharpNeat.Genomes.Neat.NeatGenome neatGene = genome as SharpNeat.Genomes.Neat.NeatGenome;
+					if( neatGene != null )
+						yield return Coroutiner.StartCoroutine(_phenomeEvaluator.Evaluate(phenome, neatGene.VoxelData));
+					else
+						yield return Coroutiner.StartCoroutine(_phenomeEvaluator.Evaluate(phenome));
 
                     FitnessInfo fitnessInfo = _phenomeEvaluator.GetLastFitness(phenome);
 

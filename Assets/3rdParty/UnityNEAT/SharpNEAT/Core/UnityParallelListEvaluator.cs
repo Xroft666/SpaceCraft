@@ -79,9 +79,11 @@ namespace SharpNEAT.Core
                         //    dict.Add(genome, phenome);
                         //    fitnessDict.Add(phenome, new FitnessInfo[_optimizer.Trials]);
                         //}
-                        Coroutiner.StartCoroutine(_phenomeEvaluator.Evaluate(phenome));
-
-
+						SharpNeat.Genomes.Neat.NeatGenome neatGene = genome as SharpNeat.Genomes.Neat.NeatGenome;
+						if( neatGene != null )
+							Coroutiner.StartCoroutine(_phenomeEvaluator.Evaluate(phenome, neatGene.VoxelData));
+						else
+							Coroutiner.StartCoroutine(_phenomeEvaluator.Evaluate(phenome));
                     }
                 }
 
