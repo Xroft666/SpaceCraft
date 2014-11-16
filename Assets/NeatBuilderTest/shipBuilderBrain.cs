@@ -62,7 +62,7 @@ public class shipBuilderBrain : UnitController {
 
 		GenerateVoxelSystem((List<VoxelRawData>) blackBoxExtraData[0]);
 
-		StartCoroutine( StopCall(5f) );
+//		StartCoroutine( StopCall(3f) );
 //		while(running){
 //			running = NextStep();
 //		}
@@ -81,22 +81,38 @@ public class shipBuilderBrain : UnitController {
 				takenPosition.Add(localCoord,voxel._deviceType);
 				VoxelData vd = null;
 
+				int rotationAngle = 0;
+				switch(voxel._rotation)
+				{
+				case 1:
+					rotationAngle = 90;
+					break;
+				case 2:
+					rotationAngle = 180;
+					break;
+				case 3:
+					rotationAngle = 270;
+					break;
+				default:
+					break;
+				}
+
 				switch( voxel._deviceType )
 				{
 				case 0:
-					vd = new Wall(1,localCoord,voxel._rotation,voxelSystem);
+					vd = new Wall(1,localCoord,rotationAngle,voxelSystem);
 					break;
 				case 1:
-					vd = new Cannon(1,localCoord,voxel._rotation,voxelSystem,10,1);
+					vd = new Cannon(1,localCoord,rotationAngle,voxelSystem,10,1);
 					break;
 				case 2:
-					vd = new Laser(1,localCoord,voxel._rotation,voxelSystem,250);
+					vd = new Laser(1,localCoord,rotationAngle,voxelSystem,250);
 					break;
 				case 3:
-					vd = new Engine(1,localCoord,voxel._rotation,voxelSystem,100);
+					vd = new Engine(1,localCoord,rotationAngle,voxelSystem,100);
 					break;
 				case 4:
-					vd = new Wall(1,localCoord,voxel._rotation,voxelSystem);
+					vd = new Wall(1,localCoord,rotationAngle,voxelSystem);
 					break;
 				default:
 					break;
@@ -104,10 +120,10 @@ public class shipBuilderBrain : UnitController {
 
 				voxelSystem.AddVoxel(vd);
 			}
-			else
-			{
-				Debug.Log("GenerateVoxelSystem: voxel already taken");
-			}
+//			else
+//			{
+//				Debug.Log("GenerateVoxelSystem: voxel already taken");
+//			}
 		}
 	}
 	
