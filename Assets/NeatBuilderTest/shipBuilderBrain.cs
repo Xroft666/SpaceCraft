@@ -150,6 +150,7 @@ public class shipBuilderBrain : UnitController {
 				takenPosition.Add(localCoord,voxel._deviceType);
 				VoxelData vd = null;
 
+				int elementType = voxel._materialType;
 				int rotationAngle = 0;
 				switch(voxel._rotation)
 				{
@@ -169,19 +170,19 @@ public class shipBuilderBrain : UnitController {
 				switch( voxel._deviceType )
 				{
 				case 0:
-					vd = new Wall(1,localCoord,rotationAngle,voxelSystem);
+					vd = new Wall(elementType,localCoord,rotationAngle,voxelSystem);
 					break;
 				case 1:
-					vd = new Cannon(1,localCoord,rotationAngle,voxelSystem,10,1);
+					vd = new Cannon(elementType,localCoord,rotationAngle,voxelSystem,10,1);
 					break;
 				case 2:
-					vd = new Laser(1,localCoord,rotationAngle,voxelSystem,250);
+					vd = new Laser(elementType,localCoord,rotationAngle,voxelSystem,250);
 					break;
 				case 3:
-					vd = new Engine(1,localCoord,rotationAngle,voxelSystem,100);
+					vd = new Engine(elementType,localCoord,rotationAngle,voxelSystem,100);
 					break;
 				case 4:
-					vd = new Wall(1,localCoord,rotationAngle,voxelSystem);
+					vd = new Wall(elementType,localCoord,rotationAngle,voxelSystem);
 					break;
 				default:
 					break;
