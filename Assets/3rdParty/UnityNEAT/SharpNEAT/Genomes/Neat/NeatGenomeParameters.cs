@@ -36,20 +36,20 @@ namespace SharpNeat.Genomes.Neat
         const double DefaultDisjointExcessGenesRecombineProbability = 0.1;
 
         // High level mutation probabilities
-        const double DefaultConnectionWeightMutationProbability = 0.988;
+		const double DefaultConnectionWeightMutationProbability = 0.0;//0.988;
         //const double DefaultAddNodeMutationProbability = 0.001;
         //const double DefaultAddConnectionMutationProbability = 0.01;
         //const double DefaultNodeAuxStateMutationProbability = 0.00;
         //const double DefaultDeleteConnectionMutationProbability = 0.001;
         //const double DefaultConnectionWeightMutationProbability = 0.888;
-        const double DefaultAddNodeMutationProbability = 0.005;
-        const double DefaultAddConnectionMutationProbability = 0.05;
-        const double DefaultNodeAuxStateMutationProbability = 0.00;
-        const double DefaultDeleteConnectionMutationProbability = 0.004;
+		const double DefaultAddNodeMutationProbability = 0.0;//0.005;
+		const double DefaultAddConnectionMutationProbability = 0.0;//0.05;
+		const double DefaultNodeAuxStateMutationProbability = 0.0;//0.00;
+		const double DefaultDeleteConnectionMutationProbability = 0.0;//0.004;
 
-		const double DefaultAddVoxelDataMutationProbability = 0.1;
-		const double DefaultRemoveVoxelDataMutationProbability = 0.1;
-		const double DefaultChangeVoxelDataMutationProbability = 0.1;
+		const double DefaultAddVoxelDataMutationProbability = 0.333;
+		const double DefaultRemoveVoxelDataMutationProbability = 0.333;
+		const double DefaultChangeVoxelDataMutationProbability = 0.333;
 
         #endregion
 
@@ -456,19 +456,19 @@ namespace SharpNeat.Genomes.Neat
         public static NeatGenomeParameters CreateSimplifyingParameters(NeatGenomeParameters copyFrom)
         {
             NeatGenomeParameters newParams = new NeatGenomeParameters(copyFrom);
-            newParams._connectionWeightMutationProbability = 0.6;
+			newParams._connectionWeightMutationProbability = 0.0;//0.6;
             newParams._addNodeMutationProbability = 0.0;
             newParams._addConnectionMutationProbability = 0.0;
             // TODO: better method for automatically generating simplifying parameters?
             newParams._nodeAuxStateMutationProbability = copyFrom._nodeAuxStateMutationProbability;
-            newParams._deleteConnectionMutationProbability = 0.4;
+			newParams._deleteConnectionMutationProbability = 0.0;//0.4;
             newParams._rouletteWheelLayout = newParams.CreateRouletteWheelLayout();
             newParams._rouletteWheelLayoutNonDestructive = newParams.CreateRouletteWheelLayout_NonDestructive();
 
 
-			newParams._addVoxelDataMutationProbability = 0.05;
-			newParams._removeVoxelDataMutationProbability = 0.05;
-			newParams._changeVoxelDataMutationProbability = 0.05;
+			newParams._addVoxelDataMutationProbability = 0.33;
+			newParams._removeVoxelDataMutationProbability = 0.33;
+			newParams._changeVoxelDataMutationProbability = 0.33;
 
             newParams._connectionMutationInfoList = new ConnectionMutationInfoList(copyFrom._connectionMutationInfoList);
 
