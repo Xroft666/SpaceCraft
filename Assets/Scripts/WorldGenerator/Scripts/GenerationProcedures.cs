@@ -7,6 +7,8 @@ namespace WorldGen{
 
 		int[,] map;
 
+
+
 		public GenerationProcedures(ref int[,] map)
 		{
 			this.map = map;
@@ -53,6 +55,34 @@ namespace WorldGen{
 			map = v.GenerateOreVeins(map,0.1f,1,3,new int[]{1});
 		}
 
+		public void PerlinGen(PerlinNoise noise){
+
+	
+			int[,] mapClone = this.map.Clone () as int[,];
+		
+		
+
+			for (int x=0; x<mapClone.GetLength(0); x++) 
+			{
+				for (int y=0; y<mapClone.GetLength(1); y++)
+				{
+					mapClone[x,y] = (int)noise.FractalNoise2D((float)x, (float)y, 1, 1f, 1f);
+				}
+			}
+			
+					
+
+		
+
+			for (int x = 0; x < map.GetLength(0); x++) {
+								for (int y = 0; y < map.GetLength(1); y++) {
+										this.map [x, y] = mapClone [x, y];
+								}
+						}
+			
+
+			map = mapClone;
+		}
 		/*
 		void method2(){
 			CellularAutomata CA = new CellularAutomata(voxelSize,voxelSize);

@@ -27,7 +27,11 @@ public class AstroidGenerator : MonoBehaviour {
 			GenerationProcedures GP = new GenerationProcedures(ref map);
 
 			Thread thread;
-			thread = new Thread(GP.GenAstroidType1);
+
+			int seed = Random.Range (0, 90000);
+
+
+			thread = new Thread(GP.PerlinGen(new PerlinNoise(seed)));
 	    	thread.Start();
 			while(thread.IsAlive){
 				yield return new WaitForEndOfFrame();
