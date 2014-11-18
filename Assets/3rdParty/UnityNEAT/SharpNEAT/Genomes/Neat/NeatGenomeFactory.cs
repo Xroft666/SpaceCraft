@@ -419,9 +419,25 @@ namespace SharpNeat.Genomes.Neat
             // Ensure connections are sorted.
             connectionGeneList.SortByInnovationId();
 
-
-
 			List<VoxelRawData> randomlyInitializedVoxels = new List<VoxelRawData>();
+
+			int voxelsGridOneSide = 4;
+			for( int i = 0; i < voxelsGridOneSide; i++ )
+			{
+				int xPos = UnityEngine.Random.Range(0, voxelsGridOneSide);
+				int yPos = UnityEngine.Random.Range(0, voxelsGridOneSide);
+				
+				for( int j = 0; j < randomlyInitializedVoxels.Count; j++ )
+					if( randomlyInitializedVoxels[j]._xPos == xPos && randomlyInitializedVoxels[j]._yPos == yPos )
+						continue;
+
+				int deviceType = UnityEngine.Random.Range(0, 5);
+				int material = UnityEngine.Random.Range(0, 5);
+				
+				int rotation = UnityEngine.Random.Range(0, 4);
+
+				randomlyInitializedVoxels.Add( new VoxelRawData(deviceType, material, xPos, yPos, rotation) );
+			}
 
             // Create and return the completed genome object.
             return CreateGenome(_genomeIdGenerator.NextId, birthGeneration,
