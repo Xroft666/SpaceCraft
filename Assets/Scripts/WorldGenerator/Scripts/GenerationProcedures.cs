@@ -6,7 +6,11 @@ namespace WorldGen{
 	public class GenerationProcedures{
 
 		int[,] map;
+		System.Random randomSeed;
 
+		//RandomSeedGen se = new RandomSeedGen();
+		//public int mySeed = se.DoIt();
+		//int mySeed = Random.Range(0, 900000);
 
 
 		public GenerationProcedures(ref int[,] map)
@@ -55,7 +59,13 @@ namespace WorldGen{
 			map = v.GenerateOreVeins(map,0.1f,1,3,new int[]{1});
 		}
 
-		public void PerlinGen(PerlinNoise noise){
+		public void PerlinGen(){
+
+			randomSeed = new System.Random(3);
+			//RandomSeedGen generator = new RandomSeedGen();
+			//System.Random mySeed = new System.Random(987);
+//			PerlinNoise noise = new PerlinNoise((int)mySeed.NextDouble());
+			PerlinNoise noise = new PerlinNoise(randomSeed.Next(0, 90000));
 
 	
 			int[,] mapClone = this.map.Clone () as int[,];
@@ -66,7 +76,17 @@ namespace WorldGen{
 			{
 				for (int y=0; y<mapClone.GetLength(1); y++)
 				{
-					mapClone[x,y] = (int)noise.FractalNoise2D((float)x, (float)y, 1, 1f, 1f);
+					int voxel = (int)noise.FractalNoise2D((float)x, (float)y, 6, 10f, 22f);
+
+					if (voxel <= 0)
+						mapClone[x,y]=0;
+					else
+						mapClone[x,y] = 1;
+
+					//mapClone[x,y] = (int)noise.FractalNoise2D((float)x, (float)y, 6, 10f, 22f);
+				//	Debug.Log("x= "+x+ "y= " + y);
+					//Debug.Log (noise.FractalNoise2D((float)x, (float)y, 6, 10f, 22f));
+					Debug.Log (mapClone[x,y]);
 				}
 			}
 			
@@ -80,7 +100,7 @@ namespace WorldGen{
 								}
 						}
 			
-
+			Debug.Log (mapClone.Length);
 			map = mapClone;
 		}
 		/*

@@ -11,9 +11,12 @@ public class AstroidGenerator : MonoBehaviour {
 	public List<Vector2> AstroidList = new List<Vector2>();
 
 	int[,] map;
+
+
 	
 	// Use this for initialization
 	void Start () {
+
 		StartCoroutine(Generate());
 	}
 	
@@ -26,12 +29,13 @@ public class AstroidGenerator : MonoBehaviour {
 		
 			GenerationProcedures GP = new GenerationProcedures(ref map);
 
+
 			Thread thread;
 
-			int seed = Random.Range (0, 90000);
+			//int seed = Random.Range (0, 90000);
 
-
-			thread = new Thread(GP.PerlinGen(new PerlinNoise(seed)));
+			//thread = new Thread(GP.GenAstroidType1);
+			thread = new Thread(GP.PerlinGen);
 	    	thread.Start();
 			while(thread.IsAlive){
 				yield return new WaitForEndOfFrame();
