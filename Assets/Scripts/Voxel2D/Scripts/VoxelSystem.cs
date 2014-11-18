@@ -390,25 +390,34 @@ namespace Voxel2D{
 
 		public VoxelData AddVoxel( VoxelData voxel )
 		{
-			IntVector2 pos = voxel.GetPosition();
-			
-			if(VoxelUtility.IsPointInBounds(GetVoxelData(),new Vector2(pos.x,pos.y)) && IsVoxelEmpty(pos.x,pos.y))
-			{
-				voxelGrid [pos.x, pos.y] = voxel;
-				voxelCount++;
-				totalMass += voxel.stats.mass; //TODO: add correct mass
-				wasDataChanged = true;
-				if(VoxelAdded!=null){
-					VoxelAdded(voxel);
-				}
-				NeighbourUpdate(voxel);
-				return voxelGrid[pos.x,pos.y];
-			}
-			else
-			{
-				Debug.LogError("Voxel allready contains data, delete voxel before adding");
-				return null;
-			}
+		    if (voxel != null)
+		    {
+		        IntVector2 pos = voxel.GetPosition();
+
+		        if (VoxelUtility.IsPointInBounds(GetVoxelData(), new Vector2(pos.x, pos.y)) && IsVoxelEmpty(pos.x, pos.y))
+		        {
+		            voxelGrid[pos.x, pos.y] = voxel;
+		            voxelCount++;
+		            totalMass += voxel.stats.mass; //TODO: add correct mass
+		            wasDataChanged = true;
+		            if (VoxelAdded != null)
+		            {
+		                VoxelAdded(voxel);
+		            }
+		            NeighbourUpdate(voxel);
+		            return voxelGrid[pos.x, pos.y];
+		        }
+		        else
+		        {
+		            Debug.LogError("Voxel allready contains data, delete voxel before adding");
+		            return null;
+		        }
+		    }
+		    else
+		    {
+		        //Debug.LogWarning("Voxel System Doesnt Exist");
+		        return null;
+		    }
 		}
 
 		public void RemoveVoxel(int x,int y){

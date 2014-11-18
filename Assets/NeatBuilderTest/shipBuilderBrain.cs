@@ -151,24 +151,9 @@ public class shipBuilderBrain : UnitController {
 				VoxelData vd = null;
 
 				int elementType = voxel._materialType;
-				if(elementType == 0){
-					invalid = true;
-				}
-				int rotationAngle = 0;
-				switch(voxel._rotation)
-				{
-				case 1:
-					rotationAngle = 90;
-					break;
-				case 2:
-					rotationAngle = 180;
-					break;
-				case 3:
-					rotationAngle = 270;
-					break;
-				default:
-					break;
-				}
+				
+			    int rotationAngle = voxel._rotation*90;
+				
 
 				switch( voxel._deviceType )
 				{
@@ -202,7 +187,7 @@ public class shipBuilderBrain : UnitController {
 	
 	public override float GetFitness(){
 
-		/*
+		
 		VoxelData[,] data = voxelSystem.GetVoxelData();
 		blockCounts = new int[4];
 		foreach(VoxelData vd in data){
@@ -216,15 +201,18 @@ public class shipBuilderBrain : UnitController {
 				blockCounts[3]++;
 			} 
 		}
-		if(invalid){
-			//return 0;
-		}
-		//Debug.Log("fitness "+voxelSystem.voxelCount);
-		return blockCounts[0]+blockCounts[1]*2+blockCounts[2]*3+blockCounts[3]*10;
-//		return voxelSystem.voxelCount;
-		 */
-		return voxelSystem.voxelCount;
+        return blockCounts[0]+blockCounts[1]*2+blockCounts[2]*3+blockCounts[3]*10;
 		/*
+        if(invalid){
+			//return 0;
+		}*/
+		//Debug.Log("fitness "+voxelSystem.voxelCount);
+		
+//		return voxelSystem.voxelCount;
+		 
+		//return voxelSystem.voxelCount;
+		
+        /*
 		VoxelData[,] data = voxelSystem.GetVoxelData();
 
 		int engines = 0;

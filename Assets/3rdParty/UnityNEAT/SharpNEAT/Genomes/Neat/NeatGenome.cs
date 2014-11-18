@@ -20,6 +20,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using MaterialSystem;
 using SharpNeat.Core;
 using SharpNeat.Network;
 using SharpNeat.Utility;
@@ -596,8 +597,8 @@ namespace SharpNeat.Genomes.Neat
 				if( _voxelsData[i]._xPos == xPos && _voxelsData[i]._yPos == yPos )
 					return false;
 
-			int deviceType = UnityEngine.Random.Range(0, 5);
-			int material = UnityEngine.Random.Range(0, 5);
+			int deviceType = UnityEngine.Random.Range(0, TextureHolder.Instance.devices.Count);
+			int material = UnityEngine.Random.Range(1, ElementList.Instance.elements.Count);
 
 			int rotation = UnityEngine.Random.Range(0, 4);
 			_voxelsData.Add( new VoxelRawData(deviceType, material, xPos, yPos, rotation) );
@@ -643,8 +644,8 @@ namespace SharpNeat.Genomes.Neat
 			for( int i = 0; i < _voxelsData.Count; i++ )
 				if( _voxelsData[i]._xPos == xPos && _voxelsData[i]._yPos == yPos )
 				{
-					_voxelsData[i]._deviceType = UnityEngine.Random.Range(0, 5);
-					_voxelsData[i]._materialType = UnityEngine.Random.Range(0, 5);
+                    _voxelsData[i]._deviceType = UnityEngine.Random.Range(0, TextureHolder.Instance.devices.Count);
+                    _voxelsData[i]._materialType = UnityEngine.Random.Range(1, ElementList.Instance.elements.Count);
 					_voxelsData[i]._rotation = UnityEngine.Random.Range(0, 4);
 
 					return true;
