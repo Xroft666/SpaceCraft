@@ -6,33 +6,65 @@ namespace WorldGen{
 	public class GenerationProcedures{
 
 		int[,] map;
-		System.Random randomSeed;
+		//System.Random randomSeed;
 
 		//RandomSeedGen se = new RandomSeedGen();
 		//public int mySeed = se.DoIt();
 		//int mySeed = Random.Range(0, 900000);
 
+	    private int seed;
+	    private AstroidGenerator.AstroidSettings astroid;
+	    private AstroidGenerator AS;
 
-		public GenerationProcedures(ref int[,] map)
+		public GenerationProcedures(AstroidGenerator AS, ref int[,] map, int seed, AstroidGenerator.AstroidSettings astroid)
 		{
-			this.map = map;
+		    this.seed = seed;
+            this.map = map;
+		    this.astroid = astroid;
+		    this.AS = AS;
 		}
 
-		void RunIteration(CellularAutomata c, int rounds)
-		{
-			for (int i=0; i<rounds; i++) {
-				c.nextIteration();
-			}
-		}
+		
+
+	    public void Generate()
+	    {
+            map = NoiseGenerator.GenerateNoise(seed, map);
+            //map = MapUtility.ClearMapEdges(map, 2);
+
+	        foreach (AstroidGenerator.AstroidSettings.Actions action in astroid.actions)
+	        {
+	            if (action.method == AstroidGenerator.AstroidSettings.Actions.Method.CellularAutomata)
+	            {
+	                CellularAutomata CA = new CellularAutomata(ref map);
+	                CellularAutomata.CaveConfig.SquareRules rules = CA.caveConfig.squareRules;
+	                    //TODO: allow for other method
+	                CA.neighborType = CellularAutomata.NeighborType.Square;
+
+	                rules.blackChangeThreshold = AS.cellularAutomataMethods[action.index].BlackChangeThreshold;
+	                rules.whileChangeThreshold = AS.cellularAutomataMethods[action.index].WhileChangeThreshold;
+	                rules.radius = AS.cellularAutomataMethods[action.index].Radius;
+	                int rounds = AS.cellularAutomataMethods[action.index].Rounds;
+                    for (int i = 0; i < rounds; i++)
+                    {
+                        CA.nextIteration();
+                    }
+	            }
+	            else if(action.method == AstroidGenerator.AstroidSettings.Actions.Method.MapEdgeCleaning)
+	            {
+	                MapUtility.ClearMapEdges(map, AS.mapEdgeCleaning[action.index]);
+	            }//TODO:implement others
+	        }
+	    }
 		
 		public void GenAstroidType1()
 		{
 
-			CellularAutomata CA = new CellularAutomata(ref map);
+		    map = NoiseGenerator.GenerateNoise(seed, map);
+            map = MapUtility.ClearMapEdges(map, 2);
+
+            CellularAutomata CA = new CellularAutomata(ref map);
 			CellularAutomata.CaveConfig.SquareRules rules = CA.caveConfig.squareRules;
-			CA.neighborType = CellularAutomata.NeighborType.Square;
-			
-			CA.ClearMapEdges(2);
+		    CA.neighborType = CellularAutomata.NeighborType.Square;
 
 			int rounds = 0;
 
@@ -40,13 +72,13 @@ namespace WorldGen{
 			rules.whileChangeThreshold = 0.55f;
 			rules.radius = 2;
 			rounds = 10;
-			RunIteration (CA,rounds);
+			//RunIteration (CA,rounds);
 
 			rules.blackChangeThreshold = 0.6f;
 			rules.whileChangeThreshold = 0.6f;
 			rules.radius = 1;
 			rounds = 2;
-			RunIteration (CA,rounds);
+			//RunIteration (CA,rounds);
 
 			map = CA.GetMap();
 
@@ -61,11 +93,11 @@ namespace WorldGen{
 
 		public void PerlinGen(){
 
-			randomSeed = new System.Random(3);
+			
 			//RandomSeedGen generator = new RandomSeedGen();
 			//System.Random mySeed = new System.Random(987);
 //			PerlinNoise noise = new PerlinNoise((int)mySeed.NextDouble());
-			PerlinNoise noise = new PerlinNoise(randomSeed.Next(0, 90000));
+			PerlinNoise noise = new PerlinNoise(seed);
 
 	
 			int[,] mapClone = this.map.Clone () as int[,];

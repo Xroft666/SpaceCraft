@@ -7,12 +7,43 @@ using WorldGen;
 
 public class AstroidGenerator : MonoBehaviour {
 
-	//HACK
-	public List<Vector2> AstroidList = new List<Vector2>();
+[System.Serializable]
+    public class AstroidSettings
+    {
+        [System.Serializable]
+        public class Actions
+        {
+            public string name;
+            public int index;
+
+            public enum Method
+            {
+                CellularAutomata, PerlinNoise, MapEdgeCleaning
+            }
+
+            public Method method;
+        }
+
+        public string name;
+        public int size;
+        public List<Actions> actions = new List<Actions>();
+    }
+
+    
+    public List<int> AstroidsToGenerate = new List<int>(); 
+    
+    public List<AstroidSettings> AstroidList = new List<AstroidSettings>();
+
+    public List<CellularAutomataStats>  cellularAutomataMethods = new List<CellularAutomataStats>();
+
+	public List<int> mapEdgeCleaning = new List<int>(); 
+	
 
 	int[,] map;
 
+    public List<int> seeds = new List<int>();
 
+    public bool randomSeed;
 	
 	// Use this for initialization
 	void Start () {
@@ -22,20 +53,26 @@ public class AstroidGenerator : MonoBehaviour {
 	
 	IEnumerator Generate()
 	{
-		foreach(Vector2 pos in AstroidList){
-		
-			int astroidSize = 30;
+		for(int i=0;i<AstroidsToGenerate.Count;i++)
+		{
+
+		    int astroidSize = AstroidList[AstroidsToGenerate[i]].size;
 			map = new int[astroidSize,astroidSize];
-		
-			GenerationProcedures GP = new GenerationProcedures(ref map);
+
+		    int theSeed = 0;
+		    if (randomSeed)
+		    {
+		        theSeed = Random.Range(int.MinValue, int.MaxValue);
+		    }
+		    else
+		    {
+		        theSeed = seeds[i];
+		    }
+
+            GenerationProcedures GP = new GenerationProcedures(this, ref map, theSeed, AstroidList[AstroidsToGenerate[i]]);
 
 
-			Thread thread;
-
-			//int seed = Random.Range (0, 90000);
-
-			//thread = new Thread(GP.GenAstroidType1);
-			thread = new Thread(GP.PerlinGen);
+		    Thread thread = new Thread(GP.Generate);
 	    	thread.Start();
 			while(thread.IsAlive){
 				yield return new WaitForEndOfFrame();
@@ -43,8 +80,8 @@ public class AstroidGenerator : MonoBehaviour {
 
 
 			GameObject g = new GameObject();
-			g.transform.position = pos;
-			g.transform.name = "Astroid "+Random.seed;
+		    g.transform.position = Vector3.up*i*30;
+			g.transform.name = "Astroid "+theSeed;
 			VoxelSystem v = g.AddComponent<VoxelSystem>();
 
 			VoxelData[,] VD = VoxelUtility.IntToVoxelDataOre(map,v);

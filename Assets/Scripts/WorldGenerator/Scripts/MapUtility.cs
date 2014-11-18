@@ -29,6 +29,19 @@ namespace WorldGen{
 			return map;
 		}
 
-
+        public static int[,] ClearMapEdges(int[,] map, int thickness)
+        {
+            for (int x = 0; x < map.GetLength(0); x++)
+            {
+                for (int y = 0; y < map.GetLength(1); y++)
+                {
+                    if (x < thickness || x > (map.GetLength(0) - thickness) || y < thickness || y > (map.GetLength(1) - thickness))
+                    {
+                        map[x, y] = 0;
+                    }
+                }
+            }
+            return map;
+        }
 	}
 }
