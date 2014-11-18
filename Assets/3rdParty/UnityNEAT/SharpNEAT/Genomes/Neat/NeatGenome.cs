@@ -126,7 +126,7 @@ namespace SharpNeat.Genomes.Neat
                 _auxStateNeuronCount = CountAuxStateNodes();
             }
 
-			_voxelsData = voxelsData;
+			_voxelsData = new List<VoxelRawData>(voxelsData);
 
             Debug.Assert(PerformIntegrityCheck());
         }
@@ -153,7 +153,7 @@ namespace SharpNeat.Genomes.Neat
             
             _evalInfo = new EvaluationInfo(copyFrom.EvaluationInfo.FitnessHistoryLength);
 
-			_voxelsData = copyFrom._voxelsData;
+			_voxelsData = new List<VoxelRawData>(copyFrom._voxelsData);
 
             Debug.Assert(PerformIntegrityCheck());
         }
