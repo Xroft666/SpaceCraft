@@ -2,7 +2,8 @@
 
     <Config>
       <PopulationSize>10</PopulationSize>
-      <SpecieCount>4</SpecieCount>
+      <SpecieCount>1</SpecieCount>
+      <VoxelSize>10</VoxelSize>
       <Activation>
         <Scheme>Acyclic</Scheme>
       </Activation>

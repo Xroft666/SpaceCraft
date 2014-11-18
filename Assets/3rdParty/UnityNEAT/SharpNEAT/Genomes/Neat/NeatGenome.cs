@@ -82,7 +82,7 @@ namespace SharpNeat.Genomes.Neat
 		#region VoxelData
 
 		List<VoxelRawData> _voxelsData;
-		int _voxelsGridOneSide = 4;
+        private int _voxelsGridOneSide;
 
 		#endregion
 
@@ -128,6 +128,8 @@ namespace SharpNeat.Genomes.Neat
 
 			_voxelsData = new List<VoxelRawData>(voxelsData);
 
+            _voxelsGridOneSide = Optimizer.VoxelSize;
+
             Debug.Assert(PerformIntegrityCheck());
         }
 
@@ -154,6 +156,8 @@ namespace SharpNeat.Genomes.Neat
             _evalInfo = new EvaluationInfo(copyFrom.EvaluationInfo.FitnessHistoryLength);
 
 			_voxelsData = new List<VoxelRawData>(copyFrom._voxelsData);
+
+            _voxelsGridOneSide = Optimizer.VoxelSize;
 
             Debug.Assert(PerformIntegrityCheck());
         }

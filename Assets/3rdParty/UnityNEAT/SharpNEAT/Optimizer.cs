@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using SharpNeat.Domains;
+using UnityEngine;
 using System.Collections;
 using SharpNeat.Phenomes;
 using System.Collections.Generic;
@@ -12,6 +13,8 @@ public class Optimizer : MonoBehaviour {
 
     const int NUM_INPUTS = 1;
     const int NUM_OUTPUTS = 4;
+
+    public static int VoxelSize;
 
     public int Trials;
     public float TrialDuration;
@@ -43,7 +46,7 @@ public class Optimizer : MonoBehaviour {
         TextAsset textAsset = (TextAsset)Resources.Load("experiment.config");
         xmlConfig.LoadXml(textAsset.text);
         experiment.SetOptimizer(this);
-
+        VoxelSize = XmlUtils.GetValueAsInt(xmlConfig.DocumentElement, "VoxelSize");
         experiment.Initialize("Car Experiment", xmlConfig.DocumentElement, NUM_INPUTS, NUM_OUTPUTS);
 
         champFileSavePath = Application.persistentDataPath + string.Format("/{0}.champ.xml", "car");
