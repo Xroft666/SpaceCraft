@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Voxel2D;
+using MaterialSystem;
 
 public class Laser :  VoxelData{
 

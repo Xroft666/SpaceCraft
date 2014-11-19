@@ -10,6 +10,7 @@ public class Ore :  VoxelData{
 		stats.sizeModifier = 1;
 		propertyList.Add(new ThermalConductor());
 		propertyList.Add(new ThermalRadiator());
+		propertyList.Add(new RadioActivity());
 
 	}
 	

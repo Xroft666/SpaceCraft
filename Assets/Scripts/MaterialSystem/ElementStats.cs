@@ -78,7 +78,9 @@ namespace MaterialSystem{
 		/// </summary>
 		/// <param name="energy">Energy.</param>
 		public void addThermalEnergy(float energy){
-			temperature+= energy/(totalHeatCapacity);
+			if(energy>0){
+				temperature+= energy/(totalHeatCapacity);
+			}
 		}
 
 		/// <summary>
@@ -86,7 +88,9 @@ namespace MaterialSystem{
 		/// </summary>
 		/// <param name="energy">Energy.</param>
 		public void removeThermalEnergy(float energy){
-			temperature-= energy/(totalHeatCapacity);
+			if(energy>0){
+				temperature-= energy/(totalHeatCapacity);
+			}
 		}
 	
 	}
