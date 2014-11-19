@@ -5,31 +5,20 @@ using SpaceSandbox;
 
 
 namespace Voxel2D{
-    //[RequireComponent(typeof(SaveLoadInterface))]
+    //[RequireComponent(typeof(VoxelSystemSaveLoadInterface))]
 	public class VoxelBuilderPlayer : MonoBehaviour {
 		
-		VoxelSystem voxel;
-		
-		enum device
-		{
-			engine,
-			ore,
-			wall,
-			floor,
-			shipcontroller,
-			laser,
-			cannon
-		}
-		
-		int selectedElementID = 0;
-		int selectedRotation = 0;
-		device selectedDevice = device.engine;
+		VoxelSystem _voxel;
+
+		int _selectedElementId;
+		int _selectedRotation;
+		DeviceData.DeviceType _selectedDevice = DeviceData.DeviceType.Wall;
 		
 		// Use this for initialization
 		void Start () {
 			
-			voxel = gameObject.AddComponent<VoxelSystem>();
-		    gameObject.AddComponent<SaveLoadInterface>();
+			_voxel = gameObject.AddComponent<VoxelSystem>();
+		    gameObject.AddComponent<VoxelSystemSaveLoadInterface>();
 
 			Camera.main.transform.parent = transform;
 			Camera.main.orthographicSize = 15;
@@ -42,24 +31,24 @@ namespace Voxel2D{
 			
 			for (int x = 9; x < 14; x++) {
 				for (int y = 8; y < 16; y++) {
-					startShip[x,y] = new Wall(2, new IntVector2(x,y),0,voxel);
+					startShip[x,y] = new Wall(2, new IntVector2(x,y),0,_voxel);
 					//voxel.AddVoxel(x+5,y+5,2);
 				}
 			}
-			voxel.SetVoxelGrid(startShip);
+			_voxel.SetVoxelGrid(startShip);
 			
-			voxel.AddVoxel(new ShipController(2, new IntVector2(11,7),0,voxel));
-			voxel.AddVoxel(new Engine(2, new IntVector2(9,7),0,voxel,1000));
-			voxel.AddVoxel( new Engine(2, new IntVector2(13,7),0,voxel,1000));
-			voxel.AddVoxel(new Engine(2, new IntVector2(12,7),0,voxel,1000));
-			voxel.AddVoxel( new Engine(2, new IntVector2(10,7),0,voxel,1000));
+			_voxel.AddVoxel(new ShipController(2, new IntVector2(11,7),0,_voxel));
+			_voxel.AddVoxel(new Engine(2, new IntVector2(9,7),0,_voxel,1000));
+			_voxel.AddVoxel( new Engine(2, new IntVector2(13,7),0,_voxel,1000));
+			_voxel.AddVoxel(new Engine(2, new IntVector2(12,7),0,_voxel,1000));
+			_voxel.AddVoxel( new Engine(2, new IntVector2(10,7),0,_voxel,1000));
 			
-			voxel.AddVoxel(new Cannon(2,new IntVector2(12,16),selectedRotation,voxel,1000000,200));
-			voxel.AddVoxel(new Cannon(2,new IntVector2(10,16),selectedRotation,voxel,1000000,200));
+			_voxel.AddVoxel(new Cannon(2,new IntVector2(12,16),_selectedRotation,_voxel,1000000,200));
+			_voxel.AddVoxel(new Cannon(2,new IntVector2(10,16),_selectedRotation,_voxel,1000000,200));
 
-			voxel.AddVoxel(new Laser(2,new IntVector2(11,16),selectedRotation,voxel,100f));
+			_voxel.AddVoxel(new Laser(2,new IntVector2(11,16),_selectedRotation,_voxel,100f));
 
-			Vector2 center = voxel.GetCenter();
+			Vector2 center = _voxel.GetCenter();
 			Camera.main.transform.position = transform.TransformPoint(new Vector3(center.x,center.y,-10));
 		}
 		
@@ -67,14 +56,15 @@ namespace Voxel2D{
 		// Update is called once per frame
 		void Update () {
 			CheckInput();
-			selectedElementID = Mathf.Clamp(selectedElementID,1,MaterialSystem.ElementList.Instance.elements.Count-1);
+			_selectedElementId = Mathf.Clamp(_selectedElementId,1,MaterialSystem.ElementList.Instance.elements.Count-1);
 			//Mathf.Clamp(selectedDevice,0,System.Enum.GetValues(typeof(device)).Length);
-			if(selectedDevice.GetHashCode() <0){
-				selectedDevice++;
-			}else if(selectedDevice.GetHashCode() >System.Enum.GetValues(typeof(device)).Length-1){
-				selectedDevice--;
+			
+            if(_selectedDevice.GetHashCode() <0){
+				_selectedDevice++;
+			}else if(_selectedDevice.GetHashCode() >System.Enum.GetValues(typeof(DeviceData.DeviceType)).Length-1){
+				_selectedDevice--;
 			}
-			selectedRotation = Mathf.Clamp(selectedRotation,0,270);
+			_selectedRotation = Mathf.Clamp(_selectedRotation,0,270);
 			
 		}
 		
@@ -85,22 +75,22 @@ namespace Voxel2D{
 			IntVector2 RL = new IntVector2(Mathf.RoundToInt(localPos.x),Mathf.RoundToInt(localPos.y));
 			
 			if(Input.GetMouseButtonDown(0)){
-				if(VoxelUtility.IsPointInBounds(voxel.GetGridSize(),localPos)){
-					if(!voxel.IsVoxelEmpty(RL.x,RL.y)){
-						voxel.RemoveVoxel(RL.x,RL.y);
-						List<bool[,]> islands = VoxelIslandDetector.findIslands(VoxelUtility.VoxelDataToBool(voxel.GetVoxelData()));
+				if(VoxelUtility.IsPointInBounds(_voxel.GetGridSize(),localPos)){
+					if(!_voxel.IsVoxelEmpty(RL.x,RL.y)){
+						_voxel.RemoveVoxel(RL.x,RL.y);
+						List<bool[,]> islands = VoxelIslandDetector.findIslands(VoxelUtility.VoxelDataToBool(_voxel.GetVoxelData()));
 						if(islands.Count == 1){
 							
 						}else{
-							VoxelData[,] vox = VoxelIslandDetector.SplitAndReturnFirstIslands(voxel.GetVoxelData(),voxel);
-							voxel.SetVoxelGrid(vox);
+							VoxelData[,] vox = VoxelIslandDetector.SplitAndReturnFirstIslands(_voxel.GetVoxelData(),_voxel);
+							_voxel.SetVoxelGrid(vox);
 						}
 					}
 				}
 			}else if(Input.GetMouseButtonDown(1)){
-				if(VoxelUtility.IsPointInBounds(voxel.GetGridSize(),localPos)){
-					if(VoxelUtility.IsPosNextToVoxel(voxel.GetVoxelData(),RL)){
-						if(voxel.IsVoxelEmpty(RL.x,RL.y)){
+				if(VoxelUtility.IsPointInBounds(_voxel.GetGridSize(),localPos)){
+					if(VoxelUtility.IsPosNextToVoxel(_voxel.GetVoxelData(),RL)){
+						if(_voxel.IsVoxelEmpty(RL.x,RL.y)){
 							AddSelectedVoxelType(RL.x,RL.y);
 						}
 					}
@@ -108,21 +98,21 @@ namespace Voxel2D{
 			}
 			
 			if(Input.GetKeyDown(KeyCode.U)){
-				selectedElementID++;
+				_selectedElementId++;
 			}else if(Input.GetKeyDown(KeyCode.J)){
-				selectedElementID--;
+				_selectedElementId--;
 			}
 			
 			if(Input.GetKeyDown(KeyCode.O)){
-				selectedRotation += 90;
+				_selectedRotation += 90;
 			}else if(Input.GetKeyDown(KeyCode.L)){
-				selectedRotation -= 90;
+				_selectedRotation -= 90;
 			}
 			
 			if(Input.GetKeyDown(KeyCode.I)){
-				selectedDevice++;
+				_selectedDevice++;
 			}else if(Input.GetKeyDown(KeyCode.K)){
-				selectedDevice--;
+				_selectedDevice--;
 			}
 			
 			
@@ -130,38 +120,38 @@ namespace Voxel2D{
 		}
 		
 		void AddSelectedVoxelType(int x,int y){
-			VoxelData VD = null;
+			VoxelData vd = null;
 			
-			switch(selectedDevice){
-			case device.engine:
-				VD = new Engine(selectedElementID,new IntVector2(x,y),selectedRotation,voxel,1000);
+			switch(_selectedDevice){
+			case DeviceData.DeviceType.Engine:
+				vd = new Engine(_selectedElementId,new IntVector2(x,y),_selectedRotation,_voxel,1000);
 				break;
-			case device.floor:
-				VD = new Floor(selectedElementID,new IntVector2(x,y),selectedRotation,voxel);
+            case DeviceData.DeviceType.Floor:
+				vd = new Floor(_selectedElementId,new IntVector2(x,y),_selectedRotation,_voxel);
 				break;
-			case device.ore:
-				VD = new Ore(selectedElementID,new IntVector2(x,y),selectedRotation,voxel);
+            case DeviceData.DeviceType.Ore:
+				vd = new Ore(_selectedElementId,new IntVector2(x,y),_selectedRotation,_voxel);
 				break;
-			case device.shipcontroller:
-				VD = new ShipController(selectedElementID,new IntVector2(x,y),selectedRotation,voxel);
+            case DeviceData.DeviceType.ShipController:
+				vd = new ShipController(_selectedElementId,new IntVector2(x,y),_selectedRotation,_voxel);
 				break;
-			case device.wall:
-				VD = new Wall(selectedElementID,new IntVector2(x,y),selectedRotation,voxel);
+            case DeviceData.DeviceType.Wall:
+				vd = new Wall(_selectedElementId,new IntVector2(x,y),_selectedRotation,_voxel);
 				break;
-			case device.laser:
-				VD = new Laser(selectedElementID,new IntVector2(x,y),selectedRotation,voxel,100);
+            case DeviceData.DeviceType.Laser:
+				vd = new Laser(_selectedElementId,new IntVector2(x,y),_selectedRotation,_voxel,100);
 				break;
-			case device.cannon:
-				VD = new Cannon(selectedElementID,new IntVector2(x,y),selectedRotation,voxel,1000000,200);
+            case DeviceData.DeviceType.Cannon:
+				vd = new Cannon(_selectedElementId,new IntVector2(x,y),_selectedRotation,_voxel,1000000,200);
 				break;
 				
 			}
-			voxel.AddVoxel(VD);
+			_voxel.AddVoxel(vd);
 			
 		}
 		
 		void OnGUI(){
-			GUI.Label(new Rect(Screen.width/2-150,0,300,20),"element: "+selectedElementID+" device: "+selectedDevice.ToString()+" rotation: "+selectedRotation);
+			GUI.Label(new Rect(Screen.width/2-150,0,300,20),"element: "+_selectedElementId+" device: "+_selectedDevice.ToString()+" rotation: "+_selectedRotation);
 		}
 		
 	}

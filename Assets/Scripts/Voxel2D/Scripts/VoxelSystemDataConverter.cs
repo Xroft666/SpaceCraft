@@ -1,4 +1,5 @@
 ﻿using System;
+using SpaceSandbox;
 
 namespace Voxel2D
 {
@@ -23,7 +24,7 @@ namespace Voxel2D
                     if (voxData[x, y] != null)
                     {
                         ElementIDs[x, y] = voxData[x, y].GetElementID();
-                        EntityIDs[x, y] = TextureHolder.Instance.GetDeviceIndex(voxData[x, y].deviceName);
+                        EntityIDs[x, y] = (int) voxData[x, y].deviceType;
                         Rotations[x, y] = voxData[x, y].rotation;
                     }
                     else
@@ -50,28 +51,29 @@ namespace Voxel2D
                     {
                         VoxelData VD = null;
 
-                        switch (TextureHolder.Instance.GetDeviceName(EntityIDs[x, y]))
+                       
+                        switch ((DeviceData.DeviceType)EntityIDs[x,y])
                         {
-                            case "Engine":
+                            case DeviceData.DeviceType.Engine:
                                 VD = new Engine(ElementIDs[x, y], new IntVector2(x, y), Rotations[x, y], voxelSys, 1000);
                                 break;
-                            case "Floor":
+                            case DeviceData.DeviceType.Floor:
                                 VD = new Floor(ElementIDs[x, y], new IntVector2(x, y), Rotations[x, y], voxelSys);
                                 break;
-                            case "Ore":
+                            case DeviceData.DeviceType.Ore:
                                 VD = new Ore(ElementIDs[x, y], new IntVector2(x, y), Rotations[x, y], voxelSys);
                                 break;
-                            case "ShipController":
+                            case DeviceData.DeviceType.ShipController:
                                 VD = new ShipController(ElementIDs[x, y], new IntVector2(x, y), Rotations[x, y],
                                     voxelSys);
                                 break;
-                            case "Wall":
+                            case DeviceData.DeviceType.Wall:
                                 VD = new Wall(ElementIDs[x, y], new IntVector2(x, y), Rotations[x, y], voxelSys);
                                 break;
-                            case "Laser":
+                            case DeviceData.DeviceType.Laser:
                                 VD = new Laser(ElementIDs[x, y], new IntVector2(x, y), Rotations[x, y], voxelSys, 100);
                                 break;
-                            case "Cannon":
+                            case DeviceData.DeviceType.Cannon:
                                 VD = new Cannon(ElementIDs[x, y], new IntVector2(x, y), Rotations[x, y], voxelSys,
                                     1000000, 200);
                                 break;

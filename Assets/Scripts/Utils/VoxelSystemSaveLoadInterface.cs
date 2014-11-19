@@ -4,7 +4,7 @@ using System.Collections;
 using Voxel2D;
 
 [RequireComponent(typeof(VoxelSystem))]
-public class SaveLoadInterface : MonoBehaviour
+public class VoxelSystemSaveLoadInterface : MonoBehaviour
 {
 
     public string objectName = "MyName";
@@ -32,6 +32,6 @@ public class SaveLoadInterface : MonoBehaviour
             Load();   
         }
 
-        objectName = GUI.TextField(new Rect(Screen.width/2, 60+25, 300, 50), objectName);
+        objectName = GUI.TextField(new Rect(Screen.width/2, 50+25, 300, 20), objectName);
     }
 }

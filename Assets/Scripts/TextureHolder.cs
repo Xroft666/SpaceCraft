@@ -1,7 +1,10 @@
-﻿using UnityEngine;
+﻿using System;
+using SpaceSandbox;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using MaterialSystem;
+using Material = UnityEngine.Material;
 
 public class TextureHolder : MonoBehaviour {
 	
@@ -25,49 +28,48 @@ public class TextureHolder : MonoBehaviour {
 		}else{
 			Destroy(gameObject);
 		}
-		
-		List<Texture2D> TileTextures = new List<Texture2D>();
-		for(int i=0;i<ElementList.Instance.elements.Count;i++){
-			Texture2D t = new Texture2D(1,1);
-			t.SetPixel(1,1, ElementList.Instance.elements[i].color);
-			TileTextures.Add(t);
-			//TileTextures.Add(ElementList.Instance.elements[i].texture);
-		}
 
-
-		List<Texture2D> DeviceTextures = new List<Texture2D>();
-		for(int i=0;i<devices.Count;i++){
-			DeviceTextures.Add(devices[i].deviceTexture);
+	    Array x = Enum.GetValues(typeof (DeviceData.DeviceType));
+	    int l = x.Length;
+	    Texture2D[] DeviceTextures = new Texture2D[l];
+		for(int i=0;i<devices.Count;i++)
+		{
+		    DeviceData.DeviceType d = devices[i].Device;
+            int index = (int)d;
+		    DeviceTextures[index] = devices[i].deviceTexture;
 		}
 		
 		DeviceTextureAtlas = new Texture2D(MaxAtlasSize,MaxAtlasSize);
 		DeviceTextureAtlas.filterMode = FilterMode.Point;
 		DeviceTextureAtlas.wrapMode = TextureWrapMode.Clamp;
 
-		DeviceAtlasRects = DeviceTextureAtlas.PackTextures(DeviceTextures.ToArray(),0,MaxAtlasSize,false);
+		DeviceAtlasRects = DeviceTextureAtlas.PackTextures(DeviceTextures,0,MaxAtlasSize,false);
 		DeviceMaterial = new Material(Shader.Find("Sprites/Default"));
 		DeviceMaterial.mainTexture = DeviceTextureAtlas;
 
 	}
-	
-	public int GetDeviceIndex(string deviceName){
+    /*
+    public int GetDeviceIndex(string deviceName){
 		
-		for (int i = 0; i < devices.Count; i++) {
-			if(devices[i].deviceName == deviceName){
-				return i;
-			}
-		}
-		return -1;
-	}
-
+        for (int i = 0; i < devices.Count; i++) {
+            if(devices[i].deviceName == deviceName){
+                return i;
+            }
+        }
+        
+        return -1;
+    }
+    
     public string GetDeviceName(int index)
     {
         return devices[index].deviceName;
-    }
+    }*/
 	
 	[System.Serializable]
-	public class DeviceDescriptor{
-		public string deviceName;
+	public class DeviceDescriptor
+	{
+	    public DeviceData.DeviceType Device;
+        //public string deviceName;
 		public Texture2D deviceTexture;
 	}
 }
