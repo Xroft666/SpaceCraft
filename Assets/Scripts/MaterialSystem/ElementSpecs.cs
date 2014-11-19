@@ -27,6 +27,8 @@ namespace MaterialSystem{
 		public float melting;	//temperature to melt
 		public float boiling; 	//temperature to boil
 
-		public bool magnetic;	//effected by magnetic fields?
+		public float fisionRate;	//how many watts of power this block emits
+
+		public float magneticStrength;	//effected by magnetic fields?
 	}
 }
