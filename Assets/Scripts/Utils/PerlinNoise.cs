@@ -1,15 +1,20 @@
 using UnityEngine;
 using System.Collections;
 
+
 public class PerlinNoise
 {
 	const int B = 256;
 	int[] m_perm = new int[B+B];
 	Texture2D m_permTex;
 
-	public PerlinNoise(int seed)
+	System.Random seed;
+
+	public PerlinNoise(int yeah)
 	{
-		UnityEngine.Random.seed = seed;
+		seed = new System.Random(yeah);
+//		UnityEngine.Random.seed = seed;
+//		seed = System.Random.
 
 		int i, j, k;
 		for (i = 0 ; i < B ; i++) 
@@ -20,7 +25,7 @@ public class PerlinNoise
 		while (--i != 0) 
 		{
 			k = m_perm[i];
-			j = UnityEngine.Random.Range(0, B);
+			j = seed.Next(0, B);
 			m_perm[i] = m_perm[j];
 			m_perm[j] = k;
 		}

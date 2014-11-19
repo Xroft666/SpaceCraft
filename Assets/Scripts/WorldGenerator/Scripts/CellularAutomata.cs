@@ -67,37 +67,9 @@ namespace WorldGen{
 				this.seed = seed;
 			}
 
-			
-			generateNoise(this.seed);
 		}
 		
 
-		
-		
-		
-		private void generateNoise(float seed)
-		{
-			rand = new System.Random((int)seed);
-			
-			for (int x=0; x<map.GetLength(0); x++) {
-				for(int y=0;y<map.GetLength(1);y++){
-					int r = Mathf.RoundToInt((float)rand.NextDouble());
-					map[x,y] = r;
-				}
-			}
-		}
-		
-		public void ClearMapEdges(int thickness)
-		{
-			for (int x= 0; x < map.GetLength(0); x++) {
-				for (int y = 0; y < map.GetLength(1); y++) {
-					if(x < thickness || x > (map.GetLength(0)-thickness) || y < thickness || y > (map.GetLength(1)-thickness)){
-						map[x,y] = 0;
-					}
-				}
-			}
-		}
-		
 		public int[,] GetMap(){
 			return map;
 		}

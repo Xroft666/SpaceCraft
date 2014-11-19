@@ -22,7 +22,8 @@ namespace Voxel2D{
 			vox.OnSystemChange(null);
 
 			MeshFilter mFilter = GetComponent<MeshFilter>();
-			Mesh mesh = mFilter.sharedMesh;
+			Mesh mesh = new Mesh();//mFilter.sharedMesh;
+			mFilter.sharedMesh = mesh;
 
 			VoxelMeshGenerator.VoxelToMesh(voxelGrid, ref mesh);
 
