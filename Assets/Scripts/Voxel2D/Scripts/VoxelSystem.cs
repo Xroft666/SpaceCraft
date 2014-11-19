@@ -174,7 +174,9 @@ namespace Voxel2D{
 		
 		#region set&get
 		public void SetVoxelGrid(VoxelData[,] grid){	//TODO: messy code, clean!
-			VoxelData[,] v = VoxelIslandDetector.SplitAndReturnFirstIslands(grid,this);
+		    SetEmpty();
+
+            VoxelData[,] v = VoxelIslandDetector.SplitAndReturnFirstIslands(grid,this);
 			if(v != null){
 				FillVoxelGrid(v);
 			}else{
@@ -184,7 +186,22 @@ namespace Voxel2D{
 			}
 			
 		}
-		
+
+	    public void SetEmpty()
+	    {
+            for (int x = 0; x < voxelGrid.GetLength(0); x++)
+            {
+                for (int y = 0; y < voxelGrid.GetLength(1); y++)
+                {
+                    if (voxelGrid[x, y] != null)
+                    {
+                        voxelGrid[x, y].OnDelete();
+                        voxelGrid[x, y] = null;
+                    }
+                }
+            }
+	    }
+
 		public VoxelData GetVoxel(int x, int y)
 		{
 			if(!IsVoxelEmpty(x,y)){

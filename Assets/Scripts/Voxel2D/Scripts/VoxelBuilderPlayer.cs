@@ -5,6 +5,7 @@ using SpaceSandbox;
 
 
 namespace Voxel2D{
+    //[RequireComponent(typeof(SaveLoadInterface))]
 	public class VoxelBuilderPlayer : MonoBehaviour {
 		
 		VoxelSystem voxel;
@@ -28,7 +29,8 @@ namespace Voxel2D{
 		void Start () {
 			
 			voxel = gameObject.AddComponent<VoxelSystem>();
-			
+		    gameObject.AddComponent<SaveLoadInterface>();
+
 			Camera.main.transform.parent = transform;
 			Camera.main.orthographicSize = 15;
 			

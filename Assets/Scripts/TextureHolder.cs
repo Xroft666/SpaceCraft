@@ -59,6 +59,11 @@ public class TextureHolder : MonoBehaviour {
 		}
 		return -1;
 	}
+
+    public string GetDeviceName(int index)
+    {
+        return devices[index].deviceName;
+    }
 	
 	[System.Serializable]
 	public class DeviceDescriptor{
