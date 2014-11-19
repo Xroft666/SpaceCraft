@@ -28,10 +28,11 @@ public class shipBuilderBrain : UnitController {
 	void Awake () {
 
 		GameObject g = new GameObject("Ship");
-		g.transform.position = new Vector3(Random.Range(-10,10),Random.Range(-10,10),0);
+		g.layer = 8;
+		g.transform.position = Vector3.zero;//new Vector3(Random.Range(-10,10),Random.Range(-10,10),0);
 	
 		voxelSystem = g.AddComponent<VoxelSystem>();
-		voxelSystem.rigidbody2D.isKinematic = true;
+//		voxelSystem.rigidbody2D.isKinematic = true;
 		voxelSystem.SetGridSize(shipSize);
 	}
 	
@@ -48,13 +49,54 @@ public class shipBuilderBrain : UnitController {
 
 		// and the fitness would be distance to the goal
 
-		List<Engine> leftEngines = new List<Engine>();
-		List<Engine> rightEngines = new List<Engine>();
-		List<Engine> forwardEngines = new List<Engine>();
-		List<Engine> backwardEngines = new List<Engine>();
-		
-		CollectThrusters(ref leftEngines, ref rightEngines, ref forwardEngines, ref backwardEngines);
-		InputThrusters(ref leftEngines, ref rightEngines, ref forwardEngines, ref backwardEngines);
+		if( isRunning )
+		{
+			float frontSensor = 0f;
+			float leftFrontSensor = 0f;
+			float leftSensor = 0f;
+			float rightFrontSensor = 0f;
+			float rightSensor = 0f;
+			float SensorRange = 10f;
+
+			RaycastHit hit;
+			if (Physics.Raycast(transform.position + transform.forward * 1.1f, transform.TransformDirection(new Vector3(0f, 0f, 1f).normalized), out hit, SensorRange))
+				frontSensor = 1f - hit.distance / SensorRange;
+			
+			if (Physics.Raycast(transform.position + transform.forward * 1.1f, transform.TransformDirection(new Vector3(0.5f, 0f, 1f).normalized), out hit, SensorRange))
+				rightFrontSensor = 1f - hit.distance / SensorRange;
+			
+			if (Physics.Raycast(transform.position + transform.forward * 1.1f, transform.TransformDirection(new Vector3(1f, 0f, 0f).normalized), out hit, SensorRange))
+				rightSensor = 1f - hit.distance / SensorRange;
+			
+			if (Physics.Raycast(transform.position + transform.forward * 1.1f, transform.TransformDirection(new Vector3(-0.5f, 0f, 1f).normalized), out hit, SensorRange))
+				leftFrontSensor = 1f - hit.distance / SensorRange;
+			
+			if (Physics.Raycast(transform.position + transform.forward * 1.1f, transform.TransformDirection(new Vector3(-1f, 0f, 0f).normalized), out hit, SensorRange))
+				leftSensor = 1f - hit.distance / SensorRange;
+			
+			ISignalArray inputArr = box.InputSignalArray;
+			inputArr[0] = frontSensor;
+			inputArr[1] = leftFrontSensor;
+			inputArr[2] = leftSensor;
+			inputArr[3] = rightFrontSensor;
+			inputArr[4] = rightSensor;
+			
+			box.Activate();
+			
+			ISignalArray outputArr = box.OutputSignalArray;
+			
+			float steer = (float)outputArr[0] * 2 - 1;
+			float gas = (float)outputArr[1] * 2 - 1;
+
+
+			List<Engine> leftEngines = new List<Engine>();
+			List<Engine> rightEngines = new List<Engine>();
+			List<Engine> forwardEngines = new List<Engine>();
+			List<Engine> backwardEngines = new List<Engine>();
+			
+			CollectThrusters(ref leftEngines, ref rightEngines, ref forwardEngines, ref backwardEngines);
+			InputThrusters(gas, steer, ref leftEngines, ref rightEngines, ref forwardEngines, ref backwardEngines);
+		}
 	}
 
 	public void CollectThrusters(ref List<Engine> left, ref List<Engine> right, ref List<Engine> forward, ref List<Engine> backward)
@@ -82,38 +124,46 @@ public class shipBuilderBrain : UnitController {
 		}
 	}
 	
-	public void InputThrusters(ref List<Engine> left, ref List<Engine> right, ref List<Engine> forward, ref List<Engine> backward )
+	public void InputThrusters(float gas, float steer, ref List<Engine> left, ref List<Engine> right, ref List<Engine> forward, ref List<Engine> backward )
 	{
-		if(Input.GetKeyDown(KeyCode.W))
+//		if(Input.GetKeyDown(KeyCode.W))
 			foreach(Engine e in forward)
+			if( gas > 0f && !e.enabled )
 				e.OnActivate();
 		
-		if(Input.GetKeyUp(KeyCode.W))
+//		if(Input.GetKeyUp(KeyCode.W))
 			foreach(Engine e in forward)
+			if( gas == 0f && e.enabled )
 				e.OnDeactivate();
 		
-		if(Input.GetKeyDown(KeyCode.S))
+//		if(Input.GetKeyDown(KeyCode.S))
 			foreach(Engine e in backward)
+			if( gas > 0f && !e.enabled )
 				e.OnActivate();
 		
-		if(Input.GetKeyUp(KeyCode.S))
+//		if(Input.GetKeyUp(KeyCode.S))
 			foreach(Engine e in backward)
+			if( gas == 0f && e.enabled )
 				e.OnDeactivate();
 		
-		if(Input.GetKeyDown(KeyCode.A))
+//		if(Input.GetKeyDown(KeyCode.A))
 			foreach(Engine e in right)
+			if( steer > 0f && !e.enabled )
 				e.OnActivate();
 		
-		if(Input.GetKeyUp(KeyCode.A))
+//		if(Input.GetKeyUp(KeyCode.A))
 			foreach(Engine e in right)
+			if( gas == 0f && e.enabled )
 				e.OnDeactivate();
 		
-		if(Input.GetKeyDown(KeyCode.D))
+//		if(Input.GetKeyDown(KeyCode.D))
 			foreach(Engine e in left)
+			if( steer < 0f && !e.enabled )
 				e.OnActivate();
 		
-		if(Input.GetKeyUp(KeyCode.D))
+//		if(Input.GetKeyUp(KeyCode.D))
 			foreach(Engine e in left)
+			if( gas == 0f && e.enabled )
 				e.OnDeactivate();
 	}
 

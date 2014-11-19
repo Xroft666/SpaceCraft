@@ -7,7 +7,7 @@ public class Engine : VoxelData
 	// engine force in newtons
 	public float engineForce = 0;
 
-	private bool enabled = false;
+	public bool enabled = false;
 
 	private Rigidbody2D body;
 
