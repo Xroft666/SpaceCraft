@@ -80,7 +80,7 @@ public class AstroidGenerator : MonoBehaviour {
 
 
 			GameObject g = new GameObject();
-		    g.transform.position = Vector3.up*i*30;
+			g.transform.position = transform.position;
 			g.transform.name = "Astroid "+theSeed;
 			VoxelSystem v = g.AddComponent<VoxelSystem>();
 
