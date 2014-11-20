@@ -116,6 +116,7 @@ namespace Voxel2D{
 
 	public class VoxelRawData
 	{
+		public VoxelRawData() {}
 		public VoxelRawData(int deviceType,
 		                    int materialType,
 		                    int xPos,

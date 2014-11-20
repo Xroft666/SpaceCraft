@@ -82,12 +82,15 @@ public class AstroidGenerator : MonoBehaviour {
 			GameObject g = new GameObject();
 			g.transform.position = transform.position;
 			g.transform.name = "Astroid "+theSeed;
+
+			g.layer = 9; // obstacle layer
+
 			VoxelSystem v = g.AddComponent<VoxelSystem>();
 
 			VoxelData[,] VD = VoxelUtility.IntToVoxelDataOre(map,v);
 			v.SetVoxelGrid(VD);
 
-
+			g.rigidbody2D.isKinematic = true;
 			//HACK: just for tests
 			//g.rigidbody2D.angularVelocity = 100;
 		}

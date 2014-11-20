@@ -581,6 +581,7 @@ namespace SharpNeat.Genomes.Neat
 
 		private bool Mutate_AddVoxel()
 		{
+			return false;
 			// here we want to add a new voxel.
 			// need to define what happens if new generated voxel overlaps already existing one
 			// and if there are already full pack of them
@@ -608,6 +609,7 @@ namespace SharpNeat.Genomes.Neat
 
 		private bool Mutate_RemoveVoxel()
 		{
+			return false;
 			// here we remove a voxel
 			// this function in the future should guarantee that one voxel should dissapear
 			// instead of skipping
@@ -631,6 +633,7 @@ namespace SharpNeat.Genomes.Neat
 
 		private bool Mutate_ChangeVoxel()
 		{
+			return false;
 			// here we take one voxel and change it
 			// (or recreate it)
 			// and again, should guarantee that something to be changed, maybe later (instead of skipping)

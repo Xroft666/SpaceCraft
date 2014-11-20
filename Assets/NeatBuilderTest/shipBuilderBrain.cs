@@ -58,22 +58,30 @@ public class shipBuilderBrain : UnitController {
 			float rightSensor = 0f;
 			float SensorRange = 10f;
 
-			RaycastHit hit;
-			if (Physics.Raycast(transform.position + transform.forward * 1.1f, transform.TransformDirection(new Vector3(0f, 0f, 1f).normalized), out hit, SensorRange))
+			RaycastHit2D hit;
+			LayerMask mask = 1 << 9; // "Obstacles" layer
+
+			hit = Physics2D.Raycast(transform.position/* + transform.up * 1.1f*/, transform.TransformDirection(new Vector3(0f, 1f, 0f).normalized), SensorRange, mask);
+			if( hit.collider != null )
 				frontSensor = 1f - hit.distance / SensorRange;
-			
-			if (Physics.Raycast(transform.position + transform.forward * 1.1f, transform.TransformDirection(new Vector3(0.5f, 0f, 1f).normalized), out hit, SensorRange))
+
+			hit = Physics2D.Raycast(transform.position/* + transform.up * 1.1f*/, transform.TransformDirection(new Vector3(0.5f, 1f, 0f).normalized), SensorRange, mask);
+			if( hit.collider != null )
 				rightFrontSensor = 1f - hit.distance / SensorRange;
-			
-			if (Physics.Raycast(transform.position + transform.forward * 1.1f, transform.TransformDirection(new Vector3(1f, 0f, 0f).normalized), out hit, SensorRange))
+
+			hit = Physics2D.Raycast(transform.position/* + transform.up * 1.1f*/, transform.TransformDirection(new Vector3(1f, 0f, 0f).normalized), SensorRange, mask);
+			if( hit.collider != null )
 				rightSensor = 1f - hit.distance / SensorRange;
-			
-			if (Physics.Raycast(transform.position + transform.forward * 1.1f, transform.TransformDirection(new Vector3(-0.5f, 0f, 1f).normalized), out hit, SensorRange))
+
+			hit = Physics2D.Raycast(transform.position/* + transform.up * 1.1f*/, transform.TransformDirection(new Vector3(-0.5f, 1f, 0f).normalized), SensorRange, mask);
+			if( hit.collider != null )
 				leftFrontSensor = 1f - hit.distance / SensorRange;
-			
-			if (Physics.Raycast(transform.position + transform.forward * 1.1f, transform.TransformDirection(new Vector3(-1f, 0f, 0f).normalized), out hit, SensorRange))
+
+			hit = Physics2D.Raycast(transform.position/* + transform.up * 1.1f*/, transform.TransformDirection(new Vector3(-1f, 0f, 0f).normalized), SensorRange, mask);
+			if( hit.collider != null )
 				leftSensor = 1f - hit.distance / SensorRange;
-			
+
+
 			ISignalArray inputArr = box.InputSignalArray;
 			inputArr[0] = frontSensor;
 			inputArr[1] = leftFrontSensor;
@@ -238,20 +246,23 @@ public class shipBuilderBrain : UnitController {
 	public override float GetFitness(){
 
 		
-		VoxelData[,] data = voxelSystem.GetVoxelData();
-		blockCounts = new int[4];
-		foreach(VoxelData vd in data){
-			if(vd != null && vd.GetType().Name == "Wall"){
-				blockCounts[0]++;
-			}else if(vd != null && vd.GetType().Name == "Cannon"){
-				blockCounts[1]++;
-			}else if(vd != null && vd.GetType().Name == "Laser"){
-				blockCounts[2]++;
-			}else if(vd != null && vd.GetType().Name == "Engine"){
-				blockCounts[3]++;
-			} 
-		}
-        return blockCounts[0]+blockCounts[1]*2+blockCounts[2]*3+blockCounts[3]*10;
+//		VoxelData[,] data = voxelSystem.GetVoxelData();
+//		blockCounts = new int[4];
+//		foreach(VoxelData vd in data){
+//			if(vd != null && vd.GetType().Name == "Wall"){
+//				blockCounts[0]++;
+//			}else if(vd != null && vd.GetType().Name == "Cannon"){
+//				blockCounts[1]++;
+//			}else if(vd != null && vd.GetType().Name == "Laser"){
+//				blockCounts[2]++;
+//			}else if(vd != null && vd.GetType().Name == "Engine"){
+//				blockCounts[3]++;
+//			} 
+//		}
+//        return blockCounts[0]+blockCounts[1]*2+blockCounts[2]*3+blockCounts[3]*10;
+
+
+
 		/*
         if(invalid){
 			//return 0;
@@ -261,7 +272,8 @@ public class shipBuilderBrain : UnitController {
 //		return voxelSystem.voxelCount;
 		 
 		//return voxelSystem.voxelCount;
-		
+
+
         /*
 		VoxelData[,] data = voxelSystem.GetVoxelData();
 
@@ -272,6 +284,9 @@ public class shipBuilderBrain : UnitController {
 
 		return engines;
 		*/
+
+		// fitness for flying the maximum distance
+		return voxelSystem.transform.position.magnitude;
 	}
 	
 //	bool NextStep(){

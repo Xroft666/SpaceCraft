@@ -47,7 +47,7 @@ namespace Voxel2D{
 		public static bool IsPointInBounds(VoxelData[,] map, Vector2 point){
 			int[] i = new int[]{Mathf.RoundToInt(point.x),Mathf.RoundToInt(point.y)};
 			Vector2 m = new Vector2(map.GetLength(0), map.GetLength(1));
-			if(i[0]>0 && i[0]<m.x && i[1]>0 && i[1]<m.y){
+			if(i[0]>=0 && i[0]<m.x && i[1]>=0 && i[1]<m.y){
 				return true;
 			}else{
 				return false;
@@ -56,7 +56,7 @@ namespace Voxel2D{
 
 		public static bool IsPointInBounds(int size, Vector2 point){
 			int[] i = new int[]{Mathf.RoundToInt(point.x),Mathf.RoundToInt(point.y)};
-			if(i[0]>0 && i[0]<size && i[1]>0 && i[1]<size){
+			if(i[0]>=0 && i[0]<size && i[1]>=0 && i[1]<size){
 				return true;
 			}else{
 				return false;

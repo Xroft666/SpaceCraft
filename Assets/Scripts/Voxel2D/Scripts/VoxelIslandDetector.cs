@@ -79,7 +79,10 @@ namespace Voxel2D{
 						v.SetVoxelGrid(voxelDataGrid);
 						g.rigidbody2D.velocity = vox.rigidbody2D.velocity;
 						g.rigidbody2D.angularVelocity = vox.rigidbody2D.angularVelocity;
-						
+
+						g.layer = 9; // obstacle layer
+					
+						g.rigidbody2D.isKinematic = true;
 					}
 					
 				}else{
@@ -120,7 +123,10 @@ namespace Voxel2D{
 						v.SetVoxelGrid(voxelIslands[i]);
 						g.rigidbody2D.velocity = vox.rigidbody2D.velocity;
 						g.rigidbody2D.angularVelocity = vox.rigidbody2D.angularVelocity;
-						
+
+						g.layer = 9; // obstacle layer
+
+						g.rigidbody2D.isKinematic = true;
 					}
 				}
 				return(voxelIslands[0]);

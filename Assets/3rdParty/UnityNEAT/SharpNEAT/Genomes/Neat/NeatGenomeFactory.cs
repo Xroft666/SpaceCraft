@@ -421,23 +421,38 @@ namespace SharpNeat.Genomes.Neat
 
 			List<VoxelRawData> randomlyInitializedVoxels = new List<VoxelRawData>();
 
-			int voxelsGridOneSide = 4;
-			for( int i = 0; i < voxelsGridOneSide; i++ )
-			{
-				int xPos = UnityEngine.Random.Range(0, voxelsGridOneSide);
-				int yPos = UnityEngine.Random.Range(0, voxelsGridOneSide);
-				
-				for( int j = 0; j < randomlyInitializedVoxels.Count; j++ )
-					if( randomlyInitializedVoxels[j]._xPos == xPos && randomlyInitializedVoxels[j]._yPos == yPos )
-						continue;
 
-				int deviceType = UnityEngine.Random.Range(0, 5);
-				int material = UnityEngine.Random.Range(0, 5);
-				
-				int rotation = UnityEngine.Random.Range(0, 4);
+			// preset ships
 
-				randomlyInitializedVoxels.Add( new VoxelRawData(deviceType, material, xPos, yPos, rotation) );
-			}
+			randomlyInitializedVoxels.Add(new VoxelRawData(3,1,1,0,0));
+			randomlyInitializedVoxels.Add(new VoxelRawData(3,1,3,0,0));
+			randomlyInitializedVoxels.Add(new VoxelRawData(3,1,0,1,1));
+			randomlyInitializedVoxels.Add(new VoxelRawData(3,1,4,1,3));
+
+			randomlyInitializedVoxels.Add(new VoxelRawData(0,1,1,1,0));
+			randomlyInitializedVoxels.Add(new VoxelRawData(0,1,2,1,0));
+			randomlyInitializedVoxels.Add(new VoxelRawData(0,1,3,1,0));
+
+//			randomlyInitializedVoxels.Add(new VoxelRawData(3,1,1,2,2));
+//			randomlyInitializedVoxels.Add(new VoxelRawData(3,1,3,2,2));
+
+//			int voxelsGridOneSide = 4;
+//			for( int i = 0; i < voxelsGridOneSide; i++ )
+//			{
+//				int xPos = UnityEngine.Random.Range(0, voxelsGridOneSide);
+//				int yPos = UnityEngine.Random.Range(0, voxelsGridOneSide);
+//				
+//				for( int j = 0; j < randomlyInitializedVoxels.Count; j++ )
+//					if( randomlyInitializedVoxels[j]._xPos == xPos && randomlyInitializedVoxels[j]._yPos == yPos )
+//						continue;
+//
+//				int deviceType = UnityEngine.Random.Range(0, 5);
+//				int material = UnityEngine.Random.Range(0, 5);
+//				
+//				int rotation = UnityEngine.Random.Range(0, 4);
+//
+//				randomlyInitializedVoxels.Add( new VoxelRawData(deviceType, material, xPos, yPos, rotation) );
+//			}
 
             // Create and return the completed genome object.
             return CreateGenome(_genomeIdGenerator.NextId, birthGeneration,
