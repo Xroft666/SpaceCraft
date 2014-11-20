@@ -9,6 +9,7 @@ public class Floor : VoxelData {
 		stats.sizeModifier = 0.3f;
 		propertyList.Add(new ThermalConductor());
 		propertyList.Add(new ThermalRadiator());
+		propertyList.Add(new RadioActivity());
 	}
 
 }

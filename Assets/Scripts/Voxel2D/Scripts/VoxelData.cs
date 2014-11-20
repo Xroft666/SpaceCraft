@@ -11,6 +11,7 @@ namespace Voxel2D{
 	public class VoxelData{
 
 		public string deviceName;
+	    public readonly DeviceData.DeviceType deviceType;
 
 		public ElementStats stats;
 
@@ -38,6 +39,7 @@ namespace Voxel2D{
 			position = pos;
 			stats = new ElementStats(elementID);
 			deviceName = this.GetType().Name;
+            deviceType = (DeviceData.DeviceType) System.Enum.Parse(typeof(DeviceData.DeviceType), deviceName);
 
 			vertexIndexes = new int[4];
 		}
