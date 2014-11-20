@@ -87,17 +87,8 @@ public class AstroidGenerator : MonoBehaviour {
 			VoxelData[,] VD = VoxelUtility.IntToVoxelDataOre(map,v);
 			v.SetVoxelGrid(VD);
 
-
-			//HACK: just for tests
-			//g.rigidbody2D.angularVelocity = 100;
 		}
 
 	}
 
-
-
-	// Update is called once per frame
-	void Update () {
-		
-	}
 }

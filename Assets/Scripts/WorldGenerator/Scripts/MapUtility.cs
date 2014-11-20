@@ -43,5 +43,18 @@ namespace WorldGen{
             }
             return map;
         }
+
+	    public static Texture2D MapToBinaryTexture(int[,] map)
+	    {
+	        Texture2D t = new Texture2D(map.GetLength(0),map.GetLength(1));
+	        for (int x = 0; x < map.GetLength(0); x++)
+	        {
+	            for (int y = 0; y < map.GetLength(1); y++)
+	            {
+	                t.SetPixel(x,y,new Color(map[x,y],map[x,y],map[x,y]));
+	            }
+	        }
+	        return t;
+	    }
 	}
 }

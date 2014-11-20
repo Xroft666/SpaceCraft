@@ -1,13 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net.Mime;
 using UnityEngine;
 using UnityEditor;
+using WorldGen;
 
 public class PcgWindow : EditorWindow
 {
     private static PcgWindow _window;
 
     private AstroidGenerator _aGen;
+
+    private Texture2D texture2;
+
+    private Texture2D[] texture2Ds;
 
     private AstroidGenerator.AstroidSettings _astroidObject;
 
@@ -19,9 +26,6 @@ public class PcgWindow : EditorWindow
     private Vector2 _astroidDataScrollPos;
 
     private int seed;
-
-   // Rect fromRect = new Rect(50, 0, 100, 100);
-    //Rect toRect = new Rect(100, 0, 100, 100);
 
     private List<Rect> _windowRects;
     
@@ -37,7 +41,8 @@ public class PcgWindow : EditorWindow
 
     void Init()
     {
-        _aGen = AssetDatabase.LoadAssetAtPath("Assets/PCGData/Generator.prefab", typeof (AstroidGenerator)) as AstroidGenerator;
+        texture2 = (Texture2D) AssetDatabase.LoadAssetAtPath("Assets/PCGData/t.jpg", typeof (Texture2D));
+        _aGen = (AstroidGenerator) AssetDatabase.LoadAssetAtPath("Assets/PCGData/Generator.prefab", typeof (AstroidGenerator));
         if (_aGen == null)
         {
             Debug.LogError("Failed loading generator Data");
@@ -48,15 +53,15 @@ public class PcgWindow : EditorWindow
 
     void OnGUI()
     {
-
-        
-        GUILayout.BeginArea(new Rect(200,0,1000,500));
+        GUILayout.BeginArea(new Rect(200,0,_window.position.width-400,_window.position.height-50), _astroidObject.name, GUIStyle.none);
         EditorGUILayout.BeginVertical("Window");
         RenderActionWindow();
         EditorGUILayout.EndVertical();
         GUILayout.EndArea();
 
         AstroidGUI();
+
+        //AssetDatabase.SaveAssets();
     }
 
    
@@ -66,7 +71,7 @@ public class PcgWindow : EditorWindow
         _windowRects = new List<Rect>();
         for (int i = 0; i < _aGen.AstroidList[_currentAstroid].actions.Count; i++)
         {
-            _windowRects.Add(new Rect(i * 160 + 250, 50, 150, 150));
+            _windowRects.Add(new Rect(i * 160 + 250, 50, 150, 300));
         }
     }
 
@@ -126,6 +131,8 @@ public class PcgWindow : EditorWindow
         EditorGUILayout.LabelField("Index:");
         _astroidObject.actions[windowID].index = EditorGUILayout.IntField("", _astroidObject.actions[windowID].index);
 
+        GUI.DrawTexture(new Rect(0,150,150,150), texture2Ds[windowID]);
+
         GUI.DragWindow();
     }
 
@@ -144,8 +151,13 @@ public class PcgWindow : EditorWindow
     {
         GUILayout.BeginArea(new Rect(0, 0, 200, 500));
         EditorGUILayout.BeginVertical("Box");
+        if (GUILayout.Button("Refresh"))
+        {
+            Refresh();
+        }
         EditorGUILayout.LabelField("Seed:");
         seed = EditorGUILayout.IntField("", seed);
+        
         AstroidList();
         AstroidDataManipulators();
         EditorGUILayout.EndVertical();
@@ -210,7 +222,10 @@ public class PcgWindow : EditorWindow
     {
         _currentAstroid = i;
         _astroidObject = _window._aGen.AstroidList[_currentAstroid];
+        texture2Ds = new Texture2D[_astroidObject.actions.Count];
+        UpdateTextures();
         GenerateWindowRects();
+        
     }
 
     void AddAstroid()
@@ -226,4 +241,27 @@ public class PcgWindow : EditorWindow
     }
 
     #endregion
+
+    void Refresh()
+    {
+        SetCurrentAstroid(_currentAstroid);
+    }
+
+    void UpdateTextures()
+    {
+        int size = _astroidObject.size;
+        int[,] map = new int[size,size];
+        map = NoiseGenerator.GenerateNoise(seed,map);
+        GenerationProcedures GP = new GenerationProcedures(_aGen, ref map, seed, _astroidObject);  
+        foreach (AstroidGenerator.AstroidSettings.Actions a in _astroidObject.actions)
+        {
+            GP.GenerateAction(ref map,a);
+            int i = _astroidObject.actions.IndexOf(a);
+            texture2Ds[i] = MapUtility.MapToBinaryTexture(map);
+            texture2Ds[i].Apply();
+            //AssetDatabase.CreateAsset(texture2Ds[i].EncodeToPNG(), path: "Assets/PCGData/tmpTex"+i+".png");
+            //texture2Ds[i].SetPixel(2,2,new Color(0.5f,0.3f,0.1f));
+            //Serializer.Save(Application.dataPath + "/Data/SavedVoxelSystems/tmpTex" + i + ".jpg", texture2Ds[i].EncodeToJPG());
+        }
+    }
 }

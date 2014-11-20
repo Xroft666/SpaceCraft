@@ -33,65 +33,35 @@ namespace WorldGen{
 
 	        foreach (AstroidGenerator.AstroidSettings.Actions action in astroid.actions)
 	        {
-	            if (action.method == AstroidGenerator.AstroidSettings.Actions.Method.CellularAutomata)
-	            {
-	                CellularAutomata CA = new CellularAutomata(ref map);
-	                CellularAutomata.CaveConfig.SquareRules rules = CA.caveConfig.squareRules;
-	                    //TODO: allow for other method
-	                CA.neighborType = CellularAutomata.NeighborType.Square;
-
-	                rules.blackChangeThreshold = AS.cellularAutomataMethods[action.index].BlackChangeThreshold;
-	                rules.whileChangeThreshold = AS.cellularAutomataMethods[action.index].WhileChangeThreshold;
-	                rules.radius = AS.cellularAutomataMethods[action.index].Radius;
-	                int rounds = AS.cellularAutomataMethods[action.index].Rounds;
-                    for (int i = 0; i < rounds; i++)
-                    {
-                        CA.nextIteration();
-                    }
-	            }
-	            else if(action.method == AstroidGenerator.AstroidSettings.Actions.Method.MapEdgeCleaning)
-	            {
-	                MapUtility.ClearMapEdges(map, AS.mapEdgeCleaning[action.index]);
-	            }//TODO:implement others
+	           GenerateAction(ref map, action);
 	        }
 	    }
-		
-		public void GenAstroidType1()
-		{
 
-		    map = NoiseGenerator.GenerateNoise(seed, map);
-            map = MapUtility.ClearMapEdges(map, 2);
+        public void GenerateAction(ref int[,] map, AstroidGenerator.AstroidSettings.Actions action)
+	    {
+            if (action.method == AstroidGenerator.AstroidSettings.Actions.Method.CellularAutomata)
+            {
+                CellularAutomata CA = new CellularAutomata(ref map);
+                CellularAutomata.CaveConfig.SquareRules rules = CA.caveConfig.squareRules;
+                //TODO: allow for other method
+                CA.neighborType = CellularAutomata.NeighborType.Square;
 
-            CellularAutomata CA = new CellularAutomata(ref map);
-			CellularAutomata.CaveConfig.SquareRules rules = CA.caveConfig.squareRules;
-		    CA.neighborType = CellularAutomata.NeighborType.Square;
+                rules.blackChangeThreshold = AS.cellularAutomataMethods[action.index].BlackChangeThreshold;
+                rules.whileChangeThreshold = AS.cellularAutomataMethods[action.index].WhileChangeThreshold;
+                rules.radius = AS.cellularAutomataMethods[action.index].Radius;
+                int rounds = AS.cellularAutomataMethods[action.index].Rounds;
+                for (int i = 0; i < rounds; i++)
+                {
+                    CA.nextIteration();
+                }
+            }
+            else if (action.method == AstroidGenerator.AstroidSettings.Actions.Method.MapEdgeCleaning)
+            {
+                MapUtility.ClearMapEdges(map, AS.mapEdgeCleaning[action.index]);
+            }//TODO:implement others
+	    }
 
-			int rounds = 0;
-
-			rules.blackChangeThreshold = 0.55f;
-			rules.whileChangeThreshold = 0.55f;
-			rules.radius = 2;
-			rounds = 10;
-			//RunIteration (CA,rounds);
-
-			rules.blackChangeThreshold = 0.6f;
-			rules.whileChangeThreshold = 0.6f;
-			rules.radius = 1;
-			rounds = 2;
-			//RunIteration (CA,rounds);
-
-			map = CA.GetMap();
-
-			//map = MapUtility.swapMapIDs(map,0);
-
-			OreVeinGenerator v = new OreVeinGenerator();
-
-			//int[,] tmpMap =v.GenerateOreVeins(map,0.5f,1,3,new int[]{1});
-			map = v.GenerateOreVeins(map,0.2f,1,2,new int[]{1});
-			map = v.GenerateOreVeins(map,0.005f,1,3,new int[]{1});
-		}
-
-		public void PerlinGen(){
+	    public void PerlinGen(){
 
 			
 			//RandomSeedGen generator = new RandomSeedGen();
@@ -122,9 +92,6 @@ namespace WorldGen{
 				}
 			}
 			
-					
-
-		
 
 			for (int x = 0; x < map.GetLength(0); x++) {
 								for (int y = 0; y < map.GetLength(1); y++) {
@@ -135,44 +102,6 @@ namespace WorldGen{
 			Debug.Log (mapClone.Length);
 			map = mapClone;
 		}
-		/*
-		void method2(){
-			CellularAutomata CA = new CellularAutomata(voxelSize,voxelSize);
-			CellularAutomata.CaveConfig.SquareRules r = CA.caveConfig.squareRules;
-			
-			CA.neighborType = CellularAutomata.NeighborType.Square;
-			
-			r.blackChangeThreshold = 0.6f;
-			r.whileChangeThreshold = 0.6f;
-			r.radius = 1;
-			RunIteration (CA,25);
-			
-		}
-		
-		void method3(){
-			CellularAutomata CA = new CellularAutomata(voxelSize,voxelSize);
-			CellularAutomata.CaveConfig.SquareRules r = CA.caveConfig.squareRules;
-			
-			CA.neighborType = CellularAutomata.NeighborType.Square;
-			
-			
-			r.blackChangeThreshold = 0.7f;
-			r.whileChangeThreshold = 0.7f;
-			r.radius = 3;
-			RunIteration (CA,3);
-			
-			r.blackChangeThreshold = 0.6f;
-			r.whileChangeThreshold = 0.53f;
-			r.radius = 4;
-			RunIteration (CA,2);
-			
-			r.blackChangeThreshold = 0.6f;
-			r.whileChangeThreshold = 0.6f;
-			r.radius = 1;
-			RunIteration (CA,10);
-		}
-		*/
-
 		
 	}
 }
