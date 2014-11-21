@@ -11,22 +11,25 @@ public class AstroidGenerator : MonoBehaviour {
     public class AstroidSettings
     {
         [System.Serializable]
-        public class Actions
+        public class Action
         {
             public string name;
             public int index;
 
             public enum Method
             {
-                CellularAutomata, PerlinNoise, MapEdgeCleaning
+                CellularAutomata, PerlinNoise, MapEdgeCleaning, Noise
             }
 
             public Method method;
+            public CellularAutomataStats cellularAutomataStats = new CellularAutomataStats();
+            public int mapEdgeCleaning;
+            public float noiseThreshold;
         }
 
         public string name;
-        public int size;
-        public List<Actions> actions = new List<Actions>();
+        public int size = 10;
+        public List<Action> actions = new List<Action>();
     }
 
     

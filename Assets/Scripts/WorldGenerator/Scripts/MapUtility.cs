@@ -35,7 +35,7 @@ namespace WorldGen{
             {
                 for (int y = 0; y < map.GetLength(1); y++)
                 {
-                    if (x < thickness || x > (map.GetLength(0) - thickness) || y < thickness || y > (map.GetLength(1) - thickness))
+                    if (x < thickness || x > (map.GetLength(0) - thickness-1) || y < thickness || y > (map.GetLength(1) - thickness-1))
                     {
                         map[x, y] = 0;
                     }

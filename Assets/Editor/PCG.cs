@@ -12,11 +12,11 @@ public class PcgWindow : EditorWindow
 
     private AstroidGenerator _aGen;
 
-    private Texture2D texture2;
+    private Texture2D _texture2;
 
-    private Texture2D[] texture2Ds;
+    public Texture2D[] Texture2Ds;
 
-    private AstroidGenerator.AstroidSettings _astroidObject;
+    public AstroidGenerator.AstroidSettings AstroidObject;
 
     private int _currentAstroid;
 
@@ -24,6 +24,7 @@ public class PcgWindow : EditorWindow
 
     private Vector2 _astroidScrollPos;
     private Vector2 _astroidDataScrollPos;
+    private Vector2 _nodeFieldScrollPos;
 
     private int seed;
 
@@ -41,7 +42,7 @@ public class PcgWindow : EditorWindow
 
     void Init()
     {
-        texture2 = (Texture2D) AssetDatabase.LoadAssetAtPath("Assets/PCGData/t.jpg", typeof (Texture2D));
+        //_texture2 = (Texture2D) AssetDatabase.LoadAssetAtPath("Assets/PCGData/t.jpg", typeof (Texture2D));
         _aGen = (AstroidGenerator) AssetDatabase.LoadAssetAtPath("Assets/PCGData/Generator.prefab", typeof (AstroidGenerator));
         if (_aGen == null)
         {
@@ -53,14 +54,20 @@ public class PcgWindow : EditorWindow
 
     void OnGUI()
     {
-        GUILayout.BeginArea(new Rect(200,0,_window.position.width-400,_window.position.height-50), _astroidObject.name, GUIStyle.none);
+        Rect nodeRect = new Rect(200,0,_window.position.width-400,_window.position.height-50);
+
+        GUILayout.BeginArea(nodeRect, AstroidObject.name, GUIStyle.none);
+      
+        _nodeFieldScrollPos = EditorGUILayout.BeginScrollView(_nodeFieldScrollPos, true, true);
         EditorGUILayout.BeginVertical("Window");
         RenderActionWindow();
         EditorGUILayout.EndVertical();
+        EditorGUILayout.EndScrollView();
+        
         GUILayout.EndArea();
 
         AstroidGUI();
-
+        ActionButtons();
         //AssetDatabase.SaveAssets();
     }
 
@@ -68,15 +75,31 @@ public class PcgWindow : EditorWindow
 
     void GenerateWindowRects()
     {
+        Debug.Log(("Generating windows"));
+        Debug.Log("astroid " + _currentAstroid + " " + _aGen.AstroidList[_currentAstroid].name);
+        Debug.Log("num " + _aGen.AstroidList[_currentAstroid].actions.Count);
         _windowRects = new List<Rect>();
         for (int i = 0; i < _aGen.AstroidList[_currentAstroid].actions.Count; i++)
         {
-            _windowRects.Add(new Rect(i * 160 + 250, 50, 150, 300));
+            _windowRects.Add(new Rect(i * 160 + 25, 50, 150, 450));
         }
     }
 
 
     #region Action
+
+    private void ActionButtons()
+    {
+        GUILayout.BeginArea(new Rect(_window.position.width-200, 0, 200, 1000));
+        EditorGUILayout.BeginVertical();
+        if (GUILayout.Button("Add Action"))
+        {
+            AstroidObject.actions.Add(new AstroidGenerator.AstroidSettings.Action());
+            SetCurrentAstroid(_currentAstroid);
+        }
+        EditorGUILayout.EndVertical();
+        GUILayout.EndArea();
+    }
 
     private void RenderActionBezier(Rect? nullableFromRect, Rect toRect, int i)
     {
@@ -124,25 +147,12 @@ public class PcgWindow : EditorWindow
     /// <param name="windowID"></param>
     void ActionWindowFunction(int windowID)
     {
-        EditorGUILayout.LabelField("Method:");
-        ActionEnum(windowID);
-        EditorGUILayout.LabelField("Name:");
-        _astroidObject.actions[windowID].name = EditorGUILayout.TextField("", _astroidObject.actions[windowID].name);
-        EditorGUILayout.LabelField("Index:");
-        _astroidObject.actions[windowID].index = EditorGUILayout.IntField("", _astroidObject.actions[windowID].index);
-
-        GUI.DrawTexture(new Rect(0,150,150,150), texture2Ds[windowID]);
+        NodeWindowRenderer.PrepareRender(_window,windowID,_aGen);
 
         GUI.DragWindow();
     }
 
-    void ActionEnum(int windowID)
-    {
-        List<AstroidGenerator.AstroidSettings.Actions> aList =
-            _astroidObject.actions;
-
-        aList[windowID].method = (AstroidGenerator.AstroidSettings.Actions.Method)EditorGUILayout.EnumPopup("", aList[windowID].method);
-    }
+    
     #endregion
 
     #region Astroid
@@ -185,12 +195,10 @@ public class PcgWindow : EditorWindow
             RemoveAstroid();
         }
 
-       astroidLabel = GUILayout.TextField(astroidLabel);
-        if (GUILayout.Button("Rename Current Astroid"))
-        {
-            _astroidObject.name = astroidLabel;
-        }
-        
+        EditorGUILayout.LabelField("Astroid Name");
+        AstroidObject.name = EditorGUILayout.TextField(AstroidObject.name);
+        EditorGUILayout.LabelField("Astroid Size");
+        AstroidObject.size = EditorGUILayout.IntField(AstroidObject.size);
         //GUILayout.EndArea();
         
        
@@ -221,8 +229,8 @@ public class PcgWindow : EditorWindow
     void SetCurrentAstroid(int i)
     {
         _currentAstroid = i;
-        _astroidObject = _window._aGen.AstroidList[_currentAstroid];
-        texture2Ds = new Texture2D[_astroidObject.actions.Count];
+        AstroidObject = _window._aGen.AstroidList[_currentAstroid];
+        Texture2Ds = new Texture2D[AstroidObject.actions.Count];
         UpdateTextures();
         GenerateWindowRects();
         
@@ -232,36 +240,42 @@ public class PcgWindow : EditorWindow
     {
         AstroidGenerator.AstroidSettings a = new AstroidGenerator.AstroidSettings();
         _window._aGen.AstroidList.Add(a);
-        _currentAstroid = _window._aGen.AstroidList.Count - 1;
+        SetCurrentAstroid(_window._aGen.AstroidList.Count - 1);
+        
     }
 
     void RemoveAstroid()
     {
         _window._aGen.AstroidList.RemoveAt(_currentAstroid);
+        SetCurrentAstroid(_window._aGen.AstroidList.Count - 1);
     }
 
     #endregion
 
     void Refresh()
     {
-        SetCurrentAstroid(_currentAstroid);
+        UpdateTextures();
+        AssetDatabase.SaveAssets();
+     
     }
 
     void UpdateTextures()
     {
-        int size = _astroidObject.size;
+        int size = AstroidObject.size;
         int[,] map = new int[size,size];
-        map = NoiseGenerator.GenerateNoise(seed,map);
-        GenerationProcedures GP = new GenerationProcedures(_aGen, ref map, seed, _astroidObject);  
-        foreach (AstroidGenerator.AstroidSettings.Actions a in _astroidObject.actions)
+
+        GenerationProcedures GP = new GenerationProcedures(_aGen, ref map, seed, AstroidObject);  
+       
+        for (int j = 0; j < AstroidObject.actions.Count; j++)
         {
-            GP.GenerateAction(ref map,a);
-            int i = _astroidObject.actions.IndexOf(a);
-            texture2Ds[i] = MapUtility.MapToBinaryTexture(map);
-            texture2Ds[i].Apply();
-            //AssetDatabase.CreateAsset(texture2Ds[i].EncodeToPNG(), path: "Assets/PCGData/tmpTex"+i+".png");
-            //texture2Ds[i].SetPixel(2,2,new Color(0.5f,0.3f,0.1f));
-            //Serializer.Save(Application.dataPath + "/Data/SavedVoxelSystems/tmpTex" + i + ".jpg", texture2Ds[i].EncodeToJPG());
+            AstroidGenerator.AstroidSettings.Action a = AstroidObject.actions[j];
+            GP.GenerateAction(ref map, a);
+            Texture2Ds[j] = MapUtility.MapToBinaryTexture(map);
+            
+            Texture2Ds[j].wrapMode = TextureWrapMode.Clamp;
+            Texture2Ds[j].filterMode = FilterMode.Point;
+            Texture2Ds[j].Apply();
+            
         }
     }
 }

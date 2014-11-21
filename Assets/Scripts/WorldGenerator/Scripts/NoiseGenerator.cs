@@ -6,7 +6,7 @@ namespace WorldGen
 {
 public static class NoiseGenerator{
 
-    public static int[,] GenerateNoise(float seed, int[,] map)
+    public static int[,] GenerateNoise(float seed, int[,] map, float whiteChance)
     {
         Random rand = new System.Random((int)seed);
 
@@ -14,8 +14,19 @@ public static class NoiseGenerator{
         {
             for (int y = 0; y < map.GetLength(1); y++)
             {
-                int r = Mathf.RoundToInt((float)rand.NextDouble());
-                map[x, y] = r;
+                float r = (float)rand.NextDouble();
+                int i;
+                if (r > whiteChance)
+                {
+                    i = 1;
+                }
+                else
+                {
+                    i = 0;
+                }
+
+                    
+                map[x, y] = i;
             }
         }
         return map;

@@ -28,37 +28,45 @@ namespace WorldGen{
 
 	    public void Generate()
 	    {
-            map = NoiseGenerator.GenerateNoise(seed, map);
+            map = NoiseGenerator.GenerateNoise(seed, map,0.5f);
             //map = MapUtility.ClearMapEdges(map, 2);
 
-	        foreach (AstroidGenerator.AstroidSettings.Actions action in astroid.actions)
+	        foreach (AstroidGenerator.AstroidSettings.Action action in astroid.actions)
 	        {
 	           GenerateAction(ref map, action);
 	        }
 	    }
 
-        public void GenerateAction(ref int[,] map, AstroidGenerator.AstroidSettings.Actions action)
+        public void GenerateAction(ref int[,] map, AstroidGenerator.AstroidSettings.Action action)
 	    {
-            if (action.method == AstroidGenerator.AstroidSettings.Actions.Method.CellularAutomata)
+            if (action.method == AstroidGenerator.AstroidSettings.Action.Method.CellularAutomata)
             {
                 CellularAutomata CA = new CellularAutomata(ref map);
                 CellularAutomata.CaveConfig.SquareRules rules = CA.caveConfig.squareRules;
+                CellularAutomataStats stats = action.cellularAutomataStats;
+
                 //TODO: allow for other method
                 CA.neighborType = CellularAutomata.NeighborType.Square;
 
-                rules.blackChangeThreshold = AS.cellularAutomataMethods[action.index].BlackChangeThreshold;
-                rules.whileChangeThreshold = AS.cellularAutomataMethods[action.index].WhileChangeThreshold;
-                rules.radius = AS.cellularAutomataMethods[action.index].Radius;
-                int rounds = AS.cellularAutomataMethods[action.index].Rounds;
+                rules.blackChangeThreshold = stats.BlackChangeThreshold;
+                rules.whileChangeThreshold = stats.WhileChangeThreshold;
+                rules.radius =stats.Radius;
+                int rounds = stats.Rounds;
                 for (int i = 0; i < rounds; i++)
                 {
                     CA.nextIteration();
                 }
             }
-            else if (action.method == AstroidGenerator.AstroidSettings.Actions.Method.MapEdgeCleaning)
+            else if (action.method == AstroidGenerator.AstroidSettings.Action.Method.MapEdgeCleaning)
             {
-                MapUtility.ClearMapEdges(map, AS.mapEdgeCleaning[action.index]);
-            }//TODO:implement others
+                MapUtility.ClearMapEdges(map, action.mapEdgeCleaning);
+            }
+            else if (action.method == AstroidGenerator.AstroidSettings.Action.Method.Noise)
+            {
+                map = NoiseGenerator.GenerateNoise(seed, map,action.noiseThreshold);
+            }
+            
+            //TODO:implement others
 	    }
 
 	    public void PerlinGen(){
