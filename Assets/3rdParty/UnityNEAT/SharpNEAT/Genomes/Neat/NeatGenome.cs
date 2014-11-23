@@ -442,6 +442,8 @@ namespace SharpNeat.Genomes.Neat
 			}
 
 			// take the second (least fit) parent's genes
+
+			// skip the whole sentence, if you want to rpeserve the best parent
 			if( combineDisjointExcessFlag )
 			{
 				for( int i = 0; i < secondParent.Count; i++ )

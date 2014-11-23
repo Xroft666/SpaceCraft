@@ -456,19 +456,19 @@ namespace SharpNeat.Genomes.Neat
         public static NeatGenomeParameters CreateSimplifyingParameters(NeatGenomeParameters copyFrom)
         {
             NeatGenomeParameters newParams = new NeatGenomeParameters(copyFrom);
-			newParams._connectionWeightMutationProbability = 0.0;//0.6;
+			newParams._connectionWeightMutationProbability = 0.6;
             newParams._addNodeMutationProbability = 0.0;
             newParams._addConnectionMutationProbability = 0.0;
             // TODO: better method for automatically generating simplifying parameters?
             newParams._nodeAuxStateMutationProbability = copyFrom._nodeAuxStateMutationProbability;
-			newParams._deleteConnectionMutationProbability = 0.0;//0.4;
+			newParams._deleteConnectionMutationProbability = 0.4;
             newParams._rouletteWheelLayout = newParams.CreateRouletteWheelLayout();
             newParams._rouletteWheelLayoutNonDestructive = newParams.CreateRouletteWheelLayout_NonDestructive();
 
 
-			newParams._addVoxelDataMutationProbability = 0.33;
-			newParams._removeVoxelDataMutationProbability = 0.33;
-			newParams._changeVoxelDataMutationProbability = 0.33;
+			newParams._addVoxelDataMutationProbability = 0.1;
+			newParams._removeVoxelDataMutationProbability = 0.1;
+			newParams._changeVoxelDataMutationProbability = 0.1;
 
             newParams._connectionMutationInfoList = new ConnectionMutationInfoList(copyFrom._connectionMutationInfoList);
 
