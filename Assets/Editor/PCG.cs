@@ -12,8 +12,6 @@ public class PcgWindow : EditorWindow
 
     private AstroidGenerator _aGen;
 
-    private Texture2D _texture2;
-
     public Texture2D[] Texture2Ds;
 
     public AstroidGenerator.AstroidSettings AstroidObject;
@@ -28,7 +26,9 @@ public class PcgWindow : EditorWindow
 
     private int seed;
 
-    private List<Rect> _windowRects;
+    private List<NodeWindow> windows;
+
+    public Handle SelectedHandle;
     
 
     // Add menu named "My Window" to the Window menu
@@ -50,6 +50,7 @@ public class PcgWindow : EditorWindow
             return;
         }
         SetCurrentAstroid(0);
+        
     }
 
     void OnGUI()
@@ -58,30 +59,36 @@ public class PcgWindow : EditorWindow
 
         GUILayout.BeginArea(nodeRect, AstroidObject.name, GUIStyle.none);
       
-        _nodeFieldScrollPos = EditorGUILayout.BeginScrollView(_nodeFieldScrollPos, true, true);
+        _nodeFieldScrollPos = GUILayout.BeginScrollView(_nodeFieldScrollPos, true, true);
         EditorGUILayout.BeginVertical("Window");
+        EditorGUILayout.LabelField("",GUILayout.Width(10000), GUILayout.Height(10000));
         RenderActionWindow();
+        foreach (NodeWindow w in windows)
+        {
+            w.Render(_window);
+        }
         EditorGUILayout.EndVertical();
-        EditorGUILayout.EndScrollView();
+        GUILayout.EndScrollView();
         
         GUILayout.EndArea();
 
         AstroidGUI();
         ActionButtons();
         //AssetDatabase.SaveAssets();
+
+        
     }
 
    
 
-    public void GenerateWindowRects()
+    public void GenerateWindows()
     {
-        Debug.Log(("Generating windows"));
-        Debug.Log("astroid " + _currentAstroid + " " + _aGen.AstroidList[_currentAstroid].name);
-        Debug.Log("num " + _aGen.AstroidList[_currentAstroid].actions.Count);
-        _windowRects = new List<Rect>();
+
+        windows = new List<NodeWindow>();
         for (int i = 0; i < _aGen.AstroidList[_currentAstroid].actions.Count; i++)
         {
-            _windowRects.Add(new Rect(i * 160 + 25, 50, 150, 450));
+            AstroidGenerator.AstroidSettings.Action a = _aGen.AstroidList[_currentAstroid].actions[i];
+            windows.Add(new NodeWindow(new Rect(a.windowEditor.windowPos.x, a.windowEditor.windowPos.y, 150, 450),_aGen.AstroidList[_currentAstroid].actions[i]));
         }
     }
 
@@ -91,13 +98,13 @@ public class PcgWindow : EditorWindow
     private void ActionButtons()
     {
         GUILayout.BeginArea(new Rect(_window.position.width-200, 0, 200, 1000));
-        EditorGUILayout.BeginVertical();
+        EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Add Action"))
         {
             AstroidObject.actions.Add(new AstroidGenerator.AstroidSettings.Action());
             SetCurrentAstroid(_currentAstroid);
         }
-        EditorGUILayout.EndVertical();
+        EditorGUILayout.EndHorizontal();
         GUILayout.EndArea();
     }
 
@@ -122,18 +129,18 @@ public class PcgWindow : EditorWindow
         Rect fromRect;
         Rect toRect;
         BeginWindows();
-        for (int i = 0; i < _windowRects.Count; i++)
+        for (int i = 0; i < windows.Count; i++)
         {
-            _windowRects[i] = GUI.Window(i, _windowRects[i], ActionWindowFunction, "Action " + i);
+            windows[i].WindowRect = GUI.Window(i, windows[i].WindowRect, ActionWindowFunction, "Action " + i);
             if (i == 0)
             {
-                toRect = _windowRects[i];
+                toRect = windows[i].WindowRect;
                 RenderActionBezier(null, toRect, i);
             }
             else
             {
-                fromRect = _windowRects[i - 1];
-                toRect = _windowRects[i];
+                fromRect = windows[i - 1].WindowRect;
+                toRect = windows[i].WindowRect;
                 RenderActionBezier(fromRect, toRect, i);
             }
 
@@ -232,7 +239,7 @@ public class PcgWindow : EditorWindow
         AstroidObject = _window._aGen.AstroidList[_currentAstroid];
         Texture2Ds = new Texture2D[AstroidObject.actions.Count];
         UpdateTextures();
-        GenerateWindowRects();
+        GenerateWindows();  
         
     }
 
@@ -255,6 +262,10 @@ public class PcgWindow : EditorWindow
     public void Refresh()
     {
         UpdateTextures();
+        foreach (NodeWindow n in windows)
+        {
+            n.Save();
+        }
         AssetDatabase.SaveAssets();
      
     }

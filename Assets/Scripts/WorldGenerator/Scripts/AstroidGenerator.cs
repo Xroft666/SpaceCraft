@@ -21,6 +21,15 @@ public class AstroidGenerator : MonoBehaviour {
                 CellularAutomata, PerlinNoise, MapEdgeCleaning, Noise, Invert
             }
 
+            [System.Serializable]
+            public class WindowEditor
+            {
+                public Vector2 windowPos;
+                public List<int> inList = new List<int>();
+                public List<int> outList = new List<int>();
+            }
+
+            public WindowEditor windowEditor;
             public Method method;
             public CellularAutomataStats cellularAutomataStats = new CellularAutomataStats();
             public PerlinNoiseStats perlinNoiseStats = new PerlinNoiseStats();

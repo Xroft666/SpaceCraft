@@ -20,7 +20,7 @@ public static class NodeWindowRenderer {
         if (GUI.Button(new Rect(0, 0, 15, 15), "X"))
         {
             window.AstroidObject.actions.RemoveAt(id);
-            window.GenerateWindowRects();
+            window.GenerateWindows();
             window.Refresh();
         }
 
@@ -50,6 +50,7 @@ public static class NodeWindowRenderer {
         }
 
         GUI.DrawTexture(new Rect(0, 300, 150, 150), window.Texture2Ds[id], ScaleMode.StretchToFill,true);
+
     }
 
     /// <summary>
