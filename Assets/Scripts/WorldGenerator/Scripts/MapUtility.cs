@@ -17,17 +17,37 @@ namespace WorldGen{
 			return map;
 		}
 
-		public static int[,] setMapToID(int[,] original, int ID){
+		public static int[,] setMapToID(int[,] original, int fromID, int toID){
 			int[,] map = original.Clone() as int[,];
 			for (int x = 0; x < map.GetLength(0); x++) {
 				for (int y = 0; y < map.GetLength(1); y++) {
-					if(map[x,y] != 0){
-						map[x,y] = ID;
+					if(map[x,y] == fromID){
+						map[x,y] = toID;
 					}
 				}
 			}
 			return map;
 		}
+
+	    public static int[,] invertMap(int[,] original, int ID1, int ID2)
+	    {
+            int[,] map = original.Clone() as int[,];
+            for (int x = 0; x < map.GetLength(0); x++)
+            {
+                for (int y = 0; y < map.GetLength(1); y++)
+                {
+                    if (map[x, y] == ID1)
+                    {
+                        map[x, y] = ID2;
+                    }
+                    else if (map[x, y] == ID2)
+                    {
+                        map[x, y] = ID1;
+                    }
+                }
+            }
+            return map;
+	    }
 
         public static int[,] ClearMapEdges(int[,] map, int thickness)
         {

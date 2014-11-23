@@ -11,8 +11,8 @@ namespace Voxel2D
 		public static readonly IntVector2 RIGHT = new IntVector2(1, 0);
 		public static readonly IntVector2 ONE = new IntVector2(1, 1);
 
-		public readonly int x;
-		public readonly int y;
+		public int x;
+		public int y;
 
 		public IntVector2(int x, int y)
         {

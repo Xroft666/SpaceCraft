@@ -7,10 +7,10 @@ public class WorldGenerator : MonoBehaviour
 //	public Color tintColor;
 	public Light lightSource;
 
-	void Start () 
+	void Start ()
 	{
-
-		PerlinNoise noise = new PerlinNoise(Random.Range(0, 100));
+        //TODO tmp removed
+	    PerlinNoise noise = null;//new PerlinNoise(Random.Range(0, 100));
 
 		for( int i = -100; i < 100; i++ )
 			for( int j = -100; j < 100; j++ )

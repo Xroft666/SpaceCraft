@@ -6,7 +6,9 @@ namespace WorldGen
     [System.Serializable]
     public class PerlinNoiseStats
     {
-        //TODO: add stuff
+        public int octNum = 5;
+        public float frq = 5;
+        public float amp = 5;
 
     }
 }

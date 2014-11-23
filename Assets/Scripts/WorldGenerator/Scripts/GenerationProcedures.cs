@@ -63,20 +63,24 @@ namespace WorldGen{
             }
             else if (action.method == AstroidGenerator.AstroidSettings.Action.Method.Noise)
             {
-                map = NoiseGenerator.GenerateNoise(seed, map,action.noiseThreshold);
+                map = NoiseGenerator.GenerateNoise(seed, map, action.noiseThreshold);
+            }
+            else if (action.method == AstroidGenerator.AstroidSettings.Action.Method.PerlinNoise)
+            {
+                PerlinGen(ref map, action);
+            }
+            else if (action.method == AstroidGenerator.AstroidSettings.Action.Method.Invert)
+            {
+                map = MapUtility.invertMap(map, action.invertStats.x, action.invertStats.y);
             }
             
             //TODO:implement others
 	    }
 
-	    public void PerlinGen(){
+	    public void PerlinGen(ref int[,] map, AstroidGenerator.AstroidSettings.Action action){
 
-			
-			//RandomSeedGen generator = new RandomSeedGen();
-			//System.Random mySeed = new System.Random(987);
-//			PerlinNoise noise = new PerlinNoise((int)mySeed.NextDouble());
 			PerlinNoise noise = new PerlinNoise(seed);
-
+	        PerlinNoiseStats PS = action.perlinNoiseStats;
 	
 			int[,] mapClone = this.map.Clone () as int[,];
 		
@@ -86,28 +90,21 @@ namespace WorldGen{
 			{
 				for (int y=0; y<mapClone.GetLength(1); y++)
 				{
-					int voxel = (int)noise.FractalNoise2D((float)x, (float)y, 6, 10f, 22f);
+					int voxel = (int)noise.FractalNoise2D((float)x, (float)y, PS.octNum, PS.frq, PS.amp);
 
 					if (voxel <= 0)
 						mapClone[x,y]=0;
 					else
 						mapClone[x,y] = 1;
-
-					//mapClone[x,y] = (int)noise.FractalNoise2D((float)x, (float)y, 6, 10f, 22f);
-				//	Debug.Log("x= "+x+ "y= " + y);
-					//Debug.Log (noise.FractalNoise2D((float)x, (float)y, 6, 10f, 22f));
-					Debug.Log (mapClone[x,y]);
 				}
 			}
 			
-
 			for (int x = 0; x < map.GetLength(0); x++) {
-								for (int y = 0; y < map.GetLength(1); y++) {
-										this.map [x, y] = mapClone [x, y];
-								}
-						}
-			
-			Debug.Log (mapClone.Length);
+				for (int y = 0; y < map.GetLength(1); y++) {
+					this.map [x, y] = mapClone [x, y];
+				}
+			}
+
 			map = mapClone;
 		}
 		

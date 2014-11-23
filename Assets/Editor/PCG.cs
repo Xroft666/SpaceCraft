@@ -73,7 +73,7 @@ public class PcgWindow : EditorWindow
 
    
 
-    void GenerateWindowRects()
+    public void GenerateWindowRects()
     {
         Debug.Log(("Generating windows"));
         Debug.Log("astroid " + _currentAstroid + " " + _aGen.AstroidList[_currentAstroid].name);
@@ -252,7 +252,7 @@ public class PcgWindow : EditorWindow
 
     #endregion
 
-    void Refresh()
+    public void Refresh()
     {
         UpdateTextures();
         AssetDatabase.SaveAssets();

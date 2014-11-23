@@ -18,16 +18,19 @@ public class AstroidGenerator : MonoBehaviour {
 
             public enum Method
             {
-                CellularAutomata, PerlinNoise, MapEdgeCleaning, Noise
+                CellularAutomata, PerlinNoise, MapEdgeCleaning, Noise, Invert
             }
 
             public Method method;
             public CellularAutomataStats cellularAutomataStats = new CellularAutomataStats();
+            public PerlinNoiseStats perlinNoiseStats = new PerlinNoiseStats();
+            public Voxel2D.IntVector2 invertStats;
             public int mapEdgeCleaning;
             public float noiseThreshold;
         }
 
         public string name;
+
         public int size = 10;
         public List<Action> actions = new List<Action>();
     }
@@ -36,11 +39,6 @@ public class AstroidGenerator : MonoBehaviour {
     public List<int> AstroidsToGenerate = new List<int>(); 
     
     public List<AstroidSettings> AstroidList = new List<AstroidSettings>();
-
-    public List<CellularAutomataStats>  cellularAutomataMethods = new List<CellularAutomataStats>();
-
-	public List<int> mapEdgeCleaning = new List<int>(); 
-	
 
 	int[,] map;
 

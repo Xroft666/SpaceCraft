@@ -16,7 +16,14 @@ public static class NodeWindowRenderer {
     public static void PrepareRender(PcgWindow window,int id, AstroidGenerator aGen)
     {
         AstroidGenerator.AstroidSettings.Action action = window.AstroidObject.actions[id];
-       
+
+        if (GUI.Button(new Rect(0, 0, 15, 15), "X"))
+        {
+            window.AstroidObject.actions.RemoveAt(id);
+            window.GenerateWindowRects();
+            window.Refresh();
+        }
+
         EditorGUILayout.LabelField("Method:");
         ActionEnum(window,id);
         EditorGUILayout.LabelField("Name:");
@@ -33,6 +40,13 @@ public static class NodeWindowRenderer {
             case AstroidGenerator.AstroidSettings.Action.Method.MapEdgeCleaning:
                 RenderMapEdgeClear(action, id);
                 break;
+            case AstroidGenerator.AstroidSettings.Action.Method.PerlinNoise:
+                RenderPerlinNoise(action,id);
+                break;
+            case AstroidGenerator.AstroidSettings.Action.Method.Invert:
+                RenderInvert(action, id);
+                break;
+
         }
 
         GUI.DrawTexture(new Rect(0, 300, 150, 150), window.Texture2Ds[id], ScaleMode.StretchToFill,true);
@@ -58,9 +72,29 @@ public static class NodeWindowRenderer {
          CAS.Rounds = EditorGUILayout.IntField("", CAS.Rounds);
     }
 
+    public static void RenderInvert(AstroidGenerator.AstroidSettings.Action action, int id)
+    {
+        EditorGUILayout.LabelField("From:");
+        action.invertStats.x = EditorGUILayout.IntField("", action.invertStats.x);
+        EditorGUILayout.LabelField("To:");
+        action.invertStats.y = EditorGUILayout.IntField("", action.invertStats.y);
+    }
+
+    public static void RenderPerlinNoise(AstroidGenerator.AstroidSettings.Action action, int id)
+    {
+        PerlinNoiseStats PS = action.perlinNoiseStats;
+        
+        EditorGUILayout.LabelField("Octav Number:");
+        PS.octNum = EditorGUILayout.IntField("", PS.octNum);
+        EditorGUILayout.LabelField("Frequenzy:");
+        PS.frq = EditorGUILayout.FloatField("", PS.frq);
+        EditorGUILayout.LabelField("Amplitude:");
+        PS.amp = EditorGUILayout.FloatField("", PS.amp);
+    }
+
     public static void RenderNoise(AstroidGenerator.AstroidSettings.Action action, int id)
     {
-        EditorGUILayout.LabelField("White Threshold:");
+        EditorGUILayout.LabelField("Black Chance:");
         action.noiseThreshold = EditorGUILayout.FloatField("", action.noiseThreshold);
     }
 
