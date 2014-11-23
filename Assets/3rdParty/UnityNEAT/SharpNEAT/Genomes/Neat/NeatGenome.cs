@@ -423,9 +423,52 @@ namespace SharpNeat.Genomes.Neat
             // - which returns correlation items in order.
 
 
+			// Figuring out sexual reproduction for voxels
+//			List<VoxelRawData> currentVoxelGene = new List<VoxelRawData>(_voxelsData);
+//			List<VoxelRawData> parentVoxelGene = new List<VoxelRawData>(parent.VoxelData);
+
+			List<VoxelRawData> offspringGene;
+			List<VoxelRawData> secondParent;
+
+			if( fitSwitch == 1)
+			{
+				offspringGene = new List<VoxelRawData>(_voxelsData);
+				secondParent = parent.VoxelData;
+			}
+			else
+			{
+				offspringGene = new List<VoxelRawData>(parent.VoxelData);
+				secondParent = _voxelsData;
+			}
+
+			// take the second (least fit) parent's genes
+			if( combineDisjointExcessFlag )
+			{
+				for( int i = 0; i < secondParent.Count; i++ )
+				{
+					bool disjoint = true;
+
+					for( int j = 0; j < offspringGene.Count; j++ )
+					{
+						if( secondParent[i]._xPos == offspringGene[j]._xPos &&
+						   secondParent[i]._yPos == offspringGene[j]._yPos )
+						{
+							disjoint = false;
+							break;
+						}
+					}
+
+					if( !disjoint )
+						continue;
+
+					offspringGene.Add(secondParent[i]);
+				}
+					
+			}
+
             return _genomeFactory.CreateGenome(_genomeFactory.NextGenomeId(), birthGeneration,
                                                                neuronGeneList, connectionListBuilder.ConnectionGeneList,
-			                                   _inputNeuronCount, _outputNeuronCount, false, new List<VoxelRawData>(parent.VoxelData));            
+			                                   _inputNeuronCount, _outputNeuronCount, false, offspringGene);            
         }
 
         #endregion
@@ -581,7 +624,7 @@ namespace SharpNeat.Genomes.Neat
 
 		private bool Mutate_AddVoxel()
 		{
-			return false;
+//			return false;
 			// here we want to add a new voxel.
 			// need to define what happens if new generated voxel overlaps already existing one
 			// and if there are already full pack of them
@@ -609,7 +652,7 @@ namespace SharpNeat.Genomes.Neat
 
 		private bool Mutate_RemoveVoxel()
 		{
-			return false;
+//			return false;
 			// here we remove a voxel
 			// this function in the future should guarantee that one voxel should dissapear
 			// instead of skipping
@@ -633,7 +676,7 @@ namespace SharpNeat.Genomes.Neat
 
 		private bool Mutate_ChangeVoxel()
 		{
-			return false;
+//			return false;
 			// here we take one voxel and change it
 			// (or recreate it)
 			// and again, should guarantee that something to be changed, maybe later (instead of skipping)

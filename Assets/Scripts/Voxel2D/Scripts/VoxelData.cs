@@ -116,6 +116,13 @@ namespace Voxel2D{
 
 	public class VoxelRawData
 	{
+		public int _deviceType;
+		public int _materialType;
+
+		public int _xPos;
+		public int _yPos;
+		public int _rotation;
+
 		public VoxelRawData() {}
 		public VoxelRawData(int deviceType,
 		                    int materialType,
@@ -130,12 +137,25 @@ namespace Voxel2D{
 			_rotation = rotation;
 		}
 
-		public int _deviceType;
-		public int _materialType;
-
-		public int _xPos;
-		public int _yPos;
-		public int _rotation;
+//		public static bool operator==( VoxelRawData first, VoxelRawData second )
+//		{
+//			return 	first._xPos == second._xPos &&
+//					first._yPos == second._yPos &&
+//					first._rotation == second._rotation &&
+//					first._deviceType == second._deviceType &&
+//					first._materialType == second._materialType;
+//
+//		}
+//
+//		public static bool operator!=( VoxelRawData first, VoxelRawData second )
+//		{
+//			return	first._xPos != second._xPos ||
+//					first._yPos != second._yPos ||
+//					first._rotation != second._rotation ||
+//					first._deviceType != second._deviceType ||
+//					first._materialType != second._materialType;
+//
+//		}
 	
 //		protected List<PhysicalProperty> propertyList = new List<PhysicalProperty>();
 //		public string deviceName;		

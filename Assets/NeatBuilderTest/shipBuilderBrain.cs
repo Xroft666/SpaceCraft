@@ -134,43 +134,35 @@ public class shipBuilderBrain : UnitController {
 	
 	public void InputThrusters(float gas, float steer, ref List<Engine> left, ref List<Engine> right, ref List<Engine> forward, ref List<Engine> backward )
 	{
-//		if(Input.GetKeyDown(KeyCode.W))
-			foreach(Engine e in forward)
-			if( gas > 0f && !e.enabled )
-				e.OnActivate();
-		
-//		if(Input.GetKeyUp(KeyCode.W))
-			foreach(Engine e in forward)
+		foreach(Engine e in forward)
+			if( gas > 0f /*&& !e.enabled*/ )
+				e.OnActivate(gas);
+
+		foreach(Engine e in forward)
 			if( gas == 0f && e.enabled )
 				e.OnDeactivate();
-		
-//		if(Input.GetKeyDown(KeyCode.S))
-			foreach(Engine e in backward)
-			if( gas > 0f && !e.enabled )
-				e.OnActivate();
-		
-//		if(Input.GetKeyUp(KeyCode.S))
-			foreach(Engine e in backward)
+
+		foreach(Engine e in backward)
+			if( gas > 0f /*&& !e.enabled*/ )
+				e.OnActivate(gas);
+
+		foreach(Engine e in backward)
 			if( gas == 0f && e.enabled )
 				e.OnDeactivate();
-		
-//		if(Input.GetKeyDown(KeyCode.A))
-			foreach(Engine e in right)
-			if( steer > 0f && !e.enabled )
-				e.OnActivate();
-		
-//		if(Input.GetKeyUp(KeyCode.A))
-			foreach(Engine e in right)
+
+		foreach(Engine e in right)
+			if( steer > 0f /*&& !e.enabled*/ )
+				e.OnActivate(steer);
+
+		foreach(Engine e in right)
 			if( gas == 0f && e.enabled )
 				e.OnDeactivate();
-		
-//		if(Input.GetKeyDown(KeyCode.D))
-			foreach(Engine e in left)
-			if( steer < 0f && !e.enabled )
-				e.OnActivate();
-		
-//		if(Input.GetKeyUp(KeyCode.D))
-			foreach(Engine e in left)
+
+		foreach(Engine e in left)
+			if( steer < 0f /*&& !e.enabled*/ )
+				e.OnActivate(steer);
+
+		foreach(Engine e in left)
 			if( gas == 0f && e.enabled )
 				e.OnDeactivate();
 	}

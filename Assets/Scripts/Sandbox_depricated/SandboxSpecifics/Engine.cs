@@ -7,6 +7,9 @@ public class Engine : VoxelData
 	// engine force in newtons
 	public float engineForce = 0;
 
+	[Range(0f, 1f)]
+	private float engineSpeed = 1f;
+
 	public bool enabled = false;
 
 	private Rigidbody2D body;
@@ -28,7 +31,10 @@ public class Engine : VoxelData
 	public override void OnActivate(params object[] input)
 	{
 		enabled = true;
-		particle.emissionRate = 100;
+
+		engineSpeed = Mathf.Clamp01((float) input[0]);
+
+		particle.emissionRate = 100 * engineSpeed;
 	}
 	public override void OnDeactivate(params object[] input)
 	{
@@ -45,7 +51,7 @@ public class Engine : VoxelData
 		if(enabled){
 			Vector3 v = Quaternion.Euler(0,0,-rotation)*new Vector3(0,1,0);
 
-			Vector3 direction = voxel.transform.TransformDirection(v)*engineForce;
+			Vector3 direction = voxel.transform.TransformDirection(v) * engineForce * engineSpeed;
 
 			Vector3 pos = new Vector3(position.x,position.y,0);
 
