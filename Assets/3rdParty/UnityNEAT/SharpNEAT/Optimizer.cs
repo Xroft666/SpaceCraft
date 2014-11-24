@@ -11,8 +11,8 @@ using System.IO;
 
 public class Optimizer : MonoBehaviour {
 
-    const int NUM_INPUTS = 1;
-    const int NUM_OUTPUTS = 4;
+    const int NUM_INPUTS = 6;
+    const int NUM_OUTPUTS = 2;
 
     public static int VoxelSize;
 

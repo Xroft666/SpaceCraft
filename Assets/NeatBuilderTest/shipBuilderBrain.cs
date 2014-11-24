@@ -19,6 +19,8 @@ public class shipBuilderBrain : UnitController {
 
 	bool isRunning = false;
 
+	int WallHits; 
+
 	enum BlockType
 	{
 		engine
@@ -27,11 +29,11 @@ public class shipBuilderBrain : UnitController {
 	// Use this for initialization
 	void Awake () {
 
-		GameObject g = new GameObject("Ship");
-		g.layer = 8;
-		g.transform.position = Vector3.zero;//new Vector3(Random.Range(-10,10),Random.Range(-10,10),0);
+//		GameObject g = new GameObject("Ship");
+		gameObject.layer = 8;
+		gameObject.transform.position = Vector3.zero;//new Vector3(Random.Range(-10,10),Random.Range(-10,10),0);
 	
-		voxelSystem = g.AddComponent<VoxelSystem>();
+		voxelSystem = gameObject.AddComponent<VoxelSystem>();
 //		voxelSystem.rigidbody2D.isKinematic = true;
 		voxelSystem.SetGridSize(shipSize);
 	}
@@ -88,6 +90,8 @@ public class shipBuilderBrain : UnitController {
 			inputArr[2] = leftSensor;
 			inputArr[3] = rightFrontSensor;
 			inputArr[4] = rightSensor;
+
+			inputArr[5] = (voxelSystem.transform.position - GotoTarget.Position).magnitude;
 			
 			box.Activate();
 			
@@ -278,7 +282,10 @@ public class shipBuilderBrain : UnitController {
 		*/
 
 		// fitness for flying the maximum distance
-		return voxelSystem.transform.position.magnitude;
+//		return voxelSystem.transform.position.magnitude;
+
+
+		return 1f / (voxelSystem.transform.position - GotoTarget.Position).magnitude - WallHits * 0.01f;
 	}
 	
 //	bool NextStep(){
@@ -346,4 +353,10 @@ public class shipBuilderBrain : UnitController {
 			NextStep();
 		}
 	}*/
+
+
+	void OnCollisionEnter(Collision collision)
+	{
+		WallHits++; 
+	}
 }

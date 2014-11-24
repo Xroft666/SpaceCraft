@@ -589,11 +589,11 @@ namespace SharpNeat.Genomes.Neat
 
 					#region Voxels mutations
 
-					case 5: success = Mutate_AddVoxel();
+				case 5: success = false;//Mutate_AddVoxel();
 						break;
-					case 6: success = Mutate_RemoveVoxel();
+				case 6: success = false;//Mutate_RemoveVoxel();
 						break;
-					case 7: success = Mutate_ChangeVoxel();
+				case 7: success = false;//Mutate_ChangeVoxel();
 						break;
 
 					#endregion
