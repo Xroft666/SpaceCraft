@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.Mime;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using WorldGen;
@@ -284,6 +281,7 @@ public class PcgWindow : EditorWindow
         {
             n.Save();
         }
+        Resources.UnloadUnusedAssets();
     }
 
     void UpdateTextures()
