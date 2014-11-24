@@ -88,7 +88,9 @@ public class PcgWindow : EditorWindow
         for (int i = 0; i < _aGen.AstroidList[_currentAstroid].actions.Count; i++)
         {
             AstroidGenerator.AstroidSettings.Action a = _aGen.AstroidList[_currentAstroid].actions[i];
-            windows.Add(new NodeWindow(new Rect(a.windowEditor.windowPos.x, a.windowEditor.windowPos.y, 150, 450),_aGen.AstroidList[_currentAstroid].actions[i]));
+            Rect r = new Rect(a.windowEditor.windowPos.x, a.windowEditor.windowPos.y, 150, 450);
+            NodeWindow n = new NodeWindow(r,_aGen.AstroidList[_currentAstroid].actions[i]);
+            windows.Add(n);
         }
     }
 

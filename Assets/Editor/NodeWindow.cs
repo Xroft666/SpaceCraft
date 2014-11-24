@@ -89,11 +89,11 @@ public class NodeWindow
         {
             case AstroidGenerator.AstroidSettings.Action.Method.CellularAutomata:
                 InHandles.Add(new Handle(this));
-                InHandles.Add(new Handle(this));
+                //InHandles.Add(new Handle(this));
                 OutHandles.Add(new Handle(this));
                 break;
             case AstroidGenerator.AstroidSettings.Action.Method.PerlinNoise:
-                InHandles.Add(new Handle(this));
+                //InHandles.Add(new Handle(this));
                 OutHandles.Add(new Handle(this));
                 break;
             case AstroidGenerator.AstroidSettings.Action.Method.Invert:

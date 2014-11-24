@@ -29,7 +29,7 @@ public class AstroidGenerator : MonoBehaviour {
                 public List<int> outList = new List<int>();
             }
 
-            public WindowEditor windowEditor;
+            public WindowEditor windowEditor = new WindowEditor();
             public Method method;
             public CellularAutomataStats cellularAutomataStats = new CellularAutomataStats();
             public PerlinNoiseStats perlinNoiseStats = new PerlinNoiseStats();
