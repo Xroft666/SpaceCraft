@@ -5,6 +5,7 @@ using System.Threading;
 using Voxel2D;
 using WorldGen;
 
+[System.Serializable]
 public class AstroidGenerator : MonoBehaviour {
 
 [System.Serializable]
@@ -16,6 +17,7 @@ public class AstroidGenerator : MonoBehaviour {
             public string name;
             public int index;
 
+            [System.Serializable]
             public enum Method
             {
                 CellularAutomata, PerlinNoise, MapEdgeCleaning, Noise, Invert

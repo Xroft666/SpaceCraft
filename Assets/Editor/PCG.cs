@@ -11,6 +11,7 @@ public class PcgWindow : EditorWindow
     private static PcgWindow _window;
 
     private AstroidGenerator _aGen;
+    private GameObject prefab;
 
     public Texture2D[] Texture2Ds;
 
@@ -28,6 +29,9 @@ public class PcgWindow : EditorWindow
 
     private List<NodeWindow> windows;
 
+    private readonly string filePath = "Assets/PCGData/";
+    private readonly string objectName = "Generator.prefab";
+
     public Handle SelectedHandle;
     
 
@@ -40,16 +44,18 @@ public class PcgWindow : EditorWindow
         _window.Init();
     }
 
-    void Init()
+    void Init(int i=0)
     {
         //_texture2 = (Texture2D) AssetDatabase.LoadAssetAtPath("Assets/PCGData/t.jpg", typeof (Texture2D));
-        _aGen = (AstroidGenerator) AssetDatabase.LoadAssetAtPath("Assets/PCGData/Generator.prefab", typeof (AstroidGenerator));
+        GameObject go = (GameObject) AssetDatabase.LoadAssetAtPath(filePath+"Generator.prefab", typeof (GameObject));
+        prefab = (GameObject) GameObject.Instantiate(go);
+        _aGen = prefab.GetComponent<AstroidGenerator>();
         if (_aGen == null)
         {
             Debug.LogError("Failed loading generator Data");
             return;
         }
-        SetCurrentAstroid(0);
+        SetCurrentAstroid(i);
         
     }
 
@@ -170,6 +176,10 @@ public class PcgWindow : EditorWindow
     {
         GUILayout.BeginArea(new Rect(0, 0, 200, 500));
         EditorGUILayout.BeginVertical("Box");
+        if (GUILayout.Button("Save"))
+        {
+            Save();
+        }
         if (GUILayout.Button("Refresh"))
         {
             Refresh();
@@ -261,6 +271,12 @@ public class PcgWindow : EditorWindow
 
     #endregion
 
+    private void Save()
+    {
+        AssetDatabase.DeleteAsset(filePath + objectName);
+        PrefabUtility.CreatePrefab(filePath + objectName, prefab);
+    }
+
     public void Refresh()
     {
         UpdateTextures();
@@ -268,8 +284,6 @@ public class PcgWindow : EditorWindow
         {
             n.Save();
         }
-        AssetDatabase.SaveAssets();
-     
     }
 
     void UpdateTextures()

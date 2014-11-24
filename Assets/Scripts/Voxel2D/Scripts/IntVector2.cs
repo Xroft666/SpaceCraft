@@ -3,6 +3,7 @@ using System.Collections;
 
 namespace Voxel2D
 {
+    [System.Serializable]
 	public struct IntVector2
     {
 
