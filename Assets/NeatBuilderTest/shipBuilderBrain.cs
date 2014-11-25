@@ -19,7 +19,10 @@ public class shipBuilderBrain : UnitController {
 
 	bool isRunning = false;
 
-	int WallHits; 
+	int WallHits = 0; 
+	float closestDistance = Mathf.Infinity;
+
+	List<Engine> engines = new List<Engine>();
 
 	enum BlockType
 	{
@@ -67,19 +70,19 @@ public class shipBuilderBrain : UnitController {
 			if( hit.collider != null )
 				frontSensor = 1f - hit.distance / SensorRange;
 
-			hit = Physics2D.Raycast(transform.position/* + transform.up * 1.1f*/, transform.TransformDirection(new Vector3(0.5f, 1f, 0f).normalized), SensorRange, mask);
+			hit = Physics2D.Raycast(transform.position, transform.TransformDirection(new Vector3(0.5f, 1f, 0f).normalized), SensorRange, mask);
 			if( hit.collider != null )
 				rightFrontSensor = 1f - hit.distance / SensorRange;
 
-			hit = Physics2D.Raycast(transform.position/* + transform.up * 1.1f*/, transform.TransformDirection(new Vector3(1f, 0f, 0f).normalized), SensorRange, mask);
+			hit = Physics2D.Raycast(transform.position, transform.TransformDirection(new Vector3(1f, 0f, 0f).normalized), SensorRange, mask);
 			if( hit.collider != null )
 				rightSensor = 1f - hit.distance / SensorRange;
 
-			hit = Physics2D.Raycast(transform.position/* + transform.up * 1.1f*/, transform.TransformDirection(new Vector3(-0.5f, 1f, 0f).normalized), SensorRange, mask);
+			hit = Physics2D.Raycast(transform.position, transform.TransformDirection(new Vector3(-0.5f, 1f, 0f).normalized), SensorRange, mask);
 			if( hit.collider != null )
 				leftFrontSensor = 1f - hit.distance / SensorRange;
 
-			hit = Physics2D.Raycast(transform.position/* + transform.up * 1.1f*/, transform.TransformDirection(new Vector3(-1f, 0f, 0f).normalized), SensorRange, mask);
+			hit = Physics2D.Raycast(transform.position, transform.TransformDirection(new Vector3(-1f, 0f, 0f).normalized), SensorRange, mask);
 			if( hit.collider != null )
 				leftSensor = 1f - hit.distance / SensorRange;
 
@@ -96,18 +99,37 @@ public class shipBuilderBrain : UnitController {
 			box.Activate();
 			
 			ISignalArray outputArr = box.OutputSignalArray;
+
+			engines.Clear();
+
+			foreach(VoxelData e in voxelSystem.GetVoxelData())
+				if(e is Engine)
+					engines.Add( (Engine)e );
+
+			for( int i = 0; i < engines.Count; i++ )
+			{
+				float pullForce = (float) outputArr[i];
+//				if( pullForce > 0.0f)
+				engines[i].OnActivate( pullForce );
+//				else
+//					engines[i].OnDeactivate();
+			}
 			
-			float steer = (float)outputArr[0] * 2 - 1;
-			float gas = (float)outputArr[1] * 2 - 1;
+//			float steer = (float)outputArr[0] * 2f - 1f;
+//			float gas = (float)outputArr[1] * 2f - 1f;
+
+//			List<Engine> leftEngines = new List<Engine>();
+//			List<Engine> rightEngines = new List<Engine>();
+//			List<Engine> forwardEngines = new List<Engine>();
+//			List<Engine> backwardEngines = new List<Engine>();
+			
+//			CollectThrusters(ref leftEngines, ref rightEngines, ref forwardEngines, ref backwardEngines);
+//			InputThrusters(gas, steer, ref leftEngines, ref rightEngines, ref forwardEngines, ref backwardEngines);
 
 
-			List<Engine> leftEngines = new List<Engine>();
-			List<Engine> rightEngines = new List<Engine>();
-			List<Engine> forwardEngines = new List<Engine>();
-			List<Engine> backwardEngines = new List<Engine>();
-			
-			CollectThrusters(ref leftEngines, ref rightEngines, ref forwardEngines, ref backwardEngines);
-			InputThrusters(gas, steer, ref leftEngines, ref rightEngines, ref forwardEngines, ref backwardEngines);
+			float currentDist = (voxelSystem.transform.position - GotoTarget.Position).magnitude;
+			if( currentDist < closestDistance )
+				closestDistance = currentDist;
 		}
 	}
 
@@ -139,7 +161,7 @@ public class shipBuilderBrain : UnitController {
 	public void InputThrusters(float gas, float steer, ref List<Engine> left, ref List<Engine> right, ref List<Engine> forward, ref List<Engine> backward )
 	{
 		foreach(Engine e in forward)
-			if( gas > 0f /*&& !e.enabled*/ )
+			if( gas > 0f )
 				e.OnActivate(gas);
 
 		foreach(Engine e in forward)
@@ -147,7 +169,7 @@ public class shipBuilderBrain : UnitController {
 				e.OnDeactivate();
 
 		foreach(Engine e in backward)
-			if( gas > 0f /*&& !e.enabled*/ )
+			if( gas > 0f )
 				e.OnActivate(gas);
 
 		foreach(Engine e in backward)
@@ -155,7 +177,7 @@ public class shipBuilderBrain : UnitController {
 				e.OnDeactivate();
 
 		foreach(Engine e in right)
-			if( steer > 0f /*&& !e.enabled*/ )
+			if( steer > 0f )
 				e.OnActivate(steer);
 
 		foreach(Engine e in right)
@@ -163,7 +185,7 @@ public class shipBuilderBrain : UnitController {
 				e.OnDeactivate();
 
 		foreach(Engine e in left)
-			if( steer < 0f /*&& !e.enabled*/ )
+			if( steer < 0f )
 				e.OnActivate(steer);
 
 		foreach(Engine e in left)
@@ -285,7 +307,7 @@ public class shipBuilderBrain : UnitController {
 //		return voxelSystem.transform.position.magnitude;
 
 
-		return 1f / (voxelSystem.transform.position - GotoTarget.Position).magnitude - WallHits * 0.01f;
+		return 1f / closestDistance - WallHits * 0.01f;
 	}
 	
 //	bool NextStep(){
