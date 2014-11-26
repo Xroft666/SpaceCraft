@@ -13,7 +13,9 @@ namespace Voxel2D{
 		Voxel2D.VoxelSystem voxel;
 		
 		private List<GameObject> fragmentList = new List<GameObject>();
-		
+
+	    public static bool GenerateFragments = true;
+
 		// Use this for initialization
 		void Awake () {
 			voxel = GetComponent<Voxel2D.VoxelSystem>();
@@ -64,7 +66,9 @@ namespace Voxel2D{
 					}
 					//wait (hopefully) for collider to be generated //TODO: base this on event
 					yield return new WaitForEndOfFrame();
-					CreateFragments(voxelList);
+				    
+				    CreateFragments(voxelList);
+				    
 				}
 			}
 		}
@@ -109,7 +113,11 @@ namespace Voxel2D{
 				for(int i=0;i<fragmentList.Count;i++){
 					//foreach(VoxelData vox in fragmentList){
 					if(fragmentList[i] != null){
-						GameObject fragment = VoxelUtility.CreateFragment(fragmentList[i],PosLocalToGlobal(fragmentList[i].GetPosition()), voxel);
+					    if (GenerateFragments)
+					    {
+					        GameObject fragment = VoxelUtility.CreateFragment(fragmentList[i],
+					            PosLocalToGlobal(fragmentList[i].GetPosition()), voxel);
+					    }
 						voxel.RemoveVoxel(fragmentList[i].GetPosition().x,fragmentList[i].GetPosition().y);
 						
 						//event call

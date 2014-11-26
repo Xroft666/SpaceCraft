@@ -8,6 +8,7 @@ using SharpNeat.Genomes.Neat;
 using System;
 using System.Xml;
 using System.IO;
+using Voxel2D;
 
 public class Optimizer : MonoBehaviour {
 
@@ -38,8 +39,11 @@ public class Optimizer : MonoBehaviour {
     private double Fitness;
 
 	// Use this for initialization
-	void Start () {
-	
+	void Start ()
+	{
+
+	    VoxelImpacter.GenerateFragments = false;
+
         Utility.DebugLog = true;
         experiment = new SimpleExperiment();
         XmlDocument xmlConfig = new XmlDocument();

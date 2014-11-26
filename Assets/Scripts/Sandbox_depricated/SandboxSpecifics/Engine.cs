@@ -42,20 +42,28 @@ public class Engine : VoxelData
 		particle.emissionRate = 0;
 	}
 
-	public override void OnDelete(){
-		Object.Destroy(particle.gameObject);
+	public override void OnDelete()
+	{
+	    if (particle != null) Object.Destroy(particle.gameObject);
 	}
 
-	public override void OnUpdate()
+    public override void OnUpdate()
 	{
 		if(enabled){
-			Vector3 v = Quaternion.Euler(0,0,-rotation)*new Vector3(0,1,0);
+            if (voxel != null)
+		    {
+		        Vector3 v = Quaternion.Euler(0, 0, -rotation)*new Vector3(0, 1, 0);
 
-			Vector3 direction = voxel.transform.TransformDirection(v) * engineForce * engineSpeed;
+		        Vector3 direction = voxel.transform.TransformDirection(v)*engineForce*engineSpeed;
 
-			Vector3 pos = new Vector3(position.x,position.y,0);
+		        Vector3 pos = new Vector3(position.x, position.y, 0);
 
-			body.AddForceAtPosition(direction,voxel.transform.TransformPoint(pos));
+		        body.AddForceAtPosition(direction, voxel.transform.TransformPoint(pos));
+		    }
+            else
+            {
+                OnDelete();
+            }
 		}
 	}
 
