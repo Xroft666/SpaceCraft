@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Text;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using SharpNeat.Phenomes;
@@ -22,6 +24,9 @@ public class shipBuilderBrain : UnitController {
 	int WallHits = 0; 
 	float closestDistance = Mathf.Infinity;
 
+    private float totalRotation = 0;
+    private float prevRot;
+
 	List<Engine> engines = new List<Engine>();
 
 	enum BlockType
@@ -37,7 +42,8 @@ public class shipBuilderBrain : UnitController {
 		gameObject.transform.position = Vector3.zero;//new Vector3(Random.Range(-10,10),Random.Range(-10,10),0);
 	
 		voxelSystem = gameObject.AddComponent<VoxelSystem>();
-//		voxelSystem.rigidbody2D.isKinematic = true;
+		voxelSystem.rigidbody2D.drag = 1;
+	    voxelSystem.rigidbody2D.angularDrag = 1;
 		voxelSystem.SetGridSize(shipSize);
 	}
 	
@@ -88,14 +94,18 @@ public class shipBuilderBrain : UnitController {
 
 
 			ISignalArray inputArr = box.InputSignalArray;
-			inputArr[0] = frontSensor;
+			FillInputs(ref inputArr);
+            /*
+            inputArr[0] = frontSensor;
 			inputArr[1] = leftFrontSensor;
 			inputArr[2] = leftSensor;
 			inputArr[3] = rightFrontSensor;
 			inputArr[4] = rightSensor;
 
+		    
+
 			inputArr[5] = (voxelSystem.transform.position - GotoTarget.Position).magnitude;
-			
+			*/
 			box.Activate();
 			
 			ISignalArray outputArr = box.OutputSignalArray;
@@ -130,8 +140,40 @@ public class shipBuilderBrain : UnitController {
 			float currentDist = (voxelSystem.transform.position - GotoTarget.Position).magnitude;
 			if( currentDist < closestDistance )
 				closestDistance = currentDist;
+
+
+		    totalRotation += Mathf.Abs(voxelSystem.transform.rotation.eulerAngles.z - prevRot);
+		    prevRot = voxelSystem.transform.rotation.eulerAngles.z;
 		}
 	}
+
+    public void FillInputs(ref ISignalArray inputArr)
+    {
+        Vector3 targetDir = voxelSystem.transform.position - GotoTarget.Position;
+        Vector3 shipDir = voxelSystem.transform.up;
+
+        float angle = Vector3.Angle(shipDir, targetDir);
+        Vector3 cross = Vector3.Cross(shipDir, targetDir);
+        if (cross.y < 0) angle = -angle;
+
+        angle = angle / 360;
+
+        inputArr[0] = angle;
+
+        inputArr[1] = Mathf.Clamp((voxelSystem.transform.position - GotoTarget.Position).magnitude/100,0,1);
+
+        Vector3 localDeltaPos = voxelSystem.transform.InverseTransformPoint(GotoTarget.Position);
+        localDeltaPos.x = Mathf.Clamp(localDeltaPos.x/100, 0, 1);
+        localDeltaPos.y = Mathf.Clamp(localDeltaPos.y / 100, 0, 1);
+
+        inputArr[2] = localDeltaPos.x;
+        inputArr[3] = localDeltaPos.y;
+
+        inputArr[4] = Mathf.Clamp(voxelSystem.rigidbody2D.velocity.magnitude, 0, 25);
+        inputArr[5] = Mathf.Clamp(voxelSystem.rigidbody2D.angularVelocity, 0, 10);
+
+        inputArr[6] = Mathf.Clamp((voxelSystem.transform.rotation.z - prevRot), -1, 1);
+    }
 
 	public void CollectThrusters(ref List<Engine> left, ref List<Engine> right, ref List<Engine> forward, ref List<Engine> backward)
 	{
@@ -158,6 +200,7 @@ public class shipBuilderBrain : UnitController {
 		}
 	}
 	
+    
 	public void InputThrusters(float gas, float steer, ref List<Engine> left, ref List<Engine> right, ref List<Engine> forward, ref List<Engine> backward )
 	{
 		foreach(Engine e in forward)
@@ -204,6 +247,8 @@ public class shipBuilderBrain : UnitController {
 		this.box = box;
 //		bool running = true;
 		isRunning = true;
+
+	    totalRotation = 0;
 
 		GenerateVoxelSystem((List<VoxelRawData>) blackBoxExtraData[0]);
 
@@ -307,7 +352,17 @@ public class shipBuilderBrain : UnitController {
 //		return voxelSystem.transform.position.magnitude;
 
 
-		return 1f / closestDistance - WallHits * 0.01f;
+	    float fitness = 100;
+	    fitness -= (voxelSystem.transform.position-GotoTarget.Position).magnitude;
+
+	    fitness -= WallHits*0.01f;
+	    fitness -= Mathf.Clamp(voxelSystem.rigidbody2D.velocity.magnitude/100, 0, 1);
+        fitness -= Mathf.Clamp(voxelSystem.rigidbody2D.angularVelocity/10, 0, 1);
+        fitness -= Mathf.Clamp(totalRotation/100,0,1);
+
+	    fitness = Mathf.Clamp(fitness, 0,999999);
+
+	    return fitness;
 	}
 	
 //	bool NextStep(){
