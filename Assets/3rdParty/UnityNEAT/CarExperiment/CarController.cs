@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using SharpNeat.EvolutionAlgorithms;
+using SharpNeat.Genomes.Neat;
+using UnityEngine;
 using System.Collections;
 using SharpNeat.Phenomes;
 
@@ -155,6 +157,11 @@ public class CarController : UnitController {
             return fit;
         }
         return 0;
+    }
+
+    public override void SetOptimizer(Optimizer o)
+    {
+        return;
     }
 
     void OnCollisionEnter(Collision collision)

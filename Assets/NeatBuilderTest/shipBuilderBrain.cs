@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Text;
+using SharpNeat.EvolutionAlgorithms;
+using SharpNeat.Genomes.Neat;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -33,6 +35,8 @@ public class ShipBuilderBrain : UnitController {
 
 	List<Engine> engines = new List<Engine>();
     public float _targetScore;
+
+    private Optimizer optimizer;
 
     enum BlockType
 	{
@@ -148,6 +152,11 @@ public class ShipBuilderBrain : UnitController {
 		    _prevRot = voxelSystem.transform.rotation.eulerAngles.z;
 		}
 	}
+
+    public override void SetOptimizer(Optimizer o)
+    {
+        this.optimizer = o;
+    }
 
     public void FillInputs(ref ISignalArray inputArr)
     {
@@ -377,7 +386,7 @@ public class ShipBuilderBrain : UnitController {
 
 	    fitness = Mathf.Clamp(fitness, 0,999999);
         */
-	    return FitnessFunction.GetFitness(this);
+	    return optimizer.objective.GetFitness(this);
 	}
 	
 //	bool NextStep(){

@@ -2,9 +2,9 @@
 using System.Collections;
 using Voxel2D;
 
-public static class FitnessFunction {
+public static class FitnessFunctions {
 
-    public static float GetFitness(ShipBuilderBrain S)
+    public static float GetFitness0(ShipBuilderBrain S)
     {
         VoxelSystem VS = S.voxelSystem;
         Vector3 shipPos = VS.transform.TransformPoint(VS.GetCenter());

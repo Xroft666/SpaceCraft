@@ -24,7 +24,7 @@ public class Optimizer : MonoBehaviour {
     string popFileSavePath, champFileSavePath;
 
     SimpleExperiment experiment;
-    static NeatEvolutionAlgorithm<NeatGenome> _ea;
+    public static NeatEvolutionAlgorithm<NeatGenome> _ea { get; private set; }
 
     public GameObject Unit;
 
@@ -38,10 +38,13 @@ public class Optimizer : MonoBehaviour {
     private uint Generation;
     private double Fitness;
 
+    public ObjectiveHandler objective;
+
 	// Use this for initialization
 	void Start ()
 	{
 
+        objective = new ObjectiveHandler();
 	    VoxelImpacter.GenerateFragments = false;
 
         Utility.DebugLog = true;
@@ -170,7 +173,7 @@ public class Optimizer : MonoBehaviour {
 
 		// some how here, i need to get the original genome which contains all the data on voxels
 
-
+        controller.SetOptimizer(this);
 		controller.Activate(box, blackBoxExtraData);
     }
 
