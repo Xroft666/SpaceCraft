@@ -6,11 +6,11 @@ using System.Collections.Generic;
 using SharpNeat.Phenomes;
 using Voxel2D;
 
-public class ShipBuilderBrain : UnitController {
+public class shipBuilderBrain : UnitController {
 
 	Dictionary<Voxel2D.IntVector2,int> takenPosition = new Dictionary<Voxel2D.IntVector2, int>();
 
-    public VoxelSystem voxelSystem{get; private set; }
+	VoxelSystem voxelSystem;
 	IBlackBox box;
 
 	int[] blockCounts;
@@ -21,10 +21,10 @@ public class ShipBuilderBrain : UnitController {
 
 	bool isRunning = false;
 
-    public int _wallHits = 0; 
+	int _wallHits = 0; 
 	float _closestDistance = Mathf.Infinity;
 
-    public float _totalRotation = 0;
+    private float _totalRotation = 0;
     private float _prevRot;
 
 
@@ -32,9 +32,8 @@ public class ShipBuilderBrain : UnitController {
     private string path = Application.dataPath + "/Data/SavedVoxelSystems/";
 
 	List<Engine> engines = new List<Engine>();
-    public float _targetScore;
 
-    enum BlockType
+	enum BlockType
 	{
 		engine
 	}
@@ -124,7 +123,10 @@ public class ShipBuilderBrain : UnitController {
 			for( int i = 0; i < engines.Count; i++ )
 			{
 				float pullForce = (float) outputArr[i];
+//				if( pullForce > 0.0f)
 				engines[i].OnActivate( pullForce );
+//				else
+//					engines[i].OnDeactivate();
 			}
 			
 //			float steer = (float)outputArr[0] * 2f - 1f;
@@ -151,9 +153,7 @@ public class ShipBuilderBrain : UnitController {
 
     public void FillInputs(ref ISignalArray inputArr)
     {
-        Vector3 shipPos = voxelSystem.transform.TransformPoint(voxelSystem.GetCenter());
-
-        Vector3 targetDir = shipPos - GotoTarget.Position;
+        Vector3 targetDir = voxelSystem.transform.position - GotoTarget.Position;
         Vector3 shipDir = voxelSystem.transform.up;
 
         float angle = Vector3.Angle(shipDir, targetDir);
@@ -164,7 +164,7 @@ public class ShipBuilderBrain : UnitController {
 
         inputArr[0] = angle;
 
-        inputArr[1] = Mathf.Clamp((shipPos - GotoTarget.Position).magnitude / 100, 0, 1);
+        inputArr[1] = Mathf.Clamp((voxelSystem.transform.position - GotoTarget.Position).magnitude/100,0,1);
 
         Vector3 localDeltaPos = voxelSystem.transform.InverseTransformPoint(GotoTarget.Position);
         localDeltaPos.x = Mathf.Clamp(localDeltaPos.x/100, 0, 1);
@@ -252,7 +252,6 @@ public class ShipBuilderBrain : UnitController {
 //		bool running = true;
 		isRunning = true;
 
-	    _targetScore = 0;
 	    _totalRotation = 0;
 
 		//GenerateVoxelSystem((List<VoxelRawData>) blackBoxExtraData[0]);
@@ -364,20 +363,19 @@ public class ShipBuilderBrain : UnitController {
 
 		// fitness for flying the maximum distance
 //		return voxelSystem.transform.position.magnitude;
-        /*
-        Vector3 shipPos = voxelSystem.transform.TransformPoint(voxelSystem.GetCenter());
+
 
 	    float fitness = 100;
-	    fitness -= (shipPos-GotoTarget.Position).magnitude;
+	    fitness -= (voxelSystem.transform.position-GotoTarget.Position).magnitude;
 
 	    fitness -= _wallHits*0.01f;
-	    fitness -= Mathf.Clamp(voxelSystem.rigidbody2D.velocity.magnitude/100, 0, 10);
-        fitness -= Mathf.Clamp(voxelSystem.rigidbody2D.angularVelocity/10, 0, 10);
-        fitness -= Mathf.Clamp(_totalRotation/100,0,25);
+	    fitness -= Mathf.Clamp(voxelSystem.rigidbody2D.velocity.magnitude/100, 0, 1);
+        fitness -= Mathf.Clamp(voxelSystem.rigidbody2D.angularVelocity/10, 0, 1);
+        fitness -= Mathf.Clamp(_totalRotation/100,0,1);
 
 	    fitness = Mathf.Clamp(fitness, 0,999999);
-        */
-	    return FitnessFunction.GetFitness(this);
+
+	    return fitness;
 	}
 	
 //	bool NextStep(){
@@ -447,16 +445,8 @@ public class ShipBuilderBrain : UnitController {
 	}*/
 
 
-	void OnCollisionEnter2D(Collision2D collision)
+	void OnCollisionEnter(Collision collision)
 	{
-        _wallHits++; 
+		_wallHits++; 
 	}
-
-    void OnTriggerStay2D(Collider2D col)
-    {
-        if (col.tag == "Target")
-        {
-            _targetScore += 1f;
-        }
-    }
 }

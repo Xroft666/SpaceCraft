@@ -32,9 +32,16 @@ public class Engine : VoxelData
 	{
 		enabled = true;
 
-		engineSpeed = Mathf.Clamp01((float) input[0]);
+	    if (input.Length >0)
+	    {
+	        engineSpeed = Mathf.Clamp01((float) input[0]);
+	    }
+	    else
+	    {
+	        engineSpeed = 1;
+	    }
 
-		particle.emissionRate = 100 * engineSpeed;
+	    particle.emissionRate = 100 * engineSpeed;
 	}
 	public override void OnDeactivate(params object[] input)
 	{

@@ -16,7 +16,7 @@ public class Serializer
                 using (Stream stream = File.OpenRead(filename))
                 {
                     BinaryFormatter formatter = new BinaryFormatter();
-                    Debug.Log("Succesfully loaded from " + filename);
+                    //Debug.Log("Succesfully loaded from " + filename);
                     return formatter.Deserialize(stream) as T;
                 }
             }
