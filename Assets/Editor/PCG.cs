@@ -44,8 +44,9 @@ public class PcgWindow : EditorWindow
     void Init(int i=0)
     {
         //_texture2 = (Texture2D) AssetDatabase.LoadAssetAtPath("Assets/PCGData/t.jpg", typeof (Texture2D));
-        GameObject go = (GameObject) AssetDatabase.LoadAssetAtPath(filePath+"Generator.prefab", typeof (GameObject));
-        prefab = (GameObject) GameObject.Instantiate(go);
+		prefab = (GameObject) AssetDatabase.LoadAssetAtPath(filePath+"Generator.prefab", typeof (GameObject));
+
+ //       prefab = (GameObject) GameObject.Instantiate(go);
         _aGen = prefab.GetComponent<AstroidGenerator>();
         if (_aGen == null)
         {
@@ -177,7 +178,11 @@ public class PcgWindow : EditorWindow
         {
             Save();
         }
-        if (GUILayout.Button("Refresh"))
+		if (GUILayout.Button("Instantiate Generator"))
+		{
+			Instantiate( prefab );
+		}
+		if (GUILayout.Button("Refresh"))
         {
             Refresh();
         }
@@ -223,10 +228,11 @@ public class PcgWindow : EditorWindow
         AstroidObject.size = EditorGUILayout.IntField(AstroidObject.size);
         //GUILayout.EndArea();
         
-       
-    }
 
-    /// <summary>
+		
+	}
+	
+	/// <summary>
     /// Selection of astroid
     /// </summary>
     private void AstroidList()
