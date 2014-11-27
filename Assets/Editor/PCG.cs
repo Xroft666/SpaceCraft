@@ -183,6 +183,12 @@ public class PcgWindow : EditorWindow
         }
         EditorGUILayout.LabelField("Seed:");
         seed = EditorGUILayout.IntField("", seed);
+
+		if (GUILayout.Button("Randomize"))
+		{
+			seed = Random.Range(0, int.MaxValue);
+			Refresh();
+		}
         
         AstroidList();
         AstroidDataManipulators();
