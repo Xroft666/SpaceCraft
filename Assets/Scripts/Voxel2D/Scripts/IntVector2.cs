@@ -31,6 +31,16 @@ namespace Voxel2D
 			return new IntVector2(left.x - right.x, left.y - right.y);
 		}
 
+		public static IntVector2 operator *(IntVector2 left, IntVector2 right)
+		{
+			return new IntVector2(left.x * right.x, left.y * right.y);
+		}
+
+		public static IntVector2 operator /(IntVector2 left, IntVector2 right)
+		{
+			return new IntVector2(left.x / right.x, left.y / right.y);
+		}
+
 
         public static implicit operator Vector2(IntVector2 value)
         {

@@ -11,6 +11,7 @@ public class PcgWindow : EditorWindow
     private GameObject prefab;
 
     public Texture2D[] Texture2Ds;
+	public List<int[,]> Maps = new List<int[,]>();
 
     public AstroidGenerator.AstroidSettings AstroidObject;
 
@@ -22,7 +23,7 @@ public class PcgWindow : EditorWindow
     private Vector2 _astroidDataScrollPos;
     private Vector2 _nodeFieldScrollPos;
 
-    private int seed;
+    public int seed;
 
     private List<NodeWindow> windows;
 
@@ -259,6 +260,8 @@ public class PcgWindow : EditorWindow
         _currentAstroid = i;
         AstroidObject = _window._aGen.AstroidList[_currentAstroid];
         Texture2Ds = new Texture2D[AstroidObject.actions.Count];
+		Maps.Clear();
+
         UpdateTextures();
         GenerateWindows();  
         
@@ -306,7 +309,11 @@ public class PcgWindow : EditorWindow
         for (int j = 0; j < AstroidObject.actions.Count; j++)
         {
             AstroidGenerator.AstroidSettings.Action a = AstroidObject.actions[j];
+
             GP.GenerateAction(ref map, a);
+
+			Maps.Add((int[,])map.Clone());
+
             Texture2Ds[j] = MapUtility.MapToBinaryTexture(map);
             
             Texture2Ds[j].wrapMode = TextureWrapMode.Clamp;
