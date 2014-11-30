@@ -12,7 +12,7 @@ using Voxel2D;
 
 public class Optimizer : MonoBehaviour {
 
-    const int NUM_INPUTS = 7;
+    const int NUM_INPUTS = 9;
     const int NUM_OUTPUTS = 6;
 
     public static int VoxelSize;
@@ -28,7 +28,15 @@ public class Optimizer : MonoBehaviour {
 
     public GameObject Unit;
 
-    Dictionary<IBlackBox, UnitController> ControllerMap = new Dictionary<IBlackBox, UnitController>();
+    static Dictionary<IBlackBox, UnitController> ControllerMap = new Dictionary<IBlackBox, UnitController>();
+	static public List<UnitController> Units
+	{
+		get
+		{
+			return new List<UnitController>(ControllerMap.Values);
+		}
+	}
+
     private DateTime startTime;
     private float timeLeft;
     private float accum;

@@ -44,6 +44,8 @@ public class AstroidGenerator : MonoBehaviour {
     public List<int> seeds = new List<int>();
 
     public bool randomSeed;
+
+	public static List<VoxelSystem> generatedAsteroidList = new List<VoxelSystem>();
 	
 	// Use this for initialization
 	void Start () {
@@ -93,6 +95,8 @@ public class AstroidGenerator : MonoBehaviour {
 			g.rigidbody2D.isKinematic = true;
 			//HACK: just for tests
 			//g.rigidbody2D.angularVelocity = 100;
+
+			generatedAsteroidList.Add(v);
 		}
 
 	}
