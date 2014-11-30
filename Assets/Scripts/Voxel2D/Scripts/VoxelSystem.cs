@@ -41,6 +41,8 @@ namespace Voxel2D{
 		private IslandDetector.Region[] mSeaRegions = null;
 		
 		private bool wasDataChanged = false;
+
+		private Vector2 cachedCenter;
 		
 		
 		// Use this for initialization
@@ -104,6 +106,12 @@ namespace Voxel2D{
 		/// </summary>
 		/// <returns>The average position of voxels.</returns>
 		public Vector2 GetCenter(){	//TODO: take mass of voxel type into the calculation	
+
+			return cachedCenter;
+		}
+
+		private void RefreshCenter(){
+
 			float counter = 0;
 			Vector2 sum = Vector2.zero;
 			
@@ -117,18 +125,19 @@ namespace Voxel2D{
 				}
 			}
 			if(counter>0){
-				return sum/counter;
+				cachedCenter = sum/counter;
 			}else{
 				Debug.LogWarning("Trying to get center of empty voxel system");
-				return Vector2.zero;
+				cachedCenter = Vector2.zero;
 			}
-			
 		}
 		
 		private void VoxelSystemWasUpdated(bool removed){
+
 			if(VoxelSystemUpdated != null){
 				VoxelSystemUpdated(this);
 			}
+
 			if(voxelCount == 0){
 				Debug.LogWarning("The newly created voxel system is empty, deleting");
 				DestroyVoxelSystem();
@@ -141,7 +150,9 @@ namespace Voxel2D{
 				DestroyVoxelSystem();
 			}
 			else{
+				RefreshCenter();
 				UpdateMass();
+
 				if(voxelCount >0){
 
 					MeshFilter mFilter = GetComponent<MeshFilter>();
