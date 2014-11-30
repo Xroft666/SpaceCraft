@@ -54,7 +54,7 @@ public static class NodeWindowRenderer {
 		if( GUILayout.Button("Evaluate") )
 		{
 			int[,] map = window.Maps[id];
-			float fitness = AsteroidEvaluator.Evaluate(window.seed, ref map, 50f);
+			float fitness = AsteroidEvaluator.Evaluate(window.seed, ref map);
 			Debug.Log("Fintess: " + fitness);
 		}
     }
