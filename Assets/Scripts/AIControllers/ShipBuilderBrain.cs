@@ -180,8 +180,8 @@ public class ShipBuilderBrain : UnitController {
 
 		// shouldnt it be relative to voxelSystem.GetCenter instead?
         Vector3 localDeltaPos = voxelSystem.transform.InverseTransformPoint(GotoTarget.Position);
-        localDeltaPos.x = Mathf.Clamp(localDeltaPos.x/100, 0, 1);
-        localDeltaPos.y = Mathf.Clamp(localDeltaPos.y / 100, 0, 1);
+        localDeltaPos.x = Mathf.Clamp01(localDeltaPos.x / 100f);
+        localDeltaPos.y = Mathf.Clamp01(localDeltaPos.y / 100f);
 
         inputArr[2] = localDeltaPos.x;
         inputArr[3] = localDeltaPos.y;
@@ -200,14 +200,14 @@ public class ShipBuilderBrain : UnitController {
 			distance = ( voxelSystem.transform.TransformPoint( voxelSystem.GetCenter() ) - 
 		                  selectedAsteroid.transform.TransformPoint( selectedAsteroid.GetCenter() )).magnitude;
 
-		inputArr[7] = distance;
+		inputArr[7] = Mathf.Clamp01(distance / 100f);
 
 		distance = 0;
 		if( selectedEnemyship != null )
 			distance = ( voxelSystem.transform.TransformPoint( voxelSystem.GetCenter() ) - 
 		            selectedEnemyship.transform.TransformPoint( selectedEnemyship.GetCenter() )).magnitude;
 
-		inputArr[8] = distance;
+		inputArr[8] = Mathf.Clamp01(distance / 100f);
     }
 
 	public void CollectThrusters(ref List<Engine> left, ref List<Engine> right, ref List<Engine> forward, ref List<Engine> backward)
