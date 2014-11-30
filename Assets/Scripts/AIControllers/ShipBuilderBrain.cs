@@ -41,6 +41,9 @@ public class ShipBuilderBrain : UnitController {
 	private VoxelSystem selectedAsteroid;
 	private VoxelSystem selectedEnemyship;
 
+	private bool mineSignal = false;
+	private bool attackSignal = false;
+
     enum BlockType
 	{
 		engine
@@ -164,8 +167,23 @@ public class ShipBuilderBrain : UnitController {
     public void FillInputs(ref ISignalArray inputArr)
     {
         Vector3 shipPos = voxelSystem.transform.TransformPoint(voxelSystem.GetCenter());
+		Vector3 moveToPos;
 
-        Vector3 targetDir = shipPos - GotoTarget.Position;
+		if( mineSignal )
+		{
+			moveToPos = selectedAsteroid.GetCenter();
+		}
+		else if( attackSignal )
+		{
+			moveToPos = selectedEnemyship.GetCenter();
+		}
+		// if just go to command
+		else
+		{
+			moveToPos = GotoTarget.Position;
+		}
+
+		Vector3 targetDir = shipPos - moveToPos;
         Vector3 shipDir = voxelSystem.transform.up;
 
         float angle = Vector3.Angle(shipDir, targetDir);
@@ -175,16 +193,16 @@ public class ShipBuilderBrain : UnitController {
         angle = angle / 360;
 
         inputArr[0] = angle;
+		inputArr[1] = Mathf.Clamp((shipPos - moveToPos).magnitude / 100, 0, 1);
 
-        inputArr[1] = Mathf.Clamp((shipPos - GotoTarget.Position).magnitude / 100, 0, 1);
 
 		// shouldnt it be relative to voxelSystem.GetCenter instead?
-        Vector3 localDeltaPos = voxelSystem.transform.InverseTransformPoint(GotoTarget.Position);
-        localDeltaPos.x = Mathf.Clamp01(localDeltaPos.x / 100f);
-        localDeltaPos.y = Mathf.Clamp01(localDeltaPos.y / 100f);
-
-        inputArr[2] = localDeltaPos.x;
-        inputArr[3] = localDeltaPos.y;
+		Vector3 localDeltaPos = voxelSystem.transform.InverseTransformPoint(moveToPos);
+		localDeltaPos.x = Mathf.Clamp01(localDeltaPos.x / 100f);
+		localDeltaPos.y = Mathf.Clamp01(localDeltaPos.y / 100f);
+		
+		inputArr[2] = localDeltaPos.x;
+		inputArr[3] = localDeltaPos.y;
 
         inputArr[4] = Mathf.Clamp(voxelSystem.rigidbody2D.velocity.magnitude, 0, 25);
         inputArr[5] = Mathf.Clamp(voxelSystem.rigidbody2D.angularVelocity, 0, 10);
@@ -194,20 +212,12 @@ public class ShipBuilderBrain : UnitController {
 		// im not sure, if distances should be the input, or vectors which show directions?
 		// distance to the closest asteroid
 
-		float distance = 0;
-
-		if( selectedAsteroid != null )
-			distance = ( voxelSystem.transform.TransformPoint( voxelSystem.GetCenter() ) - 
-		                  selectedAsteroid.transform.TransformPoint( selectedAsteroid.GetCenter() )).magnitude;
-
-		inputArr[7] = Mathf.Clamp01(distance / 100f);
-
-		distance = 0;
-		if( selectedEnemyship != null )
-			distance = ( voxelSystem.transform.TransformPoint( voxelSystem.GetCenter() ) - 
-		            selectedEnemyship.transform.TransformPoint( selectedEnemyship.GetCenter() )).magnitude;
-
-		inputArr[8] = Mathf.Clamp01(distance / 100f);
+		// combinations:
+		// 0, 0: GO TO COMMAND
+		// 0, 1: MINE COMMAND
+		// 1, 0: ATTACK A SHIP COMMAND
+		inputArr[7] = mineSignal ? 1f : 0f;
+		inputArr[8] = attackSignal ? 1f : 0f;
     }
 
 	public void CollectThrusters(ref List<Engine> left, ref List<Engine> right, ref List<Engine> forward, ref List<Engine> backward)

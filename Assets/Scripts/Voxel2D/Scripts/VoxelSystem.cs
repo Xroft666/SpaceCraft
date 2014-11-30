@@ -62,6 +62,8 @@ namespace Voxel2D{
 			Mesh mesh = new Mesh();
 			mesh.MarkDynamic();
 			mFilter.sharedMesh = mesh;
+
+			RefreshCenter();
 		}
 		
 		void Update(){
