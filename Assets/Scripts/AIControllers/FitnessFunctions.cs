@@ -1,10 +1,18 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using Voxel2D;
 
-public static class FitnessFunctions {
+public static class FitnessFunctions
+{
 
-    public static float GetFitness0(ShipBuilderBrain S)
+ 
+    /// <summary>
+    /// Stay at point
+    /// </summary>
+    /// <param name="S"></param>
+    /// <returns></returns>
+    public static float GetFitnessStayOnTarget(ShipBuilderBrain S)
     {
         VoxelSystem VS = S.voxelSystem;
         Vector3 shipPos = VS.transform.TransformPoint(VS.GetCenter());

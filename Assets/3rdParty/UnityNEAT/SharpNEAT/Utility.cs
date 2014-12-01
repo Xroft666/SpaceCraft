@@ -24,7 +24,7 @@ public class Utility : MonoBehaviour {
     {
         if (DebugLog)
         {
-            Debug.Log(message);
+            //Debug.Log(message);
         }
     }
 

@@ -357,6 +357,8 @@ public class ShipBuilderBrain : UnitController {
         VoxelSystemDataConverter VSD = Serializer.Load<VoxelSystemDataConverter>(path + objectName + ".space");
         VoxelSystem voxelSystem = GetComponent<VoxelSystem>();
         VSD.FillVoxelSystem(ref voxelSystem);
+        voxelSystem.ForceUpdate();
+        voxelSystem.transform.position -= (Vector3)voxelSystem.GetCenter();
     }
 
 	private void GenerateVoxelSystem(List<VoxelRawData> voxelData)
