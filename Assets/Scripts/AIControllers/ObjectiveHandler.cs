@@ -22,8 +22,12 @@ public class ObjectiveHandler
 
     private bool _checkingObjectives;
 
-    public ObjectiveHandler()
+    private Optimizer optimizer;
+
+    public ObjectiveHandler(Optimizer o)
     {
+        optimizer = o;
+        
         InitTarget();
         
         _objectiveList.Add(SetObjective0);
@@ -130,7 +134,10 @@ public class ObjectiveHandler
     }
     private void SetObjective3()
     {
-        target.transform.position = Vector3.down * 6 + Vector3.right * 11;
+        target.transform.position = new Vector3(5, 0, 0);
+        
+        iTween.MoveTo(target, new Vector3(5, 5, 0), optimizer.TrialDuration);
+        
     }
     private void SetObjective4()
     {

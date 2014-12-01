@@ -52,7 +52,7 @@ public class Optimizer : MonoBehaviour {
 	void Start ()
 	{
 
-        objective = new ObjectiveHandler();
+        objective = new ObjectiveHandler(this);
 	    VoxelImpacter.GenerateFragments = false;
 
         Utility.DebugLog = true;
