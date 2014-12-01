@@ -20,7 +20,8 @@ public static class FitnessFunctions
         float fitness = 100;
         fitness -= (shipPos - GotoTarget.Position).magnitude;
         fitness += S.Score;
-        fitness -= S.Stats._wallHits*10;
+        fitness -= S.Stats._obsticleHits*10;
+        //fitness -= S.Stats.usedFuel/25;
          
         fitness = Mathf.Clamp(fitness, 0, 999999);
 

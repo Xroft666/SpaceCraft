@@ -46,8 +46,8 @@ public class ShipBuilderBrain : UnitController {
     {
         public enemyDamage EnemyDamage = new enemyDamage();
         public astroidDamage AstroidDamage = new astroidDamage();
-        public int _wallHits = 0;
-        private float usedFuel = 0;
+        public int _obsticleHits = 0;
+        public float usedFuel = 0;
     }
     public class enemyDamage
     {
@@ -80,13 +80,12 @@ public class ShipBuilderBrain : UnitController {
 	// Use this for initialization
 	void Awake () {
 
-//		GameObject g = new GameObject("Ship");
 		gameObject.layer = 8;
-		gameObject.transform.position = Vector3.zero;//new Vector3(Random.Range(-10,10),Random.Range(-10,10),0);
+	    gameObject.transform.position = Vector3.zero;
 	
 		voxelSystem = gameObject.AddComponent<VoxelSystem>();
-		voxelSystem.rigidbody2D.drag = 1;
-	    voxelSystem.rigidbody2D.angularDrag = 1;
+		//voxelSystem.rigidbody2D.drag = 1;
+	    //voxelSystem.rigidbody2D.angularDrag = 1;
 		voxelSystem.SetGridSize(shipSize);
 	}
 	
@@ -105,42 +104,13 @@ public class ShipBuilderBrain : UnitController {
 
 		if( isRunning )
 		{
-			
-            /*
-            float frontSensor = 0f;
-			float leftFrontSensor = 0f;
-			float leftSensor = 0f;
-			float rightFrontSensor = 0f;
-			float rightSensor = 0f;
-			float SensorRange = 10f;
-
-			RaycastHit2D hit;
-			LayerMask mask = 1 << 9; // "Obstacles" layer
-
-			hit = Physics2D.Raycast(transform.position, transform.TransformDirection(new Vector3(0f, 1f, 0f).normalized), SensorRange, mask);
-			if( hit.collider != null )
-				frontSensor = 1f - hit.distance / SensorRange;
-
-			hit = Physics2D.Raycast(transform.position, transform.TransformDirection(new Vector3(0.5f, 1f, 0f).normalized), SensorRange, mask);
-			if( hit.collider != null )
-				rightFrontSensor = 1f - hit.distance / SensorRange;
-
-			hit = Physics2D.Raycast(transform.position, transform.TransformDirection(new Vector3(1f, 0f, 0f).normalized), SensorRange, mask);
-			if( hit.collider != null )
-				rightSensor = 1f - hit.distance / SensorRange;
-
-			hit = Physics2D.Raycast(transform.position, transform.TransformDirection(new Vector3(-0.5f, 1f, 0f).normalized), SensorRange, mask);
-			if( hit.collider != null )
-				leftFrontSensor = 1f - hit.distance / SensorRange;
-
-			hit = Physics2D.Raycast(transform.position, transform.TransformDirection(new Vector3(-1f, 0f, 0f).normalized), SensorRange, mask);
-			if( hit.collider != null )
-				leftSensor = 1f - hit.distance / SensorRange;
-            */
 
 			ISignalArray inputArr = box.InputSignalArray;
 			FillInputs(ref inputArr);
+
             /*
+		    float[] sensors = ActivateRangeFinders();
+            
             inputArr[0] = frontSensor;
 			inputArr[1] = leftFrontSensor;
 			inputArr[2] = leftSensor;
@@ -153,38 +123,71 @@ public class ShipBuilderBrain : UnitController {
 			
 			ISignalArray outputArr = box.OutputSignalArray;
 
-			engines.Clear();
-
-			foreach(VoxelData e in voxelSystem.GetVoxelData())
-				if(e is Engine)
-					engines.Add( (Engine)e );
-
-			for( int i = 0; i < engines.Count; i++ )
-			{
-				float pullForce = (float) outputArr[i];
-				engines[i].OnActivate( pullForce );
-			}
+            ActivateEngines(outputArr);
 			
-//			float steer = (float)outputArr[0] * 2f - 1f;
-//			float gas = (float)outputArr[1] * 2f - 1f;
-
-//			List<Engine> leftEngines = new List<Engine>();
-//			List<Engine> rightEngines = new List<Engine>();
-//			List<Engine> forwardEngines = new List<Engine>();
-//			List<Engine> backwardEngines = new List<Engine>();
-			
-//			CollectThrusters(ref leftEngines, ref rightEngines, ref forwardEngines, ref backwardEngines);
-//			InputThrusters(gas, steer, ref leftEngines, ref rightEngines, ref forwardEngines, ref backwardEngines);
-
-
-			float currentDist = (voxelSystem.transform.position - GotoTarget.Position).magnitude;
-			if( currentDist < _closestDistance )
-				_closestDistance = currentDist;
-
-		    _prevRot = voxelSystem.transform.rotation.eulerAngles.z;
+            CalculateAditionalData();
 		}
 	}
 
+    private void CalculateAditionalData()
+    {
+        float currentDist = (voxelSystem.transform.position - GotoTarget.Position).magnitude;
+        if (currentDist < _closestDistance)
+            _closestDistance = currentDist;
+
+        _prevRot = voxelSystem.transform.rotation.eulerAngles.z;
+    }
+    private float[] ActivateRangeFinders()
+    {
+        
+        float frontSensor = 0f;
+		float leftFrontSensor = 0f;
+		float leftSensor = 0f;
+		float rightFrontSensor = 0f;
+		float rightSensor = 0f;
+		float SensorRange = 10f;
+
+		RaycastHit2D hit;
+		LayerMask mask = 1 << 9; // "Obstacles" layer
+
+		hit = Physics2D.Raycast(transform.position, transform.TransformDirection(new Vector3(0f, 1f, 0f).normalized), SensorRange, mask);
+		if( hit.collider != null )
+			frontSensor = 1f - hit.distance / SensorRange;
+
+		hit = Physics2D.Raycast(transform.position, transform.TransformDirection(new Vector3(0.5f, 1f, 0f).normalized), SensorRange, mask);
+		if( hit.collider != null )
+			rightFrontSensor = 1f - hit.distance / SensorRange;
+
+		hit = Physics2D.Raycast(transform.position, transform.TransformDirection(new Vector3(1f, 0f, 0f).normalized), SensorRange, mask);
+		if( hit.collider != null )
+			rightSensor = 1f - hit.distance / SensorRange;
+
+		hit = Physics2D.Raycast(transform.position, transform.TransformDirection(new Vector3(-0.5f, 1f, 0f).normalized), SensorRange, mask);
+		if( hit.collider != null )
+			leftFrontSensor = 1f - hit.distance / SensorRange;
+
+		hit = Physics2D.Raycast(transform.position, transform.TransformDirection(new Vector3(-1f, 0f, 0f).normalized), SensorRange, mask);
+		if( hit.collider != null )
+		    leftSensor = 1f - hit.distance / SensorRange;
+
+        return new float[] { frontSensor ,leftFrontSensor,leftSensor,rightFrontSensor,rightSensor};
+            
+    }
+    private void ActivateEngines(ISignalArray outputArr)
+    {
+        engines.Clear();
+
+        foreach (VoxelData e in voxelSystem.GetVoxelData())
+            if (e is Engine)
+                engines.Add((Engine)e);
+
+        for (int i = 0; i < engines.Count; i++)
+        {
+            float pullForce = (float)outputArr[i];
+            engines[i].OnActivate(pullForce);
+            Stats.usedFuel += pullForce;
+        }
+    }
     public override void SetOptimizer(Optimizer o)
     {
         this.optimizer = o;
@@ -233,6 +236,7 @@ public class ShipBuilderBrain : UnitController {
         inputArr[4] = Mathf.Clamp(voxelSystem.rigidbody2D.velocity.magnitude, 0, 25);
         inputArr[5] = Mathf.Clamp(voxelSystem.rigidbody2D.angularVelocity, 0, 10);
 
+        //TODO: remove, since this is angular velocity??
         inputArr[6] = Mathf.Clamp((voxelSystem.transform.rotation.z - _prevRot), -1, 1);
 
 		// im not sure, if distances should be the input, or vectors which show directions?
@@ -245,67 +249,6 @@ public class ShipBuilderBrain : UnitController {
 		inputArr[7] = mineSignal ? 1f : 0f;
 		inputArr[8] = attackSignal ? 1f : 0f;
     }
-
-	public void CollectThrusters(ref List<Engine> left, ref List<Engine> right, ref List<Engine> forward, ref List<Engine> backward)
-	{
-		foreach(VoxelData e in voxelSystem.GetVoxelData())
-		{
-			if(e is Engine)
-			{
-				switch(e.rotation)
-				{
-				case 0:
-					forward.Add((Engine)e);
-					break;
-				case 90:
-					left.Add((Engine)e);
-					break;
-				case 270:
-					right.Add((Engine)e);
-					break;
-				case 180:
-					backward.Add((Engine)e);
-					break;
-				}
-			}
-		}
-	}
-	
-    
-	public void InputThrusters(float gas, float steer, ref List<Engine> left, ref List<Engine> right, ref List<Engine> forward, ref List<Engine> backward )
-	{
-		foreach(Engine e in forward)
-			if( gas > 0f )
-				e.OnActivate(gas);
-
-		foreach(Engine e in forward)
-			if( gas == 0f && e.enabled )
-				e.OnDeactivate();
-
-		foreach(Engine e in backward)
-			if( gas > 0f )
-				e.OnActivate(gas);
-
-		foreach(Engine e in backward)
-			if( gas == 0f && e.enabled )
-				e.OnDeactivate();
-
-		foreach(Engine e in right)
-			if( steer > 0f )
-				e.OnActivate(steer);
-
-		foreach(Engine e in right)
-			if( gas == 0f && e.enabled )
-				e.OnDeactivate();
-
-		foreach(Engine e in left)
-			if( steer < 0f )
-				e.OnActivate(steer);
-
-		foreach(Engine e in left)
-			if( gas == 0f && e.enabled )
-				e.OnDeactivate();
-	}
 
 	// replacable by SELECT ASTEROID
 	public VoxelSystem SearchForClosestAsteroid()
@@ -372,14 +315,14 @@ public class ShipBuilderBrain : UnitController {
 
 	    Score = 0;
 
-        Load();
+        LoadShipFromFile();
 
 //		selectedEnemyship = SearchForClosestShip();
 //		selectedAsteroid = SearchForClosestAsteroid();
 	}
 
     
-    private void Load()
+    private void LoadShipFromFile()
     {
         VoxelSystemDataConverter VSD = Serializer.Load<VoxelSystemDataConverter>(path + objectName + ".space");
         VoxelSystem voxelSystem = GetComponent<VoxelSystem>();
@@ -388,6 +331,7 @@ public class ShipBuilderBrain : UnitController {
         voxelSystem.transform.position -= (Vector3)voxelSystem.GetCenter();
     }
 
+    /*
 	private void GenerateVoxelSystem(List<VoxelRawData> voxelData)
 	{
 		foreach( VoxelRawData voxel in voxelData )
@@ -429,7 +373,7 @@ public class ShipBuilderBrain : UnitController {
 			}
 		}
 	}
-	
+	*/
 	public override void Stop(){
 		Destroy(voxelSystem.gameObject);
 	}
@@ -441,7 +385,7 @@ public class ShipBuilderBrain : UnitController {
 
 	void OnCollisionEnter2D(Collision2D collision)
 	{
-       Stats._wallHits++; 
+       Stats._obsticleHits++; 
 	}
 
     void OnTriggerStay2D(Collider2D col)

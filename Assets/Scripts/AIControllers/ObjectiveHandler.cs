@@ -76,6 +76,10 @@ public class ObjectiveHandler
             if (meanFit >= targetFitnes[currentObjective])
             {
                 currentObjective++;
+                if (currentObjective == _objectiveList.Count)
+                {
+                    currentObjective = 0;
+                }
                 _checkingObjectives = true;
                 checkingObjective = 0;
                 _objectiveList[checkingObjective]();
