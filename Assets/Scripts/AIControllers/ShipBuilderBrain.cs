@@ -19,22 +19,17 @@ public class ShipBuilderBrain : UnitController {
 
 	int shipSize = 10;
 
-	bool invalid = false;
-
 	bool isRunning = false;
 
-    public int _wallHits = 0; 
 	float _closestDistance = Mathf.Infinity;
 
-    public float _totalRotation = 0;
     private float _prevRot;
-
 
     private string objectName = "E1";
     private string path = Application.dataPath + "/Data/SavedVoxelSystems/";
 
 	List<Engine> engines = new List<Engine>();
-    public float _targetScore;
+    public float Score;
 
     private Optimizer optimizer;
 
@@ -44,6 +39,39 @@ public class ShipBuilderBrain : UnitController {
 	private bool mineSignal = false;
 	private bool attackSignal = false;
 
+    public SimulationStats Stats;
+
+    #region Classes
+    public class SimulationStats
+    {
+        public enemyDamage EnemyDamage = new enemyDamage();
+        public astroidDamage AstroidDamage = new astroidDamage();
+        public int _wallHits = 0;
+        private float usedFuel = 0;
+    }
+    public class enemyDamage
+    {
+        private float damage;
+        private int hits;
+
+        void Hit(float damage)
+        {
+            this.damage += damage;
+            hits++;
+        }
+    }
+    public class astroidDamage
+    {
+        private float damage;
+        private int hits;
+
+        void Hit(float damage)
+        {
+            this.damage += damage;
+            hits++;
+        }
+    }
+#endregion 
     enum BlockType
 	{
 		engine
@@ -153,8 +181,6 @@ public class ShipBuilderBrain : UnitController {
 			if( currentDist < _closestDistance )
 				_closestDistance = currentDist;
 
-
-		    _totalRotation += Mathf.Abs(voxelSystem.transform.rotation.eulerAngles.z - _prevRot);
 		    _prevRot = voxelSystem.transform.rotation.eulerAngles.z;
 		}
 	}
@@ -342,8 +368,9 @@ public class ShipBuilderBrain : UnitController {
 
 		isRunning = true;
 
-	    _targetScore = 0;
-	    _totalRotation = 0;
+        Stats = new SimulationStats();
+
+	    Score = 0;
 
         Load();
 
@@ -414,14 +441,14 @@ public class ShipBuilderBrain : UnitController {
 
 	void OnCollisionEnter2D(Collision2D collision)
 	{
-        _wallHits++; 
+       Stats._wallHits++; 
 	}
 
     void OnTriggerStay2D(Collider2D col)
     {
         if (col.tag == "Target")
         {
-            _targetScore += 1f;
+            Score += 1f;
         }
     }
 }

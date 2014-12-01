@@ -19,14 +19,8 @@ public static class FitnessFunctions
 
         float fitness = 100;
         fitness -= (shipPos - GotoTarget.Position).magnitude;
-        fitness += S._targetScore;
-
-        /*
-        fitness -= S._wallHits * 0.01f;
-        fitness -= Mathf.Clamp(VS.rigidbody2D.velocity.magnitude / 100, 0, 10);
-        fitness -= Mathf.Clamp(VS.rigidbody2D.angularVelocity / 10, 0, 10);
-        fitness -= Mathf.Clamp(S._totalRotation / 100, 0, 25);
-        */
+        fitness += S.Score;
+        fitness -= S.Stats._wallHits*10;
          
         fitness = Mathf.Clamp(fitness, 0, 999999);
 

@@ -1,9 +1,11 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using SharpNeat.EvolutionAlgorithms;
 using SharpNeat.Genomes.Neat;
 using UnityEngine;
 using System.Collections;
+using Random = UnityEngine.Random;
 
 public class ObjectiveHandler
 {
@@ -24,6 +26,7 @@ public class ObjectiveHandler
 
     private Optimizer optimizer;
 
+   
     public ObjectiveHandler(Optimizer o)
     {
         optimizer = o;
@@ -39,7 +42,7 @@ public class ObjectiveHandler
 
 
 
-        _objectiveList[0]();
+       
 
        
     }
@@ -47,6 +50,11 @@ public class ObjectiveHandler
     private void InitTarget()
     {
         target = new GameObject();
+        target.AddComponent<MeshRenderer>();
+        MeshFilter f = target.AddComponent<MeshFilter>();
+        GameObject g = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        f.mesh = g.GetComponent<MeshFilter>().mesh;
+        GameObject.Destroy(g);
         CircleCollider2D c = target.AddComponent<CircleCollider2D>();
         c.radius = 1;
         c.isTrigger = true;
@@ -71,10 +79,11 @@ public class ObjectiveHandler
                 _checkingObjectives = true;
                 checkingObjective = 0;
                 _objectiveList[checkingObjective]();
-                Debug.Log("OBJECTIVE "+(currentObjective-1)+" COMPLETED, CHECKING OBJECTIVES");
+                Debug.Log("OBJECTIVE " + (currentObjective - 1) + " COMPLETED, CHECKING OBJECTIVES" + "... " + meanFit + "/" + targetFitnes[currentObjective]);
             }
             else
             {
+                _objectiveList[currentObjective]();
                 Debug.Log("TRAINING OBJECTIVE " + (currentObjective) + "... "+meanFit+"/"+targetFitnes[currentObjective]);
             }
         }
@@ -86,13 +95,13 @@ public class ObjectiveHandler
                 {
                     checkingObjective ++;
                     _objectiveList[checkingObjective]();
-                    Debug.Log("CHECKING OBJECTIVE " + (checkingObjective - 1) + " COMPLETED");
+                    Debug.Log("CHECKING OBJECTIVE " + (checkingObjective - 1) + " COMPLETED" + "... " + meanFit + "/" + targetFitnes[currentObjective]);
                 }
                 else
                 {
                     _checkingObjectives = false;
                     _objectiveList[currentObjective]();
-                    Debug.Log("CHECKING OBJECTIVES COMPLETE, BACK TO TRAINING");
+                    Debug.Log("CHECKING OBJECTIVES COMPLETE, BACK TO TRAINING" + "... " + meanFit + "/" + targetFitnes[currentObjective]);
                 }
             }
             else
@@ -101,9 +110,10 @@ public class ObjectiveHandler
                 currentObjective = checkingObjective;
                 _objectiveList[currentObjective]();
                 checkingObjective = 0;
-                Debug.Log("OBJECTIVE " + currentObjective + " FAILED, RETRAINING THIS OBJECTIVE");
+                Debug.Log("OBJECTIVE " + currentObjective + " FAILED, RETRAINING THIS OBJECTIVE" + "... " + meanFit + "/" + targetFitnes[currentObjective]);
             }
         }
+
     }
 
     public float GetFitness(ShipBuilderBrain S)
@@ -130,13 +140,18 @@ public class ObjectiveHandler
 
     private void SetObjective2()
     {
-        target.transform.position = Vector3.down*5 + Vector3.left*5;
+        target.transform.position = new Vector3(Random.Range(-10,10), Random.Range(-10,10),0);
     }
     private void SetObjective3()
     {
-        target.transform.position = new Vector3(5, 0, 0);
+        target.transform.position = new Vector3(10, -10, 0);
         
-        iTween.MoveTo(target, new Vector3(5, 5, 0), optimizer.TrialDuration);
+        Hashtable h = new Hashtable();
+        h.Add("position",new Vector3(10, 10, 0));
+        h.Add("time",optimizer.TrialDuration-0.1f);
+        h.Add("easetype","linear");
+
+        iTween.MoveTo(target,h);
         
     }
     private void SetObjective4()
