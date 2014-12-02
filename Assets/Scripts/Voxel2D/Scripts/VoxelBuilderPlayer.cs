@@ -13,8 +13,9 @@ namespace Voxel2D{
 		int _selectedElementId;
 		int _selectedRotation;
 		DeviceData.DeviceType _selectedDevice = DeviceData.DeviceType.Wall;
-		
-		// Use this for initialization
+	    private Vector3 prevMousePos;
+
+	    // Use this for initialization
 		void Start () {
 			
 			_voxel = gameObject.AddComponent<VoxelSystem>();
@@ -48,11 +49,17 @@ namespace Voxel2D{
 
 			_voxel.AddVoxel(new Laser(2,new IntVector2(11,16),_selectedRotation,_voxel,100f));
 
-			Vector2 center = _voxel.GetCenter();
-			Camera.main.transform.position = transform.TransformPoint(new Vector3(center.x,center.y,-10));
+		    StartCoroutine(SetCameraPos());
+
 		}
-		
-		
+
+	    IEnumerator SetCameraPos()
+	    {
+	        yield return new WaitForEndOfFrame();
+            Vector2 center = _voxel.GetCenter();
+            Camera.main.transform.position = transform.TransformPoint(new Vector3(center.x, center.y, -10));
+	    }
+
 		// Update is called once per frame
 		void Update () {
 			CheckInput();
@@ -113,12 +120,21 @@ namespace Voxel2D{
 				_selectedDevice++;
 			}else if(Input.GetKeyDown(KeyCode.K)){
 				_selectedDevice--;
-			}
-			
-			
-			
+			}	
+			CheckDrag();
 		}
-		
+
+	    void CheckDrag()
+	    {
+            if (Input.GetMouseButton(2))
+            {
+                Vector3 deltaPos = prevMousePos-Input.mousePosition;
+                print(deltaPos);
+                Camera.main.transform.position += deltaPos;
+            }
+            prevMousePos = Input.mousePosition;
+	    }
+
 		void AddSelectedVoxelType(int x,int y){
 			VoxelData vd = null;
 			
