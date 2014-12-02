@@ -13,12 +13,14 @@ public class AsteroidEvaluator
 	// general formula: fitness = (density + roundness) / 2
 	static public float Evaluate(float seed, ref int[,] map)
 	{
-		float weight = 0.5f;
+		float weight = 0.0f;
 
 		// searching for the density center
 		
 		int xAver = 0;
 		int yAver = 0;
+
+
 
 		int voxelsCount = 0;
 		for( int i = map.GetLength(0) - 1; i >= 0 ; i-- )
@@ -49,6 +51,8 @@ public class AsteroidEvaluator
 	static private float EvaluateDensity(int xAver, int yAver, float seed, ref int[,] map)
 	{
 		int size = map.GetLength(0);
+		int transX;
+		int transY;
 	
 		// calculating density ( white voxels to black voxels relation )
 		// currently supports only quad maps
@@ -57,6 +61,8 @@ public class AsteroidEvaluator
 
 		int voxelsCount = 0;
 		int objectsCount = 0;
+
+
 		for( int i = 0; i <= size; i++ )
 		{
 			// if voxel is solid on the edge of the map, we count it as an object
@@ -77,8 +83,8 @@ public class AsteroidEvaluator
 				voxelsCount ++;
 		}
 
-		// vertical line through the center
-
+//		// vertical line through the center
+//
 		for( int i = 0; i <= size; i++ )
 		{
 			// if voxel is solid on the edge of the map, we count it as an object
@@ -99,52 +105,95 @@ public class AsteroidEvaluator
                 voxelsCount ++;
 		}
 
-		// first diagonal line
+		// first diagonal line (from bottom left to upper right)
 
-//		for( int i = 0; i <= size; i++ )
-//		{
-//			// if voxel is solid on the edge of the map, we count it as an object
-//			if( i == map.GetLength(0) )
-//			{
-//				if( map[i - 1, i - 1] == 1 )
-//					objectsCount++;
-//				break;
-//			}
-//			
-//			// if there is a hole after a solid voxel, we increment objects count
-//			if( i > 0 )
-//				if( map[i - 1, i - 1] != map[i, i] && map[i, i] == 0 )
-//                    objectsCount++;
-//            
-//            // general voxels count
-//            if( map[i, i] == 1 )
-//                voxelsCount ++;
-//		}
-//
-//		// second diagonal line
-//
-//		for( int i = 0; i <= size; i++ )
-//		{
-//			// if voxel is solid on the edge of the map, we count it as an object
-//			if( i == size )
-//			{
-//				if( map[i - 1, size - i] == 1 )
-//					objectsCount++;
-//				break;
-//			}
-//			
-//			// if there is a hole after a solid voxel, we increment objects count
-//			if( i > 0 )
-//				if( map[i - 1, size - i] != map[i, size - i - 1] && map[i, size - i - 1] == 0 )
-//					objectsCount++;
-//            
-//            // general voxels count
-//			if( map[i, size - i - 1] == 1 )
-//                voxelsCount ++;
-//        }
+
+		//defines the diagonal starting point (x, 0) or (0, y)
+		if (xAver < yAver) {
+			transX = 0;
+			transY = yAver - xAver;
+				}
+		else if (xAver > yAver) {
+			transX = xAver - yAver;
+			transY = 0;
+				} 
+		else {
+			transX = 0;
+			transY = 0;
+		}
+
+		for (int i = 0; i <= (size - transX - transY ); i++)
+		{
+
+			if( i == size - transX - transY)
+			{
+				if( map[transX + i - 1, transY + i - 1] == 1 )
+					objectsCount++;
+				break;
+			}
+
+
+			if (i > 0) {
+					if (map [transX + i - 1, transY + i - 1] != map [transX + i, transY + i] && map [transX + i, transY + i] == 0)
+							objectsCount++;
+
+					if (map [transX + i, transY + i] == 1)
+							voxelsCount++;
+			}
+		}
+
+
+		//second diagonal line (from upper left to bottom right)
+
+		if (xAver + yAver <= size) {
+
+				for (int i = 0; i < yAver + xAver; i++) {
+
+				if( i == yAver + xAver )
+						{
+					if( map[i - 1, xAver + yAver - i + 1] == 1 )
+							objectsCount++;
+							break;
+						}
+
+
+						if (i > 0) {
+
+								if (map [i - 1, xAver + yAver - i + 1] != map [i, xAver + yAver - i] && map [i, xAver + yAver - i] == 0) //not sure about "-i" after !=
+										objectsCount++;
+
+								if (map [i, xAver + yAver - i] == 1)
+										voxelsCount++;
+						}
+				}
+
+		} 
+		else 
+		{
+			for (int j = 0; j <= (2*size - (xAver + yAver)); j++)
+			{
+				if( j == 2*size - (xAver + yAver))
+				{
+					if( map [yAver - (size - xAver) + j - 1, size - j] == 1 )
+						objectsCount++;
+					break;
+				}
+
+				if (j > 0)
+				{
+				
+					if (map [yAver - (size - xAver) + j - 1, size - j] != map [yAver - (size - xAver) + j, size - j - 1] && map [yAver - (size - xAver) + j, size - j - 1]  == 0)
+						objectsCount++;
+					if(map [yAver - (size - xAver) + j, size - j - 1] == 1)
+						voxelsCount++;
+				}
+			}
+
+		}
+
         
         // general density is solid voxels to empty voxels relation
-		float lineDensity = voxelsCount / (float) map.GetLength(0);
+		float lineDensity = voxelsCount / (float)size;
 
 		// density to objects count relation would be the average density per object
 		return lineDensity / (float) objectsCount;
