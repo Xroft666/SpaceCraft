@@ -120,28 +120,23 @@ public class SimpleExperiment : INeatExperiment
     public NeatEvolutionAlgorithm<NeatGenome> CreateEvolutionAlgorithm(string fileName)
     {
         List<NeatGenome> genomeList = null;
-        IGenomeFactory<NeatGenome> genomeFactory = CreateGenomeFactory();
-        try
-        {
-            if (fileName.Contains("/.pop.xml"))
-            {
-                throw new Exception();
-            }
-            using (XmlReader xr = XmlReader.Create(fileName))
-            {
-                genomeList = LoadPopulation(xr);
-            }
-        }
-        catch (Exception e1)
-        {
-            Utility.Log(fileName + " Error loading genome from file!\nLoading aborted.\n"
-                                      + e1.Message + "\nJoe: " + fileName);
+		IGenomeFactory<NeatGenome> genomeFactory = null;
 
-            genomeList = genomeFactory.CreateGenomeList(_populationSize, 0);
+		try
+		{
+       		using (XmlReader xr = XmlReader.Create(fileName))
+       		{
+				genomeFactory = CreateGenomeFactory();
+       		    genomeList = LoadPopulation(xr);
+       		}
+		}
+		catch(Exception e){}
 
-        }
-
-
+		if( genomeList == null )
+		{
+			Utility.Log(fileName + " Error loading genome from file!\nLoading aborted.");
+			return null;
+		}
 
         return CreateEvolutionAlgorithm(genomeFactory, genomeList);
     }
