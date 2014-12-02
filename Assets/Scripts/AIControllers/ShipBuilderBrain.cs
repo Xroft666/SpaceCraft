@@ -118,39 +118,23 @@ public class ShipBuilderBrain : UnitController {
     }
     private float[] ActivateRangeFinders()
     {
-        
-        float frontSensor = 0f;
-		float leftFrontSensor = 0f;
-		float leftSensor = 0f;
-		float rightFrontSensor = 0f;
-		float rightSensor = 0f;
-		float SensorRange = 10f;
+		const int sensorsCount = 16;
+		const float SensorRange = 20f;
 
 		RaycastHit2D hit;
 		LayerMask mask = 1 << 9; // "Obstacles" layer
 
-		hit = Physics2D.Raycast(transform.position, transform.TransformDirection(new Vector3(0f, 1f, 0f).normalized), SensorRange, mask);
-		if( hit.collider != null )
-			frontSensor = 1f - hit.distance / SensorRange;
+		float[] sensors = new float[sensorsCount];
+		for( int i = 0; i < sensorsCount; i++ )
+		{
+			Vector3 direction = new Vector3( Mathf.Cos (i * (2f * Mathf.PI / (float) sensorsCount) ), Mathf.Sin(i * (2f * Mathf.PI / (float) sensorsCount) ) , 0f );
 
-		hit = Physics2D.Raycast(transform.position, transform.TransformDirection(new Vector3(0.5f, 1f, 0f).normalized), SensorRange, mask);
-		if( hit.collider != null )
-			rightFrontSensor = 1f - hit.distance / SensorRange;
+			hit = Physics2D.Raycast(transform.position, transform.TransformDirection(direction), SensorRange, mask);
+			if( hit.collider != null )
+				sensors[i] = 1f - hit.distance / SensorRange;
+		}
 
-		hit = Physics2D.Raycast(transform.position, transform.TransformDirection(new Vector3(1f, 0f, 0f).normalized), SensorRange, mask);
-		if( hit.collider != null )
-			rightSensor = 1f - hit.distance / SensorRange;
-
-		hit = Physics2D.Raycast(transform.position, transform.TransformDirection(new Vector3(-0.5f, 1f, 0f).normalized), SensorRange, mask);
-		if( hit.collider != null )
-			leftFrontSensor = 1f - hit.distance / SensorRange;
-
-		hit = Physics2D.Raycast(transform.position, transform.TransformDirection(new Vector3(-1f, 0f, 0f).normalized), SensorRange, mask);
-		if( hit.collider != null )
-		    leftSensor = 1f - hit.distance / SensorRange;
-
-        return new float[] { frontSensor ,leftFrontSensor,leftSensor,rightFrontSensor,rightSensor};
-            
+		return sensors;
     }
     private void ActivateEngines(ISignalArray outputArr)
     {
@@ -199,6 +183,8 @@ public class ShipBuilderBrain : UnitController {
         if (cross.y < 0) angle = -angle;
 
         angle = angle / 360;
+
+		ActivateRangeFinders();
 
         inputArr[0] = angle;
 		inputArr[1] = Mathf.Clamp((shipPos - moveToPos).magnitude / 100, 0, 1);
