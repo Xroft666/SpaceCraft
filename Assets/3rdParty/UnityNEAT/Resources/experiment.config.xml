@@ -5,7 +5,8 @@
       <SpecieCount>8</SpecieCount>
       <VoxelSize>10</VoxelSize>
       <Activation>
-        <Scheme>Acyclic</Scheme>
+        <Scheme>CyclicFixedIters</Scheme>
+        <Iters>2</Iters>       
       </Activation>
       <ComplexityRegulationStrategy>Absolute</ComplexityRegulationStrategy>
       <ComplexityThreshold>100</ComplexityThreshold>

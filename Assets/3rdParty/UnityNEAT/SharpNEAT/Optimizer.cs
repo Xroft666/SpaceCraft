@@ -88,7 +88,7 @@ public class Optimizer : MonoBehaviour {
             //   print("FPS: " + fps);
             if (fps < 10)
             {
-                Time.timeScale = Time.timeScale - 1;
+               // Time.timeScale = Time.timeScale - 1;
                 print("Lowering time scale to " + Time.timeScale);
             }
         }
