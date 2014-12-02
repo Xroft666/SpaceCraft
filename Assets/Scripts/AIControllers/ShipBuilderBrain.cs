@@ -163,11 +163,11 @@ public class ShipBuilderBrain : UnitController {
 
 		if( mineSignal )
 		{
-			moveToPos = selectedAsteroid.GetCenter();
+			moveToPos = selectedAsteroid.transform.TransformPoint(selectedAsteroid.GetCenter());
 		}
 		else if( attackSignal )
 		{
-			moveToPos = selectedEnemyship.GetCenter();
+			moveToPos = selectedEnemyship.transform.TransformPoint( selectedEnemyship.GetCenter());
 		}
 		// if just go to command
 		else
@@ -244,20 +244,19 @@ public class ShipBuilderBrain : UnitController {
 		float minDist = Mathf.Infinity;
 		VoxelSystem closestShip = null;
 
-		List<UnitController> ships = Optimizer.Units;
+//		List<UnitController> ships = Optimizer.Units;
+		GameObject[] ships = GameObject.FindGameObjectsWithTag("Enemy");
 
-		for( int i = 0; i < ships.Count; i++ )
+		for( int i = 0; i < ships.Length; i++ )
 		{
-			ShipBuilderBrain otherShip = ships[i] as ShipBuilderBrain;
-			if( this  == otherShip )
-				continue;
+			VoxelSystem otherShip = ships[i].GetComponent<VoxelSystem>();
 		
 			float distance = ( voxelSystem.transform.TransformPoint( voxelSystem.GetCenter() ) - 
-			                           otherShip.transform.TransformPoint( otherShip.voxelSystem.GetCenter() )).magnitude;
+			                           otherShip.transform.TransformPoint( otherShip.GetCenter() )).magnitude;
 			if( distance < minDist )
 			{
 				minDist = distance;
-				closestShip = otherShip.voxelSystem;
+				closestShip = voxelSystem;
 			}
 		}
 
