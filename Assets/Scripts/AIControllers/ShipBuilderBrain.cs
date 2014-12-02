@@ -104,16 +104,6 @@ public class ShipBuilderBrain : UnitController {
 	
 	// Update is called once per frame
 	void Update () {
-		// testing goes here
-		// let's say we need to move the vessel from A to B through bunch of obstalces
-
-		// here we use the brain:
-		// let's assume that we have inputs:
-		// 	- sensors which tell where are the obstacles
-		//  the output would be:
-		//  - which direction to take
-
-		// and the fitness would be distance to the goal
 
 		if( isRunning )
 		{
@@ -121,17 +111,6 @@ public class ShipBuilderBrain : UnitController {
 			ISignalArray inputArr = box.InputSignalArray;
 			FillInputs(ref inputArr);
 
-            /*
-		    float[] sensors = ActivateRangeFinders();
-            
-            inputArr[0] = frontSensor;
-			inputArr[1] = leftFrontSensor;
-			inputArr[2] = leftSensor;
-			inputArr[3] = rightFrontSensor;
-			inputArr[4] = rightSensor;
-
-			inputArr[5] = (voxelSystem.transform.position - GotoTarget.Position).magnitude;
-			*/
 			box.Activate();
 			
 			ISignalArray outputArr = box.OutputSignalArray;
@@ -152,39 +131,23 @@ public class ShipBuilderBrain : UnitController {
     }
     private float[] ActivateRangeFinders()
     {
-        
-        float frontSensor = 0f;
-		float leftFrontSensor = 0f;
-		float leftSensor = 0f;
-		float rightFrontSensor = 0f;
-		float rightSensor = 0f;
-		float SensorRange = 10f;
+		const int sensorsCount = 16;
+		const float SensorRange = 20f;
 
 		RaycastHit2D hit;
 		LayerMask mask = 1 << 9; // "Obstacles" layer
 
-		hit = Physics2D.Raycast(transform.position, transform.TransformDirection(new Vector3(0f, 1f, 0f).normalized), SensorRange, mask);
-		if( hit.collider != null )
-			frontSensor = 1f - hit.distance / SensorRange;
+		float[] sensors = new float[sensorsCount];
+		for( int i = 0; i < sensorsCount; i++ )
+		{
+			Vector3 direction = new Vector3( Mathf.Cos (i * (2f * Mathf.PI / (float) sensorsCount) ), Mathf.Sin(i * (2f * Mathf.PI / (float) sensorsCount) ) , 0f );
 
-		hit = Physics2D.Raycast(transform.position, transform.TransformDirection(new Vector3(0.5f, 1f, 0f).normalized), SensorRange, mask);
-		if( hit.collider != null )
-			rightFrontSensor = 1f - hit.distance / SensorRange;
+			hit = Physics2D.Raycast(transform.position, transform.TransformDirection(direction), SensorRange, mask);
+			if( hit.collider != null )
+				sensors[i] = 1f - hit.distance / SensorRange;
+		}
 
-		hit = Physics2D.Raycast(transform.position, transform.TransformDirection(new Vector3(1f, 0f, 0f).normalized), SensorRange, mask);
-		if( hit.collider != null )
-			rightSensor = 1f - hit.distance / SensorRange;
-
-		hit = Physics2D.Raycast(transform.position, transform.TransformDirection(new Vector3(-0.5f, 1f, 0f).normalized), SensorRange, mask);
-		if( hit.collider != null )
-			leftFrontSensor = 1f - hit.distance / SensorRange;
-
-		hit = Physics2D.Raycast(transform.position, transform.TransformDirection(new Vector3(-1f, 0f, 0f).normalized), SensorRange, mask);
-		if( hit.collider != null )
-		    leftSensor = 1f - hit.distance / SensorRange;
-
-        return new float[] { frontSensor ,leftFrontSensor,leftSensor,rightFrontSensor,rightSensor};
-            
+		return sensors;
     }
     private void ActivateEngines(ISignalArray outputArr)
     {
@@ -213,11 +176,11 @@ public class ShipBuilderBrain : UnitController {
 
 		if( mineSignal )
 		{
-			moveToPos = selectedAsteroid.GetCenter();
+			moveToPos = selectedAsteroid.transform.TransformPoint(selectedAsteroid.GetCenter());
 		}
 		else if( attackSignal )
 		{
-			moveToPos = selectedEnemyship.GetCenter();
+			moveToPos = selectedEnemyship.transform.TransformPoint( selectedEnemyship.GetCenter());
 		}
 		// if just go to command
 		else
@@ -233,6 +196,8 @@ public class ShipBuilderBrain : UnitController {
         if (cross.y < 0) angle = -angle;
 
         angle = angle / 360;
+
+		ActivateRangeFinders();
 
         inputArr[0] = angle;
 		inputArr[1] = Mathf.Clamp((shipPos - moveToPos).magnitude / 100, 0, 1);
@@ -292,20 +257,19 @@ public class ShipBuilderBrain : UnitController {
 		float minDist = Mathf.Infinity;
 		VoxelSystem closestShip = null;
 
-		List<UnitController> ships = Optimizer.Units;
+//		List<UnitController> ships = Optimizer.Units;
+		GameObject[] ships = GameObject.FindGameObjectsWithTag("Enemy");
 
-		for( int i = 0; i < ships.Count; i++ )
+		for( int i = 0; i < ships.Length; i++ )
 		{
-			ShipBuilderBrain otherShip = ships[i] as ShipBuilderBrain;
-			if( this  == otherShip )
-				continue;
+			VoxelSystem otherShip = ships[i].GetComponent<VoxelSystem>();
 		
 			float distance = ( voxelSystem.transform.TransformPoint( voxelSystem.GetCenter() ) - 
-			                           otherShip.transform.TransformPoint( otherShip.voxelSystem.GetCenter() )).magnitude;
+			                           otherShip.transform.TransformPoint( otherShip.GetCenter() )).magnitude;
 			if( distance < minDist )
 			{
 				minDist = distance;
-				closestShip = otherShip.voxelSystem;
+				closestShip = voxelSystem;
 			}
 		}
 
@@ -330,8 +294,8 @@ public class ShipBuilderBrain : UnitController {
 
         LoadShipFromFile();
 
-//		selectedEnemyship = SearchForClosestShip();
-//		selectedAsteroid = SearchForClosestAsteroid();
+		selectedEnemyship = SearchForClosestShip();
+		selectedAsteroid = SearchForClosestAsteroid();
 	}
 
     
@@ -344,49 +308,6 @@ public class ShipBuilderBrain : UnitController {
         voxelSystem.transform.position -= (Vector3)voxelSystem.GetCenter();
     }
 
-    /*
-	private void GenerateVoxelSystem(List<VoxelRawData> voxelData)
-	{
-		foreach( VoxelRawData voxel in voxelData )
-		{
-			Voxel2D.IntVector2 localCoord = new Voxel2D.IntVector2(voxel._xPos, voxel._yPos);
-			
-			if(!takenPosition.ContainsKey(localCoord) && voxelSystem.CanAddVoxel(localCoord))
-			{
-				takenPosition.Add(localCoord,voxel._deviceType);
-				VoxelData vd = null;
-
-				int elementType = voxel._materialType;
-				
-			    int rotationAngle = voxel._rotation*90;
-				
-
-				switch( voxel._deviceType )
-				{
-				case 0:
-					vd = new Wall(elementType,localCoord,rotationAngle,voxelSystem);
-					break;
-				case 1:
-					vd = new Cannon(elementType,localCoord,rotationAngle,voxelSystem,10,1);
-					break;
-				case 2:
-					vd = new Laser(elementType,localCoord,rotationAngle,voxelSystem,250);
-					break;
-				case 3:
-					vd = new Engine(elementType,localCoord,rotationAngle,voxelSystem,100);
-					break;
-				case 4:
-					vd = new Wall(elementType,localCoord,rotationAngle,voxelSystem);
-					break;
-				default:
-					break;
-				}
-
-				voxelSystem.AddVoxel(vd);
-			}
-		}
-	}
-	*/
 	public override void Stop(){
 		Destroy(voxelSystem.gameObject);
 	}
