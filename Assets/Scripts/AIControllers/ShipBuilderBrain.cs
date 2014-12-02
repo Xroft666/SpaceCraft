@@ -100,6 +100,8 @@ public class ShipBuilderBrain : UnitController {
 		//voxelSystem.rigidbody2D.drag = 1;
 	    //voxelSystem.rigidbody2D.angularDrag = 1;
 		voxelSystem.SetGridSize(shipSize);
+
+		objectName = Optimizer.fileName;
 	}
 	
 	// Update is called once per frame

@@ -47,6 +47,8 @@ public class Optimizer : MonoBehaviour {
     private double Fitness;
 
     public ObjectiveHandler objective;
+	
+	static public string fileName = "";
 
 	// Use this for initialization
 	void Start ()
@@ -240,8 +242,7 @@ public class Optimizer : MonoBehaviour {
         }
         return 0;
     }
-
-	string fileName = "";
+	
     void OnGUI()
     {
         if (GUI.Button(new Rect(10, 10, 100, 40), "Start EA"))
