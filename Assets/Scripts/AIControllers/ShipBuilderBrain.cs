@@ -281,8 +281,8 @@ public class ShipBuilderBrain : UnitController {
 
         LoadShipFromFile();
 
-//		selectedEnemyship = SearchForClosestShip();
-//		selectedAsteroid = SearchForClosestAsteroid();
+		selectedEnemyship = SearchForClosestShip();
+		selectedAsteroid = SearchForClosestAsteroid();
 	}
 
     
