@@ -91,16 +91,6 @@ public class ShipBuilderBrain : UnitController {
 	
 	// Update is called once per frame
 	void Update () {
-		// testing goes here
-		// let's say we need to move the vessel from A to B through bunch of obstalces
-
-		// here we use the brain:
-		// let's assume that we have inputs:
-		// 	- sensors which tell where are the obstacles
-		//  the output would be:
-		//  - which direction to take
-
-		// and the fitness would be distance to the goal
 
 		if( isRunning )
 		{
@@ -108,17 +98,6 @@ public class ShipBuilderBrain : UnitController {
 			ISignalArray inputArr = box.InputSignalArray;
 			FillInputs(ref inputArr);
 
-            /*
-		    float[] sensors = ActivateRangeFinders();
-            
-            inputArr[0] = frontSensor;
-			inputArr[1] = leftFrontSensor;
-			inputArr[2] = leftSensor;
-			inputArr[3] = rightFrontSensor;
-			inputArr[4] = rightSensor;
-
-			inputArr[5] = (voxelSystem.transform.position - GotoTarget.Position).magnitude;
-			*/
 			box.Activate();
 			
 			ISignalArray outputArr = box.OutputSignalArray;
@@ -331,49 +310,6 @@ public class ShipBuilderBrain : UnitController {
         voxelSystem.transform.position -= (Vector3)voxelSystem.GetCenter();
     }
 
-    /*
-	private void GenerateVoxelSystem(List<VoxelRawData> voxelData)
-	{
-		foreach( VoxelRawData voxel in voxelData )
-		{
-			Voxel2D.IntVector2 localCoord = new Voxel2D.IntVector2(voxel._xPos, voxel._yPos);
-			
-			if(!takenPosition.ContainsKey(localCoord) && voxelSystem.CanAddVoxel(localCoord))
-			{
-				takenPosition.Add(localCoord,voxel._deviceType);
-				VoxelData vd = null;
-
-				int elementType = voxel._materialType;
-				
-			    int rotationAngle = voxel._rotation*90;
-				
-
-				switch( voxel._deviceType )
-				{
-				case 0:
-					vd = new Wall(elementType,localCoord,rotationAngle,voxelSystem);
-					break;
-				case 1:
-					vd = new Cannon(elementType,localCoord,rotationAngle,voxelSystem,10,1);
-					break;
-				case 2:
-					vd = new Laser(elementType,localCoord,rotationAngle,voxelSystem,250);
-					break;
-				case 3:
-					vd = new Engine(elementType,localCoord,rotationAngle,voxelSystem,100);
-					break;
-				case 4:
-					vd = new Wall(elementType,localCoord,rotationAngle,voxelSystem);
-					break;
-				default:
-					break;
-				}
-
-				voxelSystem.AddVoxel(vd);
-			}
-		}
-	}
-	*/
 	public override void Stop(){
 		Destroy(voxelSystem.gameObject);
 	}
