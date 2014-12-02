@@ -12,7 +12,7 @@ using Voxel2D;
 
 public class Optimizer : MonoBehaviour {
 
-    const int NUM_INPUTS = 9;
+    const int NUM_INPUTS = 21;
     const int NUM_OUTPUTS = 6;
 
     public static int VoxelSize;

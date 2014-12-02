@@ -161,13 +161,21 @@ public class ShipBuilderBrain : UnitController {
         Vector3 shipPos = voxelSystem.transform.TransformPoint(voxelSystem.GetCenter());
 		Vector3 moveToPos;
 
+
+		Vector3 targetVelocity = Vector3.zero;
+		Vector3 targetDir = Vector3.zero;
+
 		if( mineSignal )
 		{
 			moveToPos = selectedAsteroid.transform.TransformPoint(selectedAsteroid.GetCenter());
+			targetVelocity = selectedAsteroid.rigidbody2D.velocity;
+			targetDir = selectedAsteroid.transform.up;
 		}
 		else if( attackSignal )
 		{
 			moveToPos = selectedEnemyship.transform.TransformPoint( selectedEnemyship.GetCenter());
+			targetVelocity = selectedEnemyship.rigidbody2D.velocity;
+			targetDir = selectedEnemyship.transform.up;
 		}
 		// if just go to command
 		else
@@ -175,44 +183,51 @@ public class ShipBuilderBrain : UnitController {
 			moveToPos = GotoTarget.Position;
 		}
 
-		Vector3 targetDir = shipPos - moveToPos;
+		Vector3 toTargetDir = (shipPos - moveToPos).normalized;
         Vector3 shipDir = voxelSystem.transform.up;
-
-        float angle = Vector3.Angle(shipDir, targetDir);
-        Vector3 cross = Vector3.Cross(shipDir, targetDir);
+	
+		float angle = Vector3.Angle(shipDir, toTargetDir);
+        Vector3 cross = Vector3.Cross(shipDir, toTargetDir);
         if (cross.y < 0) angle = -angle;
 
-        angle = angle / 360;
+        angle = angle / 360f;
 
-		ActivateRangeFinders();
-
+		// angle to the target
         inputArr[0] = angle;
-		inputArr[1] = Mathf.Clamp((shipPos - moveToPos).magnitude / 100, 0, 1);
 
+		// distance to the target
+		inputArr[1] = Mathf.Clamp01((shipPos - moveToPos).magnitude / 100f);
 
-		// shouldnt it be relative to voxelSystem.GetCenter instead?
-		Vector3 localDeltaPos = voxelSystem.transform.InverseTransformPoint(moveToPos);
-		localDeltaPos.x = Mathf.Clamp01(localDeltaPos.x / 100f);
-		localDeltaPos.y = Mathf.Clamp01(localDeltaPos.y / 100f);
-		
-		inputArr[2] = localDeltaPos.x;
-		inputArr[3] = localDeltaPos.y;
+		Vector3 toTargetLocalDir = (voxelSystem.transform.InverseTransformPoint(moveToPos) - shipPos).normalized;
 
-        inputArr[4] = Mathf.Clamp(voxelSystem.rigidbody2D.velocity.magnitude, 0, 25);
-        inputArr[5] = Mathf.Clamp(voxelSystem.rigidbody2D.angularVelocity, 0, 10);
+		// relative direction to the target
+		inputArr[2] = toTargetLocalDir.x;
+		inputArr[3] = toTargetLocalDir.y;
 
-        //TODO: remove, since this is angular velocity??
-        inputArr[6] = Mathf.Clamp((voxelSystem.transform.rotation.z - _prevRot), -1, 1);
+		// this ship's velocity and and angular velocity
+        inputArr[4] = Mathf.Clamp01(voxelSystem.rigidbody2D.velocity.magnitude / 100f);
+        inputArr[5] = Mathf.Clamp01(voxelSystem.rigidbody2D.angularVelocity / 100f);
 
-		// im not sure, if distances should be the input, or vectors which show directions?
-		// distance to the closest asteroid
+		targetDir = voxelSystem.transform.InverseTransformDirection( targetDir );
+
+		// target's velocity
+		inputArr[6] = targetVelocity.magnitude / 100f;
+
+		// target's direction
+		inputArr[7] = targetDir.x;
+		inputArr[8] = targetDir.y;
 
 		// combinations:
 		// 0, 0: GO TO COMMAND
 		// 0, 1: MINE COMMAND
 		// 1, 0: ATTACK A SHIP COMMAND
-		inputArr[7] = mineSignal ? 1f : 0f;
-		inputArr[8] = attackSignal ? 1f : 0f;
+		inputArr[9] = mineSignal ? 1f : 0f;
+		inputArr[10] = attackSignal ? 1f : 0f;
+
+
+		float[] sensors = ActivateRangeFinders();
+		for( int i = 0; i < sensors.Length; i++ )
+			inputArr[i + 11] = sensors[i];
     }
 
 	// replacable by SELECT ASTEROID
