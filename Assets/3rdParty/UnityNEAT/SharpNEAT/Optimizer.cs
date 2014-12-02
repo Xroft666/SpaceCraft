@@ -47,6 +47,8 @@ public class Optimizer : MonoBehaviour {
     private double Fitness;
 
     public ObjectiveHandler objective;
+	
+	static public string fileName = "";
 
 	// Use this for initialization
 	void Start ()
@@ -64,10 +66,8 @@ public class Optimizer : MonoBehaviour {
         VoxelSize = XmlUtils.GetValueAsInt(xmlConfig.DocumentElement, "VoxelSize");
         experiment.Initialize("Car Experiment", xmlConfig.DocumentElement, NUM_INPUTS, NUM_OUTPUTS);
 
-        champFileSavePath = Application.persistentDataPath + string.Format("/{0}.champ.xml", "car");
-        popFileSavePath = Application.persistentDataPath + string.Format("/{0}.pop.xml", "car");
-
-        print(champFileSavePath);
+        champFileSavePath = Application.persistentDataPath + string.Format("/{0}.champ.xml", fileName);
+        popFileSavePath = Application.persistentDataPath + string.Format("/{0}.pop.xml", fileName);
 	}
 
     // Update is called once per frame
@@ -99,7 +99,7 @@ public class Optimizer : MonoBehaviour {
         Utility.DebugLog = true;
         Utility.Log("Starting PhotoTaxis experiment");
         // print("Loading: " + popFileLoadPath);
-        _ea = experiment.CreateEvolutionAlgorithm(popFileSavePath);
+        
         startTime = DateTime.Now;
 
         _ea.UpdateEvent += new EventHandler(ea_UpdateEvent);
@@ -112,6 +112,8 @@ public class Optimizer : MonoBehaviour {
         _ea.StartContinue();
         EARunning = true;
     }
+
+
 
     void ea_UpdateEvent(object sender, EventArgs e)
     {
@@ -209,8 +211,8 @@ public class Optimizer : MonoBehaviour {
         }
         catch (Exception e1)
         {
-            // print(champFileLoadPath + " Error loading genome from file!\nLoading aborted.\n"
-            //						  + e1.Message + "\nJoe: " + champFileLoadPath);
+			print(champFileSavePath + " Error loading genome from file!\nLoading aborted.\n"
+			      + e1.Message + "\nJoe: " + champFileSavePath);
             return;
         }
 
@@ -240,22 +242,46 @@ public class Optimizer : MonoBehaviour {
         }
         return 0;
     }
-
+	
     void OnGUI()
     {
         if (GUI.Button(new Rect(10, 10, 100, 40), "Start EA"))
         {
+			RefreshFileName();
+
+			_ea = experiment.CreateEvolutionAlgorithm();
             StartEA();
         }
         if (GUI.Button(new Rect(10, 60, 100, 40), "Stop EA"))
         {
+			RefreshFileName();
+
             StopEA();
         }
         if (GUI.Button(new Rect(10, 110, 100, 40), "Run best"))
         {
+			RefreshFileName();
+
             RunBest();
         }
 
+		fileName = GUI.TextField(new Rect(10, 160, 100, 20), fileName);
+
+		if( GUI.Button(new Rect(10, 190, 100, 40), "Load Brain"))
+		{
+			RefreshFileName();
+
+			_ea = experiment.CreateEvolutionAlgorithm(popFileSavePath);
+			StartEA();
+		}
+
         GUI.Label(new Rect(10, Screen.height - 70, 60, 150), string.Format("Generation: {0}\nFitness: {1:0.00}", Generation, Fitness));
     }
+
+	// so we dont do it per update
+	private void RefreshFileName()
+	{
+		champFileSavePath = Application.persistentDataPath + string.Format("/{0}.champ.xml", fileName);
+		popFileSavePath = Application.persistentDataPath + string.Format("/{0}.pop.xml", fileName);
+	}
 }
