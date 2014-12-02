@@ -39,6 +39,7 @@ namespace SharpNeat.Core
         readonly int _fitnessHistoryLength;
 
         double _fitness;
+     
         bool _isEvaluated;
         uint _evaluationCount;
         uint _evaluationPassCount;
@@ -81,6 +82,8 @@ namespace SharpNeat.Core
         {
             get { return _fitness; }
         }
+
+        
 
         /// <summary>
         /// Gets the arithmetic mean of the most recent fitnesses as stored in the fitness history buffer.

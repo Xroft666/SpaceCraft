@@ -44,31 +44,44 @@ public class ShipBuilderBrain : UnitController {
     #region Classes
     public class SimulationStats
     {
+        public ShipBuilderBrain ShipBuilderBrain { get; private set; }
+
+        public SimulationStats(ShipBuilderBrain shipBuilderBrain)
+        {
+            if (shipBuilderBrain != null)
+            {
+                ShipBuilderBrain = shipBuilderBrain;
+            }
+            else { Debug.LogError("shipbuilderbrain is null!");}
+        }
+
+        public float Fitness { get; set; }
+
         public enemyDamage EnemyDamage = new enemyDamage();
         public astroidDamage AstroidDamage = new astroidDamage();
-        public int _obsticleHits = 0;
-        public float usedFuel = 0;
+        public int ObsticleHits = 0;
+        public float UsedFuel = 0;
     }
     public class enemyDamage
     {
-        private float damage;
-        private int hits;
+        public float Damage { get; private set; }
+        public int Hits { get; private set; }
 
         void Hit(float damage)
         {
-            this.damage += damage;
-            hits++;
+            Damage += damage;
+            Hits++;
         }
     }
     public class astroidDamage
     {
-        private float damage;
-        private int hits;
+        public float Damage { get; private set; }
+        public int Hits { get; private set; }
 
         void Hit(float damage)
         {
-            this.damage += damage;
-            hits++;
+            Damage += damage;
+            Hits++;
         }
     }
 #endregion 
@@ -148,7 +161,7 @@ public class ShipBuilderBrain : UnitController {
         {
             float pullForce = (float)outputArr[i];
             engines[i].OnActivate(pullForce);
-            Stats.usedFuel += pullForce;
+            Stats.UsedFuel += pullForce;
         }
     }
     public override void SetOptimizer(Optimizer o)
@@ -290,7 +303,7 @@ public class ShipBuilderBrain : UnitController {
 
 		isRunning = true;
 
-        Stats = new SimulationStats();
+        Stats = new SimulationStats(this);
 
 	    Score = 0;
 
@@ -314,14 +327,17 @@ public class ShipBuilderBrain : UnitController {
 		Destroy(voxelSystem.gameObject);
 	}
 	
-	public override float GetFitness(){
+	public override float GetFitness()
+	{
 
-	    return optimizer.objective.GetFitness(this);
+	    float fitness = optimizer.objective.GetFitness(this);
+	    Stats.Fitness = fitness;
+        return fitness;
 	}
 
 	void OnCollisionEnter2D(Collision2D collision)
 	{
-       Stats._obsticleHits++; 
+       Stats.ObsticleHits++; 
 	}
 
     void OnTriggerStay2D(Collider2D col)

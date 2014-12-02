@@ -1,36 +1,50 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SharpNeat.EvolutionAlgorithms;
 using SharpNeat.Genomes.Neat;
 using UnityEngine;
 using System.Collections;
+using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 public class ObjectiveHandler
 {
 
-    private float[] targetFitnes = new float[4] {250,180,170,150};
+    private readonly float[] _targetFitnes = {250,180,170,150};
 
-    private int currentObjective = 0;
-    private int checkingObjective = 0;
+    private int _currentObjective;
+    private int _checkingObjective;
 
-    private int _generationNum;
+    public int ObjectiveNum { get {
+        if (_checkingObjectives)
+        {
+            return _checkingObjective;
+        }
+        else
+        {
+            return _currentObjective;
+        }
+    } }
 
-    private GameObject target;
+    private GameObject _target;
 
     private readonly List<Action> _objectiveList = new List<Action>();
 
 
     private bool _checkingObjectives;
 
-    private Optimizer optimizer;
+    private readonly Optimizer _optimizer;
 
-   
+    EvolutionDataHistory dataHistory;
+
     public ObjectiveHandler(Optimizer o)
     {
-        optimizer = o;
-        
+        _optimizer = o;
+
+        dataHistory = new EvolutionDataHistory(Optimizer._ea,"test",o);
+
         InitTarget();
         
         _objectiveList.Add(SetObjective0);
@@ -40,122 +54,134 @@ public class ObjectiveHandler
         //_objectiveList.Add(SetObjective4);
         //_objectiveList.Add(SetObjective5);
 
-
-
-       
-
-       
     }
 
     private void InitTarget()
     {
-        target = new GameObject();
-        target.AddComponent<MeshRenderer>();
-        MeshFilter f = target.AddComponent<MeshFilter>();
+        _target = new GameObject();
+        _target.AddComponent<MeshRenderer>();
+        MeshFilter f = _target.AddComponent<MeshFilter>();
         GameObject g = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         f.mesh = g.GetComponent<MeshFilter>().mesh;
-        GameObject.Destroy(g);
-        CircleCollider2D c = target.AddComponent<CircleCollider2D>();
-        c.radius = 1;
+        Object.Destroy(g);
+        CircleCollider2D c = _target.AddComponent<CircleCollider2D>();
+        c.radius = 0.5f;
         c.isTrigger = true;
-        target.transform.tag = "Target";
-        target.name = "Target";
-        target.AddComponent<GotoTarget>();
+        _target.transform.tag = "Target";
+        _target.name = "Target";
+        _target.AddComponent<GotoTarget>();
     }
 
     public void NextGen()
     {
         NeatEvolutionAlgorithm<NeatGenome> ea = Optimizer._ea;
 
-        _generationNum = (int) ea.Statistics._generation;
-        float maxFit = (float) ea.Statistics._maxFitness;
-        float meanFit = (float) ea.Statistics._meanFitness;
+        dataHistory.NextGeneration();
+
+        float meanFit = getMeanFitness(ea);
+        
 
         if (!_checkingObjectives)
         {
-            if (meanFit >= targetFitnes[currentObjective])
+            if (meanFit >= _targetFitnes[_currentObjective])
             {
-                currentObjective++;
-                if (currentObjective == _objectiveList.Count)
+                _currentObjective++;
+                if (_currentObjective == _objectiveList.Count)
                 {
-                    currentObjective = 0;
+                    _currentObjective = 0;
                 }
                 _checkingObjectives = true;
-                checkingObjective = 0;
-                _objectiveList[checkingObjective]();
-                Debug.Log("OBJECTIVE " + (currentObjective - 1) + " COMPLETED, CHECKING OBJECTIVES" + "... " + meanFit + "/" + targetFitnes[currentObjective]);
+                _checkingObjective = 0;
+                _objectiveList[_checkingObjective]();
+                Debug.Log("OBJECTIVE " + (_currentObjective - 1) + " COMPLETED, CHECKING OBJECTIVES" + "... " + meanFit + "/" + _targetFitnes[_currentObjective]);
             }
             else
             {
-                _objectiveList[currentObjective]();
-                Debug.Log("TRAINING OBJECTIVE " + (currentObjective) + "... "+meanFit+"/"+targetFitnes[currentObjective]);
+                _objectiveList[_currentObjective]();
+                Debug.Log("TRAINING OBJECTIVE " + (_currentObjective) + "... "+meanFit+"/"+_targetFitnes[_currentObjective]);
             }
         }
         else
         {
-            if (meanFit >= targetFitnes[currentObjective])
+            if (meanFit >= _targetFitnes[_currentObjective])
             {
-                if (checkingObjective < currentObjective)
+                if (_checkingObjective < _currentObjective)
                 {
-                    checkingObjective ++;
-                    _objectiveList[checkingObjective]();
-                    Debug.Log("CHECKING OBJECTIVE " + (checkingObjective - 1) + " COMPLETED" + "... " + meanFit + "/" + targetFitnes[currentObjective]);
+                    _checkingObjective ++;
+                    _objectiveList[_checkingObjective]();
+                    Debug.Log("CHECKING OBJECTIVE " + (_checkingObjective - 1) + " COMPLETED" + "... " + meanFit + "/" + _targetFitnes[_currentObjective]);
                 }
                 else
                 {
                     _checkingObjectives = false;
-                    _objectiveList[currentObjective]();
-                    Debug.Log("CHECKING OBJECTIVES COMPLETE, BACK TO TRAINING" + "... " + meanFit + "/" + targetFitnes[currentObjective]);
+                    _objectiveList[_currentObjective]();
+                    Debug.Log("CHECKING OBJECTIVES COMPLETE, BACK TO TRAINING" + "... " + meanFit + "/" + _targetFitnes[_currentObjective]);
                 }
             }
             else
             {
                 _checkingObjectives = false;
-                currentObjective = checkingObjective;
-                _objectiveList[currentObjective]();
-                checkingObjective = 0;
-                Debug.Log("OBJECTIVE " + currentObjective + " FAILED, RETRAINING THIS OBJECTIVE" + "... " + meanFit + "/" + targetFitnes[currentObjective]);
+                _currentObjective = _checkingObjective;
+                _objectiveList[_currentObjective]();
+                _checkingObjective = 0;
+                Debug.Log("OBJECTIVE " + _currentObjective + " FAILED, RETRAINING THIS OBJECTIVE" + "... " + meanFit + "/" + _targetFitnes[_currentObjective]);
             }
         }
 
     }
 
-    public float GetFitness(ShipBuilderBrain S)
+    private float getMeanFitness(NeatEvolutionAlgorithm<NeatGenome> ea)
+    {
+        List<float> fitList = ea.GenomeList.Select(n => (float) n.EvaluationInfo.Fitness).ToList();
+        fitList.Sort();
+        //fitList.Reverse();
+
+        for (int i = ea.GenomeList.Count / 2 - 1; i >= 0; i--)
+        {
+            fitList.RemoveAt(i);
+        }
+
+        return fitList.Sum() / fitList.Count;
+    }
+
+    public float GetFitness(ShipBuilderBrain s)
     {
         float fitness =0;
-        int t = _checkingObjectives ? checkingObjective : currentObjective;
+        int t = _checkingObjectives ? _checkingObjective : _currentObjective;
 
         if (t == 0 || t==1 || t==2 || t==3)
         {
-            fitness = FitnessFunctions.GetFitnessStayOnTarget(S);
+            fitness = FitnessFunctions.GetFitnessStayOnTarget(s);
         }
         return fitness;
     }
 
     private void SetObjective0()
     {
-       target.transform.position = Vector3.zero;
+       _target.transform.position = Vector3.zero;
     }
 
     private void SetObjective1()
     {
-        target.transform.position = Vector3.up*10;
+        _target.transform.position = Vector3.up*10;
     }
 
     private void SetObjective2()
     {
-        target.transform.position = new Vector3(Random.Range(-10,10), Random.Range(-10,10),0);
+        _target.transform.position = new Vector3(Random.Range(-10,10), Random.Range(-10,10),0);
     }
     private void SetObjective3()
     {
-        target.transform.position = new Vector3(10, -10, 0);
+        _target.transform.position = new Vector3(10, -10, 0);
         
-        Hashtable h = new Hashtable();
-        h.Add("position",new Vector3(10, 10, 0));
-        h.Add("time",optimizer.TrialDuration-0.1f);
-        h.Add("easetype","linear");
+        Hashtable h = new Hashtable
+        {
+            {"position", new Vector3(10, 10, 0)},
+            {"time", _optimizer.TrialDuration - 0.1f},
+            {"easetype", "linear"}
+        };
 
-        iTween.MoveTo(target,h);
+        iTween.MoveTo(_target,h);
         
     }
     private void SetObjective4()

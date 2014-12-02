@@ -41,7 +41,7 @@ public class Engine : VoxelData
 	        engineSpeed = 1;
 	    }
 
-	    particle.emissionRate = 100 * engineSpeed;
+	    particle.emissionRate = 0;//100 * engineSpeed;
 	}
 	public override void OnDeactivate(params object[] input)
 	{
