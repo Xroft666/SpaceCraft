@@ -180,7 +180,6 @@ public class Optimizer : MonoBehaviour {
 
 
 		// some how here, i need to get the original genome which contains all the data on voxels
-
         controller.SetOptimizer(this);
 		controller.Activate(box, blackBoxExtraData);
     }
