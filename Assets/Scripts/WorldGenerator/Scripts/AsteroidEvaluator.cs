@@ -7,6 +7,8 @@
 // it checks the density and roundness of an asteroid
 public class AsteroidEvaluator 
 {
+	private static float[,] evaluationData = new float[10,10];
+
 	// Fintess function that returns a value from 0 to 1
 	// 0 - does not fit
 	// 1 - fits
@@ -42,6 +44,9 @@ public class AsteroidEvaluator
 
 		float density = EvaluateDensity( xAver, yAver, seed, ref map );
 		float roundness = EvaluateRoundness( xAver, yAver, seed, ref map );
+
+		evaluationData[(int) (density * evaluationData.GetLength(0)), (int) (roundness * evaluationData.GetLength(1))] += 1f;
+		UnityEngine.Debug.Log("x: " + (int) (density * evaluationData.GetLength(0)) + " y: " + (int) (roundness * evaluationData.GetLength(1)));
 
 		return UnityEngine.Mathf.Lerp(density, roundness, weight);
 	}
@@ -259,8 +264,40 @@ public class AsteroidEvaluator
 
 		return minRadius / maxRadius;
     }
+
+	static public void CollectData( ref int[,] map )
+	{
+		Evaluate( 0, ref map );
+	}
+
+	static public void ClearData()
+	{
+		for( int i = 0; i < evaluationData.GetLength(0); i++ )
+			for( int j = 0; j < evaluationData.GetLength(1); j++ )
+				evaluationData[i,j] = 0f;
+	}
+
+	static public float[,] GetNormalizedData()
+	{
+
+		float[,] normalizedData = new float[evaluationData.GetLength(0),evaluationData.GetLength(1)];
+
+		float maxValue = float.MinValue;
+
+		// seeking the maximum value to normalize to
+		for( int i = 0; i < evaluationData.GetLength(0); i++ )
+			for( int j = 0; j < evaluationData.GetLength(1); j++ )
+				if( evaluationData[i,j] > maxValue )
+					maxValue = evaluationData[i,j];
+
+		for( int i = 0; i < normalizedData.GetLength(0); i++ )
+			for( int j = 0; j < normalizedData.GetLength(1); j++ )
+				normalizedData[i,j] = evaluationData[i,j] / maxValue;
+
+		return normalizedData;
+	}
     
-    static private void DebugMap(ref int[,] map)
+    static public void DebugMap(ref int[,] map)
 	{
 		for( int i = map.GetLength(0) - 1; i >= 0 ; i-- )
 		{
