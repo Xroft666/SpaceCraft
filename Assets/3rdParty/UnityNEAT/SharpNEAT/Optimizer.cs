@@ -126,7 +126,21 @@ public class Optimizer : MonoBehaviour {
         objective.NextGen();
     //    Utility.Log(string.Format("Moving average: {0}, N: {1}", _ea.Statistics._bestFitnessMA.Mean, _ea.Statistics._bestFitnessMA.Length));
 
-    
+
+		// Autosave every 50 generation 
+    	if( Generation % 50 == 0 )
+		{
+			using (XmlWriter xw = XmlWriter.Create(popFileSavePath, _xwSettings))
+			{
+				experiment.SavePopulation(xw, _ea.GenomeList);
+			}
+			// Also save the best genome
+			
+			using (XmlWriter xw = XmlWriter.Create(champFileSavePath, _xwSettings))
+			{
+				experiment.SavePopulation(xw, new NeatGenome[] { _ea.CurrentChampGenome });
+			}
+		}
     }
 
     void ea_PauseEvent(object sender, EventArgs e)
