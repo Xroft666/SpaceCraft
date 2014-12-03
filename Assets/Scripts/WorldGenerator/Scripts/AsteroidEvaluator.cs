@@ -13,7 +13,7 @@ public class AsteroidEvaluator
 	// 0 - does not fit
 	// 1 - fits
 	// general formula: fitness = (density + roundness) / 2
-	static public float Evaluate(float seed, ref int[,] map)
+	static public void Evaluate(float seed, ref int[,] map)
 	{
 		float weight = 0.0f;
 
@@ -46,9 +46,9 @@ public class AsteroidEvaluator
 		float roundness = EvaluateRoundness( xAver, yAver, seed, ref map );
 
 		evaluationData[(int) (density * evaluationData.GetLength(0)), (int) (roundness * evaluationData.GetLength(1))] += 1f;
-		UnityEngine.Debug.Log("x: " + (int) (density * evaluationData.GetLength(0)) + " y: " + (int) (roundness * evaluationData.GetLength(1)));
 
-		return UnityEngine.Mathf.Lerp(density, roundness, weight);
+		DebugMap( ref map);
+		UnityEngine.Debug.Log("density: " + density + ", roundness: " + roundness);
 	}
 
 	// tells how dense an asteroid is. If it contains a lot of holes,

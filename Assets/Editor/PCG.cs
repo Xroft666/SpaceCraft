@@ -334,7 +334,7 @@ public class PcgWindow : EditorWindow
 
             GP.GenerateAction(ref map, a);
 
-			Maps.Add( map );
+			Maps.Add( (int[,]) map.Clone() );
 
             Texture2Ds[j] = MapUtility.MapToBinaryTexture(map);
             
