@@ -51,11 +51,13 @@ public static class NodeWindowRenderer {
 
         GUI.DrawTexture(new Rect(0, 300, 150, 150), window.Texture2Ds[id], ScaleMode.StretchToFill,true);
 
-		if( GUILayout.Button("Evaluate") )
+		if( GUILayout.Button("Debug") )
 		{
+			AsteroidEvaluator.ClearData();
+
 			int[,] map = window.Maps[id];
-			float fitness = AsteroidEvaluator.Evaluate(window.seed, ref map);
-			Debug.Log("Fintess: " + fitness);
+			AsteroidEvaluator.Evaluate(window.seed, ref map);
+			AsteroidEvaluator.DebugMap(ref map);
 		}
     }
 

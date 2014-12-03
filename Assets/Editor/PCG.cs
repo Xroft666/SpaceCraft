@@ -31,6 +31,8 @@ public class PcgWindow : EditorWindow
     private readonly string objectName = "Generator.prefab";
 
     public Handle SelectedHandle;
+
+	private Texture2D evalTex = null;
     
 
     // Add menu named "My Window" to the Window menu
@@ -230,7 +232,27 @@ public class PcgWindow : EditorWindow
         //GUILayout.EndArea();
         
 
+		if (GUILayout.Button("Evaluate Generator"))
+		{
+			AsteroidEvaluator.ClearData();
+//			Debug.Log ();
+
+			for( int i = 0; i < Maps.Count; i++ )
+			{
+				int[,] map = Maps[i];
+				AsteroidEvaluator.CollectData( ref map );
+			}
 		
+			evalTex = MapUtility.MapToBinaryTexture(AsteroidEvaluator.GetNormalizedData());
+			evalTex.wrapMode = TextureWrapMode.Clamp;
+			evalTex.filterMode = FilterMode.Point;
+			evalTex.Apply();
+		}
+
+		if( evalTex != null )
+		{
+			GUI.DrawTexture(new Rect(0, 300, 150, 150), evalTex, ScaleMode.StretchToFill,true);
+		}
 	}
 	
 	/// <summary>
@@ -302,17 +324,17 @@ public class PcgWindow : EditorWindow
     void UpdateTextures()
     {
         int size = AstroidObject.size;
-        int[,] map = new int[size,size];
+        
+		int[,] map = new int[size,size];
+		GenerationProcedures GP = new GenerationProcedures(_aGen, ref map, seed, AstroidObject); 
 
-        GenerationProcedures GP = new GenerationProcedures(_aGen, ref map, seed, AstroidObject);  
-       
         for (int j = 0; j < AstroidObject.actions.Count; j++)
         {
             AstroidGenerator.AstroidSettings.Action a = AstroidObject.actions[j];
 
             GP.GenerateAction(ref map, a);
 
-			Maps.Add((int[,])map.Clone());
+			Maps.Add( map );
 
             Texture2Ds[j] = MapUtility.MapToBinaryTexture(map);
             
