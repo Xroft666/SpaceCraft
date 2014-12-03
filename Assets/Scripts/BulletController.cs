@@ -4,5 +4,5 @@ using System.Collections;
 public class BulletController : MonoBehaviour
 {
 
-    [HideInInspector] public int ownerID = -1;
+	[HideInInspector] public ShipBuilderBrain owner = null;
 }

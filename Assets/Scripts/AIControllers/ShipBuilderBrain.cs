@@ -179,7 +179,7 @@ public class ShipBuilderBrain : UnitController {
             foreach (VoxelData c in voxelSystem.GetVoxelData())
                 if (c is Cannon)
                     cannon = (Cannon) c;
-            if (cannon != null) cannon.fire();
+            if (cannon != null) cannon.fire(this);
         }
     }
     public override void SetOptimizer(Optimizer o)

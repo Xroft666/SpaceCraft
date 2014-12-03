@@ -23,7 +23,7 @@ public class Cannon : VoxelData {
 	}
 	
 	
-	public void fire(){
+	public void fire(ShipBuilderBrain owner = null){
 
 	    if (coolDown < 0)
 	    {
@@ -46,6 +46,9 @@ public class Cannon : VoxelData {
 
 
 	        body.AddForceAtPosition(-direction.normalized*launchForce, voxel.transform.TransformPoint(pos));
+
+			if( owner != null )
+				g.GetComponent<BulletController>().owner = owner;
 	    }
 	}
 	
