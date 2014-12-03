@@ -144,7 +144,7 @@ public class ShipBuilderBrain : UnitController {
 		{
 			Vector3 direction = new Vector3( Mathf.Cos (i * (2f * Mathf.PI / (float) sensorsCount) ), Mathf.Sin(i * (2f * Mathf.PI / (float) sensorsCount) ) , 0f );
 
-			hit = Physics2D.Raycast(transform.position, transform.TransformDirection(direction), SensorRange, mask);
+			hit = Physics2D.Raycast(transform.TransformPoint(voxelSystem.GetCenter()), transform.TransformDirection(direction), SensorRange, mask);
 			if( hit.collider != null )
 				sensors[i] = 1f - hit.distance / SensorRange;
 		}
