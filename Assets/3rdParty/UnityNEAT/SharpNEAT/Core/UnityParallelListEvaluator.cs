@@ -77,7 +77,7 @@ namespace SharpNEAT.Core
                         //if (!dict.ContainsKey(genome))
                         //{
                         //    dict.Add(genome, phenome);
-                        //    fitnessDict.Add(phenome, new FitnessInfo[_optimizer.Trials]);
+                        //    fitnessDict.Add(phenome, new FitnessInfo[Optimizer.Trials]);
                         //}
 						SharpNeat.Genomes.Neat.NeatGenome neatGene = genome as SharpNeat.Genomes.Neat.NeatGenome;
 						if( neatGene != null )
@@ -119,7 +119,7 @@ namespace SharpNEAT.Core
                     
                     if (fit > _optimizer.StoppingFitness)
                     {
-                      //  Utility.Log("Fitness is " + fit + ", stopping now because stopping fitness is " + _optimizer.StoppingFitness);
+                      //  Utility.Log("Fitness is " + fit + ", stopping now because stopping fitness is " + Optimizer.StoppingFitness);
                       //  _phenomeEvaluator.StopConditionSatisfied = true;
                     }
                     genome.EvaluationInfo.SetFitness(fitness);

@@ -13,7 +13,7 @@ using Voxel2D;
 public class Optimizer : MonoBehaviour {
 
     const int NUM_INPUTS = 21;
-    const int NUM_OUTPUTS = 6;
+    const int NUM_OUTPUTS = 7;
 
     public static int VoxelSize;
 
@@ -54,7 +54,7 @@ public class Optimizer : MonoBehaviour {
 	void Start ()
 	{
 
-        objective = new ObjectiveHandler(this);
+        
 	    VoxelImpacter.GenerateFragments = false;
 
         Utility.DebugLog = true;

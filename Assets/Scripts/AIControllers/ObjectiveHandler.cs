@@ -9,13 +9,16 @@ using System.Collections;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
-public class ObjectiveHandler
+public class ObjectiveHandler:MonoBehaviour
 {
 
     private readonly float[] _targetFitnes = {250,180,170,150};
 
     private int _currentObjective;
     private int _checkingObjective;
+
+    public GameObject Maze;
+    public GameObject Enemy;
 
     public int ObjectiveNum { get {
         if (_checkingObjectives)
@@ -35,21 +38,20 @@ public class ObjectiveHandler
 
     private bool _checkingObjectives;
 
-    private readonly Optimizer _optimizer;
+    public Optimizer Optimizer;
 
     EvolutionDataHistory dataHistory;
 
-    public ObjectiveHandler(Optimizer o)
+    public void Start()
     {
-        _optimizer = o;
+       
 
-        dataHistory = new EvolutionDataHistory(Optimizer._ea,"test",o);
+        dataHistory = new EvolutionDataHistory(Optimizer._ea,Optimizer.fileName,Optimizer);
 
         InitTarget();
         
-        _objectiveList.Add(SetObjective0);
-        _objectiveList.Add(SetObjective1);
-        _objectiveList.Add(SetObjective2);
+        _objectiveList.Add(SetObjectiveMaze);
+        _objectiveList.Add(ObjectiveRandomPos);
         _objectiveList.Add(SetObjective3);
         //_objectiveList.Add(SetObjective4);
         //_objectiveList.Add(SetObjective5);
@@ -156,28 +158,41 @@ public class ObjectiveHandler
         return fitness;
     }
 
-    private void SetObjective0()
+    private void ResetScene()
     {
-       _target.transform.position = Vector3.zero;
+        _target.transform.position = Vector3.zero;
+        Enemy.SetActive(false);
+        Maze.SetActive(false);
     }
 
-    private void SetObjective1()
+    private void SetObjectiveMaze()
     {
+        ResetScene();
+        _target.transform.position = new Vector3(Random.Range(-20, 20), Random.Range(-20, 20), 0);
+        Enemy.SetActive(true);
+        Maze.SetActive(true);
+    }
+
+    private void SetObjectiveShootEnemy()
+    {
+        ResetScene();
         _target.transform.position = Vector3.up*10;
     }
 
-    private void SetObjective2()
+    private void ObjectiveRandomPos()
     {
-        _target.transform.position = new Vector3(Random.Range(-10,10), Random.Range(-10,10),0);
+        ResetScene();
+        _target.transform.position = new Vector3(Random.Range(-20,20), Random.Range(-20,20),0);
     }
     private void SetObjective3()
     {
+        ResetScene();
         _target.transform.position = new Vector3(10, -10, 0);
         
         Hashtable h = new Hashtable
         {
             {"position", new Vector3(10, 10, 0)},
-            {"time", _optimizer.TrialDuration - 0.1f},
+            {"time", Optimizer.TrialDuration - 0.1f},
             {"easetype", "linear"}
         };
 

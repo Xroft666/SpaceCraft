@@ -34,10 +34,11 @@ public class ShipBuilderBrain : UnitController {
     private Optimizer optimizer;
 
 	private VoxelSystem selectedAsteroid;
-	private VoxelSystem selectedEnemyship;
+	private Transform selectedEnemyship;
 
 	private bool mineSignal = false;
-	private bool attackSignal = false;
+    [HideInInspector]
+    public bool attackSignal = false;
 
     public SimulationStats Stats;
 
@@ -97,8 +98,8 @@ public class ShipBuilderBrain : UnitController {
 	    gameObject.transform.position = Vector3.zero;
 	
 		voxelSystem = gameObject.AddComponent<VoxelSystem>();
-		//voxelSystem.rigidbody2D.drag = 1;
-	    //voxelSystem.rigidbody2D.angularDrag = 1;
+		voxelSystem.rigidbody2D.drag = 1;
+	    voxelSystem.rigidbody2D.angularDrag = 1;
 		voxelSystem.SetGridSize(shipSize);
 
 		objectName = Optimizer.fileName;
@@ -119,6 +120,8 @@ public class ShipBuilderBrain : UnitController {
 
             ActivateEngines(outputArr);
 			
+            ActivateCannon(outputArr);
+
             CalculateAditionalData();
 		}
 	}
@@ -166,6 +169,19 @@ public class ShipBuilderBrain : UnitController {
             Stats.UsedFuel += pullForce;
         }
     }
+
+    private void ActivateCannon(ISignalArray outputArr)
+    {
+        if (outputArr[6] < 0.5f)
+        {
+            Cannon cannon = null;
+
+            foreach (VoxelData c in voxelSystem.GetVoxelData())
+                if (c is Cannon)
+                    cannon = (Cannon) c;
+            if (cannon != null) cannon.fire();
+        }
+    }
     public override void SetOptimizer(Optimizer o)
     {
         this.optimizer = o;
@@ -188,7 +204,7 @@ public class ShipBuilderBrain : UnitController {
 		}
 		else if( attackSignal )
 		{
-			moveToPos = selectedEnemyship.transform.TransformPoint( selectedEnemyship.GetCenter());
+			moveToPos = selectedEnemyship.transform.position;
 			targetVelocity = selectedEnemyship.rigidbody2D.velocity;
 			targetDir = selectedEnemyship.transform.up;
 		}
@@ -269,24 +285,24 @@ public class ShipBuilderBrain : UnitController {
 	}
 
 	// replacable by SELECT SHIP
-	public VoxelSystem SearchForClosestShip()
+	public Transform SearchForClosestShip()
 	{
 		float minDist = Mathf.Infinity;
-		VoxelSystem closestShip = null;
+        Transform closestShip = null;
 
 //		List<UnitController> ships = Optimizer.Units;
 		GameObject[] ships = GameObject.FindGameObjectsWithTag("Enemy");
 
 		for( int i = 0; i < ships.Length; i++ )
 		{
-			VoxelSystem otherShip = ships[i].GetComponent<VoxelSystem>();
+            Transform otherShip = ships[i].transform;//GetComponent<VoxelSystem>();
 		
-			float distance = ( voxelSystem.transform.TransformPoint( voxelSystem.GetCenter() ) - 
-			                           otherShip.transform.TransformPoint( otherShip.GetCenter() )).magnitude;
+			float distance = ( transform.position  - 
+			                           ships[i].transform.position).magnitude;
 			if( distance < minDist )
 			{
 				minDist = distance;
-				closestShip = voxelSystem;
+                closestShip = otherShip;
 			}
 		}
 
