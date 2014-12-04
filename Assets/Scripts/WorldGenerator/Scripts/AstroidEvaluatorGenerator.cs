@@ -37,20 +37,21 @@ public class AstroidEvaluatorGenerator : MonoBehaviour
 
     IEnumerator Evaluate()
     {
+
         Debug.Log("STARTING EVALUATION...");
         _running = true;
         int mapSize = generator.AstroidList[_astroidId].size;
 
         for (int i = 0; i < Rounds; i++)
         {
-            
             foreach (AstroidGenerator.AstroidSettings.Action t in generator.AstroidList[_astroidId].actions)
             {
                 t.Randomize(mapSize);
             }
-            int[,] map = new int[mapSize,mapSize];
+            int[,] map = new int[mapSize, mapSize];
 
-            GenerationProcedures GP = new GenerationProcedures(generator, ref map, 0, generator.AstroidList[_astroidId]);
+            GenerationProcedures GP = new GenerationProcedures(generator, ref map, 0,
+                generator.AstroidList[_astroidId]);
 
 
             Thread thread = new Thread(GP.Generate);
@@ -60,9 +61,21 @@ public class AstroidEvaluatorGenerator : MonoBehaviour
                 yield return new WaitForEndOfFrame();
             }
 
-            AsteroidEvaluator.CollectData(ref map);
-            _progress = i;
-            Debug.Log("Progress:"+(i+1)+"/"+Rounds);
+            try{
+                AsteroidEvaluator.CollectData(ref map);
+                _progress = i;
+                Debug.Log("Progress:" + (i + 1) + "/" + Rounds);
+            }
+            catch (Exception e)
+            { 
+                Debug.LogException(e);
+                i--;
+            }
+
+            if (i%100 == 0)
+            {
+               TmpSave(i); 
+            }
         }
 
         float[,] f = AsteroidEvaluator.GetNormalizedData();
@@ -77,9 +90,16 @@ public class AstroidEvaluatorGenerator : MonoBehaviour
         }
     }
 
-    void PrepareData()
+    
+
+    void TmpSave(int i)
     {
-          
+        float[,] f = AsteroidEvaluator.GetNormalizedData();
+        Texture2D t = MapUtility.MapToBinaryTexture(f);
+        byte[] b = t.EncodeToPNG();
+        File.WriteAllBytes(Application.dataPath + "/Data/Evaluation/tmpsave/" + _filename +""+i+".png", b);
+        Debug.Log("Tmp save "+i);
+        Destroy(t);
     }
 
     void Export()

@@ -7,7 +7,7 @@
 // it checks the density and roundness of an asteroid
 public class AsteroidEvaluator 
 {
-	private static float[,] evaluationData = new float[256,256];
+	private static float[,] evaluationData = new float[32,32];
 
 	// Fintess function that returns a value from 0 to 1
 	// 0 - does not fit
