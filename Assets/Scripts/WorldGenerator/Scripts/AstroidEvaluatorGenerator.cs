@@ -97,6 +97,12 @@ public class AstroidEvaluatorGenerator : MonoBehaviour
         float[,] f = AsteroidEvaluator.GetNormalizedData();
         Texture2D t = MapUtility.MapToBinaryTexture(f);
         byte[] b = t.EncodeToPNG();
+
+		if( !Directory.Exists(Application.dataPath + "/Data/Evaluation/tmpsave/") )
+		{
+			Directory.CreateDirectory(Application.dataPath + "/Data/Evaluation/tmpsave/");
+		}
+
         File.WriteAllBytes(Application.dataPath + "/Data/Evaluation/tmpsave/" + _filename +""+i+".png", b);
         Debug.Log("Tmp save "+i);
         Destroy(t);
