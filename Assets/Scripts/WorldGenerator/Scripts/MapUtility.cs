@@ -87,6 +87,7 @@ namespace WorldGen{
 					t.SetPixel(x,y,new Color(map[x,y],map[x,y],map[x,y]));
 				}
 			}
+            t.Apply();
 			return t;
 		}
 	}
