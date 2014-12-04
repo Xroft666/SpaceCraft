@@ -7,7 +7,7 @@
 // it checks the density and roundness of an asteroid
 public class AsteroidEvaluator 
 {
-	private static float[,] evaluationData = new float[10,10];
+	private static float[,] evaluationData = new float[256,256];
 
 	// Fintess function that returns a value from 0 to 1
 	// 0 - does not fit
@@ -24,7 +24,7 @@ public class AsteroidEvaluator
 
 
 
-		int voxelsCount = 0;
+		int voxelsCount = 1;
 		for( int i = map.GetLength(0) - 1; i >= 0 ; i-- )
 		{
 			for( int j = 0; j < map.GetLength(1); j++ )

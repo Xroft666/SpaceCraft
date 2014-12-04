@@ -38,12 +38,22 @@ public class AstroidGenerator : MonoBehaviour {
             public Voxel2D.IntVector2 invertStats;
             public int mapEdgeCleaning;
             public float noiseThreshold;
+
+            public void Randomize(int mapSize)
+            {
+                cellularAutomataStats.Ranomize(mapSize);
+                perlinNoiseStats.Randomize(mapSize);
+                mapEdgeCleaning = Random.Range(1, mapSize/2);
+                noiseThreshold = Random.Range(0f, 1f);
+            }
         }
 
         public string name;
 
         public int size = 10;
         public List<Action> actions = new List<Action>();
+
+    
     }
 
     
@@ -56,6 +66,7 @@ public class AstroidGenerator : MonoBehaviour {
     public List<int> seeds = new List<int>();
 
     public bool randomSeed;
+    public bool ToVoxel = true;
 	
 	// Use this for initialization
 	void Start () {
@@ -90,17 +101,25 @@ public class AstroidGenerator : MonoBehaviour {
 				yield return new WaitForEndOfFrame();
 			}
 
-
-			GameObject g = new GameObject();
-		    g.transform.position = Vector3.up*i*30;
-			g.transform.name = "Astroid "+theSeed;
-			VoxelSystem v = g.AddComponent<VoxelSystem>();
-
-			VoxelData[,] VD = VoxelUtility.IntToVoxelDataOre(map,v);
-			v.SetVoxelGrid(VD);
-
+		    if (ToVoxel)
+		    {
+		        MapToVoxel(i, theSeed);
+		    }
 		}
 
+        
+
 	}
+
+    void MapToVoxel(int i,int theSeed)
+    {
+        GameObject g = new GameObject();
+        g.transform.position = Vector3.up * i * 30;
+        g.transform.name = "Astroid " + theSeed;
+        VoxelSystem v = g.AddComponent<VoxelSystem>();
+
+        VoxelData[,] VD = VoxelUtility.IntToVoxelDataOre(map, v);
+        v.SetVoxelGrid(VD);
+    }
 
 }
