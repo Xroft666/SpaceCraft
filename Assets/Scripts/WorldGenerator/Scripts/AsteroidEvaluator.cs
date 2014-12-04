@@ -157,7 +157,7 @@ public class AsteroidEvaluator
 
 		//second diagonal line (from upper left to bottom right)
 
-		if (xAver + yAver < size) {
+		if (xAver + yAver < size - 1) {
 
 			UnityEngine.Debug.Log("X: " + xAver + "Y: " + yAver);
 				for (int i = 0; i <= yAver + xAver; i++) {
@@ -183,11 +183,11 @@ public class AsteroidEvaluator
 		} 
 		else 
 		{
-			for (int j = 0; j <= (2*size - (xAver + yAver) - 1); j++)
+			for (int j = 0; j <= (2*(size - 1) - (xAver + yAver)); j++)	//ok!!
 			{
-				if( j == 2*size - (xAver + yAver) - 1)
+				if( j == 2*(size - 1) - (xAver + yAver))		//ok!!
 				{
-					if( map [yAver - (size - xAver) + j, size - j] == 1 )
+					if( map [yAver - (size - 1 - xAver) + j, size - 1 - j] == 1 )	//ok!
 						objectsCount++;
 					break;
 				}
@@ -195,7 +195,7 @@ public class AsteroidEvaluator
 				if (j > 0)
 				{
 				
-					if (map [yAver - (size - xAver) + j - 1, size - j] != map [yAver - (size - xAver) + j, size - j - 1] && map [yAver - (size - xAver) + j, size - j - 1]  == 0)
+					if (map [yAver - (size - xAver) + j, size - j] != map [yAver - (size - xAver) + j, size - j - 1] && map [yAver - (size - xAver) + j, size - j - 1]  == 0)	//ok!
 						objectsCount++;
 					if(map [yAver - (size - xAver) + j, size - j - 1] == 1)
 						voxelsCount++;
@@ -316,12 +316,11 @@ public class AsteroidEvaluator
 
 		//second diagonal line (from upper left to bottom right)
 		
-		if (xAver + yAver <= size - 1) {
+		if (xAver + yAver < size - 1) {
 
-			int offset;
-			for (int i = 0; i < yAver + xAver; i++) {
+			for (int i = 0; i < yAver + xAver; i++) {		//ok!!
 
-				if(map[i, xAver + yAver - i] == 1)
+				if(map[i, xAver + yAver - i] == 1)		//ok!!
 				{
 					asteroidEdge = new UnityEngine.Vector2 (i, xAver + yAver - i);
 					diagUpLeftToRightRad = new UnityEngine.Vector2 (asteroidEdge.x - center.x, asteroidEdge.y - center.y).magnitude;
@@ -329,11 +328,11 @@ public class AsteroidEvaluator
 				}
 			}
 
-			for (int i = yAver + xAver - 1; i > 0; i--){
+			for (int i = yAver + xAver; i > 0; i--){
 
-				if (map[i,size - i -1] == 1)
+				if (map[i,size - i - 2] == 1)		//ok!!
 				{
-					asteroidEdge = new UnityEngine.Vector2 (transX + transY - i ,i);
+					asteroidEdge = new UnityEngine.Vector2 (i,size - i - 2);		//ok!
 					diagDownRightToLeftRad = new UnityEngine.Vector2 (asteroidEdge.x - center.x, asteroidEdge.y - center.y).magnitude;
 					break;
 				}
@@ -342,22 +341,23 @@ public class AsteroidEvaluator
 		} 
 		else 
 		{
-			for (int j = 0; j < (2*size - (xAver + yAver)); j++)
+			for (int j = 0; j < (2* (size - 1) - (xAver + yAver)); j++)		//ok!!
 			{
-				if (map[size - (2*size - (xAver + yAver)) + j, size -1 - j] == 1)
+				if (map[(size - 1)  - (2* (size - 1) - (xAver + yAver)) + j, size - 1 - j] == 1)
 				{
-					asteroidEdge = new UnityEngine.Vector2 (size - (2*size - (xAver + yAver)) + j, size -1 - j);
+					asteroidEdge = new UnityEngine.Vector2 ((size - 1) - (2*(size - 1)  - (xAver + yAver)) + j, size -1 - j);
 					diagUpLeftToRightRad = new UnityEngine.Vector2 (asteroidEdge.x - center.x, asteroidEdge.y - center.y).magnitude;
 					break;
 				}
 
 			}
 
-			for(int j = (2*size - (xAver + yAver)) - 1; j > 0; j-- )
+			for(int j = (2* (size - 1) - (xAver + yAver)); j > 0; j-- )
 			{
-				if(map[size -1 - j, size - (2*size - (xAver + yAver)) + j]  == 1)
+				//if(map[size -1 - j, size - (2* (size - 1)  - (xAver + yAver)) + j]  == 1)
+				if (map[((size - 1) - (2* (size - 1) - (xAver + yAver))) + j, (size - 1 - j)] == 1)		//portuguese, but ok!!
 				{
-					asteroidEdge = new UnityEngine.Vector2 (size -1 - j, size - (2*size - (xAver + yAver)) + j);
+					asteroidEdge = new UnityEngine.Vector2 (((size - 1) - (2* (size - 1) - (xAver + yAver))) + j, (size - 1 - j));		//ok!!
 					diagDownRightToLeftRad = new UnityEngine.Vector2 (asteroidEdge.x - center.x, asteroidEdge.y - center.y).magnitude;
 					break;
 				}
