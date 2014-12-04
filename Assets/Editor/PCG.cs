@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEditor;
 using WorldGen;
@@ -306,8 +307,13 @@ public class PcgWindow : EditorWindow
 
     private void Save()
     {
+        GameObject nprefab = Instantiate(prefab) as GameObject;
+
         AssetDatabase.DeleteAsset(filePath + objectName);
-        PrefabUtility.CreatePrefab(filePath + objectName, prefab);
+        PrefabUtility.CreatePrefab(filePath + objectName, nprefab);
+
+        DestroyImmediate(nprefab);
+        Init();
     }
 
     public void Refresh()
