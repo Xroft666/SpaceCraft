@@ -127,12 +127,13 @@ public class AsteroidEvaluator
 			transY = 0;
 		}
 
-		for (int i = 0; i <= (size - transX - transY ); i++)
+		for (int i = 0; i <= (size - transX - transY - 1); i++)
 		{
 
-			if( i == size - transX - transY)
+			if( i == size - transX - transY - 1)
 			{
-				if( map[transX + i - 1, transY + i - 1] == 1 )
+				UnityEngine.Debug.Log("transx: " + transX + "transY: " + transY);
+				if( map[transX + i, transY + i] == 1 )
 					objectsCount++;
 				break;
 			}
@@ -150,13 +151,14 @@ public class AsteroidEvaluator
 
 		//second diagonal line (from upper left to bottom right)
 
-		if (xAver + yAver <= size) {
+		if (xAver + yAver < size) {
 
-				for (int i = 0; i < yAver + xAver; i++) {
+			UnityEngine.Debug.Log("X: " + xAver + "Y: " + yAver);
+				for (int i = 0; i <= yAver + xAver; i++) {
 
-				if( i == yAver + xAver )
+				if( i == yAver + xAver)
 						{
-					if( map[i - 1, xAver + yAver - i + 1] == 1 )
+					if( map[i, xAver + yAver - i] == 1 )
 							objectsCount++;
 							break;
 						}
@@ -175,11 +177,11 @@ public class AsteroidEvaluator
 		} 
 		else 
 		{
-			for (int j = 0; j <= (2*size - (xAver + yAver)); j++)
+			for (int j = 0; j <= (2*size - (xAver + yAver) - 1); j++)
 			{
-				if( j == 2*size - (xAver + yAver))
+				if( j == 2*size - (xAver + yAver) - 1)
 				{
-					if( map [yAver - (size - xAver) + j - 1, size - j] == 1 )
+					if( map [yAver - (size - xAver) + j, size - j] == 1 )
 						objectsCount++;
 					break;
 				}
@@ -278,7 +280,7 @@ public class AsteroidEvaluator
 			transY = 0;
 		}
 		
-		for (int i = 0; i <= (size - transX - transY ); i++)
+		for (int i = 0; i < (size - transX - transY ); i++)
 		{
 			if(map[transX + i, transY + i] == 1)
 			{
@@ -288,7 +290,7 @@ public class AsteroidEvaluator
 			}
 		}
 
-		for (int i = (size - transX - transY - 1); i >= 0; i--)
+		for (int i = (size - transX - transY - 1); i > 0; i--)
 		{
 			if(map[transX + i,transY + i] == 1)
 			{
@@ -303,7 +305,7 @@ public class AsteroidEvaluator
 
 		//second diagonal line (from upper left to bottom right)
 		
-		if (xAver + yAver <= size) {
+		if (xAver + yAver <= size - 1) {
 
 			int offset;
 			for (int i = 0; i < yAver + xAver; i++) {
@@ -329,7 +331,7 @@ public class AsteroidEvaluator
 		} 
 		else 
 		{
-			for (int j = 0; j <= (2*size - (xAver + yAver)); j++)
+			for (int j = 0; j < (2*size - (xAver + yAver)); j++)
 			{
 				if (map[size - (2*size - (xAver + yAver)) + j, size -1 - j] == 1)
 				{
@@ -340,7 +342,7 @@ public class AsteroidEvaluator
 
 			}
 
-			for(int j = (2*size - (xAver + yAver)) - 1; j >= 0; j-- )
+			for(int j = (2*size - (xAver + yAver)) - 1; j > 0; j-- )
 			{
 				if(map[size -1 - j, size - (2*size - (xAver + yAver)) + j]  == 1)
 				{
