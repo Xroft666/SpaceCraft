@@ -64,7 +64,7 @@ public class AstroidEvaluatorGenerator : MonoBehaviour
             try{
                 AsteroidEvaluator.CollectData(ref map);
                 _progress = i;
-                Debug.Log("Progress:" + (i + 1) + "/" + Rounds);
+//                Debug.Log("Progress:" + (i + 1) + "/" + Rounds);
             }
             catch (Exception e)
             { 

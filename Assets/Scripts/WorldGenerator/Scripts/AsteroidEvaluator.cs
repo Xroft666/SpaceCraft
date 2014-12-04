@@ -45,16 +45,19 @@ public class AsteroidEvaluator
 		float density = EvaluateDensity( xAver, yAver, ref map );
 		float roundness = EvaluateRoundness( xAver, yAver, ref map );
 
-		UnityEngine.Debug.Log ("density: " + density);
-		UnityEngine.Debug.Log ("evaluationData.GetLength(0): " + evaluationData.GetLength(0));
-		UnityEngine.Debug.Log ("roundness: " + roundness);
-		UnityEngine.Debug.Log ("evaluationData.GetLength(1): " + evaluationData.GetLength(1));
+//		UnityEngine.Debug.Log ("density: " + density);
+//		UnityEngine.Debug.Log ("evaluationData.GetLength(0): " + evaluationData.GetLength(0));
+//		UnityEngine.Debug.Log ("roundness: " + roundness);
+//		UnityEngine.Debug.Log ("evaluationData.GetLength(1): " + evaluationData.GetLength(1));
 
+		int x = (int)(density * (evaluationData.GetLength(0) - 1));
+		int y = (int)(roundness * (evaluationData.GetLength(1) - 1));
 
-		evaluationData[(int) density * (evaluationData.GetLength(0) - 1), (int) roundness * (evaluationData.GetLength(1) - 1)] += 1f;
+		evaluationData[x,y] += 1f;
 
 //		DebugMap( ref map);
 		UnityEngine.Debug.Log("density: " + density + ", roundness: " + roundness);
+		UnityEngine.Debug.Log("x: " + x + ", y: " + y);
 	}
 
 	// tells how dense an asteroid is. If it contains a lot of holes,
@@ -138,7 +141,7 @@ public class AsteroidEvaluator
 
 			if( i == size - transX - transY - 1)
 			{
-				UnityEngine.Debug.Log("transx: " + transX + "transY: " + transY);
+//				UnityEngine.Debug.Log("transx: " + transX + "transY: " + transY);
 				if( map[transX + i, transY + i] == 1 )
 					objectsCount++;
 				break;
@@ -159,7 +162,7 @@ public class AsteroidEvaluator
 
 		if (xAver + yAver < size - 1) {
 
-			UnityEngine.Debug.Log("X: " + xAver + "Y: " + yAver);
+//			UnityEngine.Debug.Log("X: " + xAver + "Y: " + yAver);
 				for (int i = 0; i <= yAver + xAver; i++) {
 
 				if( i == yAver + xAver)
@@ -383,18 +386,18 @@ public class AsteroidEvaluator
 		if( maxRadius == 0f)
 			maxRadius = 1f;
 
-		UnityEngine.Debug.Log ("leftToRightRad: " + leftToRightRad);
-		UnityEngine.Debug.Log ("rightToLeftRad: " + rightToLeftRad);
-		UnityEngine.Debug.Log ("topToBotRad: " + topToBotRad);
-		UnityEngine.Debug.Log ("botToTopRad: " + botToTopRad);
-		UnityEngine.Debug.Log ("diagUpLeftToRightRad: " + diagUpLeftToRightRad);
-		UnityEngine.Debug.Log ("diagUpRightToLeftRad: " + diagUpRightToLeftRad);
-		UnityEngine.Debug.Log ("diagDownRightToLeftRad: " + diagDownRightToLeftRad);
-		UnityEngine.Debug.Log ("diagDownLeftToRightRad: " + diagDownLeftToRightRad);
-
-
-		UnityEngine.Debug.Log ("minRadius: " + minRadius);
-		UnityEngine.Debug.Log ("maxRadius: " + maxRadius);
+//		UnityEngine.Debug.Log ("leftToRightRad: " + leftToRightRad);
+//		UnityEngine.Debug.Log ("rightToLeftRad: " + rightToLeftRad);
+//		UnityEngine.Debug.Log ("topToBotRad: " + topToBotRad);
+//		UnityEngine.Debug.Log ("botToTopRad: " + botToTopRad);
+//		UnityEngine.Debug.Log ("diagUpLeftToRightRad: " + diagUpLeftToRightRad);
+//		UnityEngine.Debug.Log ("diagUpRightToLeftRad: " + diagUpRightToLeftRad);
+//		UnityEngine.Debug.Log ("diagDownRightToLeftRad: " + diagDownRightToLeftRad);
+//		UnityEngine.Debug.Log ("diagDownLeftToRightRad: " + diagDownLeftToRightRad);
+//
+//
+//		UnityEngine.Debug.Log ("minRadius: " + minRadius);
+//		UnityEngine.Debug.Log ("maxRadius: " + maxRadius);
 		return minRadius / maxRadius;
     }
 
