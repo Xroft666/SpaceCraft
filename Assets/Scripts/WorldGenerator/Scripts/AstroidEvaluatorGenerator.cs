@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using UnityEngine;
 using System.Collections;
@@ -11,21 +12,21 @@ public class AstroidEvaluatorGenerator : MonoBehaviour
 
     public int Rounds;
 
-    private AsteroidEvaluator evaluator;
+    private int _astroidId;
 
-    private int[,] intMap;
+    private GameObject _renderQuad ;
 
-    private int astroidID;
+    private Texture2D _visual;
+    private string _filename = "";
+    private bool _autoSave;
+    private int _progress;
+    private bool _running;
 
-    private GameObject renderQuad ;
-
-    private Texture2D visual;
-
-	// Use this for initialization
+    // Use this for initialization
 	void Start ()
 	{
-	    renderQuad = GameObject.CreatePrimitive(PrimitiveType.Quad);
-        evaluator = new AsteroidEvaluator();
+	    _renderQuad = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        new AsteroidEvaluator();
 	    
     }
 	
@@ -36,17 +37,20 @@ public class AstroidEvaluatorGenerator : MonoBehaviour
 
     IEnumerator Evaluate()
     {
-        int mapSize = generator.AstroidList[astroidID].size;
+        Debug.Log("STARTING EVALUATION...");
+        _running = true;
+        int mapSize = generator.AstroidList[_astroidId].size;
 
         for (int i = 0; i < Rounds; i++)
         {
-            foreach (AstroidGenerator.AstroidSettings.Action t in generator.AstroidList[astroidID].actions)
+            
+            foreach (AstroidGenerator.AstroidSettings.Action t in generator.AstroidList[_astroidId].actions)
             {
                 t.Randomize(mapSize);
             }
             int[,] map = new int[mapSize,mapSize];
 
-            GenerationProcedures GP = new GenerationProcedures(generator, ref map, 0, generator.AstroidList[astroidID]);
+            GenerationProcedures GP = new GenerationProcedures(generator, ref map, 0, generator.AstroidList[_astroidId]);
 
 
             Thread thread = new Thread(GP.Generate);
@@ -57,19 +61,20 @@ public class AstroidEvaluatorGenerator : MonoBehaviour
             }
 
             AsteroidEvaluator.CollectData(ref map);
+            _progress = i;
+            Debug.Log("Progress:"+(i+1)+"/"+Rounds);
         }
 
         float[,] f = AsteroidEvaluator.GetNormalizedData();
-        visual = new Texture2D(f.GetLength(0),f.GetLength(1));
-        for (int x = 0; x < f.GetLength(0); x++)
+
+        _visual = MapUtility.MapToBinaryTexture(f);
+        _renderQuad.renderer.material.mainTexture = _visual;
+        _running = false;
+        
+        if (_autoSave)
         {
-            for (int y = 0; y < f.GetLength(1); y++)
-            {
-                visual.SetPixel(x,y,new Color(f[x,y],0,0,0));
-            }
+            Export();
         }
-        visual.Apply();
-        renderQuad.renderer.material.mainTexture = visual;
     }
 
     void PrepareData()
@@ -77,12 +82,38 @@ public class AstroidEvaluatorGenerator : MonoBehaviour
           
     }
 
+    void Export()
+    {
+        byte[] b = _visual.EncodeToPNG();
+        File.WriteAllBytes(Application.dataPath + "/Data/Evaluation/" + _filename + ".png", b);
+        Debug.Log("Export Complete");
+    }
+
     void OnGUI()
     {
-        astroidID = Convert.ToInt32(GUI.TextField(new Rect(0, 0, 150, 25), astroidID.ToString()));
-        if (GUI.Button(new Rect(0, 25, 150, 25), "Evaluate"))
+        
+        _astroidId = Convert.ToInt32(GUI.TextField(new Rect(0, 0, 150, 25), _astroidId.ToString()));
+        GUI.Label(new Rect(150, 0, 150, 25),"Astroid ID");
+        _filename = GUI.TextField(new Rect(0, 25, 150, 25), _filename);
+        GUI.Label(new Rect(150, 25, 150, 25), "File Name");
+        Rounds = Convert.ToInt32(GUI.TextField(new Rect(0, 50, 150, 25), Rounds.ToString()));
+        GUI.Label(new Rect(150, 50, 150, 25), "Rounds");
+
+        if (GUI.Button(new Rect(0, 75, 150, 25), "Evaluate"))
         {
            StartCoroutine(Evaluate()); 
         }
+        
+        _autoSave = GUI.Toggle(new Rect(150, 75, 150, 25), _autoSave, "Autosave");
+
+        if (GUI.Button(new Rect(0, 100, 150, 25), "Export"))
+        {
+            Export();
+        }
+
+        if(_running)
+        GUI.Label(new Rect(0, Screen.height / 2, 150, 50), "Progress:" + (_progress + 1) + "/" + Rounds);
+
+        
     }
 }
