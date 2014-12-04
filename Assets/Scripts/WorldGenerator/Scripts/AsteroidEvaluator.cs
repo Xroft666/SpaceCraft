@@ -47,7 +47,7 @@ public class AsteroidEvaluator
 
 		evaluationData[(int) (density * evaluationData.GetLength(0)), (int) (roundness * evaluationData.GetLength(1))] += 1f;
 
-		DebugMap( ref map);
+//		DebugMap( ref map);
 		UnityEngine.Debug.Log("density: " + density + ", roundness: " + roundness);
 	}
 
@@ -198,7 +198,8 @@ public class AsteroidEvaluator
 
         
         // general density is solid voxels to empty voxels relation
-		float lineDensity = voxelsCount / (float)size;
+		// 4 - is amount if scan lines in this evaluation
+		float lineDensity = voxelsCount / (float) (size * 4);
 
 		// density to objects count relation would be the average density per object
 		return lineDensity / (float) objectsCount;
@@ -213,9 +214,9 @@ public class AsteroidEvaluator
 		int transX;
 		int transY;
 
-		float leftToRightRad = size, rightToLeftRad = size, topToBotRad = size, botToTopRad = size;
-		float diagDownLeftToRightRad = size, diagUpRightToLeftRad = size;
-		float diagDownRightToLeftRad = size, diagUpLeftToRightRad = size;
+		float leftToRightRad = 0f, rightToLeftRad = 0f, topToBotRad = 0f, botToTopRad = 0f;
+		float diagDownLeftToRightRad = 0f, diagUpRightToLeftRad = 0f;
+		float diagDownRightToLeftRad = 0f, diagUpLeftToRightRad = 0f;
 
 		// horizontal scan lines
 		for( int i = 0; i < size; i++ )
@@ -283,7 +284,7 @@ public class AsteroidEvaluator
 			if(map[transX + i, transY + i] == 1)
 			{
 				asteroidEdge = new UnityEngine.Vector2 (transX + i, transY + i);
-				diagDownLeftToRightRad = new UnityEngine.Vector2( center.x - asteroidEdge.x, center.y - asteroidEdge.y).magnitude;
+				diagDownLeftToRightRad = new UnityEngine.Vector2( asteroidEdge.x - center.x, asteroidEdge.y - center.y).magnitude;
 				break;
 			}
 		}
@@ -293,7 +294,7 @@ public class AsteroidEvaluator
 			if(map[transX + i,transY + i] == 1)
 			{
 				asteroidEdge = new UnityEngine.Vector2 (transX + i, transY + i);
-				diagUpRightToLeftRad = new UnityEngine.Vector2 ( center.x - asteroidEdge.x, center.y - asteroidEdge.y).magnitude;
+				diagUpRightToLeftRad = new UnityEngine.Vector2 ( asteroidEdge.x - center.x, asteroidEdge.y - center.y).magnitude;
 				break;
 			}
 		}
@@ -311,7 +312,7 @@ public class AsteroidEvaluator
 				if(map[i, xAver + yAver - i] == 1)
 				{
 					asteroidEdge = new UnityEngine.Vector2 (i, xAver + yAver - i);
-					diagUpLeftToRightRad = new UnityEngine.Vector2 (center.x - asteroidEdge.x, center.y - asteroidEdge.y).magnitude;
+					diagUpLeftToRightRad = new UnityEngine.Vector2 (asteroidEdge.x - center.x, asteroidEdge.y - center.y).magnitude;
 					break;
 				}
 			}
@@ -321,7 +322,7 @@ public class AsteroidEvaluator
 				if (map[i,size - i -1] == 1)
 				{
 					asteroidEdge = new UnityEngine.Vector2 (transX + transY - i ,i);
-					diagDownRightToLeftRad = new UnityEngine.Vector2 (center.x - asteroidEdge.x, center.y - asteroidEdge.y).magnitude;
+					diagDownRightToLeftRad = new UnityEngine.Vector2 (asteroidEdge.x - center.x, asteroidEdge.y - center.y).magnitude;
 					break;
 				}
 			}
@@ -334,7 +335,7 @@ public class AsteroidEvaluator
 				if (map[size - (2*size - (xAver + yAver)) + j, size -1 - j] == 1)
 				{
 					asteroidEdge = new UnityEngine.Vector2 (size - (2*size - (xAver + yAver)) + j, size -1 - j);
-					diagUpLeftToRightRad = new UnityEngine.Vector2 (center.x - asteroidEdge.x, center.y - asteroidEdge.y).magnitude;
+					diagUpLeftToRightRad = new UnityEngine.Vector2 (asteroidEdge.x - center.x, asteroidEdge.y - center.y).magnitude;
 					break;
 				}
 
@@ -345,7 +346,7 @@ public class AsteroidEvaluator
 				if(map[size -1 - j, size - (2*size - (xAver + yAver)) + j]  == 1)
 				{
 					asteroidEdge = new UnityEngine.Vector2 (size -1 - j, size - (2*size - (xAver + yAver)) + j);
-					diagDownRightToLeftRad = new UnityEngine.Vector2 (center.x - asteroidEdge.x, center.y - asteroidEdge.y).magnitude;
+					diagDownRightToLeftRad = new UnityEngine.Vector2 (asteroidEdge.x - center.x, asteroidEdge.y - center.y).magnitude;
 					break;
 				}
 			}
