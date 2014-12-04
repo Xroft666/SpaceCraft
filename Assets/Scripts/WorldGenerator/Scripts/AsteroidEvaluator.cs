@@ -207,11 +207,16 @@ public class AsteroidEvaluator
         
         // general density is solid voxels to empty voxels relation
 		// 4 - is amount if scan lines in this evaluation
-		float lineDensity = voxelsCount / (float) (size * 4);
+		float lineDensity = voxelsCount / (size * 4f);
 
 		// if objectCount is 0, we set it to one, but it doesnt matter as
 		// density is going to be 0, and the total number is 0
 		float objCount = objectsCount == 0 ? 1f : (float) objectsCount;
+
+
+		// we take the average for objects count, so it wont count 1 object per scanline
+		objCount /= 4f;
+
 
 		// density to objects count relation would be the average density per object
 		return lineDensity / objCount;
