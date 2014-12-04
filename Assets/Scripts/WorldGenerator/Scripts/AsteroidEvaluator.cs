@@ -13,7 +13,7 @@ public class AsteroidEvaluator
 	// 0 - does not fit
 	// 1 - fits
 	// general formula: fitness = (density + roundness) / 2
-	static public void Evaluate(float seed, ref int[,] map)
+	static public void Evaluate(ref int[,] map)
 	{
 		float weight = 0.0f;
 
@@ -42,8 +42,8 @@ public class AsteroidEvaluator
 		yAver /= voxelsCount;
 
 
-		float density = EvaluateDensity( xAver, yAver, seed, ref map );
-		float roundness = EvaluateRoundness( xAver, yAver, seed, ref map );
+		float density = EvaluateDensity( xAver, yAver, ref map );
+		float roundness = EvaluateRoundness( xAver, yAver, ref map );
 
 		evaluationData[(int) (density * evaluationData.GetLength(0)), (int) (roundness * evaluationData.GetLength(1))] += 1f;
 
@@ -53,7 +53,7 @@ public class AsteroidEvaluator
 
 	// tells how dense an asteroid is. If it contains a lot of holes,
 	// then the density drops
-	static private float EvaluateDensity(int xAver, int yAver, float seed, ref int[,] map)
+	static private float EvaluateDensity(int xAver, int yAver, ref int[,] map)
 	{
 		int size = map.GetLength(0);
 		int transX;
@@ -207,7 +207,7 @@ public class AsteroidEvaluator
     // check how the asteroid fits into a specified circle radius
 	// we raycast from 8 angles and store the position of the first solid voxel
 	// then we compare the distances to the center with each other and say how round it is
-	static private float EvaluateRoundness(int xAver, int yAver, float seed, ref int[,] map)
+	static private float EvaluateRoundness(int xAver, int yAver, ref int[,] map)
 	{
 		int size = map.GetLength(0);
 		int transX;
@@ -365,7 +365,7 @@ public class AsteroidEvaluator
 
 	static public void CollectData( ref int[,] map )
 	{
-		Evaluate( 0, ref map );
+		Evaluate( ref map );
 	}
 
 	static public void ClearData()

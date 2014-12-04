@@ -56,7 +56,7 @@ public static class NodeWindowRenderer {
 			AsteroidEvaluator.ClearData();
 
 			int[,] map = window.Maps[id];
-			AsteroidEvaluator.Evaluate(window.seed, ref map);
+			AsteroidEvaluator.Evaluate(ref map);
 		}
     }
 
