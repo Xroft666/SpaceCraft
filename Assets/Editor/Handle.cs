@@ -16,7 +16,8 @@ public class Handle
 
     public void Render(Vector2 pos, PcgWindow window)
     {
-      //TODO dont relay on button press
+     /*
+        //TODO dont relay on button press
         if (GUI.Button(new Rect(pos.x+MyWindow.pos.x, pos.y+MyWindow.pos.y+200, 15, 15), ""))
         {
             if (window.SelectedHandle == null)
@@ -41,7 +42,7 @@ public class Handle
                 Other = window.SelectedHandle;
                 
             }*/
-        }
+       // }
     }
 	
 }
