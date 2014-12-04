@@ -45,7 +45,7 @@ public class AsteroidEvaluator
 		float density = EvaluateDensity( xAver, yAver, ref map );
 		float roundness = EvaluateRoundness( xAver, yAver, ref map );
 
-		evaluationData[(int) (density * evaluationData.GetLength(0)), (int) (roundness * evaluationData.GetLength(1))] += 1f;
+		evaluationData[(int) (density * evaluationData.GetLength(0)) - 1, (int) (roundness * evaluationData.GetLength(1)) - 1] += 1f;
 
 //		DebugMap( ref map);
 		UnityEngine.Debug.Log("density: " + density + ", roundness: " + roundness);
@@ -203,8 +203,12 @@ public class AsteroidEvaluator
 		// 4 - is amount if scan lines in this evaluation
 		float lineDensity = voxelsCount / (float) (size * 4);
 
+		// if objectCount is 0, we set it to one, but it doesnt matter as
+		// density is going to be 0, and the total number is 0
+		float objCount = objectsCount == 0 ? 1f : (float) objectsCount;
+
 		// density to objects count relation would be the average density per object
-		return lineDensity / (float) objectsCount;
+		return lineDensity / objCount;
     }
     
     // check how the asteroid fits into a specified circle radius
@@ -362,6 +366,11 @@ public class AsteroidEvaluator
 
 		float minRadius = UnityEngine.Mathf.Min(leftToRightRad, rightToLeftRad, topToBotRad, botToTopRad, diagUpLeftToRightRad, diagUpRightToLeftRad, diagDownRightToLeftRad, diagDownLeftToRightRad);
 		float maxRadius = UnityEngine.Mathf.Max(leftToRightRad, rightToLeftRad, topToBotRad, botToTopRad, diagUpLeftToRightRad, diagUpRightToLeftRad, diagDownRightToLeftRad, diagDownLeftToRightRad);
+
+		if( minRadius == 0f)
+			minRadius = float.MinValue;
+		if( maxRadius == 1f)
+			maxRadius = float.MaxValue;
 
 		return minRadius / maxRadius;
     }
