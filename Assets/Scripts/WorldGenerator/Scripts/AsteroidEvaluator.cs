@@ -164,10 +164,10 @@ public class AsteroidEvaluator
 
 						if (i > 0) {
 
-								if (map [i - 1, xAver + yAver - i + 1] != map [i, xAver + yAver - i] && map [i, xAver + yAver - i] == 0) //not sure about "-i" after !=
+								if (map [i, xAver + yAver - i] != map [i + 1, xAver + yAver - i - 1] && map [i + 1, xAver + yAver - i - 1] == 0) 
 										objectsCount++;
 
-								if (map [i, xAver + yAver - i] == 1)
+								if (map [i + 1, xAver + yAver - i - 1] == 1)
 										voxelsCount++;
 						}
 				}
