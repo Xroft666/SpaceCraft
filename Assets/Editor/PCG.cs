@@ -232,27 +232,26 @@ public class PcgWindow : EditorWindow
         //GUILayout.EndArea();
         
 
-		if (GUILayout.Button("Evaluate Generator"))
-		{
-			AsteroidEvaluator.ClearData();
-//			Debug.Log ();
-
-			for( int i = 0; i < Maps.Count; i++ )
-			{
-				int[,] map = Maps[i];
-				AsteroidEvaluator.CollectData( ref map );
-			}
-		
-			evalTex = MapUtility.MapToBinaryTexture(AsteroidEvaluator.GetNormalizedData());
-			evalTex.wrapMode = TextureWrapMode.Clamp;
-			evalTex.filterMode = FilterMode.Point;
-			evalTex.Apply();
-		}
-
-		if( evalTex != null )
-		{
-			GUI.DrawTexture(new Rect(0, 300, 150, 150), evalTex, ScaleMode.StretchToFill,true);
-		}
+//		if (GUILayout.Button("Evaluate Generator"))
+//		{
+//			AsteroidEvaluator.ClearData();
+//
+//			for( int i = 0; i < Maps.Count; i++ )
+//			{
+//				int[,] map = Maps[i];
+//				AsteroidEvaluator.CollectData( ref map );
+//			}
+//		
+//			evalTex = MapUtility.MapToBinaryTexture(AsteroidEvaluator.GetNormalizedData());
+//			evalTex.wrapMode = TextureWrapMode.Clamp;
+//			evalTex.filterMode = FilterMode.Point;
+//			evalTex.Apply();
+//		}
+//
+//		if( evalTex != null )
+//		{
+//			GUI.DrawTexture(new Rect(0, 300, 150, 150), evalTex, ScaleMode.StretchToFill,true);
+//		}
 	}
 	
 	/// <summary>
@@ -282,7 +281,7 @@ public class PcgWindow : EditorWindow
         _currentAstroid = i;
         AstroidObject = _window._aGen.AstroidList[_currentAstroid];
         Texture2Ds = new Texture2D[AstroidObject.actions.Count];
-		Maps.Clear();
+//		Maps.Clear();
 
         UpdateTextures();
         GenerateWindows();  
@@ -327,6 +326,8 @@ public class PcgWindow : EditorWindow
         
 		int[,] map = new int[size,size];
 		GenerationProcedures GP = new GenerationProcedures(_aGen, ref map, seed, AstroidObject); 
+
+		Maps.Clear();
 
         for (int j = 0; j < AstroidObject.actions.Count; j++)
         {
