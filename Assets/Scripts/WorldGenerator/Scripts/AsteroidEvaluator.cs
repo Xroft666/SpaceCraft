@@ -45,7 +45,13 @@ public class AsteroidEvaluator
 		float density = EvaluateDensity( xAver, yAver, ref map );
 		float roundness = EvaluateRoundness( xAver, yAver, ref map );
 
-		evaluationData[(int) (density * evaluationData.GetLength(0)) - 1, (int) (roundness * evaluationData.GetLength(1)) - 1] += 1f;
+		UnityEngine.Debug.Log ("density: " + density);
+		UnityEngine.Debug.Log ("evaluationData.GetLength(0): " + evaluationData.GetLength(0));
+		UnityEngine.Debug.Log ("roundness: " + roundness);
+		UnityEngine.Debug.Log ("evaluationData.GetLength(1): " + evaluationData.GetLength(1));
+
+
+		evaluationData[(int) density * (evaluationData.GetLength(0) - 1), (int) roundness * (evaluationData.GetLength(1) - 1)] += 1f;
 
 //		DebugMap( ref map);
 		UnityEngine.Debug.Log("density: " + density + ", roundness: " + roundness);
@@ -368,10 +374,22 @@ public class AsteroidEvaluator
 		float maxRadius = UnityEngine.Mathf.Max(leftToRightRad, rightToLeftRad, topToBotRad, botToTopRad, diagUpLeftToRightRad, diagUpRightToLeftRad, diagDownRightToLeftRad, diagDownLeftToRightRad);
 
 		if( minRadius == 0f)
-			minRadius = float.MinValue;
-		if( maxRadius == 1f)
-			maxRadius = float.MaxValue;
+			minRadius = 1f;
+		if( maxRadius == 0f)
+			maxRadius = 1f;
 
+		UnityEngine.Debug.Log ("leftToRightRad: " + leftToRightRad);
+		UnityEngine.Debug.Log ("rightToLeftRad: " + rightToLeftRad);
+		UnityEngine.Debug.Log ("topToBotRad: " + topToBotRad);
+		UnityEngine.Debug.Log ("botToTopRad: " + botToTopRad);
+		UnityEngine.Debug.Log ("diagUpLeftToRightRad: " + diagUpLeftToRightRad);
+		UnityEngine.Debug.Log ("diagUpRightToLeftRad: " + diagUpRightToLeftRad);
+		UnityEngine.Debug.Log ("diagDownRightToLeftRad: " + diagDownRightToLeftRad);
+		UnityEngine.Debug.Log ("diagDownLeftToRightRad: " + diagDownLeftToRightRad);
+
+
+		UnityEngine.Debug.Log ("minRadius: " + minRadius);
+		UnityEngine.Debug.Log ("maxRadius: " + maxRadius);
 		return minRadius / maxRadius;
     }
 
