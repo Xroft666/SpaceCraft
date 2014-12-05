@@ -299,9 +299,9 @@ public class AsteroidEvaluator
 			transY = 0;
 		}
 		
-		for (int i = 0; i < (size - transX - transY ); i++)
+		for (int i = 0; i < (size - transX - transY ); i++)		//ok!!
 		{
-			if(map[transX + i, transY + i] == 1)
+			if(map[transX + i, transY + i] == 1)		//ok!!
 			{
 				asteroidEdge = new UnityEngine.Vector2 (transX + i, transY + i);
 				diagDownLeftToRightRad = new UnityEngine.Vector2( asteroidEdge.x - center.x, asteroidEdge.y - center.y).magnitude;
@@ -309,9 +309,9 @@ public class AsteroidEvaluator
 			}
 		}
 
-		for (int i = (size - transX - transY - 1); i > 0; i--)
+		for (int i = (size - transX - transY - 1); i > 0; i--)		//ok!!
 		{
-			if(map[transX + i,transY + i] == 1)
+			if(map[transX + i,transY + i] == 1)		//ok!!
 			{
 				asteroidEdge = new UnityEngine.Vector2 (transX + i, transY + i);
 				diagUpRightToLeftRad = new UnityEngine.Vector2 ( asteroidEdge.x - center.x, asteroidEdge.y - center.y).magnitude;
