@@ -126,6 +126,8 @@ public class Optimizer : MonoBehaviour {
         objective.NextGen();
     //    Utility.Log(string.Format("Moving average: {0}, N: {1}", _ea.Statistics._bestFitnessMA.Mean, _ea.Statistics._bestFitnessMA.Length));
 
+		XmlWriterSettings _xwSettings = new XmlWriterSettings();
+		_xwSettings.Indent = true;
 
 		// Autosave every 50 generation 
     	if( Generation % 50 == 0 )
