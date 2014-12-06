@@ -75,7 +75,7 @@ namespace Voxel2D
                                 break;
                             case DeviceData.DeviceType.Cannon:
                                 VD = new Cannon(ElementIDs[x, y], new IntVector2(x, y), Rotations[x, y], voxelSys,
-                                    10, 0.1f);
+                                    100, 0.1f);
                                 break;
 
                         }

@@ -12,7 +12,7 @@ using Random = UnityEngine.Random;
 public class ObjectiveHandler:MonoBehaviour
 {
 
-    private readonly float[] _targetFitnes = {250,180,170,5};
+    private readonly float[] _targetFitnes = {300,200,150,5};
 
     private int _currentObjective;
     private int _checkingObjective;
