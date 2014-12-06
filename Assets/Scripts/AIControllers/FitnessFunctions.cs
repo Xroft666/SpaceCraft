@@ -19,7 +19,7 @@ public static class FitnessFunctions
 
         float fitness = 100;
         fitness -= (shipPos - GotoTarget.Position).magnitude;
-        fitness += S.Score;
+        fitness += S.StayOnTargetScore;
         fitness -= S.Stats.ObsticleHits*10;
         //fitness -= S.Stats.usedFuel/25;
          

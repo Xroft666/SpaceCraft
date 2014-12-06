@@ -50,10 +50,10 @@ public class ObjectiveHandler:MonoBehaviour
 
         InitTarget();
         
-        _objectiveList.Add(SetObjectiveMaze);
+        
         _objectiveList.Add(ObjectiveRandomPos);
-        _objectiveList.Add(SetObjective3);
-
+        _objectiveList.Add(SetObjectiveMovingTarget);
+        _objectiveList.Add(SetObjectiveMaze);
 
 		_objectiveList.Add(SetObjectiveShootEnemy);
         //_objectiveList.Add(SetObjective4);
@@ -179,7 +179,7 @@ public class ObjectiveHandler:MonoBehaviour
     private void SetObjectiveMaze()
     {
         ResetScene();
-        _target.transform.position = new Vector3(Random.Range(-20, 20), Random.Range(-20, 20), 0);
+        _target.transform.position = new Vector3(30, 0, 0);
         Enemy.SetActive(true);
         Maze.SetActive(true);
     }
@@ -187,7 +187,7 @@ public class ObjectiveHandler:MonoBehaviour
     private void SetObjectiveShootEnemy()
     {
         ResetScene();
-        _target.transform.position = Vector3.up*10;
+        _target.transform.position = new Vector3(Random.Range(-20f,20f),20,0);
     }
 
     private void ObjectiveRandomPos()
@@ -195,7 +195,7 @@ public class ObjectiveHandler:MonoBehaviour
         ResetScene();
         _target.transform.position = new Vector3(Random.Range(-20,20), Random.Range(-20,20),0);
     }
-    private void SetObjective3()
+    private void SetObjectiveMovingTarget()
     {
         ResetScene();
         _target.transform.position = new Vector3(10, -10, 0);

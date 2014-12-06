@@ -29,7 +29,7 @@ public class ShipBuilderBrain : UnitController {
     private string path = Application.dataPath + "/Data/SavedVoxelSystems/";
 
 	List<Engine> engines = new List<Engine>();
-    public float Score;
+    public float StayOnTargetScore;
 
     private Optimizer optimizer;
 
@@ -173,7 +173,7 @@ public class ShipBuilderBrain : UnitController {
 
     private void ActivateCannon(ISignalArray outputArr)
     {
-        if (outputArr[6] < 0.5f)
+        if (outputArr[6] > 0.5f)
         {
             Cannon cannon = null;
 
@@ -324,7 +324,7 @@ public class ShipBuilderBrain : UnitController {
 
         Stats = new SimulationStats(this);
 
-	    Score = 0;
+	    StayOnTargetScore = 0;
 
         LoadShipFromFile();
 
@@ -363,7 +363,7 @@ public class ShipBuilderBrain : UnitController {
     {
         if (col.tag == "Target")
         {
-            Score += 1f;
+            StayOnTargetScore += 1f;
         }
     }
 }
