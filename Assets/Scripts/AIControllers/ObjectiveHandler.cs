@@ -12,7 +12,7 @@ using Random = UnityEngine.Random;
 public class ObjectiveHandler:MonoBehaviour
 {
 
-    private readonly float[] _targetFitnes = {250,180,170,150};
+    private readonly float[] _targetFitnes = {250,180,170,5};
 
     private int _currentObjective;
     private int _checkingObjective;
@@ -53,6 +53,9 @@ public class ObjectiveHandler:MonoBehaviour
         _objectiveList.Add(SetObjectiveMaze);
         _objectiveList.Add(ObjectiveRandomPos);
         _objectiveList.Add(SetObjective3);
+
+
+		_objectiveList.Add(SetObjectiveShootEnemy);
         //_objectiveList.Add(SetObjective4);
         //_objectiveList.Add(SetObjective5);
 
@@ -151,9 +154,17 @@ public class ObjectiveHandler:MonoBehaviour
         float fitness =0;
         int t = _checkingObjectives ? _checkingObjective : _currentObjective;
 
-        if (t == 0 || t==1 || t==2 || t==3)
-        {
+        switch( t )
+		{
+		case 0:
+		case 1:
+		case 2:
+		case 3:
             fitness = FitnessFunctions.GetFitnessStayOnTarget(s);
+			break;
+		case 4:
+			fitness = FitnessFunctions.GetFitnessHitTarget(s);
+			break;
         }
         return fitness;
     }

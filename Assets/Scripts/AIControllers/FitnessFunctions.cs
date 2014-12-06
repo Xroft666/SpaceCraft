@@ -27,4 +27,9 @@ public static class FitnessFunctions
 
         return fitness;
     }
+
+	public static float GetFitnessHitTarget(ShipBuilderBrain S)
+	{
+		return S.Stats.EnemyDamage.Hits;
+	}
 }

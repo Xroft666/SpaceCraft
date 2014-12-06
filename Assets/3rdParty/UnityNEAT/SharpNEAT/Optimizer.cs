@@ -143,6 +143,12 @@ public class Optimizer : MonoBehaviour {
 				experiment.SavePopulation(xw, new NeatGenome[] { _ea.CurrentChampGenome });
 			}
 		}
+
+
+		// destroyong all the bullets prefabs
+		BulletController[] bullets = FindObjectsOfType(typeof(BulletController)) as BulletController[];
+		foreach( BulletController bullet in bullets )
+			Destroy(bullet.gameObject);
     }
 
     void ea_PauseEvent(object sender, EventArgs e)

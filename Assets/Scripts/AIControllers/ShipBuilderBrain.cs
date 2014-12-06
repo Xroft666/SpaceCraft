@@ -36,6 +36,7 @@ public class ShipBuilderBrain : UnitController {
 	private VoxelSystem selectedAsteroid;
 	private Transform selectedEnemyship;
 
+	[HideInInspector]
 	private bool mineSignal = false;
     [HideInInspector]
     public bool attackSignal = false;
@@ -68,7 +69,7 @@ public class ShipBuilderBrain : UnitController {
         public float Damage { get; private set; }
         public int Hits { get; private set; }
 
-        void Hit(float damage)
+        public void Hit(float damage)
         {
             Damage += damage;
             Hits++;

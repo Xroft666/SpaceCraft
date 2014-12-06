@@ -8,7 +8,7 @@ public class EnemyController : MonoBehaviour {
         BulletController bulletCtrl = collision.collider.GetComponent<BulletController>();
 		if (bulletCtrl != null && bulletCtrl.owner != null)
         {
-            Debug.Log("I am a bullet: " + collision.collider.name + " and my owner is: " + bulletCtrl.owner);
+			bulletCtrl.owner.Stats.EnemyDamage.Hit(1f);
         }
     }
 }
