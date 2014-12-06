@@ -218,48 +218,55 @@ public class ShipBuilderBrain : UnitController {
 		Vector3 toTargetDir = (shipPos - moveToPos).normalized;
         Vector3 shipDir = voxelSystem.transform.up;
 	
-		float angle = Vector3.Angle(shipDir, toTargetDir);
-        Vector3 cross = Vector3.Cross(shipDir, toTargetDir);
-        if (cross.y < 0) angle = -angle;
-
-        angle = angle / 360f;
+//		float angle = Vector3.Angle(shipDir, toTargetDir);
+//        Vector3 cross = Vector3.Cross(shipDir, toTargetDir);
+//        if (cross.y < 0) angle = -angle;
+//        angle = angle / 360f;
 
 		// angle to the target
-        inputArr[0] = angle;
+//        inputArr[0] = angle;
 
 		// distance to the target
-		inputArr[1] = Mathf.Clamp01((shipPos - moveToPos).magnitude / 100f);
+		inputArr[0] = Mathf.Clamp01((shipPos - moveToPos).magnitude / 100f);
 
 		Vector3 toTargetLocalDir = (voxelSystem.transform.InverseTransformPoint(moveToPos) - shipPos).normalized;
 
+		// remapping to (0;1) domain, and 90 deg become (0.5, 0.5)
+		toTargetLocalDir.x = (Mathf.Sin( toTargetLocalDir.x * Mathf.PI + Mathf.PI / 6f ) + 1f ) / 2f;
+		toTargetLocalDir.y = (Mathf.Cos( toTargetLocalDir.y * Mathf.PI - 2 * Mathf.PI / 3f ) + 1f ) / 2f;
+
 		// relative direction to the target
-		inputArr[2] = toTargetLocalDir.x;
-		inputArr[3] = toTargetLocalDir.y;
+		inputArr[1] = toTargetLocalDir.x;
+		inputArr[2] = toTargetLocalDir.y;
 
 		// this ship's velocity and and angular velocity
-        inputArr[4] = Mathf.Clamp01(voxelSystem.rigidbody2D.velocity.magnitude / 100f);
-        inputArr[5] = Mathf.Clamp01(voxelSystem.rigidbody2D.angularVelocity / 100f);
+        inputArr[3] = Mathf.Clamp01(voxelSystem.rigidbody2D.velocity.magnitude / 100f);
+        inputArr[4] = Mathf.Clamp01(voxelSystem.rigidbody2D.angularVelocity / 100f);
+
+		// target's velocity
+		inputArr[5] = targetVelocity.magnitude / 100f;
 
 		targetDir = voxelSystem.transform.InverseTransformDirection( targetDir );
 
-		// target's velocity
-		inputArr[6] = targetVelocity.magnitude / 100f;
+		// remapping to (0;1) domain, and 90 deg become (0.5, 0.5)
+		targetDir.x = (Mathf.Sin( targetDir.x * Mathf.PI + Mathf.PI / 6f ) + 1f ) / 2f;
+		targetDir.y = (Mathf.Cos( targetDir.y * Mathf.PI - 2 * Mathf.PI / 3f ) + 1f ) / 2f;
 
 		// target's direction
-		inputArr[7] = targetDir.x;
-		inputArr[8] = targetDir.y;
+		inputArr[6] = targetDir.x;
+		inputArr[7] = targetDir.y;
 
 		// combinations:
 		// 0, 0: GO TO COMMAND
 		// 0, 1: MINE COMMAND
 		// 1, 0: ATTACK A SHIP COMMAND
-		inputArr[9] = mineSignal ? 1f : 0f;
-		inputArr[10] = attackSignal ? 1f : 0f;
+		inputArr[8] = mineSignal ? 1f : 0f;
+		inputArr[9] = attackSignal ? 1f : 0f;
 
 
 		float[] sensors = ActivateRangeFinders();
 		for( int i = 0; i < sensors.Length; i++ )
-			inputArr[i + 11] = sensors[i];
+			inputArr[i + 10] = sensors[i];
     }
 
 	// replacable by SELECT ASTEROID
