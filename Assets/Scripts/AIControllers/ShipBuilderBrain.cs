@@ -195,7 +195,7 @@ public class ShipBuilderBrain : UnitController {
 
 
 		Vector3 targetVelocity = Vector3.zero;
-		Vector3 targetDir = Vector3.zero;
+		Vector3 targetDir = Vector3.up;
 
 		if( mineSignal )
 		{
@@ -215,9 +215,9 @@ public class ShipBuilderBrain : UnitController {
 			moveToPos = GotoTarget.Position;
 		}
 
-		Vector3 toTargetDir = (shipPos - moveToPos).normalized;
-        Vector3 shipDir = voxelSystem.transform.up;
-	
+		Vector3 toTargetDir = (moveToPos - shipPos).normalized;
+
+//        Vector3 shipDir = voxelSystem.transform.up;
 //		float angle = Vector3.Angle(shipDir, toTargetDir);
 //        Vector3 cross = Vector3.Cross(shipDir, toTargetDir);
 //        if (cross.y < 0) angle = -angle;
@@ -229,11 +229,14 @@ public class ShipBuilderBrain : UnitController {
 		// distance to the target
 		inputArr[0] = Mathf.Clamp01((shipPos - moveToPos).magnitude / 100f);
 
-		Vector3 toTargetLocalDir = (voxelSystem.transform.InverseTransformPoint(moveToPos) - shipPos).normalized;
+		Vector3 toTargetLocalDir = voxelSystem.transform.InverseTransformVector(toTargetDir);
 
 		// remapping to (0;1) domain, and 90 deg become (0.5, 0.5)
-		toTargetLocalDir.x = (Mathf.Sin( toTargetLocalDir.x * Mathf.PI + Mathf.PI / 6f ) + 1f ) / 2f;
-		toTargetLocalDir.y = (Mathf.Cos( toTargetLocalDir.y * Mathf.PI - 2 * Mathf.PI / 3f ) + 1f ) / 2f;
+		toTargetLocalDir += Vector3.one;
+		toTargetLocalDir /= 2f;
+
+//		toTargetLocalDir.x = (Mathf.Sin( toTargetLocalDir.x * Mathf.PI ) + 1f ) / 2f;
+//		toTargetLocalDir.y = (Mathf.Cos( toTargetLocalDir.y * Mathf.PI ) + 1f ) / 2f;
 
 		// relative direction to the target
 		inputArr[1] = toTargetLocalDir.x;
@@ -249,8 +252,11 @@ public class ShipBuilderBrain : UnitController {
 		targetDir = voxelSystem.transform.InverseTransformDirection( targetDir );
 
 		// remapping to (0;1) domain, and 90 deg become (0.5, 0.5)
-		targetDir.x = (Mathf.Sin( targetDir.x * Mathf.PI + Mathf.PI / 6f ) + 1f ) / 2f;
-		targetDir.y = (Mathf.Cos( targetDir.y * Mathf.PI - 2 * Mathf.PI / 3f ) + 1f ) / 2f;
+		targetDir += Vector3.one;
+		targetDir /= 2f;
+
+//		targetDir.x = (Mathf.Sin( targetDir.x * Mathf.PI ) + 1f ) / 2f;
+//		targetDir.y = (Mathf.Cos( targetDir.y * Mathf.PI ) + 1f ) / 2f;
 
 		// target's direction
 		inputArr[6] = targetDir.x;
