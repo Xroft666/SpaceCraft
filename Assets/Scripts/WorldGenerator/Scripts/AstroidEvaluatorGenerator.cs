@@ -78,7 +78,9 @@ public class AstroidEvaluatorGenerator : MonoBehaviour
             }
         }
 
-        float[,] f = AsteroidEvaluator.GetNormalizedData();
+		float maxValue;
+		float[,] f = AsteroidEvaluator.GetNormalizedData(out maxValue);
+		Debug.Log("The maps count on the brightest spot: " + maxValue);
 
         _visual = MapUtility.MapToBinaryTexture(f);
         _renderQuad.renderer.material.mainTexture = _visual;
@@ -94,7 +96,10 @@ public class AstroidEvaluatorGenerator : MonoBehaviour
 
     void TmpSave(int i)
     {
-        float[,] f = AsteroidEvaluator.GetNormalizedData();
+		float maxValue;
+		float[,] f = AsteroidEvaluator.GetNormalizedData(out maxValue);
+		Debug.Log("The maps count on the brightest spot: " + maxValue);
+
         Texture2D t = MapUtility.MapToBinaryTexture(f);
         byte[] b = t.EncodeToPNG();
 
