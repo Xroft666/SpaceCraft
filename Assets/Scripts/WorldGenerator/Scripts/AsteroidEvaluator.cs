@@ -219,6 +219,9 @@ public class AsteroidEvaluator
 		// we take the average for objects count, so it wont count 1 object per scanline
 		objCount /= 4f;
 
+		// just to be sure, that the result density wont be > 1
+		if( objCount < 1f )
+			objCount = 1f;
 
 		// density to objects count relation would be the average density per object
 		return lineDensity / objCount;
