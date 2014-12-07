@@ -13,8 +13,8 @@ namespace WorldGen
         public void Randomize(int mapSize)
         {
             octNum = Random.Range(1, 25);
-            frq = Random.Range(0.1f, 25f);
-            amp = Random.Range(0.1f, 25f);
+            frq = Random.Range(0.5f, 25f);
+            amp = Random.Range(0.5f, 25f);
         }
     }
 }

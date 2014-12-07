@@ -43,8 +43,8 @@ public class AstroidGenerator : MonoBehaviour {
             {
                 cellularAutomataStats.Ranomize(mapSize);
                 perlinNoiseStats.Randomize(mapSize);
-                mapEdgeCleaning = Random.Range(1, mapSize/2);
-                noiseThreshold = Random.Range(0f, 1f);
+                mapEdgeCleaning = Random.Range(1, 4);
+                noiseThreshold = Random.Range(0.4f, 0.6f);
             }
         }
 

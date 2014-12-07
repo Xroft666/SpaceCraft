@@ -19,10 +19,10 @@ namespace WorldGen
 
         public void Ranomize(int mapSize)
         {
-            BlackChangeThreshold = Random.Range(0f, 1f);
-            WhileChangeThreshold = Random.Range(0f, 1f);
-            Radius = Random.Range(1, mapSize);
-            Rounds = Random.Range(1, 15);
+            BlackChangeThreshold = Random.Range(0.4f, 0.6f);
+            WhileChangeThreshold = Random.Range(0.4f, 0.6f);
+            Radius = Random.Range(1, 5);
+            Rounds = Random.Range(1, 5);
         }
     }
 }
