@@ -12,7 +12,7 @@ using Random = UnityEngine.Random;
 public class ObjectiveHandler:MonoBehaviour
 {
 
-    private readonly float[] _targetFitnes = {300,200,150,5};
+    private readonly float[] _targetFitnes = {300,200,150,10,5};
 
     private int _currentObjective;
     private int _checkingObjective;
@@ -56,6 +56,7 @@ public class ObjectiveHandler:MonoBehaviour
         _objectiveList.Add(SetObjectiveMaze);
 
 		_objectiveList.Add(SetObjectiveShootEnemy);
+		_objectiveList.Add(SetObjectiveMazeAndShoot);
         //_objectiveList.Add(SetObjective4);
         //_objectiveList.Add(SetObjective5);
 
@@ -159,9 +160,9 @@ public class ObjectiveHandler:MonoBehaviour
 		case 0:
 		case 1:
 		case 2:
-		case 3:
             fitness = FitnessFunctions.GetFitnessStayOnTarget(s);
 			break;
+		case 3:
 		case 4:
 			fitness = FitnessFunctions.GetFitnessHitTarget(s);
 			break;
@@ -174,21 +175,36 @@ public class ObjectiveHandler:MonoBehaviour
         _target.transform.position = Vector3.zero;
         Enemy.SetActive(false);
         Maze.SetActive(false);
+
+		ShipBuilderBrain.attackSignal = false;
+		ShipBuilderBrain.mineSignal = false;
     }
 
     private void SetObjectiveMaze()
     {
         ResetScene();
         _target.transform.position = new Vector3(30, 0, 0);
-        Enemy.SetActive(true);
+ //       Enemy.SetActive(true);
         Maze.SetActive(true);
     }
 
     private void SetObjectiveShootEnemy()
     {
         ResetScene();
-        _target.transform.position = new Vector3(Random.Range(-20f,20f),20,0);
+		Enemy.SetActive(true);
+		_target.transform.position = Enemy.transform.position;//new Vector3(Random.Range(-20f,20f),20,0);
+
+		ShipBuilderBrain.attackSignal = true;
     }
+
+	private void SetObjectiveMazeAndShoot()
+	{
+		Enemy.SetActive(true);
+		Maze.SetActive(true);
+		_target.transform.position = Enemy.transform.position;
+
+		ShipBuilderBrain.attackSignal = true;
+	}
 
     private void ObjectiveRandomPos()
     {

@@ -36,10 +36,8 @@ public class ShipBuilderBrain : UnitController {
 	private VoxelSystem selectedAsteroid;
 	private Transform selectedEnemyship;
 
-	[HideInInspector]
-	private bool mineSignal = false;
-    [HideInInspector]
-    public bool attackSignal = false;
+	static public bool mineSignal = false;
+    static public bool attackSignal = false;
 
     public SimulationStats Stats;
 
