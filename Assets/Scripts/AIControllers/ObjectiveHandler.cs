@@ -194,6 +194,10 @@ public class ObjectiveHandler:MonoBehaviour
     {
         ResetScene();
         _target.transform.position = new Vector3(Random.Range(-20,20), Random.Range(-20,20),0);
+        while (_target.transform.position.magnitude < 10)
+        {
+            _target.transform.position = new Vector3(Random.Range(-20, 20), Random.Range(-20, 20), 0);  
+        }
     }
     private void SetObjectiveMovingTarget()
     {
