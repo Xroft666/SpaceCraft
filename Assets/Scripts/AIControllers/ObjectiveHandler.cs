@@ -12,7 +12,7 @@ using Random = UnityEngine.Random;
 public class ObjectiveHandler:MonoBehaviour
 {
 
-    private readonly float[] _targetFitnes = {300,200,150,10,5};
+    private readonly float[] _targetFitnes = {300,200,150,5,5};
 
     private int _currentObjective;
     private int _checkingObjective;
@@ -115,7 +115,7 @@ public class ObjectiveHandler:MonoBehaviour
                 {
                     _checkingObjective ++;
                     _objectiveList[_checkingObjective]();
-                    Debug.Log("CHECKING OBJECTIVE " + (_checkingObjective - 1) + " COMPLETED" + "... " + meanFit + "/" + _targetFitnes[_currentObjective]);
+					Debug.Log("CHECKING OBJECTIVE " + (_checkingObjective - 1) + " COMPLETED" + "... " + meanFit + "/" + _targetFitnes[_checkingObjective]);
                 }
                 else
                 {
@@ -199,6 +199,7 @@ public class ObjectiveHandler:MonoBehaviour
 
 	private void SetObjectiveMazeAndShoot()
 	{
+		ResetScene();
 		Enemy.SetActive(true);
 		Maze.SetActive(true);
 		_target.transform.position = Enemy.transform.position;
