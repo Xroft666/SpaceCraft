@@ -12,7 +12,7 @@ using Random = UnityEngine.Random;
 public class ObjectiveHandler:MonoBehaviour
 {
 
-    private readonly float[] _targetFitnes = {300,200,150,5,5};
+    private readonly float[] _targetFitnes = {300,200,150,150, 5,5};
 
     private int _currentObjective;
     private int _checkingObjective;
@@ -54,11 +54,11 @@ public class ObjectiveHandler:MonoBehaviour
         _objectiveList.Add(ObjectiveRandomPos);
         _objectiveList.Add(SetObjectiveMovingTarget);
         _objectiveList.Add(SetObjectiveMaze);
+		_objectiveList.Add(SetObjectiveGetOutOfMaze);
 
 		_objectiveList.Add(SetObjectiveShootEnemy);
 		_objectiveList.Add(SetObjectiveMazeAndShoot);
-        //_objectiveList.Add(SetObjective4);
-        //_objectiveList.Add(SetObjective5);
+
 
     }
 
@@ -184,15 +184,23 @@ public class ObjectiveHandler:MonoBehaviour
     {
         ResetScene();
         _target.transform.position = new Vector3(30, 0, 0);
- //       Enemy.SetActive(true);
+
         Maze.SetActive(true);
     }
+
+	private void SetObjectiveGetOutOfMaze()
+	{
+		ResetScene();
+		_target.transform.position = new Vector3(65f, 13f, 0);
+		
+		Maze.SetActive(true);
+	}
 
     private void SetObjectiveShootEnemy()
     {
         ResetScene();
 		Enemy.SetActive(true);
-		_target.transform.position = Enemy.transform.position;//new Vector3(Random.Range(-20f,20f),20,0);
+		_target.transform.position = Enemy.transform.position;
 
 		ShipBuilderBrain.attackSignal = true;
     }
@@ -231,12 +239,5 @@ public class ObjectiveHandler:MonoBehaviour
         iTween.MoveTo(_target,h);
         
     }
-    private void SetObjective4()
-    {
 
-    }
-    private void SetObjective5()
-    {
-
-    }
 }
