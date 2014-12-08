@@ -46,7 +46,7 @@ public class ObjectiveHandler:MonoBehaviour
     {
        
 
-        dataHistory = new EvolutionDataHistory(Optimizer._ea,Optimizer.fileName,Optimizer);
+        
 
         InitTarget();
         
@@ -80,6 +80,11 @@ public class ObjectiveHandler:MonoBehaviour
 
     public void NextGen()
     {
+        if (dataHistory == null)
+        {
+            dataHistory = new EvolutionDataHistory(Optimizer._ea, Optimizer.fileName, Optimizer);
+        }
+        
         NeatEvolutionAlgorithm<NeatGenome> ea = Optimizer._ea;
 
         dataHistory.NextGeneration();
