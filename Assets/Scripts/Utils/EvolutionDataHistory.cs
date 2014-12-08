@@ -52,6 +52,8 @@ public class EvolutionDataHistory
         WriteData("Enemy Damage");
         WriteData(",");
         WriteData("Enemy Hits");
+        WriteData(",");
+        WriteData("Required Fitness");
 
         WriteData("\n");
     }
@@ -61,11 +63,11 @@ public class EvolutionDataHistory
         File.AppendAllText(path + _filename + ".csv", Data);
     }
 
-    public void NextGeneration()
+    public void NextGeneration(float meanFit, float Reqfit)
     {
         
 
-        List<float> meanFit = new List<float>();
+        //List<float> meanFit = new List<float>();
         List<float> fuel = new List<float>();
         List<float> wallHit = new List<float>();
         List<float> aD = new List<float>();
@@ -87,7 +89,6 @@ public class EvolutionDataHistory
         foreach (ShipBuilderBrain.SimulationStats s in statList)
         {
            
-            meanFit.Add(s.Fitness);
             fuel.Add(s.UsedFuel);
             wallHit.Add(s.ObsticleHits);
             aD.Add(s.AstroidDamage.Damage);
@@ -98,7 +99,7 @@ public class EvolutionDataHistory
         
         WriteData(_optimizer.objective.ObjectiveNum.ToString());
         WriteData(",");
-        WriteData(meanFit.Average().ToString());
+        WriteData(meanFit.ToString());
         WriteData(",");
         WriteData(fuel.Average().ToString());
         WriteData(",");
@@ -111,7 +112,8 @@ public class EvolutionDataHistory
         WriteData(eD.Average().ToString());
         WriteData(",");
         WriteData(eH.Average().ToString());
-
+        WriteData(",");
+        WriteData(Reqfit.ToString());
         WriteData("\n");
 
 

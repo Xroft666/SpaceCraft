@@ -361,7 +361,7 @@ public class ShipBuilderBrain : UnitController {
 	{
 
 	    float fitness = optimizer.objective.GetFitness(this);
-	    Stats.Fitness = fitness;
+	    //Stats.Fitness = fitness;
         return fitness;
 	}
 

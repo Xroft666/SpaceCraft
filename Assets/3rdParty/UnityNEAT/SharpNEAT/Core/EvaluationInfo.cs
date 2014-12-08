@@ -18,6 +18,7 @@
  */
 using System;
 using SharpNeat.Utility;
+using UnityEngine;
 
 namespace SharpNeat.Core
 {
@@ -162,6 +163,8 @@ namespace SharpNeat.Core
         /// </summary>
         public void SetFitness(double fitness)
         {
+
+            fitness = Mathf.Max(0, (float)fitness);
             if(fitness < 0.0 || double.IsNaN(fitness) || double.IsInfinity(fitness)) {
                 throw new ArgumentOutOfRangeException("Negative fitness values are not valid.");
             }

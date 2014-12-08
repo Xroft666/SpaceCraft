@@ -87,14 +87,17 @@ public class ObjectiveHandler:MonoBehaviour
         
         NeatEvolutionAlgorithm<NeatGenome> ea = Optimizer._ea;
 
-        dataHistory.NextGeneration();
-
+        
         float meanFit = getMeanFitness(ea);
+
+        dataHistory.NextGeneration(meanFit, _targetFitnes[_currentObjective]);
+
+        
         
 
         if (!_checkingObjectives)
         {
-            if (meanFit >= _targetFitnes[_currentObjective])
+            if (meanFit >= 1f )//_targetFitnes[_currentObjective])
             {
                 _currentObjective++;
                 if (_currentObjective == _objectiveList.Count)
@@ -114,7 +117,7 @@ public class ObjectiveHandler:MonoBehaviour
         }
         else
         {
-            if (meanFit >= _targetFitnes[_currentObjective])
+            if (meanFit >= 1f )//_targetFitnes[_currentObjective])
             {
                 if (_checkingObjective < _currentObjective)
                 {
@@ -166,11 +169,11 @@ public class ObjectiveHandler:MonoBehaviour
 		case 1:
 		case 2:
         case 3:
-            fitness = FitnessFunctions.GetFitnessStayOnTarget(s);
+            fitness = FitnessFunctions.GetFitnessStayOnTarget(s, _targetFitnes[t]);
 			break;
 		case 4:
 		case 5:
-			fitness = FitnessFunctions.GetFitnessHitTarget(s);
+            fitness = FitnessFunctions.GetFitnessHitTarget(s, _targetFitnes[t]);
 			break;
         }
         return fitness;

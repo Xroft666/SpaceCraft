@@ -12,7 +12,7 @@ public static class FitnessFunctions
     /// </summary>
     /// <param name="S"></param>
     /// <returns></returns>
-    public static float GetFitnessStayOnTarget(ShipBuilderBrain S)
+    public static float GetFitnessStayOnTarget(ShipBuilderBrain S, float currentGoal)
     {
         VoxelSystem VS = S.voxelSystem;
         Vector3 shipPos = VS.transform.TransformPoint(VS.GetCenter());
@@ -25,14 +25,14 @@ public static class FitnessFunctions
          
         fitness = Mathf.Clamp(fitness, 0, 999999);
 
-        return fitness;
+        return fitness / currentGoal;
     }
 
-	public static float GetFitnessHitTarget(ShipBuilderBrain S)
+	public static float GetFitnessHitTarget(ShipBuilderBrain S, float currentGoal)
 	{
 	    float fitness = S.Stats.EnemyDamage.Hits;
 	    fitness -= S.Stats.ObsticleHits/4;
-        
-        return fitness;
+        fitness = Mathf.Clamp(fitness, 0, 999999);
+        return fitness / currentGoal;
 	}
 }
