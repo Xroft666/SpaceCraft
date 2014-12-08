@@ -30,6 +30,9 @@ public static class FitnessFunctions
 
 	public static float GetFitnessHitTarget(ShipBuilderBrain S)
 	{
-		return S.Stats.EnemyDamage.Hits;
+	    float fitness = S.Stats.EnemyDamage.Hits;
+	    fitness -= S.Stats.ObsticleHits/4;
+        
+        return fitness;
 	}
 }

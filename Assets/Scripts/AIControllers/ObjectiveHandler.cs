@@ -206,6 +206,11 @@ public class ObjectiveHandler:MonoBehaviour
     {
         ResetScene();
 		Enemy.SetActive(true);
+        Enemy.transform.position = new Vector3(Random.Range(-30, 30), Random.Range(-30, 30), 0);
+        while (Enemy.transform.position.magnitude < 20)
+        {
+            Enemy.transform.position = new Vector3(Random.Range(-30, 30), Random.Range(-30, 30), 0);
+        }
 		_target.transform.position = Enemy.transform.position;
 
 		ShipBuilderBrain.attackSignal = true;
@@ -216,6 +221,7 @@ public class ObjectiveHandler:MonoBehaviour
 		ResetScene();
 		Enemy.SetActive(true);
 		Maze.SetActive(true);
+        Enemy.transform.position = new Vector3(65f, 13f, 0);
 		_target.transform.position = Enemy.transform.position;
 
 		ShipBuilderBrain.attackSignal = true;
