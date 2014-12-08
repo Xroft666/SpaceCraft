@@ -165,10 +165,11 @@ public class ObjectiveHandler:MonoBehaviour
 		case 0:
 		case 1:
 		case 2:
+        case 3:
             fitness = FitnessFunctions.GetFitnessStayOnTarget(s);
 			break;
-		case 3:
 		case 4:
+		case 5:
 			fitness = FitnessFunctions.GetFitnessHitTarget(s);
 			break;
         }
