@@ -35,6 +35,73 @@ public class AstroidEvaluatorGenerator : MonoBehaviour
 	
 	}
 
+	IEnumerator EvaluateParameter()
+	{
+		_running = true;
+		int mapSize = generator.AstroidList[_astroidId].size;
+
+		AstroidGenerator.AstroidSettings.Action lastAction = generator.AstroidList[_astroidId].actions
+			[generator.AstroidList[_astroidId].actions.Count-1];
+
+		int[,] map = new int[mapSize, mapSize];
+		int samplesCount = 100;
+
+		lastAction.InitializeSampling((int)lastAction.method);
+		GenerationProcedures GP = new GenerationProcedures(generator, ref map, 0,
+		                                                   generator.AstroidList[_astroidId]);
+
+		GP.Generate();
+		AsteroidEvaluator.CollectData(ref map);
+
+
+		for (int i = 1; i <= samplesCount; i++)
+		{
+//			lastAction.SampleParameter((int)lastAction.method, 1, samplesCount);
+
+			System.Collections.Generic.List<AstroidGenerator.AstroidSettings.Action> actionsList = generator.AstroidList[_astroidId].actions;
+
+			AstroidGenerator.AstroidSettings.Action a = actionsList[3];
+
+	//		foreach( AstroidGenerator.AstroidSettings.Action a in actionsList )
+	//		for( int j = 0; j < actionsList.Count; j++ )
+	//		{
+	//			AstroidGenerator.AstroidSettings.Action a = actionsList[j];
+				a.Randomize(mapSize);
+	//		}
+
+//			generator.AstroidList[_astroidId].actions
+//				[generator.AstroidList[_astroidId].actions.Count-1].Randomize(mapSize);
+
+//			foreach (AstroidGenerator.AstroidSettings.Action t in generator.AstroidList[_astroidId].actions)
+//				t.Randomize(mapSize);
+			
+			
+			map = new int[mapSize, mapSize];
+			GP = new GenerationProcedures(generator, ref map, 0,
+			                                                   generator.AstroidList[_astroidId]);
+
+
+			Thread thread = new Thread(GP.Generate);
+			thread.Start();
+			while (thread.IsAlive)
+			{
+				yield return new WaitForEndOfFrame();
+			}
+
+			AsteroidEvaluator.CollectData(ref map);
+		}
+		
+		float maxValue;
+		float[,] f = AsteroidEvaluator.GetNormalizedData(out maxValue);
+		Debug.Log("The maps count on the brightest spot: " + maxValue);
+		
+		_visual = MapUtility.MapToBinaryTexture(f);
+		_renderQuad.renderer.material.mainTexture = _visual;
+		_running = false;
+		
+//		TmpSave(0); 
+	}
+
     IEnumerator Evaluate()
     {
 
@@ -44,10 +111,15 @@ public class AstroidEvaluatorGenerator : MonoBehaviour
 
         for (int i = 0; i < Rounds; i++)
         {
-            foreach (AstroidGenerator.AstroidSettings.Action t in generator.AstroidList[_astroidId].actions)
-            {
-                t.Randomize(mapSize);
-            }
+  //          foreach (AstroidGenerator.AstroidSettings.Action t in generator.AstroidList[_astroidId].actions)
+  //          {
+  //              t.Randomize(mapSize);
+  //          }
+			for( int j = 0; j < generator.AstroidList[_astroidId].actions.Count-1; j++ )
+			{
+				generator.AstroidList[_astroidId].actions[j].Randomize(mapSize);
+			}
+
             int[,] map = new int[mapSize, mapSize];
 
             GenerationProcedures GP = new GenerationProcedures(generator, ref map, 0,
@@ -141,6 +213,11 @@ public class AstroidEvaluatorGenerator : MonoBehaviour
         {
             Export();
         }
+
+		if (GUI.Button(new Rect(0, 130, 150, 25), "Evaluate Parameter"))
+		{
+			StartCoroutine(EvaluateParameter());
+		}
 
         if(_running)
         GUI.Label(new Rect(0, Screen.height / 2, 150, 50), "Progress:" + (_progress + 1) + "/" + Rounds);

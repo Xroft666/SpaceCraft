@@ -46,6 +46,56 @@ public class AstroidGenerator : MonoBehaviour {
                 mapEdgeCleaning = Random.Range(1, 4);
                 noiseThreshold = Random.Range(0.4f, 0.6f);
             }
+
+			public void InitializeSampling( int algoIdx )
+			{
+				switch( algoIdx )
+				{
+				case 0:
+
+					cellularAutomataStats.InitializeSampling();
+
+					break;
+				case 1:
+					perlinNoiseStats.InitializeSampling();
+
+					break;
+				case 2:
+					mapEdgeCleaning = 1;
+					break;
+				case 3:
+					noiseThreshold = 0.4f;
+					break;
+				default:
+					break;
+				}
+			}
+
+			public void SampleParameter( int algoIdx, int paramIndex, int samplesCount )
+			{
+				switch( algoIdx )
+				{
+				case 0:
+					cellularAutomataStats.IncrementParameter( paramIndex, samplesCount );
+
+					break;
+				case 1:
+					perlinNoiseStats.IncrementParameter( paramIndex, samplesCount );
+					break;
+				case 2:
+
+					mapEdgeCleaning += (int) ((4 - 1) / (float) samplesCount);
+
+					break;
+				case 3:
+
+					noiseThreshold += (0.6f - 0.4f) / (float) samplesCount;
+
+					break;
+				default:
+					break;
+				}
+			}
         }
 
         public string name;

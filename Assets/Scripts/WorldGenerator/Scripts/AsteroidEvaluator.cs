@@ -57,6 +57,8 @@ public class AsteroidEvaluator
 		int y = (int)(roundness * (evaluationData.GetLength(1) - 1));
 
 		evaluationData[x,y] += 1f;
+
+		UnityEngine.Debug.Log("density: " + density + ", roundness: " + roundness);
 	}
 
 	// tells how dense an asteroid is. If it contains a lot of holes,
