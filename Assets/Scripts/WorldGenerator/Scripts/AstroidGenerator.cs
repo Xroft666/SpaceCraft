@@ -142,7 +142,7 @@ public class AstroidGenerator : MonoBehaviour {
 		        theSeed = seeds[i];
 		    }
 
-            GenerationProcedures GP = new GenerationProcedures(this, ref map, theSeed, AstroidList[AstroidsToGenerate[i]]);
+            GenerationProcedures GP = new GenerationProcedures(this, map, theSeed, AstroidList[AstroidsToGenerate[i]]);
 
 
 		    Thread thread = new Thread(GP.Generate);
@@ -153,7 +153,7 @@ public class AstroidGenerator : MonoBehaviour {
 
 		    if (ToVoxel)
 		    {
-		        MapToVoxel(i, theSeed);
+		        MapToVoxel(i, theSeed, GP);
 		    }
 		}
 
@@ -161,14 +161,14 @@ public class AstroidGenerator : MonoBehaviour {
 
 	}
 
-    void MapToVoxel(int i,int theSeed)
+    void MapToVoxel(int i, int theSeed, GenerationProcedures gp)
     {
         GameObject g = new GameObject();
         g.transform.position = Vector3.up * i * 30;
         g.transform.name = "Astroid " + theSeed;
         VoxelSystem v = g.AddComponent<VoxelSystem>();
 
-        VoxelData[,] VD = VoxelUtility.IntToVoxelDataOre(map, v);
+        VoxelData[,] VD = VoxelUtility.IntToVoxelDataOre(gp.map, v);
         v.SetVoxelGrid(VD);
     }
 

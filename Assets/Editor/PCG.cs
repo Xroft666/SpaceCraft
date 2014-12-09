@@ -331,7 +331,7 @@ public class PcgWindow : EditorWindow
         int size = AstroidObject.size;
         
 		int[,] map = new int[size,size];
-		GenerationProcedures GP = new GenerationProcedures(_aGen, ref map, seed, AstroidObject); 
+		GenerationProcedures GP = new GenerationProcedures(_aGen, map, seed, AstroidObject); 
 
 		Maps.Clear();
 
@@ -339,11 +339,11 @@ public class PcgWindow : EditorWindow
         {
             AstroidGenerator.AstroidSettings.Action a = AstroidObject.actions[j];
 
-            GP.GenerateAction(ref map, a);
+            GP.GenerateAction(ref GP.map, a);
 
-			Maps.Add( (int[,]) map.Clone() );
+			Maps.Add( (int[,]) GP.map.Clone() );
 
-            Texture2Ds[j] = MapUtility.MapToBinaryTexture(map);
+            Texture2Ds[j] = MapUtility.MapToBinaryTexture(GP.map);
             
             Texture2Ds[j].wrapMode = TextureWrapMode.Clamp;
             Texture2Ds[j].filterMode = FilterMode.Point;

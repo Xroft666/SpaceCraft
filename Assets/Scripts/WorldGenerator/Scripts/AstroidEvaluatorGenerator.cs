@@ -47,11 +47,11 @@ public class AstroidEvaluatorGenerator : MonoBehaviour
 		int samplesCount = 100;
 
 		lastAction.InitializeSampling((int)lastAction.method);
-		GenerationProcedures GP = new GenerationProcedures(generator, ref map, 0,
+		GenerationProcedures GP = new GenerationProcedures(generator, map, 0,
 		                                                   generator.AstroidList[_astroidId]);
 
 		GP.Generate();
-		AsteroidEvaluator.CollectData(ref map);
+		AsteroidEvaluator.CollectData(ref GP.map);
 
 
 		for (int i = 1; i <= samplesCount; i++)
@@ -77,7 +77,7 @@ public class AstroidEvaluatorGenerator : MonoBehaviour
 			
 			
 			map = new int[mapSize, mapSize];
-			GP = new GenerationProcedures(generator, ref map, 0,
+			GP = new GenerationProcedures(generator, map, 0,
 			                                                   generator.AstroidList[_astroidId]);
 
 
@@ -88,7 +88,7 @@ public class AstroidEvaluatorGenerator : MonoBehaviour
 				yield return new WaitForEndOfFrame();
 			}
 
-			AsteroidEvaluator.CollectData(ref map);
+			AsteroidEvaluator.CollectData(ref GP.map);
 		}
 		
 		float maxValue;
@@ -115,26 +115,33 @@ public class AstroidEvaluatorGenerator : MonoBehaviour
   //          {
   //              t.Randomize(mapSize);
   //          }
-			for( int j = 0; j < generator.AstroidList[_astroidId].actions.Count-1; j++ )
+            int[,] map = new int[mapSize, mapSize];
+			for( int j = 0; j < generator.AstroidList[_astroidId].actions.Count; j++ )
 			{
 				generator.AstroidList[_astroidId].actions[j].Randomize(mapSize);
+                /*
+                GenerationProcedures GP = new GenerationProcedures(generator, map, 0,
+                generator.AstroidList[_astroidId]);
+                GP.GenerateAction(ref map, generator.AstroidList[_astroidId].actions[j]);*/
 			}
 
-            int[,] map = new int[mapSize, mapSize];
-
-            GenerationProcedures GP = new GenerationProcedures(generator, ref map, 0,
+            
+            
+            GenerationProcedures GP = new GenerationProcedures(generator, map, 0,
                 generator.AstroidList[_astroidId]);
-
-
+            GP.Generate();
+              
+             
+            /*
             Thread thread = new Thread(GP.Generate);
             thread.Start();
             while (thread.IsAlive)
             {
                 yield return new WaitForEndOfFrame();
             }
-
+            */
             try{
-                AsteroidEvaluator.CollectData(ref map);
+                AsteroidEvaluator.CollectData(ref GP.map);
                 _progress = i;
 //                Debug.Log("Progress:" + (i + 1) + "/" + Rounds);
             }
@@ -148,6 +155,7 @@ public class AstroidEvaluatorGenerator : MonoBehaviour
             {
                TmpSave(i); 
             }
+            yield return new WaitForEndOfFrame();
         }
 
 		float maxValue;

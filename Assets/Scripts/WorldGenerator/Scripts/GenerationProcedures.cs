@@ -4,8 +4,7 @@ using System.Collections;
 
 namespace WorldGen{
 	public class GenerationProcedures{
-
-		int[,] map;
+	    public int[,] map;
 		//System.Random randomSeed;
 
 		//RandomSeedGen se = new RandomSeedGen();
@@ -16,10 +15,10 @@ namespace WorldGen{
 	    private AstroidGenerator.AstroidSettings astroid;
 	    private AstroidGenerator AS;
 
-		public GenerationProcedures(AstroidGenerator AS, ref int[,] map, int seed, AstroidGenerator.AstroidSettings astroid)
+		public GenerationProcedures(AstroidGenerator AS, int[,] map, int seed, AstroidGenerator.AstroidSettings astroid)
 		{
 		    this.seed = seed;
-            this.map = map;
+            this.map = (int[,]) map.Clone();
 		    this.astroid = astroid;
 		    this.AS = AS;
 		}
@@ -28,12 +27,13 @@ namespace WorldGen{
 
 	    public void Generate()
 	    {
-            map = NoiseGenerator.GenerateNoise(seed, map,0.5f);
+            //map = NoiseGenerator.GenerateNoise(seed, map,0.5f);
             //map = MapUtility.ClearMapEdges(map, 2);
 
 	        foreach (AstroidGenerator.AstroidSettings.Action action in astroid.actions)
 	        {
-	           GenerateAction(ref map, action);
+	           Debug.Log("MOTHEFAKKA");
+                GenerateAction(ref map, action);
 	        }
 	    }
 
