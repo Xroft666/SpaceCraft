@@ -10,18 +10,36 @@ namespace WorldGen
         public float frq = 5;
         public float amp = 5;
 
+		private int _minOctNum = 1;
+		private int _maxOctNum = 25;
+		private float _minFrq = 0.5f;
+		private float _maxFrq = 25f;
+		private float _minAmp = 0.5f;
+		private float _maxAmp = 25f;
+
         public void Randomize(int mapSize)
         {
-            octNum = Random.Range(1, 25);
-            frq = Random.Range(0.5f, 25f);
-            amp = Random.Range(0.5f, 25f);
-        }
+			octNum = Random.Range(_minOctNum, _maxOctNum);
+			frq = Random.Range(_minFrq, _maxFrq);
+			amp = Random.Range(_minAmp, _maxAmp);
+		}
 
-		public void InitializeSampling()
+		public void InitializeSampling(int paramIdx)
 		{
-			octNum = 1;
-			frq = 0.5f;
-			amp = 0.5f;
+			switch(paramIdx)
+			{
+			case 0:	
+				octNum = _minOctNum;
+				break;
+			case 1:
+				frq = _minFrq;
+				break;
+			case 2:
+				amp = _minAmp;
+				break;
+			default:
+				break;
+			}
 		}
 
 		public void IncrementParameter( int paramIndex, int samplesCount )
@@ -29,34 +47,16 @@ namespace WorldGen
 			switch( paramIndex )
 			{
 			case 0:
-				octNum += (int)(( 25 - 1 ) / (float) samplesCount);
+				octNum += (int)(( _maxOctNum - _minOctNum ) / (float) samplesCount);
 				
 				break;
 			case 1:
-				frq += (25f - 0.5f ) / (float) samplesCount;
+				frq += (_maxFrq - _minFrq ) / (float) samplesCount;
 				break;
 			case 2:
-				amp += (25f - 0.5f) / (float) samplesCount;
+				amp += (_maxAmp - _minAmp) / (float) samplesCount;
 				break;
 
-			default:
-				break;
-			}
-		}
-
-		public void SetParameter( int paramIndex, float val )
-		{
-			switch( paramIndex )
-			{
-			case 0:
-				octNum = Mathf.Clamp((int)val, 1, 25);
-				break;
-			case 1:
-				frq = Mathf.Clamp(val, 0.5f, 25f);
-				break;
-			case 2:
-				amp = Mathf.Clamp(val, 0.5f, 25f);
-				break;
 			default:
 				break;
 			}

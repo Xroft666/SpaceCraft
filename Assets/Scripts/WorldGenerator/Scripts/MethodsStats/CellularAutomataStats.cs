@@ -5,8 +5,7 @@ namespace WorldGen
 {
     [System.Serializable]
     public class CellularAutomataStats
-    {
-       
+    {  
         public enum NeighborType { Adjecent, Square, Circle };
         public CellularAutomata.NeighborType neighborType;
 
@@ -17,20 +16,43 @@ namespace WorldGen
 		public int Radius = 2;
 		public int Rounds = 10;
 
+		private float _minBlackChangeThreshold = 0.4f;
+		private float _maxBlackChangeThreshold = 0.6f;
+		private float _minWhiteChangeThreshold = 0.4f;
+		private float _maxWhiteChangeThreshold = 0.6f;
+		private int _minRadius = 1;
+		private int _maxRadius = 5;
+		private int _minRounds = 1;
+		private int _maxRounds = 5;
+
         public void Ranomize(int mapSize)
         {
-            BlackChangeThreshold = Random.Range(0.4f, 0.6f);
-            WhileChangeThreshold = Random.Range(0.4f, 0.6f);
-            Radius = Random.Range(1, 5);
-            Rounds = Random.Range(1, 5);
+			BlackChangeThreshold = Random.Range(_minBlackChangeThreshold, _maxBlackChangeThreshold);
+			WhileChangeThreshold = Random.Range(_minWhiteChangeThreshold, _maxWhiteChangeThreshold);
+			Radius = Random.Range(_minRadius, _maxRadius);
+			Rounds = Random.Range(_minRounds, _maxRounds);
         }
 
-		public void InitializeSampling()
+		public void InitializeSampling(int paramIdx)
 		{
-			BlackChangeThreshold = 0.4f;
-			WhileChangeThreshold = 0.4f;
-			Radius = 1;
-			Rounds = 1;
+			switch( paramIdx )
+			{
+			case 0:
+
+				BlackChangeThreshold = _minBlackChangeThreshold;
+				break;
+			case 1:
+				WhileChangeThreshold = _minWhiteChangeThreshold;
+				break;
+			case 2:
+				Radius = _minRadius;
+				break;
+			case 3:
+				Rounds = _minRounds;
+				break;
+			default:
+				break;
+			}
 		}
 
 		public void IncrementParameter( int paramIndex, int samplesCount )
@@ -38,38 +60,17 @@ namespace WorldGen
 			switch( paramIndex )
 			{
 			case 0:
-				BlackChangeThreshold += (0.6f - 0.4f) / (float) samplesCount;
+				BlackChangeThreshold += (_maxBlackChangeThreshold - _minBlackChangeThreshold) / (float) samplesCount;
 				break;
 			case 1:
-				WhileChangeThreshold += (0.6f - 0.4f) / (float) samplesCount;
+				WhileChangeThreshold += (_maxWhiteChangeThreshold - _minWhiteChangeThreshold) / (float) samplesCount;
 			
 				break;
 			case 2:
-				Radius += (int)( (5 - 1) / (float) samplesCount);
+				Radius += (int)( (_maxRadius - _minRadius) / (float) samplesCount);
 				break;
 			case 3:
-				Rounds += (int)((5 - 1) / (float) samplesCount);
-				break;
-			default:
-				break;
-			}
-		}
-
-		public void SetParameter( int paramIndex, float val )
-		{
-			switch( paramIndex )
-			{
-			case 0:
-				BlackChangeThreshold = Mathf.Clamp(val, 0.4f, 0.6f);
-				break;
-			case 1:
-				WhileChangeThreshold = Mathf.Clamp(val, 0.4f, 0.6f);
-				break;
-			case 2:
-				Radius = Mathf.Clamp((int)val, 1, 5);
-				break;
-			case 3:
-				Rounds = Mathf.Clamp((int)val, 1, 5);
+				Rounds += (int)((_maxRadius - _minRadius) / (float) samplesCount);
 				break;
 			default:
 				break;

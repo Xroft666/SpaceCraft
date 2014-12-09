@@ -36,35 +36,42 @@ public class AstroidGenerator : MonoBehaviour {
             public CellularAutomataStats cellularAutomataStats = new CellularAutomataStats();
             public PerlinNoiseStats perlinNoiseStats = new PerlinNoiseStats();
             public Voxel2D.IntVector2 invertStats;
+
+
             public int mapEdgeCleaning;
             public float noiseThreshold;
+
+			private int _minMapEdgeCleaning = 1;
+			private int _maxMapEdgeCleaning = 4;
+			private float _minNoiseThreshold = 0.4f;
+			private float _maxNoiseThreshold = 0.6f;
 
             public void Randomize(int mapSize)
             {
                 cellularAutomataStats.Ranomize(mapSize);
                 perlinNoiseStats.Randomize(mapSize);
-                mapEdgeCleaning = Random.Range(1, 4);
-                noiseThreshold = Random.Range(0.4f, 0.6f);
+				mapEdgeCleaning = Random.Range(_minMapEdgeCleaning, _maxMapEdgeCleaning);
+				noiseThreshold = Random.Range(_minNoiseThreshold, _maxNoiseThreshold);
             }
 
-			public void InitializeSampling( int algoIdx )
+			public void InitializeSampling( int algoIdx, int paramIdx )
 			{
 				switch( algoIdx )
 				{
 				case 0:
 
-					cellularAutomataStats.InitializeSampling();
+					cellularAutomataStats.InitializeSampling(paramIdx);
 
 					break;
 				case 1:
-					perlinNoiseStats.InitializeSampling();
+					perlinNoiseStats.InitializeSampling(paramIdx);
 
 					break;
 				case 2:
-					mapEdgeCleaning = 1;
+					mapEdgeCleaning = _minMapEdgeCleaning;
 					break;
 				case 3:
-					noiseThreshold = 0.4f;
+					noiseThreshold = _minNoiseThreshold;
 					break;
 				default:
 					break;
@@ -84,12 +91,12 @@ public class AstroidGenerator : MonoBehaviour {
 					break;
 				case 2:
 
-					mapEdgeCleaning += (int) ((4 - 1) / (float) samplesCount);
+					mapEdgeCleaning += (int) ((_maxMapEdgeCleaning - _minMapEdgeCleaning) / (float) samplesCount);
 
 					break;
 				case 3:
 
-					noiseThreshold += (0.6f - 0.4f) / (float) samplesCount;
+					noiseThreshold += (_maxNoiseThreshold - _minNoiseThreshold) / (float) samplesCount;
 
 					break;
 				default:

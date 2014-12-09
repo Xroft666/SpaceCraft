@@ -45,8 +45,9 @@ public class AstroidEvaluatorGenerator : MonoBehaviour
 
 		int[,] map = new int[mapSize, mapSize];
 		int samplesCount = 100;
+		int paramIdx = 0;
 
-		lastAction.InitializeSampling((int)lastAction.method);
+		lastAction.InitializeSampling((int)lastAction.method, paramIdx);
 		GenerationProcedures GP = new GenerationProcedures(generator, map, 0,
 		                                                   generator.AstroidList[_astroidId]);
 
@@ -56,29 +57,11 @@ public class AstroidEvaluatorGenerator : MonoBehaviour
 
 		for (int i = 1; i <= samplesCount; i++)
 		{
-//			lastAction.SampleParameter((int)lastAction.method, 1, samplesCount);
+			lastAction.SampleParameter((int)lastAction.method, paramIdx, samplesCount);
+			//lastAction.Randomize(mapSize);
 
-			System.Collections.Generic.List<AstroidGenerator.AstroidSettings.Action> actionsList = generator.AstroidList[_astroidId].actions;
-
-			AstroidGenerator.AstroidSettings.Action a = actionsList[3];
-
-	//		foreach( AstroidGenerator.AstroidSettings.Action a in actionsList )
-	//		for( int j = 0; j < actionsList.Count; j++ )
-	//		{
-	//			AstroidGenerator.AstroidSettings.Action a = actionsList[j];
-				a.Randomize(mapSize);
-	//		}
-
-//			generator.AstroidList[_astroidId].actions
-//				[generator.AstroidList[_astroidId].actions.Count-1].Randomize(mapSize);
-
-//			foreach (AstroidGenerator.AstroidSettings.Action t in generator.AstroidList[_astroidId].actions)
-//				t.Randomize(mapSize);
-			
-			
 			map = new int[mapSize, mapSize];
-			GP = new GenerationProcedures(generator, map, 0,
-			                                                   generator.AstroidList[_astroidId]);
+			GP = new GenerationProcedures(generator, map, 0, generator.AstroidList[_astroidId]);
 
 
 			Thread thread = new Thread(GP.Generate);
