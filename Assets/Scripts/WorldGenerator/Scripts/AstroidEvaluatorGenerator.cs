@@ -129,17 +129,17 @@ public class AstroidEvaluatorGenerator : MonoBehaviour
             
             GenerationProcedures GP = new GenerationProcedures(generator, map, 0,
                 generator.AstroidList[_astroidId]);
-            GP.Generate();
+            //GP.Generate();
               
              
-            /*
+            
             Thread thread = new Thread(GP.Generate);
             thread.Start();
             while (thread.IsAlive)
             {
                 yield return new WaitForEndOfFrame();
             }
-            */
+            
             try{
                 AsteroidEvaluator.CollectData(ref GP.map);
                 _progress = i;

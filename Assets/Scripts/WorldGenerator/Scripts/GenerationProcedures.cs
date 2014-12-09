@@ -32,7 +32,6 @@ namespace WorldGen{
 
 	        foreach (AstroidGenerator.AstroidSettings.Action action in astroid.actions)
 	        {
-	           Debug.Log("MOTHEFAKKA");
                 GenerateAction(ref map, action);
 	        }
 	    }
