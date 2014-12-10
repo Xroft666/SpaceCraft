@@ -227,7 +227,7 @@ public class ShipBuilderBrain : UnitController {
 		// distance to the target
 		inputArr[0] = Mathf.Clamp01((shipPos - moveToPos).magnitude / 100f);
 
-		Vector3 toTargetLocalDir = voxelSystem.transform.InverseTransformVector(toTargetDir);
+		Vector3 toTargetLocalDir = voxelSystem.transform.InverseTransformDirection(toTargetDir);
 
 		// remapping to (0;1) domain, and 90 deg become (0.5, 0.5)
 		toTargetLocalDir += Vector3.one;
