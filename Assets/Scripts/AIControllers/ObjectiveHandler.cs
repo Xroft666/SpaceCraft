@@ -14,6 +14,9 @@ public class ObjectiveHandler:MonoBehaviour
 
     private readonly float[] _targetFitnes = {300,200,150,150, 5,5};
 
+	public delegate float FitnessDelegate(ShipBuilderBrain s);
+	public FitnessDelegate onGetFitness = null;
+
     private int _currentObjective;
     private int _checkingObjective;
 
@@ -40,26 +43,14 @@ public class ObjectiveHandler:MonoBehaviour
 
     public Optimizer Optimizer;
 
-    EvolutionDataHistory dataHistory;
+	EvolutionDataHistory dataHistory;
 
     public void Start()
     {
-       
-
-        
-
         InitTarget();
-        
-        
-        _objectiveList.Add(ObjectiveRandomPos);
-        _objectiveList.Add(SetObjectiveMovingTarget);
-        _objectiveList.Add(SetObjectiveMaze);
-		_objectiveList.Add(SetObjectiveGetOutOfMaze);
 
-		_objectiveList.Add(SetObjectiveShootEnemy);
-		_objectiveList.Add(SetObjectiveMazeAndShoot);
-
-
+		SetUpIncrementalEvolution();
+//		SetUpGeneralEvolution();
     }
 
     private void InitTarget()
@@ -77,6 +68,26 @@ public class ObjectiveHandler:MonoBehaviour
         _target.name = "Target";
         _target.AddComponent<GotoTarget>();
     }
+
+	private void SetUpIncrementalEvolution()
+	{
+		onGetFitness = GetIncrementalFitness;
+
+		_objectiveList.Add(ObjectiveRandomPos);
+		_objectiveList.Add(SetObjectiveMovingTarget);
+		_objectiveList.Add(SetObjectiveMaze);
+		_objectiveList.Add(SetObjectiveGetOutOfMaze);
+		
+		_objectiveList.Add(SetObjectiveShootEnemy);
+		_objectiveList.Add(SetObjectiveMazeAndShoot);
+	}
+
+	private void SetUpGeneralEvolution()
+	{
+		onGetFitness = GetGeneralAllInOneFitness;
+
+		_objectiveList.Add(SetObjectiveMazeAndShoot);
+	}
 
     public void NextGen()
     {
@@ -158,7 +169,12 @@ public class ObjectiveHandler:MonoBehaviour
         return fitList.Sum() / fitList.Count;
     }
 
-    public float GetFitness(ShipBuilderBrain s)
+	public float GetFitness(ShipBuilderBrain s)
+	{
+		return onGetFitness(s);
+	}
+
+    public float GetIncrementalFitness(ShipBuilderBrain s)
     {
         float fitness =0;
         int t = _checkingObjectives ? _checkingObjective : _currentObjective;
@@ -179,11 +195,18 @@ public class ObjectiveHandler:MonoBehaviour
         return fitness;
     }
 
+	public float GetGeneralAllInOneFitness(ShipBuilderBrain s)
+	{
+		return FitnessFunctions.GetGeneralAllInOneFitness(s, 300f, 5f);
+	}
+
     private void ResetScene()
     {
         _target.transform.position = Vector3.zero;
         Enemy.SetActive(false);
         Maze.SetActive(false);
+
+		_target.transform.localScale = Vector3.one;
 
 		ShipBuilderBrain.attackSignal = false;
 		ShipBuilderBrain.mineSignal = false;
@@ -214,7 +237,9 @@ public class ObjectiveHandler:MonoBehaviour
         {
             Enemy.transform.position = new Vector3(Random.Range(-30, 30), Random.Range(-30, 30), 0);
         }
+
 		_target.transform.position = Enemy.transform.position;
+		_target.transform.localScale = Vector3.one * 5f;
 
 		ShipBuilderBrain.attackSignal = true;
     }
@@ -225,7 +250,9 @@ public class ObjectiveHandler:MonoBehaviour
 		Enemy.SetActive(true);
 		Maze.SetActive(true);
         Enemy.transform.position = new Vector3(65f, 13f, 0);
+
 		_target.transform.position = Enemy.transform.position;
+		_target.transform.localScale = Vector3.one * 5f;
 
 		ShipBuilderBrain.attackSignal = true;
 	}

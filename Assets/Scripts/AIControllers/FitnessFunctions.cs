@@ -35,4 +35,25 @@ public static class FitnessFunctions
         fitness = Mathf.Clamp(fitness, 0, 999999);
         return fitness / currentGoal;
 	}
+
+	public static float GetGeneralAllInOneFitness(ShipBuilderBrain S, float moveGoal, float shootGoal)
+	{
+		VoxelSystem VS = S.voxelSystem;
+		Vector3 shipPos = VS.transform.TransformPoint(VS.GetCenter());
+		
+		float moveFitness = 100;
+		moveFitness -= (shipPos - GotoTarget.Position).magnitude;
+		moveFitness += S.StayOnTargetScore;
+		moveFitness -= S.Stats.ObsticleHits*10;
+
+		moveFitness = Mathf.Clamp(moveFitness, 0, 999999) / moveGoal;
+
+		float shootFitness = S.Stats.EnemyDamage.Hits;
+		shootFitness -= S.Stats.ObsticleHits/4;
+
+		shootFitness = Mathf.Clamp(shootFitness, 0, 999999) / shootGoal;
+
+		
+		return (moveFitness + shootFitness ) * 0.5f;
+	}
 }
