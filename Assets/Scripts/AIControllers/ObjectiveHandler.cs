@@ -49,8 +49,8 @@ public class ObjectiveHandler:MonoBehaviour
     {
         InitTarget();
 
-		SetUpIncrementalEvolution();
-//		SetUpGeneralEvolution();
+//		SetUpIncrementalEvolution();
+		SetUpGeneralEvolution();
     }
 
     private void InitTarget()
