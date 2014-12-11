@@ -196,6 +196,10 @@ public class PcgWindow : EditorWindow
 		if (GUILayout.Button("Randomize"))
 		{
 			seed = Random.Range(0, int.MaxValue);
+
+			for (int j = 0; j < AstroidObject.actions.Count; j++)
+				AstroidObject.actions[j].Randomize(AstroidObject.size);
+
 			Refresh();
 		}
         
