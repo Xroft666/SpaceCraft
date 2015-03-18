@@ -122,7 +122,7 @@ namespace Voxel2D
 				col.SetPath(i,colGen.vertexPaths[i].ToArray());
 				yield return new WaitForEndOfFrame();
 			}
-			voxel.rigidbody2D.WakeUp();
+			voxel.GetComponent<Rigidbody2D>().WakeUp();
 		}
 	}
 }

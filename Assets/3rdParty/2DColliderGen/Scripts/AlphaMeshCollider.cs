@@ -1418,8 +1418,8 @@ public class AlphaMeshCollider : MonoBehaviour {
 	void InitTextureParams() {
 		bool mHasNoTextureAtGameObjectButSomewhereElse = (mHasSmoothMovesAnimBoneColliderComponent || (mHasSmoothMovesBoneAnimationParent == InitState.Yes && !mIsSmoothMovesNodeWithoutSprite));
 		if (!mHasNoTextureAtGameObjectButSomewhereElse) {
-			if (this.renderer && this.renderer.sharedMaterial) {
-				mMainTex = (Texture2D) this.renderer.sharedMaterial.mainTexture;
+			if (this.GetComponent<Renderer>() && this.GetComponent<Renderer>().sharedMaterial) {
+				mMainTex = (Texture2D) this.GetComponent<Renderer>().sharedMaterial.mainTexture;
 			}
 			else {
 				mMainTex = null;
@@ -2763,8 +2763,8 @@ public class AlphaMeshCollider : MonoBehaviour {
 	/// </returns>
 	string GetColliderMeshFilename() {
 		if (mMainTex == null) {
-			if (this.renderer && this.renderer.sharedMaterial) {
-				mMainTex = (Texture2D) this.renderer.sharedMaterial.mainTexture;
+			if (this.GetComponent<Renderer>() && this.GetComponent<Renderer>().sharedMaterial) {
+				mMainTex = (Texture2D) this.GetComponent<Renderer>().sharedMaterial.mainTexture;
 			}
 		}
 		

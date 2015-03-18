@@ -78,8 +78,8 @@ namespace Voxel2D{
 			VoxelFragment f = frag.AddComponent<VoxelFragment>();
 			f.Init(vox);
 
-			frag.rigidbody2D.velocity = voxel.rigidbody2D.velocity+new Vector2(Random.Range(-50,50),Random.Range(-50,50));
-			frag.rigidbody2D.angularVelocity = voxel.rigidbody2D.angularDrag + Random.Range(-100,100);
+			frag.GetComponent<Rigidbody2D>().velocity = voxel.GetComponent<Rigidbody2D>().velocity+new Vector2(Random.Range(-50,50),Random.Range(-50,50));
+			frag.GetComponent<Rigidbody2D>().angularVelocity = voxel.GetComponent<Rigidbody2D>().angularDrag + Random.Range(-100,100);
 			return frag;
 		}
 

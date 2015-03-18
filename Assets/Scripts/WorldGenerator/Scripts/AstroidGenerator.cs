@@ -92,7 +92,7 @@ public class AstroidGenerator : MonoBehaviour {
 			VoxelData[,] VD = VoxelUtility.IntToVoxelDataOre(map,v);
 			v.SetVoxelGrid(VD);
 
-			g.rigidbody2D.isKinematic = true;
+			g.GetComponent<Rigidbody2D>().isKinematic = true;
 			//HACK: just for tests
 			//g.rigidbody2D.angularVelocity = 100;
 

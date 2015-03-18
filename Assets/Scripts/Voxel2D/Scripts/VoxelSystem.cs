@@ -52,7 +52,7 @@ namespace Voxel2D{
 			previousVelocity = new Vector2[3];
 			previousAngularVelocity = new float[3];
 			
-			rigidbody2D.angularDrag = 0;
+			GetComponent<Rigidbody2D>().angularDrag = 0;
 			
 			gameObject.AddComponent<VoxelImpacter>();
 			gameObject.AddComponent<VoxelTextureHandler>();
@@ -94,11 +94,11 @@ namespace Voxel2D{
 		{
 			previousVelocity [2] = previousVelocity [1];
 			previousVelocity [1] = previousVelocity [0];
-			previousVelocity [0] = rigidbody2D.velocity;
+			previousVelocity [0] = GetComponent<Rigidbody2D>().velocity;
 			
 			previousAngularVelocity [2] = previousAngularVelocity [1];
 			previousAngularVelocity [1] = previousAngularVelocity [0];
-			previousAngularVelocity [0] = rigidbody2D.angularVelocity;
+			previousAngularVelocity [0] = GetComponent<Rigidbody2D>().angularVelocity;
 		}
 		
 		
@@ -194,7 +194,7 @@ namespace Voxel2D{
 		}
 		
 		private void UpdateMass(){
-			rigidbody2D.mass = totalMass;
+			GetComponent<Rigidbody2D>().mass = totalMass;
 		}
 		
 		private void FillVoxelGrid(VoxelData[,] grid){
@@ -390,7 +390,7 @@ namespace Voxel2D{
 		public void SetMesh(ref Mesh mesh)
 		{
 			StartCoroutine(VoxelMeshGenerator.GeneratePolygonCollider(this));
-			rigidbody2D.centerOfMass = GetCenter();
+			GetComponent<Rigidbody2D>().centerOfMass = GetCenter();
 		}
 		
 		public void SetGridSize(int size)

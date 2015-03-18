@@ -6,7 +6,7 @@ namespace Voxel2D{
 
 		void Awake(){
 			if(TextureHolder.Instance !=null)
-			renderer.sharedMaterial = TextureHolder.Instance.DeviceMaterial;
+			GetComponent<Renderer>().sharedMaterial = TextureHolder.Instance.DeviceMaterial;
 		}
 	
 	}

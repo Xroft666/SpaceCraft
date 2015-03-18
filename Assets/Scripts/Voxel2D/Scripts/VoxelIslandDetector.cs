@@ -77,12 +77,12 @@ namespace Voxel2D{
 						g.transform.rotation = vox.gameObject.transform.rotation;
 						VoxelSystem v = g.AddComponent<VoxelSystem>();
 						v.SetVoxelGrid(voxelDataGrid);
-						g.rigidbody2D.velocity = vox.rigidbody2D.velocity;
-						g.rigidbody2D.angularVelocity = vox.rigidbody2D.angularVelocity;
+						g.GetComponent<Rigidbody2D>().velocity = vox.GetComponent<Rigidbody2D>().velocity;
+						g.GetComponent<Rigidbody2D>().angularVelocity = vox.GetComponent<Rigidbody2D>().angularVelocity;
 
 						g.layer = 9; // obstacle layer
 					
-						g.rigidbody2D.isKinematic = true;
+						g.GetComponent<Rigidbody2D>().isKinematic = true;
 					}
 					
 				}else{
@@ -121,12 +121,12 @@ namespace Voxel2D{
 						g.transform.rotation = vox.gameObject.transform.rotation;
 						VoxelSystem v = g.AddComponent<VoxelSystem>();
 						v.SetVoxelGrid(voxelIslands[i]);
-						g.rigidbody2D.velocity = vox.rigidbody2D.velocity;
-						g.rigidbody2D.angularVelocity = vox.rigidbody2D.angularVelocity;
+						g.GetComponent<Rigidbody2D>().velocity = vox.GetComponent<Rigidbody2D>().velocity;
+						g.GetComponent<Rigidbody2D>().angularVelocity = vox.GetComponent<Rigidbody2D>().angularVelocity;
 
 						g.layer = 9; // obstacle layer
 
-						g.rigidbody2D.isKinematic = true;
+						g.GetComponent<Rigidbody2D>().isKinematic = true;
 					}
 				}
 				return(voxelIslands[0]);

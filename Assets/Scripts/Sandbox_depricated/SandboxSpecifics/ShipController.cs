@@ -144,7 +144,7 @@ public class ShipController : VoxelData {
 
 			Vector3 shipPos = voxel.transform.TransformPoint(voxel.GetCenter());
 
-			float curVelocity = voxel.rigidbody2D.velocity.magnitude;
+			float curVelocity = voxel.GetComponent<Rigidbody2D>().velocity.magnitude;
 
 			Vector3 middleWayPoint = voxel.transform.up * curVelocity + shipPos;
 

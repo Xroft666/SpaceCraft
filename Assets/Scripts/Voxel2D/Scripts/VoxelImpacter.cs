@@ -131,7 +131,7 @@ namespace Voxel2D{
 		
 		float calculateTotalImpactForce(Collision2D col){	//TODO: use col.relative velocity and current relative velocity to calculate energy 
 			float energyAbsorbed = 0;
-			Vector2 deltaVelocityThis = rigidbody2D.velocity-voxel.previousVelocity[0];
+			Vector2 deltaVelocityThis = GetComponent<Rigidbody2D>().velocity-voxel.previousVelocity[0];
 			float massThis = voxel.totalMass;
 			float impactEnergyThis = PhysicsFormulas.KineticEnergy(massThis,deltaVelocityThis);
 			
@@ -142,7 +142,7 @@ namespace Voxel2D{
 			
 			voxelOther = col.gameObject.GetComponent<Voxel2D.VoxelSystem>();
 			if(voxelOther != null){
-				deltaVelocityOther = voxelOther.rigidbody2D.velocity-voxelOther.previousVelocity[0];
+				deltaVelocityOther = voxelOther.GetComponent<Rigidbody2D>().velocity-voxelOther.previousVelocity[0];
 				massOther = voxelOther.totalMass;
 				impactEnergyOther = PhysicsFormulas.KineticEnergy(massOther,deltaVelocityOther);
 			}

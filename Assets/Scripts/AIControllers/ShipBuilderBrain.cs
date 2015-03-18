@@ -97,8 +97,8 @@ public class ShipBuilderBrain : UnitController {
 	    gameObject.transform.position = Vector3.zero;
 	
 		voxelSystem = gameObject.AddComponent<VoxelSystem>();
-		voxelSystem.rigidbody2D.drag = 1;
-	    voxelSystem.rigidbody2D.angularDrag = 1;
+		voxelSystem.GetComponent<Rigidbody2D>().drag = 1;
+	    voxelSystem.GetComponent<Rigidbody2D>().angularDrag = 1;
 		voxelSystem.SetGridSize(shipSize);
 
 		objectName = Optimizer.fileName;
@@ -198,13 +198,13 @@ public class ShipBuilderBrain : UnitController {
 		if( mineSignal )
 		{
 			moveToPos = selectedAsteroid.transform.TransformPoint(selectedAsteroid.GetCenter());
-			targetVelocity = selectedAsteroid.rigidbody2D.velocity;
+			targetVelocity = selectedAsteroid.GetComponent<Rigidbody2D>().velocity;
 			targetDir = selectedAsteroid.transform.up;
 		}
 		else if( attackSignal )
 		{
 			moveToPos = selectedEnemyship.transform.position;
-			targetVelocity = selectedEnemyship.rigidbody2D.velocity;
+			targetVelocity = selectedEnemyship.GetComponent<Rigidbody2D>().velocity;
 			targetDir = selectedEnemyship.transform.up;
 		}
 		// if just go to command
@@ -241,8 +241,8 @@ public class ShipBuilderBrain : UnitController {
 		inputArr[2] = toTargetLocalDir.y;
 
 		// this ship's velocity and and angular velocity
-        inputArr[3] = Mathf.Clamp01(voxelSystem.rigidbody2D.velocity.magnitude / 100f);
-        inputArr[4] = Mathf.Clamp01(voxelSystem.rigidbody2D.angularVelocity / 100f);
+        inputArr[3] = Mathf.Clamp01(voxelSystem.GetComponent<Rigidbody2D>().velocity.magnitude / 100f);
+        inputArr[4] = Mathf.Clamp01(voxelSystem.GetComponent<Rigidbody2D>().angularVelocity / 100f);
 
 		// target's velocity
 		inputArr[5] = targetVelocity.magnitude / 100f;

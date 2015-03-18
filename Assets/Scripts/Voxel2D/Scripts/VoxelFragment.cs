@@ -34,18 +34,18 @@ namespace Voxel2D{
 //			mFilter.sharedMesh = null;
 //			mFilter.sharedMesh = mesh;
 
-			rigidbody2D.mass = vox.stats.mass;
+			GetComponent<Rigidbody2D>().mass = vox.stats.mass;
 
 			gameObject.AddComponent<VoxelTextureHandler>();
 			gameObject.AddComponent<PropertyOverlay>();
 
-			rigidbody2D.angularDrag = 0;
+			GetComponent<Rigidbody2D>().angularDrag = 0;
 		}
 
 		// Use this for initialization
 		void Awake () {
 			BoxCollider2D bc = GetComponent<BoxCollider2D>();
-			bc.center = Vector2.zero;
+			bc.offset = Vector2.zero;
 			bc.size = Vector2.one;
 		}
 		

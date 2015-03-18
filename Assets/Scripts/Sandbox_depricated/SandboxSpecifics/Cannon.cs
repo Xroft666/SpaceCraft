@@ -18,7 +18,7 @@ public class Cannon : VoxelData {
 	public Cannon(int elementID, Voxel2D.IntVector2 pos, int rotation, VoxelSystem voxel, float launchForce, float projectileMass):base(elementID,pos,rotation, voxel){
 		this.launchForce = launchForce;
 		this.projectileMass = projectileMass;
-		body = voxel.rigidbody2D;
+		body = voxel.GetComponent<Rigidbody2D>();
 		
 	}
 	
@@ -40,9 +40,9 @@ public class Cannon : VoxelData {
 	                Quaternion.Euler(new Vector3(0, 0, rotation))) as GameObject;
 	        g.AddComponent<Projectile>();
 
-	        g.rigidbody2D.velocity = voxel.rigidbody2D.velocity;
-	        g.rigidbody2D.mass = projectileMass;
-	        g.rigidbody2D.AddForce(direction.normalized*launchForce);
+	        g.GetComponent<Rigidbody2D>().velocity = voxel.GetComponent<Rigidbody2D>().velocity;
+	        g.GetComponent<Rigidbody2D>().mass = projectileMass;
+	        g.GetComponent<Rigidbody2D>().AddForce(direction.normalized*launchForce);
 
 
 	        body.AddForceAtPosition(-direction.normalized*launchForce, voxel.transform.TransformPoint(pos));
