@@ -1,12 +1,20 @@
 using UnityEngine;
+
 using SpaceSandbox;
 using System.Collections.Generic;
 
-// represents a small detail - tile, device, anything graphical
+
+[RequireComponent(typeof( BoxCollider2D ))]
+[RequireComponent(typeof( EventTriggerInitializer ))]
 public class ContainerRepresentation : MonoBehaviour 
 {
 
+	public Container _contain;
 
+	private void Awake()
+	{
+
+	}
 
 //	public List<Container> _contains = new List<Container>();
 //
@@ -26,5 +34,6 @@ public class ContainerRepresentation : MonoBehaviour
 //	void Update () {
 //	
 //	}
+	
 
 }

@@ -6,8 +6,10 @@ namespace SpaceSandbox
 	[System.Serializable]
 	public class Device : Entity 
 	{
+		public string deviceName = "Unknown";
 		public List<Resource> resources = new List<Resource>();
-		public string deviceName;
+
+		public BlueprintScheme blueprint = null;
 
 		public delegate void DeviceCallback( object[] output );
 		public DeviceCallback outputCallback;
