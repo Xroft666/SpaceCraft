@@ -5,8 +5,6 @@ namespace SpaceSandbox
 	{
 		public string deviceName;
 		public EntityRepresentation representation;
-
-		public float rotation = 0;
-
+		
 	}
 }
