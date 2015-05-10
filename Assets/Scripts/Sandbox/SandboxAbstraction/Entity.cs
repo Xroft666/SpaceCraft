@@ -3,8 +3,13 @@ namespace SpaceSandbox
 {
 	public class Entity 
 	{
-		public string deviceName;
-		public EntityRepresentation representation;
-		
+		private string m_entityName;
+		private EntityRepresentation m_representation;
+
+
+		public string EntityName
+		{
+			get{ return m_entityName; }
+		}
 	}
 }

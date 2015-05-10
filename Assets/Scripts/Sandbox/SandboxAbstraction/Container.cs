@@ -5,11 +5,34 @@ namespace SpaceSandbox
 {
 	public class Container : Entity, IDamagable 
 	{
-		public BlueprintScheme blueprint = null;
+		private BlueprintScheme blueprint = null;
 
-		public List<Device> equipment = new List<Device>();
-		public List<Entity> cargo = new List<Entity>();
-		public float volume;
+		private List<Device> m_equipment = new List<Device>();
+		private List<Entity> m_cargo = null;
+
+		public void SetUpEquipment( List<Device> devices )
+		{
+			m_equipment = devices ;
+		}
+
+		public void InstallDevice( Device device )
+		{
+			m_equipment.Add( device );
+		}
+
+
+		public Device ConvertToDevice()
+		{
+			Device device = new Device();
+			device.SetUpIntegratedDevices( m_equipment );
+
+			return device;
+		}
+
+		public List<Entity> GetCargoList()
+		{
+			return m_cargo;
+		}
 
 		void IDamagable.TakeDamage()
 		{

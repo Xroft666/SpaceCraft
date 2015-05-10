@@ -22,7 +22,7 @@ public class UCABuilderUIController : MonoBehaviour
 
 	public void LoadDevicesList( Container container )
 	{
-		foreach( Entity ent in container.cargo )
+		foreach( Entity ent in container.GetCargoList() )
 		{
 			Device device = ent as Device;
 			if( device == null )

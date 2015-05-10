@@ -12,6 +12,7 @@ namespace SpaceSandbox
 		protected BlueprintScheme blueprint = null;
 
 		protected List<Device> m_integratedDevices = new List<Device>();
+
 		protected Dictionary<string, Job> m_functions = new Dictionary<string, Job>();
 		protected Dictionary<string, Action> m_events = new Dictionary<string, Action>();
 
@@ -47,7 +48,23 @@ namespace SpaceSandbox
 			m_events.Remove( name );
 		}
 
+		public void SetUpIntegratedDevices( List<Device> devices )
+		{
+			m_integratedDevices = devices;
+		}
 
+		public void InstallDevice( Device device )
+		{
+			m_integratedDevices.Add( device );
+		}
+
+		public Container ConvertToContainer()
+		{
+			Container container = new Container();
+			container.SetUpEquipment(m_integratedDevices);
+
+			return container;
+		}
 
 
 		public void Activate( string functionName )
@@ -59,18 +76,5 @@ namespace SpaceSandbox
 		{
 			yield return m_functions[functionName].startAsCoroutine();
 		}
-
-
-//		public List<Resource> resources = new List<Resource>();
-
-//		public delegate void DeviceCallback( object[] output );
-//		public DeviceCallback outputCallback;
-//
-//		public virtual void OnStart(params object[] input){}
-//		public virtual void OnUpdate(){}
-//		public virtual void OnDelete(){}
-//		
-//		public virtual void OnActivate(params object[] input){}
-//		public virtual void OnDeactivate(params object[] input){}
 	}
 }
