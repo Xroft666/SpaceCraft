@@ -11,15 +11,6 @@ public class UCABuilderUIController : MonoBehaviour
 	public Transform m_softwareBP;
 	public Transform m_softwareAPI;
 
-	public void LoadDevicesList()
-	{
-		// generate a list of devices
-		foreach( Device device in DevicesDatabase.devices )
-		{
-			// create a device UI representation
-		}
-	}
-
 	public void LoadDevicesList( Container container )
 	{
 		foreach( Entity ent in container.GetCargoList() )

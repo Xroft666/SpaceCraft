@@ -18,6 +18,12 @@ namespace SpaceSandbox
 
 		public void AddFunction ( string name, Job function )
 		{
+            if( m_functions.ContainsKey(name) )
+            {
+                Debug.LogWarning(name + " function already exists");
+                return;
+            }
+
 			m_functions[name] = function;
 		}
 
@@ -33,6 +39,12 @@ namespace SpaceSandbox
 
 		public void AddEvent ( string name, UnityEvent trigger )
 		{
+            if( m_events.ContainsKey(name) )
+            {
+                Debug.LogWarning(name + " event already exists");
+                return;
+            }
+
 			m_events.Add(name, trigger);
 		}
 
