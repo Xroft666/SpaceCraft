@@ -10,8 +10,6 @@ namespace SpaceSandbox
 	[System.Serializable]
 	public class Device : Entity 
 	{
-		protected BlueprintScheme blueprint = null;
-
 		protected List<Device> m_integratedDevices = new List<Device>();
 
 		protected Dictionary<string, Job> m_functions = new Dictionary<string, Job>();
@@ -35,7 +33,7 @@ namespace SpaceSandbox
 
 		public void AddEvent ( string name, UnityEvent trigger )
 		{
-			m_events[name] = trigger;
+			m_events.Add(name, trigger);
 		}
 
 		public UnityEvent GetEvent( string name )
@@ -61,7 +59,7 @@ namespace SpaceSandbox
 		public Container ConvertToContainer()
 		{
 			Container container = new Container();
-			container.SetUpEquipment(m_integratedDevices);
+			container.InstallEquipment(m_integratedDevices);
 
 			return container;
 		}

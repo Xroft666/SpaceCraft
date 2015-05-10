@@ -5,21 +5,26 @@ namespace SpaceSandbox
 {
 	public class Container : Entity, IDamagable 
 	{
-		private BlueprintScheme blueprint = null;
+		private BlueprintScheme m_blueprint = new BlueprintScheme();
 
 		private List<Device> m_equipment = new List<Device>();
-		private List<Entity> m_cargo = null;
+		private List<Entity> m_cargo = new List<Entity>();
 
-		public void SetUpEquipment( List<Device> devices )
+		public void LoadSoftware(BlueprintScheme blueptint)
+		{
+			m_blueprint = blueptint;
+		}
+
+		public void InstallEquipment( List<Device> devices )
 		{
 			m_equipment = devices ;
+			Initialize();
 		}
 
 		public void InstallDevice( Device device )
 		{
 			m_equipment.Add( device );
 		}
-
 
 		public Device ConvertToDevice()
 		{
@@ -40,6 +45,25 @@ namespace SpaceSandbox
 			// broke some of it
 			// explode the explosive
 			// or get split into smaller containers
+		}
+
+
+		public void Initialize() 
+		{
+			foreach( Device device in m_equipment )
+				device.Initialize();
+		}
+
+		public void Update() 
+		{
+			foreach( Device device in m_equipment )
+				device.Update();
+		}
+
+		public void Delete() 
+		{
+			foreach( Device device in m_equipment )
+				device.Delete();
 		}
 	}
 }

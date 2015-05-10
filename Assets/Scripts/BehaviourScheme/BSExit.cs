@@ -5,7 +5,7 @@ namespace BehaviourScheme
 {
 	public class BSExit : BSNode 
 	{
-		private UnityEvent exitEvent;
+		private UnityEvent exitEvent = new UnityEvent();
 		public UnityEvent ExitEvent
 		{
 			get{ return exitEvent; }
