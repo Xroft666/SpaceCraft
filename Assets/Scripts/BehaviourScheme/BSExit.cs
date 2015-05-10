@@ -1,20 +1,19 @@
-﻿
+﻿using UnityEngine.Events;
 using SpaceSandbox;
 
 namespace BehaviourScheme
 {
 	public class BSExit : BSNode 
 	{
-		private BlueprintScheme m_scheme = null;
-
-		public void SetScheme( BlueprintScheme scheme )
+		private UnityEvent exitEvent;
+		public UnityEvent ExitEvent
 		{
-			m_scheme = scheme;
+			get{ return exitEvent; }
 		}
 
 		public override void Activate()
 		{
-			m_scheme.OnExitNode( this );
+			exitEvent.Invoke();
 		}
 	}
 }

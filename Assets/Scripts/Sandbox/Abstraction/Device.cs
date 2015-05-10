@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace SpaceSandbox
 {
@@ -14,8 +15,7 @@ namespace SpaceSandbox
 		protected List<Device> m_integratedDevices = new List<Device>();
 
 		protected Dictionary<string, Job> m_functions = new Dictionary<string, Job>();
-		protected Dictionary<string, Action> m_events = new Dictionary<string, Action>();
-
+		protected Dictionary<string, UnityEvent> m_events = new Dictionary<string, UnityEvent>();
 
 
 		public void AddFunction ( string name, Job function )
@@ -33,12 +33,12 @@ namespace SpaceSandbox
 			m_functions.Remove( name );
 		}
 
-		public void AddEvent ( string name, Action action )
+		public void AddEvent ( string name, UnityEvent trigger )
 		{
-			m_events[name] = action;
+			m_events[name] = trigger;
 		}
 
-		public Action GetEvent( string name )
+		public UnityEvent GetEvent( string name )
 		{
 			return m_events[name];
 		}
@@ -76,5 +76,10 @@ namespace SpaceSandbox
 		{
 			yield return m_functions[functionName].startAsCoroutine();
 		}
+
+
+		public virtual void Initialize() {}
+		public virtual void Update() {}
+		public virtual void Delete() {}
 	}
 }

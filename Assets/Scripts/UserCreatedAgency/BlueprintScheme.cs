@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
+using UnityEngine.Events;
+
 using BehaviourScheme;
 
 namespace SpaceSandbox
@@ -34,18 +36,26 @@ namespace SpaceSandbox
 			m_nodes.Add( node );
 		}
 		
-		public void CreateEntry(  )
+		public void CreateEntry( Device device, string eventName )
 		{
 			BSEntry node = new BSEntry();
 
 			m_entries.Add( node );
 			m_nodes.Add( node );
+
+			UnityEvent trigger = device.GetEvent( eventName );
+			trigger.AddListener( node.Activate );
 		}
 		
 		public void CreateExit()
 		{
 			BSExit node = new BSExit();
-			node.SetScheme( this );
+
+			node.ExitEvent.AddListener( 
+			delegate
+			{ 
+				OnExitNode(node);
+			});
 
 			m_exits.Add( node );
 			m_nodes.Add( node );
