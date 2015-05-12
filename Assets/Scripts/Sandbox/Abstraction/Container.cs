@@ -5,33 +5,39 @@ namespace SpaceSandbox
 {
 	public class Container : Entity, IDamagable 
 	{
-		private BlueprintScheme m_blueprint = new BlueprintScheme();
+		/// <summary>
+		/// The m_generated device. Each container represents a compund device,
+		/// with blueprint logic attached.
+		/// </summary>
+		private Device m_generatedDevice = null;
+		/// <summary>
+		/// The m_blueprint. The blueprint logic scheme storage.
+		/// </summary>
+		private BlueprintScheme m_blueprint = null;
 
-		private List<Device> m_equipment = new List<Device>();
-		private List<Entity> m_cargo = new List<Entity>();
+		/// <summary>
+		/// The m_cargo. The inventory of this specific container
+		/// </summary>
+		private List<Entity> m_cargo = null;
+
+		/// <summary>
+		/// Gets the integrated device. If never asked, will generate device
+		/// </summary>
+		/// <value>The integrated device.</value>
+		public Device IntegratedDevice
+		{
+			get
+			{
+				if( m_generatedDevice == null )
+					m_generatedDevice = new Device();
+				
+				return m_generatedDevice;
+			}
+		}
 
 		public void LoadSoftware(BlueprintScheme blueptint)
 		{
 			m_blueprint = blueptint;
-		}
-
-		public void InstallEquipment( List<Device> devices )
-		{
-			m_equipment = devices ;
-			Initialize();
-		}
-
-		public void InstallDevice( Device device )
-		{
-			m_equipment.Add( device );
-		}
-
-		public Device ConvertToDevice()
-		{
-			Device device = new Device();
-			device.SetUpIntegratedDevices( m_equipment );
-
-			return device;
 		}
 
 		public List<Entity> GetCargoList()
@@ -39,31 +45,31 @@ namespace SpaceSandbox
 			return m_cargo;
 		}
 
+		/// <summary>
+		/// Takes the damage. Just an example of the interface usage.
+		/// </summary>
 		void IDamagable.TakeDamage()
 		{
-			// open the containment
-			// broke some of it
-			// explode the explosive
-			// or get split into smaller containers
+
 		}
 
+		/// <summary>
+		/// ContainerRepresentation -> Container -> Device calls execution flow
+		/// </summary>
 
 		public void Initialize() 
 		{
-			foreach( Device device in m_equipment )
-				device.Initialize();
+			IntegratedDevice.Initialize();
 		}
 
 		public void Update() 
 		{
-			foreach( Device device in m_equipment )
-				device.Update();
+			IntegratedDevice.Update();
 		}
 
 		public void Delete() 
 		{
-			foreach( Device device in m_equipment )
-				device.Delete();
+			IntegratedDevice.Delete();
 		}
 	}
 }

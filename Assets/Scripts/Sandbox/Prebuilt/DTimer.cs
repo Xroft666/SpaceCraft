@@ -6,6 +6,9 @@ using UnityEngine.Events;
 
 using SpaceSandbox;
 
+/// <summary>
+/// Timer Device. Counts to the specified second and triggers the event
+/// </summary>
 public class DTimer : Device 
 {
 	private float m_timer = 0f;
@@ -23,11 +26,14 @@ public class DTimer : Device
 		m_fired = true;
 	}
 
+	public override void OnDeviceInstalled()
+	{
+		AddEvent( "OnTimerTrigger", new UnityEvent() );
+	}
+
 	public override void Initialize()
 	{
 		m_timer = 0f;
-
-		AddEvent( "OnTimerTrigger", new UnityEvent() );
 	}
 
 	public override void Update()

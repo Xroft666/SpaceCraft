@@ -38,7 +38,7 @@ namespace SpaceSandbox
 			return node;
 		}
 		
-		public BSEntry CreateEntry( Device device, string eventName )
+		public BSEntry CreateEntry( string eventName, Device device )
 		{
 			BSEntry node = new BSEntry();
 
@@ -51,15 +51,14 @@ namespace SpaceSandbox
 			return node;
 		}
 		
-		public BSExit CreateExit()
+		public BSExit CreateExit( string eventName, Device device)
 		{
 			BSExit node = new BSExit();
 
-			node.ExitEvent.AddListener( 
-			delegate
-			{ 
-				OnExitNode(node);
-			});
+			UnityEvent exitEvent = new UnityEvent();
+
+			node.ExitEvent = exitEvent;
+			device.AddEvent(eventName, exitEvent);
 
 			m_exits.Add( node );
 			m_nodes.Add( node );
@@ -128,9 +127,9 @@ namespace SpaceSandbox
 
 		}
 
-		public void OnExitNode( BSNode exitNode )
+		public void OnPlannedFailed()
 		{
-			UnityEngine.Debug.Log("BSExit Invoke");
+
 		}
 	}
 }

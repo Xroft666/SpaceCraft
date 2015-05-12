@@ -14,24 +14,27 @@ public class ContainerRepresentation : MonoBehaviour
 	
 	private void Awake()
 	{
-		DTimer timer1 = new DTimer();
-		DTimer timer2 = new DTimer();
-		
-		timer1.SetUpTimer(2f);
-		timer2.SetUpTimer(5f);
-		
-		m_contain.InstallEquipment ( new List<Device>(){ timer1, timer2 } );
-		
-		BlueprintScheme scheme = new BlueprintScheme();
-		
-		BSEntry entry1 = scheme.CreateEntry(timer1, "OnTimerTrigger");
-		BSEntry entry2 = scheme.CreateEntry(timer2, "OnTimerTrigger");
-		
-		BSExit exit1 = scheme.CreateExit();
-		BSExit exit2 = scheme.CreateExit();
-		
-		entry1.AddChild( exit1 );
-		entry2.AddChild( exit2 );
+//		DTimer timer1 = new DTimer();
+//		
+//		timer1.SetUpTimer(2f);
+//		
+//		m_contain.IntegratedDevice.InstallEquipment ( new List<Device>(){ timer1 } );
+//		
+//		BlueprintScheme scheme = new BlueprintScheme();
+//		
+//		BSEntry entry1 = scheme.CreateEntry("OnTimerTrigger", timer1);
+//
+//
+//		Device containerDevice = m_contain.IntegratedDevice;
+//		
+//		BSExit exit1 = scheme.CreateExit("exit1", containerDevice);
+//		BSExit exit2 = scheme.CreateExit("exit2", containerDevice);
+//		
+//
+//		BSEntry entry2 = scheme.CreateEntry("exit1", containerDevice);
+//
+//		entry1.AddChild( exit1 );
+//		entry2.AddChild( exit2 );
 	}
 
 	private void Start()

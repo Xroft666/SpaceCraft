@@ -4,6 +4,7 @@
 	{
 		public override void Activate()
 		{
+//			UnityEngine.Debug.Log("BSEntry invoked");
 			m_connectNode.Activate();
 		}
 	}
