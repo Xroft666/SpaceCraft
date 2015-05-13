@@ -9,7 +9,7 @@ namespace SpaceSandbox
 		/// The m_generated device. Each container represents a compund device,
 		/// with blueprint logic attached.
 		/// </summary>
-		private Device m_generatedDevice = null;
+		private Device m_integratedDevice = null;
 		/// <summary>
 		/// The m_blueprint. The blueprint logic scheme storage.
 		/// </summary>
@@ -28,16 +28,24 @@ namespace SpaceSandbox
 		{
 			get
 			{
-				if( m_generatedDevice == null )
-					m_generatedDevice = new Device();
+				if( m_integratedDevice == null )
+					m_integratedDevice = new Device();
 				
-				return m_generatedDevice;
+				return m_integratedDevice;
 			}
 		}
 
 		public void LoadSoftware(BlueprintScheme blueptint)
 		{
 			m_blueprint = blueptint;
+		}
+
+		public void AddToCargo( Entity entity )
+		{
+			if( m_cargo == null )
+				m_cargo = new List<Entity>();
+
+			m_cargo.Add( entity );
 		}
 
 		public List<Entity> GetCargoList()

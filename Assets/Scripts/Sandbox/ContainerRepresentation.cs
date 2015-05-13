@@ -15,12 +15,14 @@ public class ContainerRepresentation : MonoBehaviour
 	private void Awake()
 	{
 //		DTimer timer1 = new DTimer();
+//		m_contain.AddToCargo( timer1 );
 //		
 //		timer1.SetUpTimer(2f);
 //		
-//		m_contain.IntegratedDevice.InstallEquipment ( new List<Device>(){ timer1 } );
+//		m_contain.IntegratedDevice.InstallDevice ( timer1 );
 //		
 //		BlueprintScheme scheme = new BlueprintScheme();
+//		m_contain.LoadSoftware( scheme );
 //		
 //		BSEntry entry1 = scheme.CreateEntry("OnTimerTrigger", timer1);
 //
