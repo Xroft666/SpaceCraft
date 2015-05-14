@@ -24,10 +24,5 @@ namespace BehaviourScheme
 		{
 			m_entry.Activate();
 		}
-
-		public override IEnumerator ActivateAndWait()
-		{
-			yield return m_entry.ActivateAndWait();
-		}
 	}
 }

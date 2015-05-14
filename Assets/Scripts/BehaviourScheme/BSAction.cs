@@ -1,29 +1,36 @@
-﻿
-using System;
+﻿using System;
+using System.Collections;
 
 namespace BehaviourScheme
 {
 	public class BSAction : BSNode 
 	{
-		private Action m_Action = null;
+		private Job m_yieldAction = null;
 
-		public void SetAction( Action action )
-		{
-			m_Action = action;
-		}
-
-		public void RemoveAction()
-		{
-			m_Action = null;
-		}
+		public void SetYieldAction( Job yieldAction )	{ m_yieldAction = yieldAction; }
+		public void RemoveYieldAction() { m_yieldAction = null; }
 
 		// executes a single action and continues to the next node
 		public override void Activate()
 		{
-			if( m_Action != null )
-				m_Action();
+			if( m_yieldAction != null )
+			{
+				UnityEngine.Debug.LogWarning("Empty Action");
+				m_yieldAction.start();
+			}
 
 			GetConnectedNode().Activate();
+		}
+
+		public override IEnumerator ActivateAndWait()
+		{
+			if( m_yieldAction != null )
+			{
+				UnityEngine.Debug.LogWarning("Empty Yield Action");
+				yield return m_yieldAction.startAsCoroutine();
+			}
+
+			yield return this.m_connectNode.ActivateAndWait();
 		}
 	}
 }
