@@ -1,4 +1,4 @@
-﻿
+﻿using System.Collections;
 using System.Collections.Generic;
 
 namespace BehaviourScheme
@@ -37,5 +37,6 @@ namespace BehaviourScheme
 
 
 		public virtual void Activate(){}
+		public virtual IEnumerator ActivateAndWait(){ yield return null; }
 	}
 }

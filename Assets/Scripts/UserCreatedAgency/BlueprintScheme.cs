@@ -10,24 +10,20 @@ namespace SpaceSandbox
 {
 	public class BlueprintScheme : Entity 
 	{
-		private List<BSEntry> m_entries = new List<BSEntry>();
-		private List<BSState> m_states = new List<BSState>();
-		private List<BSExit> m_exits = new List<BSExit>();
-
-
 		private List<BSNode> m_nodes = new List<BSNode>();
 
 		private List<Job> m_plannedActions = new List<Job>();
 
-		public void CreateState()
+		public void CreateState( string stateName, Device device )
 		{
 			BSState node = new BSState();
 
-			m_states.Add( node );
+			device.AddFunction( stateName, Job.make(node.ActivateAndWait()) );
+
 			m_nodes.Add( node );
 		}
 
-		public BSAction CreateAction( Device device, string functionName )
+		public BSAction CreateAction( string functionName, Device device )
 		{
 			BSAction node = new BSAction();
 
@@ -42,7 +38,6 @@ namespace SpaceSandbox
 		{
 			BSEntry node = new BSEntry();
 
-			m_entries.Add( node );
 			m_nodes.Add( node );
 
 			UnityEvent trigger = device.GetEvent( eventName );
@@ -60,7 +55,6 @@ namespace SpaceSandbox
 			node.ExitEvent = exitEvent;
 			device.AddEvent(eventName, exitEvent);
 
-			m_exits.Add( node );
 			m_nodes.Add( node );
 
 			return node;

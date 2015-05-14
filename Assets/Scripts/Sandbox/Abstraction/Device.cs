@@ -30,14 +30,28 @@ namespace SpaceSandbox
 		protected Dictionary<string, UnityEvent> m_events = new Dictionary<string, UnityEvent>();
 
 
+		/// <summary>
+		/// Gets the functions list. Returns the list of all the functions and their names
+		/// including the current "compound" list if it is not end-point device
+		/// </summary>
+		/// <returns>The functions list.</returns>
+		public Dictionary<string, Job> GetCompleteFunctionsList()
+		{
+			Dictionary<string, Job> functionsList = new Dictionary<string, Job>(m_functions);
+
+			foreach( Device device in m_integratedDevices )
+			{
+				foreach(KeyValuePair<string, Job> function in device.GetCompleteFunctionsList())
+				{
+					functionsList.Add(function.Key, function.Value);
+				}
+			}
+
+			return functionsList;
+		}
+
 		public void AddFunction ( string name, Job function )
 		{
-            if( m_functions.ContainsKey(name) )
-            {
-                Debug.LogWarning(name + " function already exists");
-                return;
-            }
-
 			m_functions[name] = function;
 		}
 
@@ -51,14 +65,29 @@ namespace SpaceSandbox
 			m_functions.Remove( name );
 		}
 
+
+		/// <summary>
+		/// Gets the complete events list. 
+		/// </summary>
+		/// <returns>The complete events list.</returns>
+
+		public Dictionary<string, UnityEvent> GetCompleteEventsList()
+		{
+			Dictionary<string, UnityEvent> eventsList = new Dictionary<string, UnityEvent>(m_events);
+
+			foreach( Device device in m_integratedDevices )
+			{
+				foreach(KeyValuePair<string, UnityEvent> dEvent in device.GetCompleteEventsList())
+				{
+					eventsList.Add(dEvent.Key, dEvent.Value);
+				}
+			}
+			
+			return eventsList;
+		} 
+
 		public void AddEvent ( string name, UnityEvent trigger )
 		{
-            if( m_events.ContainsKey(name) )
-            {
-                Debug.LogWarning(name + " event already exists");
-                return;
-            }
-
 			m_events.Add(name, trigger);
 		}
 

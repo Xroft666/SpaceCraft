@@ -1,4 +1,5 @@
-﻿
+﻿using System.Collections;
+
 namespace BehaviourScheme
 {
 	public class BSState : BSNode 
@@ -22,6 +23,11 @@ namespace BehaviourScheme
 		public override void Activate()
 		{
 			m_entry.Activate();
+		}
+
+		public override IEnumerator ActivateAndWait()
+		{
+			yield return m_entry.ActivateAndWait();
 		}
 	}
 }
