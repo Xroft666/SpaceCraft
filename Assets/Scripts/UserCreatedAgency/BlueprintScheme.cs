@@ -27,7 +27,7 @@ namespace SpaceSandbox
 		{
 			BSAction node = new BSAction();
 
-			Job function = device.GetFunction( "functionName" );
+			Job function = device.GetFunction( functionName );
 			node.SetYieldAction( function );
 
 			m_nodes.Add( node );
