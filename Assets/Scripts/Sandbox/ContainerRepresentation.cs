@@ -37,6 +37,7 @@ public class ContainerRepresentation : MonoBehaviour
 //
 //		entry1.AddChild( exit1 );
 //		entry2.AddChild( exit2 );
+
 	}
 
 	private void Start()
@@ -69,5 +70,13 @@ public class ContainerRepresentation : MonoBehaviour
 //		}
 //	}
 	
+	private void OnTriggerEnter( Collider other )
+	{
+		m_contain.OnObjectEntered(other.gameObject.GetComponent<ContainerRepresentation>().m_contain);
+	}
 
+	private void OnTriggerExit( Collider other )
+	{
+		m_contain.OnObjectEscaped(other.gameObject.GetComponent<ContainerRepresentation>().m_contain);
+    }
 }

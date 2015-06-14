@@ -14,6 +14,8 @@ namespace SpaceSandbox
 	/// </summary>
 	public class Device : Entity 
 	{
+		protected Container m_containerAttachedTo = null;
+
 		/// <summary>
 		/// The m_integrated devices. If the device is compud, this list will
 		/// store all the simplier devices in it
@@ -188,6 +190,18 @@ namespace SpaceSandbox
 				device.Delete();
 		}
 
-		#endregion
+		public virtual void OnObjectEntered() 
+		{
+			foreach( Device device in m_integratedDevices )
+				device.OnObjectEntered();
+        }
+
+		public virtual void OnObjectEscaped() 
+        {
+            foreach( Device device in m_integratedDevices )
+				device.OnObjectEscaped();
+        }
+        
+        #endregion
 	}
 }

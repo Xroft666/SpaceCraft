@@ -5,15 +5,28 @@ namespace SpaceSandbox
 {
 	public class Container : Entity, IDamagable 
 	{
+		private ContainerRepresentation m_representation = null;
+		public ContainerRepresentation Representation
+		{
+			get { return m_representation; }
+		}
+
 		/// <summary>
 		/// The m_generated device. Each container represents a compund device,
 		/// with blueprint logic attached.
 		/// </summary>
 		private Device m_integratedDevice = null;
+
 		/// <summary>
 		/// The m_blueprint. The blueprint logic scheme storage.
 		/// </summary>
-		private BlueprintScheme m_blueprint = null;
+		private BlueprintScheme m_blueprint = new BlueprintScheme();
+		public BlueprintScheme Blueprint
+		{
+			get { return m_blueprint; }
+			set { m_blueprint = value; }
+		}
+
 
 		/// <summary>
 		/// The m_cargo. The inventory of this specific container
@@ -33,11 +46,6 @@ namespace SpaceSandbox
 				
 				return m_integratedDevice;
 			}
-		}
-
-		public void LoadSoftware(BlueprintScheme blueptint)
-		{
-			m_blueprint = blueptint;
 		}
 
 		public void AddToCargo( Entity entity )
@@ -78,6 +86,16 @@ namespace SpaceSandbox
 		public void Delete() 
 		{
 			IntegratedDevice.Delete();
+		}
+
+		public void OnObjectEntered( Container container )
+		{
+			m_blueprint.Memory.AddObject(container.EntityName, container);
+		}
+
+		public void OnObjectEscaped( Container container )
+		{
+			m_blueprint.Memory.RemoveObject(container.EntityName);
 		}
 	}
 }

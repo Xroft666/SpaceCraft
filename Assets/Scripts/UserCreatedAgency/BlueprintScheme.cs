@@ -10,6 +10,14 @@ namespace SpaceSandbox
 {
 	public class BlueprintScheme : Entity 
 	{
+		private MemoryStack m_memory = new MemoryStack();
+
+		public MemoryStack Memory
+		{
+			get { return m_memory; }
+			set { m_memory = value; }
+		}
+
 		private List<BSNode> m_nodes = new List<BSNode>();
 
 		private List<Job> m_plannedActions = new List<Job>();
