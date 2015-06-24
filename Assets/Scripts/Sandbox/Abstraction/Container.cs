@@ -69,6 +69,8 @@ namespace SpaceSandbox
 			UnityEngine.Debug.Log( EntityName + " took damage.");
 			foreach( Entity entity in m_cargo )
 				entity.TakeDamage();
+
+			m_integratedDevice.TakeDamage();
 		}
 
 		public override void Destroy()
@@ -76,6 +78,8 @@ namespace SpaceSandbox
 			UnityEngine.Debug.Log( EntityName + " is destroyed.");
 			foreach( Entity entity in m_cargo )
 				entity.TakeDamage();
+
+			m_integratedDevice.Destroy();
 		}
 
 		/// <summary>
