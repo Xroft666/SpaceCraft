@@ -209,13 +209,13 @@ namespace SpaceSandbox
 		public override void TakeDamage()
 		{
 			foreach( Device device in m_integratedDevices )
-				(device as IDamagable).TakeDamage();
+				device.TakeDamage();
 		}
 
 		public override void Destroy()
 		{
 			foreach( Device device in m_integratedDevices )
-				(device as IDamagable).Destroy();
+				device.Destroy();
 		}
         
         #endregion

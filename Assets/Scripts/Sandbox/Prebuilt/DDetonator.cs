@@ -18,7 +18,7 @@ public class DDetonator : Device
 		// we need to go through container's storage and evaluate how much
 		// explosive resources it contains
 
-		(m_containerAttachedTo as IDamagable).Destroy();
+		m_containerAttachedTo.Destroy();
 
 		yield return null;
 	}
