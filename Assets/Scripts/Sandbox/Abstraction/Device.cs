@@ -12,7 +12,7 @@ namespace SpaceSandbox
 	/// functions and events. Can be compaund, that stores simplier
 	/// devices inside
 	/// </summary>
-	public class Device : Entity 
+	public class Device : Entity
 	{
 		protected Container m_containerAttachedTo = null;
 
@@ -201,6 +201,22 @@ namespace SpaceSandbox
             foreach( Device device in m_integratedDevices )
 				device.OnObjectEscaped();
         }
+
+		#endregion
+
+		#region IDamagable interface
+
+		public override void TakeDamage()
+		{
+			foreach( Device device in m_integratedDevices )
+				(device as IDamagable).TakeDamage();
+		}
+
+		public override void Destroy()
+		{
+			foreach( Device device in m_integratedDevices )
+				(device as IDamagable).Destroy();
+		}
         
         #endregion
 	}

@@ -1,7 +1,7 @@
 ﻿
 namespace SpaceSandbox
 {
-	public class Entity 
+	public class Entity  
 	{
 		private EntityRepresentation m_representation;
 
@@ -10,5 +10,8 @@ namespace SpaceSandbox
 		{
 			get{ return m_entityName; }
 		}
+
+		public virtual void TakeDamage() {}
+		public virtual void Destroy() {}
 	}
 }

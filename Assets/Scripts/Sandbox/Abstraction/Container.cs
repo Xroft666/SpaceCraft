@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SpaceSandbox
 {
-	public class Container : Entity, IDamagable 
+	public class Container : Entity 
 	{
 		private ContainerRepresentation m_representation = null;
 		public ContainerRepresentation Representation
@@ -64,9 +64,18 @@ namespace SpaceSandbox
 		/// <summary>
 		/// Takes the damage. Just an example of the interface usage.
 		/// </summary>
-		void IDamagable.TakeDamage()
+		public override void TakeDamage()
 		{
+			UnityEngine.Debug.Log( EntityName + " took damage.");
+			foreach( Entity entity in m_cargo )
+				(entity as IDamagable).TakeDamage();
+		}
 
+		public override void Destroy()
+		{
+			UnityEngine.Debug.Log( EntityName + " is destroyed.");
+			foreach( Entity entity in m_cargo )
+				(entity as IDamagable).TakeDamage();
 		}
 
 		/// <summary>

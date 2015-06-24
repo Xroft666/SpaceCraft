@@ -21,6 +21,10 @@ public class EventTriggerInitializer : MonoBehaviour
 		pointerEnterEntry.callback = pointerClickEvent;
 		
 		EventTrigger eventTrigger = GetComponent<EventTrigger>();
+		#if UNITY_5_1
+		eventTrigger.triggers.Add(pointerEnterEntry);
+		#else
 		eventTrigger.delegates.Add(pointerEnterEntry);
+		#endif
 	}
 }
