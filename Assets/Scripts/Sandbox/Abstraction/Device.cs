@@ -32,6 +32,11 @@ namespace SpaceSandbox
 		protected Dictionary<string, UnityEvent> m_events = new Dictionary<string, UnityEvent>();
 
 
+		public void AssignContainer( Container container )
+		{
+			m_containerAttachedTo = container;
+		}
+
 		/// <summary>
 		/// Gets the functions list. Returns the list of all the functions and their names
 		/// including the current "compound" list if it is not end-point device
@@ -108,22 +113,26 @@ namespace SpaceSandbox
 		/// And then initializes them
 		/// </summary>
 		/// <param name="devices">Devices. List of devices</param>
-		public void InstallEquipment( List<Device> devices )
+		public void IntegrateDevices( List<Device> devices )
 		{
 			m_integratedDevices = devices;
 			foreach( Device device in devices )
+			{
+				device.AssignContainer( m_containerAttachedTo );
 				device.OnDeviceInstalled();
+			}
 		}
 
 		/// <summary>
 		/// Installs the device. Installs a single device and initializes it
 		/// </summary>
 		/// <param name="device">Device.</param>
-		public void InstallDevice( Device device )
+		public void IntegrateDevice( Device device )
 		{
 			if( m_integratedDevices == null )
 				m_integratedDevices = new List<Device>();
 
+			device.AssignContainer( m_containerAttachedTo );
 			m_integratedDevices.Add( device );
 			device.OnDeviceInstalled();
 		}
@@ -188,6 +197,7 @@ namespace SpaceSandbox
 		{
 			foreach( Device device in m_integratedDevices )
 				device.Delete();
+
 		}
 
 		public virtual void OnObjectEntered() 

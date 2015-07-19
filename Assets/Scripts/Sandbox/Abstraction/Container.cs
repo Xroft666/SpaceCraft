@@ -48,6 +48,11 @@ namespace SpaceSandbox
 			}
 		}
 
+		public void InstallDevice( Device device)
+		{
+			m_integratedDevice = device;
+		}
+
 		public void AddToCargo( Entity entity )
 		{
 			if( m_cargo == null )
@@ -104,11 +109,13 @@ namespace SpaceSandbox
 		public void OnObjectEntered( Container container )
 		{
 			m_blueprint.Memory.AddObject(container.EntityName, container);
+			m_integratedDevice.OnObjectEntered();
 		}
 
 		public void OnObjectEscaped( Container container )
 		{
 			m_blueprint.Memory.RemoveObject(container.EntityName);
+			m_integratedDevice.OnObjectEscaped();
 		}
 	}
 }
