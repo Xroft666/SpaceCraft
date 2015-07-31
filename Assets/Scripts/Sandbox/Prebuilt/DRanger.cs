@@ -21,10 +21,20 @@ public class DRanger : Device
 
 	public override void OnDeviceInstalled()
 	{
-		AddEvent( "OnRangerEntered", new UnityEvent() );
-		AddEvent( "OnRangerEscaped", new UnityEvent() );
+		AddEvent( "OnRangerEntered", null );
+		AddEvent( "OnRangerEscaped", null );
 
 		m_collider = m_containerAttachedTo.Representation.gameObject.AddComponent<CircleCollider2D>();
+	}
+
+	public void OnRangerEntered(params Entity[] objs)
+	{
+
+	}
+
+	public void OnRangerEscaped(params Entity[] objs)
+	{
+		
 	}
 
 	public override void Initialize()
@@ -42,13 +52,13 @@ public class DRanger : Device
 		GameObject.Destroy(m_collider);
 	}
 
-	public override void OnObjectEntered() 
+	public override void OnObjectEntered( Container container ) 
 	{
-		GetEvent("OnRangerEntered").Invoke();
+		GetEvent("OnRangerEntered").Invoke( container );
     }
 	
-	public override void OnObjectEscaped() 
+	public override void OnObjectEscaped( Container container ) 
 	{
-		GetEvent("OnRangerEscaped").Invoke();
+		GetEvent("OnRangerEscaped").Invoke( container );
     }
 }

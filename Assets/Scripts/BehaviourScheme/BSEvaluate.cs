@@ -21,7 +21,7 @@ namespace BehaviourScheme
 			node.RemoveParent();
 		}
 
-		public override void Activate()
+		public override void Activate(params SpaceSandbox.Entity[] objects)
 		{
 			float bestValue = -1f;
 			BSNode bestNode = null;
@@ -36,7 +36,7 @@ namespace BehaviourScheme
 				}
 			}
 
-			bestNode.Activate();
+			bestNode.Activate(objects);
 		}
 		
 		

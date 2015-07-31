@@ -36,7 +36,7 @@ namespace BehaviourScheme
 		}
 
 
-		public virtual void Activate(){}
+		public virtual void Activate(params SpaceSandbox.Entity[] objects){}
 		public virtual IEnumerator ActivateAndWait(){ yield return null; }
 	}
 }

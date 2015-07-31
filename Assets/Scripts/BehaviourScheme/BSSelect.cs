@@ -21,13 +21,13 @@ namespace BehaviourScheme
 			node.RemoveParent();
 		}
 
-		public override void Activate()
+		public override void Activate(params SpaceSandbox.Entity[] objects)
 		{
 			foreach( KeyValuePair<BSNode,BSPredecate> transition in m_transitions )
 			{
 				if( transition.Value() )
 				{
-					transition.Key.Activate();
+					transition.Key.Activate(objects);
 					break;
 				}
 			}

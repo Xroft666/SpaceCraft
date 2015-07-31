@@ -20,9 +20,9 @@ namespace BehaviourScheme
 			m_type = type;
 		}
 
-		public override void Activate()
+		public override void Activate(params SpaceSandbox.Entity[] objects)
 		{
-			m_entry.Activate();
+			m_entry.Activate(objects);
 		}
 	}
 }

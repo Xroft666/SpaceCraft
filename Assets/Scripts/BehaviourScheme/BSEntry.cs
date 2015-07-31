@@ -2,10 +2,10 @@
 {
 	public class BSEntry : BSNode 
 	{
-		public override void Activate()
+		public override void Activate(params SpaceSandbox.Entity[] objects)
 		{
 //			UnityEngine.Debug.Log("BSEntry invoked");
-			m_connectNode.Activate();
+			m_connectNode.Activate(objects);
 		}
 	}
 }

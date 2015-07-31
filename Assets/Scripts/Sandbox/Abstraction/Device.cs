@@ -12,6 +12,9 @@ namespace SpaceSandbox
 	/// functions and events. Can be compaund, that stores simplier
 	/// devices inside
 	/// </summary>
+
+	public delegate void DeviceEvent(params Entity[] objects ); 
+
 	public class Device : Entity
 	{
 		protected Container m_containerAttachedTo = null;
@@ -29,8 +32,8 @@ namespace SpaceSandbox
 		/// <summary>
 		/// The m_events. List of trigger events that are exposed to the logic scheme
 		/// </summary>
-		protected Dictionary<string, UnityEvent> m_events = new Dictionary<string, UnityEvent>();
-
+//		protected Dictionary<string, UnityEvent> m_events = new Dictionary<string, UnityEvent>();
+		protected Dictionary<string, DeviceEvent> m_events = new Dictionary<string, DeviceEvent>();
 
 		public void AssignContainer( Container container )
 		{
@@ -78,13 +81,13 @@ namespace SpaceSandbox
 		/// </summary>
 		/// <returns>The complete events list.</returns>
 
-		public Dictionary<string, UnityEvent> GetCompleteEventsList()
+		public Dictionary<string, DeviceEvent> GetCompleteEventsList()
 		{
-			Dictionary<string, UnityEvent> eventsList = new Dictionary<string, UnityEvent>(m_events);
-
+			Dictionary<string, DeviceEvent> eventsList = new Dictionary<string, DeviceEvent>(m_events);
+			
 			foreach( Device device in m_integratedDevices )
 			{
-				foreach(KeyValuePair<string, UnityEvent> dEvent in device.GetCompleteEventsList())
+				foreach(KeyValuePair<string, DeviceEvent> dEvent in device.GetCompleteEventsList())
 				{
 					eventsList.Add(dEvent.Key, dEvent.Value);
 				}
@@ -93,12 +96,12 @@ namespace SpaceSandbox
 			return eventsList;
 		} 
 
-		public void AddEvent ( string name, UnityEvent trigger )
+		public void AddEvent ( string name, DeviceEvent trigger )
 		{
 			m_events.Add(name, trigger);
 		}
 
-		public UnityEvent GetEvent( string name )
+		public DeviceEvent GetEvent( string name )
 		{
 			return m_events[name];
 		}
@@ -200,16 +203,16 @@ namespace SpaceSandbox
 
 		}
 
-		public virtual void OnObjectEntered() 
+		public virtual void OnObjectEntered( Container container ) 
 		{
 			foreach( Device device in m_integratedDevices )
-				device.OnObjectEntered();
+				device.OnObjectEntered(container);
         }
 
-		public virtual void OnObjectEscaped() 
+		public virtual void OnObjectEscaped( Container container ) 
         {
             foreach( Device device in m_integratedDevices )
-				device.OnObjectEscaped();
+				device.OnObjectEscaped(container);
         }
 
 		#endregion

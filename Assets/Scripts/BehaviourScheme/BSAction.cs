@@ -11,7 +11,7 @@ namespace BehaviourScheme
 		public void RemoveYieldAction() { m_yieldAction = null; }
 
 		// executes a single action and continues to the next node
-		public override void Activate()
+		public override void Activate(params SpaceSandbox.Entity[] objects)
 		{
 			if( m_yieldAction != null )
 			{
@@ -19,7 +19,7 @@ namespace BehaviourScheme
 				m_yieldAction.start();
 			}
 
-			GetConnectedNode().Activate();
+			GetConnectedNode().Activate(objects);
 		}
 
 		public override IEnumerator ActivateAndWait()

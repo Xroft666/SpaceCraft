@@ -45,12 +45,12 @@ public class DDetonator : Device
 	
 	}
 
-	public override void OnObjectEntered() 
+	public override void OnObjectEntered( Container container ) 
 	{
 
     }
 	
-	public override void OnObjectEscaped() 
+	public override void OnObjectEscaped( Container container ) 
 	{
 
     }

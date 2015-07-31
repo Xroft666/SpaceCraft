@@ -1,21 +1,22 @@
 ﻿using UnityEngine.Events;
 using SpaceSandbox;
 
+using System;
+
 namespace BehaviourScheme
 {
 	public class BSExit : BSNode 
 	{
-		private UnityEvent exitEvent = null;
-		public UnityEvent ExitEvent
+		private SpaceSandbox.DeviceEvent exitEvent;
+		public SpaceSandbox.DeviceEvent ExitEvent
 		{
 			get{ return exitEvent; }
 			set{ exitEvent = value; }
 		}
 
-		public override void Activate()
+		public override void Activate(params SpaceSandbox.Entity[] objects)
 		{
-//			UnityEngine.Debug.Log("BSExit invoked");
-			exitEvent.Invoke();
+			exitEvent.Invoke(objects);
 		}
 	}
 }

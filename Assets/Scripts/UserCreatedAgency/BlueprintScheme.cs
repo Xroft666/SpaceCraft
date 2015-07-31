@@ -49,8 +49,8 @@ namespace SpaceSandbox
 
 			m_nodes.Add( node );
 
-			UnityEvent trigger = device.GetEvent( eventName );
-			trigger.AddListener( node.Activate );
+			DeviceEvent trigger = device.GetEvent( eventName );
+			trigger += node.Activate ;
 
 			return node;
 		}
@@ -59,10 +59,7 @@ namespace SpaceSandbox
 		{
 			BSExit node = new BSExit();
 
-			UnityEvent exitEvent = new UnityEvent();
-
-			node.ExitEvent = exitEvent;
-			device.AddEvent(eventName, exitEvent);
+			device.AddEvent(eventName, null);
 
 			m_nodes.Add( node );
 

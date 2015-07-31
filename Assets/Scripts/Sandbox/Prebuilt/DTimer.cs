@@ -46,10 +46,15 @@ public class DTimer : Device
 
 	public override void OnDeviceInstalled()
 	{
-		AddEvent( "OnTimerTrigger", new UnityEvent() );
+		AddEvent( "OnTimerTrigger", null );
 
 		AddFunction("StartTimer", Job.make(StartTimer()) );
 		AddFunction("ResetTimer", Job.make(ResetTimer()) );
+	}
+
+	public void OnTimerTrigger(params Entity[] objs)
+	{
+		
 	}
 
 	public override void Initialize()
@@ -71,15 +76,15 @@ public class DTimer : Device
 		{
 			m_fired = true;
 
-			UnityEvent timerEvent = GetEvent("OnTimerTrigger");
+			DeviceEvent timerEvent = GetEvent("OnTimerTrigger");
 			timerEvent.Invoke();
 		}
 	}
 
 	public override void Delete()
 	{
-		UnityEvent timerEvent = GetEvent("OnTimerTrigger");
-		timerEvent.RemoveAllListeners();
+		DeviceEvent timerEvent = GetEvent("OnTimerTrigger");
+		timerEvent = null;
 		RemoveEvent("OnTimerTrigger");
 	}
 

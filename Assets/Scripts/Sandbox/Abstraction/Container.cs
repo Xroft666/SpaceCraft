@@ -109,13 +109,13 @@ namespace SpaceSandbox
 		public void OnObjectEntered( Container container )
 		{
 			m_blueprint.Memory.AddObject(container.EntityName, container);
-			m_integratedDevice.OnObjectEntered();
+			m_integratedDevice.OnObjectEntered( container );
 		}
 
 		public void OnObjectEscaped( Container container )
 		{
 			m_blueprint.Memory.RemoveObject(container.EntityName);
-			m_integratedDevice.OnObjectEscaped();
+			m_integratedDevice.OnObjectEscaped( container );
 		}
 	}
 }
