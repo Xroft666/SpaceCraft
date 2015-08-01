@@ -108,6 +108,7 @@ namespace SpaceSandbox
 			// a planner can be interrupted if (high priority event kicks in?)
 			// a planner can be interrupted if an action (or a check) fails?
 
+			// should be using STATES as yelded actions instead of enums 
 		}
 
 
