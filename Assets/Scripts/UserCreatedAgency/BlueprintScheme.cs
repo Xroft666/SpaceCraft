@@ -20,13 +20,13 @@ namespace SpaceSandbox
 
 		private List<BSNode> m_nodes = new List<BSNode>();
 
-		private List<Job> m_plannedActions = new List<Job>();
+		private List<DeviceEvent> m_plannedActions = new List<DeviceEvent>();
 
 		public void CreateState( string stateName, Device device )
 		{
 			BSState node = new BSState();
 
-			device.AddFunction( stateName, Job.make(node.ActivateAndWait()) );
+			device.AddFunction( stateName, node.Activate );
 
 			m_nodes.Add( node );
 		}
@@ -35,8 +35,7 @@ namespace SpaceSandbox
 		{
 			BSAction node = new BSAction();
 
-			Job function = device.GetFunction( functionName );
-			node.SetYieldAction( function );
+			node.SetAction( device.GetFunction( functionName ) );
 
 			m_nodes.Add( node );
 
@@ -94,7 +93,7 @@ namespace SpaceSandbox
 
 		}
 
-		public void AddActionToPlanner( Job job )
+		public void AddActionToPlanner( DeviceEvent job )
 		{
 			m_plannedActions.Add( job );
 		}
@@ -109,18 +108,9 @@ namespace SpaceSandbox
 			// a planner can be interrupted if (high priority event kicks in?)
 			// a planner can be interrupted if an action (or a check) fails?
 
-			Job.make( ActionsExcecution(), true );
 		}
 
-		private IEnumerator ActionsExcecution()
-		{
-			foreach( Job job in m_plannedActions )
-			{
-				yield return job.startAsCoroutine();
-			}
 
-			OnPlannerCompleted();
-		}
 
 		public void OnPlannerCompleted()
 		{

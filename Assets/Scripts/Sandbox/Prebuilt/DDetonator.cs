@@ -10,7 +10,7 @@ public class DDetonator : Device
 {
 	#region Functions
 
-	public IEnumerator DetonateExplosives()
+	public void DetonateExplosives(params Entity[] objects)
 	{
 		// Here we could calculate the energy that being produced
 		// and make a explosion range of that specific amount
@@ -20,14 +20,13 @@ public class DDetonator : Device
 
 		m_containerAttachedTo.Destroy();
 
-		yield return null;
 	}
 
 	#endregion
 
 	public override void OnDeviceInstalled()
 	{
-		AddFunction("Detonate", Job.make(DetonateExplosives()) );
+		AddFunction("Detonate", DetonateExplosives );//Job.make(DetonateExplosives()) );
 	}
 
 	public override void Initialize()
@@ -44,14 +43,5 @@ public class DDetonator : Device
 	{
 	
 	}
-
-	public override void OnObjectEntered( Container container ) 
-	{
-
-    }
 	
-	public override void OnObjectEscaped( Container container ) 
-	{
-
-    }
 }

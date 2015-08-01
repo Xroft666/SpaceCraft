@@ -14,7 +14,12 @@ public class DHeatDetector : Device
 
 	#region device's functions
 
-	private IEnumerator SearchForClosestTarget()
+	private void SetTarget( params Entity[] objects )
+	{
+		m_target = (objects[0] as Container).Representation;
+	}
+
+	private void SearchForClosestTarget(params Entity[] objects)
 	{
 		Dictionary<string, Entity> memoryObjects = m_containerAttachedTo.Blueprint.Memory.GetAllObjects();
 
@@ -40,7 +45,7 @@ public class DHeatDetector : Device
 		if( closestContainer == null )
 		{
 			Debug.Log("HeatDetector: No targets nearby.");
-			yield break;
+			return;
 		}
 
 		m_target = closestContainer;
@@ -53,7 +58,8 @@ public class DHeatDetector : Device
 	public override void OnDeviceInstalled()
 	{
 	//	AddEvent( "OnTimerTrigger", new UnityEvent() );
-		AddFunction("SearchForClosestTarget", Job.make(SearchForClosestTarget()) );
+		AddFunction("SetTarget", SetTarget );
+		AddFunction("SearchForClosestTarget", SearchForClosestTarget );
 	}
 
 	public override void Initialize()

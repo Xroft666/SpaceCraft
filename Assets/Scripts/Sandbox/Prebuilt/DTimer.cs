@@ -24,20 +24,16 @@ public class DTimer : Device
 
 	#region device's functions
 
-	public IEnumerator StartTimer()
+	public void StartTimer(params Entity[] objects)
 	{
 		m_started = true;
-
-		yield return null;
 	}
 	
-	public IEnumerator ResetTimer()
+	public void ResetTimer(params Entity[] objects)
 	{
 		m_timer = 0f;
 		m_fired = false;
 		m_started = false;
-
-		yield return null;
 	}
 
 	#endregion
@@ -48,8 +44,8 @@ public class DTimer : Device
 	{
 		AddEvent( "OnTimerTrigger", null );
 
-		AddFunction("StartTimer", Job.make(StartTimer()) );
-		AddFunction("ResetTimer", Job.make(ResetTimer()) );
+		AddFunction("StartTimer", StartTimer );
+		AddFunction("ResetTimer", ResetTimer );
 	}
 
 	public void OnTimerTrigger(params Entity[] objs)

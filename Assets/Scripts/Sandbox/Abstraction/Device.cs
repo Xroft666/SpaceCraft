@@ -28,7 +28,7 @@ namespace SpaceSandbox
 		/// <summary>
 		/// The m_functions. List of functions that are exposed to the logic scheme
 		/// </summary>
-		protected Dictionary<string, Job> m_functions = new Dictionary<string, Job>();
+		protected Dictionary<string, DeviceEvent> m_functions = new Dictionary<string, DeviceEvent>();
 		/// <summary>
 		/// The m_events. List of trigger events that are exposed to the logic scheme
 		/// </summary>
@@ -45,13 +45,13 @@ namespace SpaceSandbox
 		/// including the current "compound" list if it is not end-point device
 		/// </summary>
 		/// <returns>The functions list.</returns>
-		public Dictionary<string, Job> GetCompleteFunctionsList()
+		public Dictionary<string, DeviceEvent> GetCompleteFunctionsList()
 		{
-			Dictionary<string, Job> functionsList = new Dictionary<string, Job>(m_functions);
+			Dictionary<string, DeviceEvent> functionsList = new Dictionary<string, DeviceEvent>(m_functions);
 
 			foreach( Device device in m_integratedDevices )
 			{
-				foreach(KeyValuePair<string, Job> function in device.GetCompleteFunctionsList())
+				foreach(KeyValuePair<string, DeviceEvent> function in device.GetCompleteFunctionsList())
 				{
 					functionsList.Add(function.Key, function.Value);
 				}
@@ -60,12 +60,12 @@ namespace SpaceSandbox
 			return functionsList;
 		}
 
-		public void AddFunction ( string name, Job function )
+		public void AddFunction ( string name, DeviceEvent function )
 		{
-			m_functions[name] = function;
+			m_functions[name] += function;
 		}
 
-		public Job GetFunction ( string name )
+		public DeviceEvent GetFunction ( string name )
 		{
 			return m_functions[name];
 		}
@@ -146,7 +146,9 @@ namespace SpaceSandbox
 		/// <param name="functionName">Function name to be activated.</param>
 		public void Activate( string functionName )
 		{
-			m_functions[functionName].start();
+//			m_functions[functionName].start();
+			if( m_functions[functionName] != null )
+				m_functions[functionName].Invoke();
 		}
 
 		/// <summary>
@@ -154,10 +156,10 @@ namespace SpaceSandbox
 		/// </summary>
 		/// <returns> Returns Coroutine.</returns>
 		/// <param name="functionName">Function name to be activated.</param>
-		public IEnumerator ActivateAndWait( string functionName )
-		{
-			yield return m_functions[functionName].startAsCoroutine();
-		}
+//		public IEnumerator ActivateAndWait( string functionName )
+//		{
+//			yield return m_functions[functionName].startAsCoroutine();
+//		}
 
 		#region Device Callback Interface
 
