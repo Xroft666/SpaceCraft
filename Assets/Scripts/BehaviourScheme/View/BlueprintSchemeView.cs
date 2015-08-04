@@ -25,6 +25,12 @@ public class BlueprintSchemeView : MonoBehaviour
 
 	#endregion
 
+	public void InitializeView( BlueprintScheme scheme )
+	{
+		m_blueprint = scheme;
+		m_currentView = m_root = scheme.RootFuntion;
+	}
+
 	// Loading up and rendering all he containment
 	public void LoadDevicesList( Container container )
 	{
@@ -41,6 +47,8 @@ public class BlueprintSchemeView : MonoBehaviour
 	public void UpdateSchemeView()
 	{
 		// Update all the visuals
+
+		// Instantiate Node Views only for the current VIEW
 	}
 
 	#region Callback methods
@@ -66,5 +74,64 @@ public class BlueprintSchemeView : MonoBehaviour
 		m_selectedNode = node;
 	}
 
+	// If a Function was double click, inception the View inside
+	public void OnNodeDoubleClicked( NodeView node )
+	{
+		m_selectedNode = node;
+
+		BSFunction asFunction = node as BSFunction;
+		if( asFunction != null )
+		{
+			m_currentView = asFunction;
+			UpdateSchemeView();
+		}
+	}
+
 	#endregion
+
+	#region Elements section butttons callback
+
+	public void CreateFunction()
+	{
+		BSNode newNode;// = m_blueprint.CreateFunction(
+		AddNodeToCurrentFunction( newNode );
+	}
+	
+	public void CreateAction()
+	{
+		BSNode newNode;// = m_blueprint.CreateAction(
+		AddNodeToCurrentFunction( newNode );
+	}
+	
+	public void CreateEntry()
+	{
+		BSNode newNode;// = m_blueprint.CreateEntry(
+		AddNodeToCurrentFunction( newNode );
+	}
+	
+	public void CreateExit()
+	{
+		BSNode newNode;// = m_blueprint.CreateExit(
+		AddNodeToCurrentFunction( newNode );
+	}
+	
+	public void CreateSelect()
+	{
+		BSNode newNode;// = m_blueprint.CreateSelect(
+		AddNodeToCurrentFunction( newNode );
+	}
+	
+	public void CreateEvaluate()
+	{
+		BSNode newNode;// = m_blueprint.CreateEvaluate(
+		AddNodeToCurrentFunction( newNode );
+	}
+
+	#endregion
+
+	private void AddNodeToCurrentFunction( BSNode node )
+	{
+		// Add node where needed, create a node view, etc
+		m_currentView.IncludeNode ( node );
+	}
 }

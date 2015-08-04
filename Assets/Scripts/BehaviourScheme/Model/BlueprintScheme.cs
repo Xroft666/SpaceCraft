@@ -10,25 +10,12 @@ namespace SpaceSandbox
 {
 	public class BlueprintScheme : Entity 
 	{
-		private BSFunction m_rootFuntion;
-
-		private MemoryStack m_memory;
-
-		public MemoryStack Memory
-		{
-			get { return m_memory; }
-			set { m_memory = value; }
-		}
+		public BSFunction RootFuntion { get; private set; }
+		public MemoryStack Memory { get; private set; }
 
 		private List<DeviceEvent> m_plannedActions = new List<DeviceEvent>();
 
-		public BlueprintScheme()
-		{
-			m_memory = new MemoryStack();
-			m_rootFuntion = new BSFunction();
-		}
-
-		public BSFunction CreateState( string stateName, Device device )
+		public BSFunction CreateFunction( string stateName, Device device )
 		{
 			BSFunction node = new BSFunction();
 

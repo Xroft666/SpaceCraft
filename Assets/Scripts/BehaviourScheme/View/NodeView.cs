@@ -7,13 +7,13 @@ using BehaviourScheme;
 // it s a monobehaviour, so it contains all the callbacks, visuals and references 
 public class NodeView : MonoBehaviour 
 {
-	private BSNode m_node;
-	private BlueprintSchemeView m_schemeView;
+	public BSNode Node { get; private set; }
+	public BlueprintSchemeView SchemeView { get; private set; }
 
 	public void InitializeNode( BSNode node, BlueprintSchemeView schemeView )
 	{
-		m_node = node;
-		m_schemeView = schemeView;
+		Node = node;
+		SchemeView = schemeView;
 
 		// initialize visuals that depends on the type
 
