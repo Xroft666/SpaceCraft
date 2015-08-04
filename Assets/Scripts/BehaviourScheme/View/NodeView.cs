@@ -8,10 +8,12 @@ using BehaviourScheme;
 public class NodeView : MonoBehaviour 
 {
 	private BSNode m_node;
+	private BlueprintSchemeView m_schemeView;
 
-	public void InitializeNode( BSNode node )
+	public void InitializeNode( BSNode node, BlueprintSchemeView schemeView )
 	{
 		m_node = node;
+		m_schemeView = schemeView;
 
 		// initialize visuals that depends on the type
 
@@ -40,5 +42,31 @@ public class NodeView : MonoBehaviour
 			// Initialize as Select
 		}
 	}
-	
+
+	#region callbacks
+
+	// Attach unity's interaction components to provide those callbacks
+	// provide data back to BlueprintSchemeView
+
+	public void OnNodeClicked()
+	{
+
+	}
+
+	public void OnNodeDragged()
+	{
+
+	}
+
+	public void OnNodePressed()
+	{
+
+	}
+
+	public void OnNodeReleased()
+	{
+
+	}
+
+	#endregion
 }

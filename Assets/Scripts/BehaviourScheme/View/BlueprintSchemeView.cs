@@ -50,14 +50,14 @@ public class BlueprintSchemeView : MonoBehaviour
 
 	}
 
-	public void OnNodesDropped( NodeView node )
+	public void OnNodesDropped( NodeView left, NodeView right )
 	{
-		// check if it was dropped over another node
+
 	}
 
 	public void OnNodeDragged( NodeView node )
 	{
-		// update position
+		// update visuals
 	}
 
 	public void OnNodeClicked( NodeView node )
