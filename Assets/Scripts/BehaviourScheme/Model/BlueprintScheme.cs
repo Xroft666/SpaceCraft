@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -10,7 +10,9 @@ namespace SpaceSandbox
 {
 	public class BlueprintScheme : Entity 
 	{
-		private MemoryStack m_memory = new MemoryStack();
+		private BSFunction m_rootFuntion;
+
+		private MemoryStack m_memory;
 
 		public MemoryStack Memory
 		{
@@ -18,17 +20,20 @@ namespace SpaceSandbox
 			set { m_memory = value; }
 		}
 
-		private List<BSNode> m_nodes = new List<BSNode>();
-
 		private List<DeviceEvent> m_plannedActions = new List<DeviceEvent>();
 
-		public void CreateState( string stateName, Device device )
+		public BlueprintScheme()
 		{
-			BSState node = new BSState();
+			m_memory = new MemoryStack();
+			m_rootFuntion = new BSFunction();
+		}
+
+		public BSFunction CreateState( string stateName, Device device )
+		{
+			BSFunction node = new BSFunction();
 
 			device.AddFunction( stateName, node.Activate );
-
-			m_nodes.Add( node );
+			return node;
 		}
 
 		public BSAction CreateAction( string functionName, Device device )
@@ -37,16 +42,12 @@ namespace SpaceSandbox
 
 			node.SetAction( device.GetFunction( functionName ) );
 
-			m_nodes.Add( node );
-
 			return node;
 		}
 		
 		public BSEntry CreateEntry( string eventName, Device device )
 		{
 			BSEntry node = new BSEntry();
-
-			m_nodes.Add( node );
 
 			DeviceEvent trigger = device.GetEvent( eventName );
 			trigger += node.Activate ;
@@ -60,15 +61,12 @@ namespace SpaceSandbox
 
 			device.AddEvent(eventName, null);
 
-			m_nodes.Add( node );
-
 			return node;
 		}
 
 		public BSSelect CreateSelect()
 		{
 			BSSelect node = new BSSelect();
-			m_nodes.Add( node );
 
 			return node;
 		}
@@ -76,7 +74,6 @@ namespace SpaceSandbox
 		public BSEvaluate CreateEvaluate()
 		{
 			BSEvaluate node = new BSEvaluate();
-			m_nodes.Add( node );
 
 			return node;
 		}
@@ -87,11 +84,6 @@ namespace SpaceSandbox
 			left.AddChild( right );
 		}
 
-
-		public void UpdateScheme()
-		{
-
-		}
 
 		public void AddActionToPlanner( DeviceEvent job )
 		{

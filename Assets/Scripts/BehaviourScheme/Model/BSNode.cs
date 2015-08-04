@@ -35,8 +35,11 @@ namespace BehaviourScheme
 			m_parentNode = null;
 		}
 
+		public void IncludeNode( BSNode node )
+		{
+			
+		}
 
 		public virtual void Activate(params SpaceSandbox.Entity[] objects){}
-		public virtual IEnumerator ActivateAndWait(){ yield return null; }
 	}
 }
