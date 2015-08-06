@@ -12,14 +12,7 @@ public class DDetonator : Device
 
 	public void DetonateExplosives(params Entity[] objects)
 	{
-		// Here we could calculate the energy that being produced
-		// and make a explosion range of that specific amount
-
-		// we need to go through container's storage and evaluate how much
-		// explosive resources it contains
-
 		m_containerAttachedTo.Destroy();
-
 	}
 
 	#endregion
@@ -27,21 +20,5 @@ public class DDetonator : Device
 	public override void OnDeviceInstalled()
 	{
 		AddFunction("Detonate", DetonateExplosives );//Job.make(DetonateExplosives()) );
-	}
-
-	public override void Initialize()
-	{
-
-	}
-
-	public override void Update()
-	{
-
-	}
-
-	public override void Delete()
-	{
-	
-	}
-	
+	}	
 }

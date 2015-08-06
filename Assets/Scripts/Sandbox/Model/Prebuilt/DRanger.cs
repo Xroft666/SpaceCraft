@@ -24,27 +24,7 @@ public class DRanger : Device
 		AddEvent( "OnRangerEntered", null );
 		AddEvent( "OnRangerEscaped", null );
 
-		m_collider = m_containerAttachedTo.Representation.gameObject.AddComponent<CircleCollider2D>();
-	}
-
-	public void OnRangerEntered(params Entity[] objs)
-	{
-
-	}
-
-	public void OnRangerEscaped(params Entity[] objs)
-	{
-		
-	}
-
-	public override void Initialize()
-	{
-
-	}
-
-	public override void Update()
-	{
-
+		m_collider = m_containerAttachedTo.View.gameObject.AddComponent<CircleCollider2D>();
 	}
 
 	public override void Delete()

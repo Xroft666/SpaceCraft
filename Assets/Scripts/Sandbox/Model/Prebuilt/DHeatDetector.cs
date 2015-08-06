@@ -16,14 +16,14 @@ public class DHeatDetector : Device
 
 	private void SetTarget( params Entity[] objects )
 	{
-		m_target = (objects[0] as Container).Representation;
+		m_target = (objects[0] as Container).View;
 	}
 
 	private void SearchForClosestTarget(params Entity[] objects)
 	{
 		Dictionary<string, Entity> memoryObjects = m_containerAttachedTo.Blueprint.Memory.GetAllObjects();
 
-		ContainerRepresentation thisContainer = m_containerAttachedTo.Representation;
+		ContainerRepresentation thisContainer = m_containerAttachedTo.View;
 		ContainerRepresentation closestContainer = null;
 
 		float minDistance = float.MaxValue;
@@ -34,11 +34,11 @@ public class DHeatDetector : Device
 			if( container == null )
 				continue;
 
-			float distance = (thisContainer.transform.position - container.Representation.transform.position).magnitude;
+			float distance = (thisContainer.transform.position - container.View.transform.position).magnitude;
 			if( distance < minDistance )
 			{
 				minDistance = distance;
-				closestContainer = container.Representation;
+				closestContainer = container.View;
 			}
 		}
 
@@ -60,21 +60,6 @@ public class DHeatDetector : Device
 	//	AddEvent( "OnTimerTrigger", new UnityEvent() );
 		AddFunction("SetTarget", SetTarget );
 		AddFunction("SearchForClosestTarget", SearchForClosestTarget );
-	}
-
-	public override void Initialize()
-	{
-
-	}
-
-	public override void Update()
-	{
-
-	}
-
-	public override void Delete()
-	{
-
 	}
 
 	#endregion
