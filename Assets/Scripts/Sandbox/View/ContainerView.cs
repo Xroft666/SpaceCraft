@@ -11,7 +11,7 @@ using BehaviourScheme;
 /// </summary>
 
 [RequireComponent(typeof( EventTriggerInitializer ))]
-public class ContainerRepresentation : MonoBehaviour 
+public class ContainerView : MonoBehaviour 
 {
 
 	public Container m_contain;
@@ -38,11 +38,11 @@ public class ContainerRepresentation : MonoBehaviour
 
 	private void OnTriggerEnter( Collider other )
 	{
-		m_contain.OnObjectEntered(other.gameObject.GetComponent<ContainerRepresentation>().m_contain);
+		m_contain.OnObjectEntered(other.gameObject.GetComponent<ContainerView>().m_contain);
 	}
 
 	private void OnTriggerExit( Collider other )
 	{
-		m_contain.OnObjectEscaped(other.gameObject.GetComponent<ContainerRepresentation>().m_contain);
+		m_contain.OnObjectEscaped(other.gameObject.GetComponent<ContainerView>().m_contain);
     }
 }

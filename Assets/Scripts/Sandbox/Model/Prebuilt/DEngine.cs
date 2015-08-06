@@ -55,7 +55,7 @@ public class DEngine : Device
 		// Move the object and consume fuel
 
 		if( isEngaged )
-			m_rigidbody.MovePosition ( m_rigidbody.position + m_rigidbody.transform.forward * speed * Time.fixedDeltaTime );
+			m_rigidbody.MovePosition ( m_rigidbody.position + m_rigidbody.transform.up * speed * Time.fixedDeltaTime );
 	}
 
 	public override void Delete()

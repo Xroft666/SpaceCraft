@@ -1,18 +1,18 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 
 using System;
 
 public static class EntitySelection 
 {
-	public delegate void OnContainerSelectedEvent( ContainerRepresentation container );
+	public delegate void OnContainerSelectedEvent( ContainerView container );
 	public static OnContainerSelectedEvent onEntityClicked = null;
 
-	public static List<ContainerRepresentation> selectedContainers = new List<ContainerRepresentation>();
-	public static ContainerRepresentation selectedContainer = null;
+	public static List<ContainerView> selectedContainers = new List<ContainerView>();
+	public static ContainerView selectedContainer = null;
 
 	
-	public static void OnEntityClicked( ContainerRepresentation entity )
+	public static void OnEntityClicked( ContainerView entity )
 	{
 		if( entity == null )
 			selectedContainers.Clear();

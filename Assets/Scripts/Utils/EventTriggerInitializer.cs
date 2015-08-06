@@ -1,11 +1,11 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 using UnityEngine.EventSystems;
 
 public class EventTriggerInitializer : MonoBehaviour 
 {
-	public ContainerRepresentation m_container;
+	public ContainerView m_container;
 
 	private void Awake()
 	{

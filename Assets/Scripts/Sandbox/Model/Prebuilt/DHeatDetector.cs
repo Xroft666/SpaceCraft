@@ -10,7 +10,12 @@ using SpaceSandbox;
 public class DHeatDetector : Device 
 {
 
-	private ContainerRepresentation m_target = null;
+	private ContainerView m_target;
+	private Rigidbody2D m_rigidbody;
+	private Transform m_transform;
+
+	// temporary variable. Should be changed to something more physical realistic
+	private float torqueSpeed = 10f;
 
 	#region device's functions
 
@@ -23,8 +28,8 @@ public class DHeatDetector : Device
 	{
 		Dictionary<string, Entity> memoryObjects = m_containerAttachedTo.Blueprint.Memory.GetAllObjects();
 
-		ContainerRepresentation thisContainer = m_containerAttachedTo.View;
-		ContainerRepresentation closestContainer = null;
+		ContainerView thisContainer = m_containerAttachedTo.View;
+		ContainerView closestContainer = null;
 
 		float minDistance = float.MaxValue;
 
@@ -62,5 +67,22 @@ public class DHeatDetector : Device
 		AddFunction("SearchForClosestTarget", SearchForClosestTarget );
 	}
 
+	public override void Initialize()
+	{
+		m_rigidbody = m_containerAttachedTo.View.GetComponent<Rigidbody>();
+		m_transform = m_containerAttachedTo.View.GetComponent<Transform>();
+	}
+
+	public override void Update()
+	{
+		RotateObjectTowardsTarget();
+	}
+
 	#endregion
+
+	private void RotateObjectTowardsTarget()
+	{
+		Vector3 dir = (m_target.transform.position - m_transform.position).normalized;
+		m_transform.rotation = Quaternion.Lerp( m_transform.rotation, Quaternion.Euler(dir), Time.fixedDeltaTime * torqueSpeed ); 
+	}
 }

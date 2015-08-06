@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 
 using UnityEngine.UI;
@@ -9,7 +9,7 @@ public class InGameUIController : MonoBehaviour
 	public RectTransform m_selectListTransform;
 	public GameObject m_selectionGroupPrefab;
 
-	private Dictionary<ContainerRepresentation, GameObject> selections = new Dictionary<ContainerRepresentation, GameObject>();
+	private Dictionary<ContainerView, GameObject> selections = new Dictionary<ContainerView, GameObject>();
 
 	private void Awake()
 	{
@@ -26,7 +26,7 @@ public class InGameUIController : MonoBehaviour
 
 	}
 
-	private void OnContainerSelectedEvent( ContainerRepresentation container )
+	private void OnContainerSelectedEvent( ContainerView container )
 	{
 		foreach( GameObject selectionGO in selections.Values )
 			selectionGO.SetActive( false );
@@ -43,7 +43,7 @@ public class InGameUIController : MonoBehaviour
 		GenerateNewSelection( container );
 	}
 
-	private void GenerateNewSelection( ContainerRepresentation container )
+	private void GenerateNewSelection( ContainerView container )
 	{
 //		Vector2 selectionViewPos = Camera.main.WorldToViewportPoint( container.transform.position );
 //		Vector2 offsetVector = selectionViewPos - Vector2.one * 0.5f;

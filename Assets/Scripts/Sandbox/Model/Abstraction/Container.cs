@@ -5,7 +5,7 @@ namespace SpaceSandbox
 {
 	public class Container : Entity 
 	{
-		public ContainerRepresentation View { get; private set; }
+		public ContainerView View { get; private set; }
 
 		/// <summary>
 		/// The m_generated device. Each container represents a compund device,
