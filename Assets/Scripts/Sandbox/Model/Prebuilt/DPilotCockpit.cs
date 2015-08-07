@@ -33,7 +33,7 @@ public class DPilotCockpit : Device
 
 	public override void Initialize()
 	{
-		m_rigidbody = m_containerAttachedTo.View.GetComponent<Rigidbody>();
+		m_rigidbody = m_containerAttachedTo.View.GetComponent<Rigidbody2D>();
 		m_transform = m_containerAttachedTo.View.GetComponent<Transform>();
 	}
 
@@ -42,12 +42,24 @@ public class DPilotCockpit : Device
 		// Rotate object towards mouse position
 		// Move forward\backward, steer right\left using WASD
 		// Fire missiles using mouse click
+
+		// keys bindings?
 	}
 
 	#endregion
 
-	private void RotateObjectTowardsTarget()
+	private void RotateTowardsMouse()
 	{
+		Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(new Vector3( Input.mousePosition.x, 
+		                                                       				Input.mousePosition.y, 
+		                                                       				-Camera.main.transform.position.z));
 
+		Vector3 dir = (mouseWorldPos - m_transform.position).normalized;
+		m_transform.rotation = Quaternion.Lerp( m_transform.rotation, Quaternion.Euler(dir), Time.fixedDeltaTime * torqueSpeed );
+	}
+
+	private void Move()
+	{
+		// Engage the engines on the board
 	}
 }

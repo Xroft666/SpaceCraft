@@ -9,10 +9,19 @@ using SpaceSandbox;
 
 public class DLauncher : Device 
 {
+	// temporary variable
+	// for now we connect Consumable with Consumers by names
+	// which should be somewhat different
+	private string m_projectileName;
 
 	#region device's functions
 
-	public void Fire()
+	public void SetProjectile(params Entity[] objects)
+	{
+	//	m_projectileName = (string) objects[0];
+	}
+
+	public void Fire(params Entity[] objects)
 	{
 	// Pick and spawn a missile that is stored in the cargo
 	// Call Initialize on it
@@ -26,8 +35,8 @@ public class DLauncher : Device
 	public override void OnDeviceInstalled()
 	{
 	//	AddEvent( "OnTimerTrigger", new UnityEvent() );
-	//	AddFunction("SetTarget", SetTarget );
-	//	AddFunction("SearchForClosestTarget", SearchForClosestTarget );
+		AddFunction("SetProjectile", SetProjectile );
+		AddFunction("Fire", Fire );
 	}
 
 	public override void Initialize()

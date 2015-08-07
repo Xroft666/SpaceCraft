@@ -69,7 +69,7 @@ public class DHeatDetector : Device
 
 	public override void Initialize()
 	{
-		m_rigidbody = m_containerAttachedTo.View.GetComponent<Rigidbody>();
+		m_rigidbody = m_containerAttachedTo.View.GetComponent<Rigidbody2D>();
 		m_transform = m_containerAttachedTo.View.GetComponent<Transform>();
 	}
 

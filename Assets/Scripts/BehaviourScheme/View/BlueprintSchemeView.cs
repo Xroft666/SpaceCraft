@@ -79,7 +79,7 @@ public class BlueprintSchemeView : MonoBehaviour
 	{
 		m_selectedNode = node;
 
-		BSFunction asFunction = node as BSFunction;
+		BSFunction asFunction = node.Node as BSFunction;
 		if( asFunction != null )
 		{
 			m_currentView = asFunction;
@@ -93,37 +93,37 @@ public class BlueprintSchemeView : MonoBehaviour
 
 	public void CreateFunction()
 	{
-		BSNode newNode;// = m_blueprint.CreateFunction(
+		BSNode newNode = null;// = m_blueprint.CreateFunction(
 		AddNodeToCurrentFunction( newNode );
 	}
 	
 	public void CreateAction()
 	{
-		BSNode newNode;// = m_blueprint.CreateAction(
+		BSNode newNode = null;// = m_blueprint.CreateAction(
 		AddNodeToCurrentFunction( newNode );
 	}
 	
 	public void CreateEntry()
 	{
-		BSNode newNode;// = m_blueprint.CreateEntry(
+		BSNode newNode = null;// = m_blueprint.CreateEntry(
 		AddNodeToCurrentFunction( newNode );
 	}
 	
 	public void CreateExit()
 	{
-		BSNode newNode;// = m_blueprint.CreateExit(
+		BSNode newNode = null;// = m_blueprint.CreateExit(
 		AddNodeToCurrentFunction( newNode );
 	}
 	
 	public void CreateSelect()
 	{
-		BSNode newNode;// = m_blueprint.CreateSelect(
+		BSNode newNode = null;// = m_blueprint.CreateSelect(
 		AddNodeToCurrentFunction( newNode );
 	}
 	
 	public void CreateEvaluate()
 	{
-		BSNode newNode;// = m_blueprint.CreateEvaluate(
+		BSNode newNode = null;// = m_blueprint.CreateEvaluate(
 		AddNodeToCurrentFunction( newNode );
 	}
 

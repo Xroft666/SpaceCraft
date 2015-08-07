@@ -54,8 +54,9 @@ public class DEngine : Device
 	{
 		// Move the object and consume fuel
 
+		Vector3 dir = m_rigidbody.transform.up * speed * Time.fixedDeltaTime;
 		if( isEngaged )
-			m_rigidbody.MovePosition ( m_rigidbody.position + m_rigidbody.transform.up * speed * Time.fixedDeltaTime );
+			m_rigidbody.MovePosition ( m_rigidbody.position + new Vector2( dir.x, dir.y) );
 	}
 
 	public override void Delete()
