@@ -10,7 +10,7 @@ public class DDetonator : Device
 {
 	#region Functions
 
-	public void DetonateExplosives(params Entity[] objects)
+	public void DetonateExplosives(params object[] objects)
 	{
 		m_containerAttachedTo.Destroy();
 	}

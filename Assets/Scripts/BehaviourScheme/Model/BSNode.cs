@@ -40,6 +40,6 @@ namespace BehaviourScheme
 			
 		}
 
-		public virtual void Activate(params SpaceSandbox.Entity[] objects){}
+		public virtual void Activate(params object[] objects){}
 	}
 }

@@ -11,7 +11,7 @@ namespace BehaviourScheme
 		public void RemoveAction() { job = null; }
 
 		// executes a single action and continues to the next node
-		public override void Activate(params SpaceSandbox.Entity[] objects)
+		public override void Activate(params object[] objects)
 		{
 			if( job != null )
 				job.Invoke( objects );

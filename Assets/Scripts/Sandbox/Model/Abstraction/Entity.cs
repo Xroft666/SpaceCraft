@@ -1,7 +1,8 @@
-﻿
+﻿using System;
+
 namespace SpaceSandbox
 {
-	public class Entity  
+	public class Entity : Object
 	{
 		private string m_entityName;
 		public string EntityName

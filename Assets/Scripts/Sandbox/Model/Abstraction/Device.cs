@@ -13,7 +13,7 @@ namespace SpaceSandbox
 	/// devices inside
 	/// </summary>
 
-	public delegate void DeviceEvent(params Entity[] objects ); 
+	public delegate void DeviceEvent(params object[] objects ); 
 
 	public class Device : Entity
 	{

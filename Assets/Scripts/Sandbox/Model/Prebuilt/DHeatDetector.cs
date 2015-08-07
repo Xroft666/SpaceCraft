@@ -19,12 +19,12 @@ public class DHeatDetector : Device
 
 	#region device's functions
 
-	private void SetTarget( params Entity[] objects )
+	private void SetTarget( params object[] objects )
 	{
 		m_target = (objects[0] as Container).View;
 	}
 
-	private void SearchForClosestTarget(params Entity[] objects)
+	private void SearchForClosestTarget(params object[] objects)
 	{
 		Dictionary<string, Entity> memoryObjects = m_containerAttachedTo.Blueprint.Memory.GetAllObjects();
 

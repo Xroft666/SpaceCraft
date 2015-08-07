@@ -32,9 +32,9 @@ public class DInputModule : Device
 		for( int i = 0; i < 3; i++ )
 		{
 			if( Input.GetMouseButtonDown(i) )
-				GetEvent("OnInputPressed").Invoke();//("mouse" + i));
+				GetEvent("OnInputPressed").Invoke("mouse" + i);
 			if( Input.GetMouseButtonUp(i) )
-				GetEvent("OnInputReleased").Invoke();//"mouse" + i);
+				GetEvent("OnInputReleased").Invoke("mouse" + i);
 		}
 
 		foreach( KeyCode code in m_keysToListen )

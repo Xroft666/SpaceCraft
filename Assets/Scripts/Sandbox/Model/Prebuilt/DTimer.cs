@@ -24,12 +24,12 @@ public class DTimer : Device
 
 	#region device's functions
 
-	public void StartTimer(params Entity[] objects)
+	public void StartTimer(params object[] objects)
 	{
 		m_started = true;
 	}
 	
-	public void ResetTimer(params Entity[] objects)
+	public void ResetTimer(params object[] objects)
 	{
 		m_timer = 0f;
 		m_fired = false;

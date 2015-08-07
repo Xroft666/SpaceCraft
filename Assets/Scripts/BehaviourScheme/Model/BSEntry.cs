@@ -2,7 +2,7 @@
 {
 	public class BSEntry : BSNode 
 	{
-		public override void Activate(params SpaceSandbox.Entity[] objects)
+		public override void Activate(params object[] objects)
 		{
 			m_connectNode.Activate(objects);
 		}

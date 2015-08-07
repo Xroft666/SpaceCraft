@@ -16,12 +16,12 @@ public class DLauncher : Device
 
 	#region device's functions
 
-	public void SetProjectile(params Entity[] objects)
+	public void SetProjectile(params object[] objects)
 	{
-	//	m_projectileName = (string) objects[0];
+		m_projectileName = (string) objects[0];
 	}
 
-	public void Fire(params Entity[] objects)
+	public void Fire(params object[] objects)
 	{
 	// Pick and spawn a missile that is stored in the cargo
 	// Call Initialize on it

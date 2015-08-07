@@ -17,12 +17,12 @@ public class DEngine : Device
 
 	#region device's functions
 
-	public void EngageEngine( params Entity[] objects )
+	public void EngageEngine( params object[] objects )
 	{
 		isEngaged = true;
 	}
 
-	public void DisengageEngine( params Entity[] objects )
+	public void DisengageEngine( params object[] objects )
 	{
 		isEngaged = false;
 	}

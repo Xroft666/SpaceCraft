@@ -26,7 +26,7 @@ namespace BehaviourScheme
 		}
 
 		// traverse to this node (on entry)
-		public override void Activate(params SpaceSandbox.Entity[] objects)
+		public override void Activate(params object[] objects)
 		{
 
 		}
@@ -37,7 +37,7 @@ namespace BehaviourScheme
 
 		}
 
-		private void OnExitNode(params SpaceSandbox.Entity[] objects)
+		private void OnExitNode(params object[] objects)
 		{
 
 		}

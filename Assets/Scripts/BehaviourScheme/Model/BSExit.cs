@@ -14,7 +14,7 @@ namespace BehaviourScheme
 			set{ exitEvent = value; }
 		}
 
-		public override void Activate(params SpaceSandbox.Entity[] objects)
+		public override void Activate(params object[] objects)
 		{
 			exitEvent.Invoke(objects);
 		}
