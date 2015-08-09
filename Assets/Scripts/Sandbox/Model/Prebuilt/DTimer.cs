@@ -11,10 +11,12 @@ using SpaceSandbox;
 /// </summary>
 public class DTimer : Device 
 {
-	private float m_timer = 0f;
-	private float m_timerSetUp = 0f;
+	// Exported values
+	public float m_timerSetUp = 0f;
+	public bool m_started = false;
 
-	private bool m_started = false;
+	private float m_timer = 0f;
+
 	private bool m_fired = false;
 
 	public void SetUpTimer( float time )
@@ -73,15 +75,9 @@ public class DTimer : Device
 			m_fired = true;
 
 			DeviceEvent timerEvent = GetEvent("OnTimerTrigger");
-			timerEvent.Invoke();
+			if( timerEvent != null )
+				timerEvent.Invoke();
 		}
-	}
-
-	public override void Delete()
-	{
-		DeviceEvent timerEvent = GetEvent("OnTimerTrigger");
-		timerEvent = null;
-		RemoveEvent("OnTimerTrigger");
 	}
 
 	#endregion

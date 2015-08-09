@@ -23,11 +23,17 @@ public class DLauncher : Device
 
 	public void Fire(params object[] objects)
 	{
-	// Pick and spawn a missile that is stored in the cargo
-	// Call Initialize on it
-
+		foreach( Entity ent in m_containerAttachedTo.GetCargoList() )
+		{
+			Container cont = ent as Container;
+			if( cont != null && ent.EntityName == m_projectileName )
+			{
+				WorldManager.SpawnContainer(cont, 
+				                            m_containerAttachedTo.View.transform.position,
+				                            m_containerAttachedTo.View.transform.rotation);
+			}
+		}
 	}
-
 	#endregion
 
 	#region device's interface implementation

@@ -10,10 +10,8 @@ using BehaviourScheme;
 /// Passes through all the Unity-related events to the model Container class
 /// </summary>
 
-[RequireComponent(typeof( EventTriggerInitializer ))]
 public class ContainerView : MonoBehaviour 
 {
-
 	public Container m_contain;
 	
 	private void Awake()
@@ -29,11 +27,6 @@ public class ContainerView : MonoBehaviour
 	private void Update()
 	{
 		m_contain.Update();
-	}
-
-	private void OnDestroy()
-	{
-		m_contain.Delete();
 	}
 
 	private void OnTriggerEnter( Collider other )

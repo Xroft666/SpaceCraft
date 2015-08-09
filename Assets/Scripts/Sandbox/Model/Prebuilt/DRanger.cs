@@ -27,9 +27,9 @@ public class DRanger : Device
 		m_collider = m_containerAttachedTo.View.gameObject.AddComponent<CircleCollider2D>();
 	}
 
-	public override void Delete()
+	public override void Destroy()
 	{
-		GameObject.Destroy(m_collider);
+		Component.Destroy(m_collider);
 	}
 
 	public override void OnObjectEntered( Container container ) 

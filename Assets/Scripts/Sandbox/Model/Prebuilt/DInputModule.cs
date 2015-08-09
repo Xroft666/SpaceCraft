@@ -9,10 +9,9 @@ using SpaceSandbox;
 
 public class DInputModule : Device 
 {
-	private KeyCode[] m_keysToListen = new KeyCode[]
-	{
-		KeyCode.W, KeyCode.A, KeyCode.D, KeyCode.S
-	};
+	// expose this variable in logic UI (like in inspector)
+	public KeyCode m_keyCode; 
+
 
 	#region device's interface implementation
 
@@ -20,29 +19,22 @@ public class DInputModule : Device
 	{
 		AddEvent( "OnInputPressed", null );
 		AddEvent( "OnInputReleased", null );
-
-	//	AddFunction("SetTarget", SetTarget );
-	//	AddFunction("SearchForClosestTarget", SearchForClosestTarget );
 	}
 	
 
 	public override void Update()
 	{
-		// Triggering mouse input
-		for( int i = 0; i < 3; i++ )
+		if( Input.GetKeyDown(m_keyCode) )
 		{
-			if( Input.GetMouseButtonDown(i) )
-				GetEvent("OnInputPressed").Invoke("mouse" + i);
-			if( Input.GetMouseButtonUp(i) )
-				GetEvent("OnInputReleased").Invoke("mouse" + i);
+			DeviceEvent onPressed = GetEvent("OnInputPressed");
+			if( onPressed != null )
+				onPressed.Invoke(m_keyCode);
 		}
-
-		foreach( KeyCode code in m_keysToListen )
+		if( Input.GetKeyUp(m_keyCode) )
 		{
-			if( Input.GetKeyDown(code) )
-				GetEvent("OnInputPressed").Invoke();//code.ToString());
-			if( Input.GetKeyUp(code) )
-				GetEvent("OnInputReleased").Invoke();//code.ToString());
+			DeviceEvent onReleased = GetEvent("OnInputReleased");
+			if( onReleased != null )
+				onReleased.Invoke(m_keyCode);
 		}
 	}
 

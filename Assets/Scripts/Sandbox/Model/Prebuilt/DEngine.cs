@@ -9,11 +9,12 @@ using SpaceSandbox;
 
 public class DEngine : Device 
 {
-	private Rigidbody2D m_rigidbody = null;
-	private bool isEngaged = false;
-
+	// Exported value just as in inspector
+	public bool isEngaged = false;
 	// temporary variable. Should be changed to something more physical realistic
-	private float speed = 10f;
+	public float speed = 1f;
+
+	private Rigidbody2D m_rigidbody = null;
 
 	#region device's functions
 
@@ -38,30 +39,30 @@ public class DEngine : Device
 		// Steering ability?
 
 
-//		AddEvent( "OnTimerTrigger", new UnityEvent() );
 		AddFunction("EngageEngine", EngageEngine );
 		AddFunction("DisengageEngine", DisengageEngine );
 
-		m_rigidbody = m_containerAttachedTo.View.gameObject.AddComponent<Rigidbody2D>();
+
 	}
 
 	public override void Initialize()
 	{
-
+		m_rigidbody = m_containerAttachedTo.View.gameObject.AddComponent<Rigidbody2D>();
+		m_rigidbody.gravityScale = 0f;
 	}
 
 	public override void Update()
 	{
 		// Move the object and consume fuel
 
-		Vector3 dir = m_rigidbody.transform.up * speed * Time.fixedDeltaTime;
+		Vector3 dir = m_containerAttachedTo.View.transform.up * speed * Time.fixedDeltaTime;
 		if( isEngaged )
 			m_rigidbody.MovePosition ( m_rigidbody.position + new Vector2( dir.x, dir.y) );
 	}
 
-	public override void Delete()
+	public override void Destroy()
 	{
-		GameObject.Destroy(m_rigidbody);
+		Component.Destroy(m_rigidbody);
 	}
 
 	#endregion

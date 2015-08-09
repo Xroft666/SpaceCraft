@@ -12,13 +12,13 @@ public class DDetonator : Device
 
 	public void DetonateExplosives(params object[] objects)
 	{
-		m_containerAttachedTo.Destroy();
+		WorldManager.UnspawnContainer( m_containerAttachedTo );
 	}
 
 	#endregion
 
 	public override void OnDeviceInstalled()
 	{
-		AddFunction("Detonate", DetonateExplosives );//Job.make(DetonateExplosives()) );
+		AddFunction("Detonate", DetonateExplosives );
 	}	
 }

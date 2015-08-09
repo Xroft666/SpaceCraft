@@ -16,7 +16,8 @@ namespace BehaviourScheme
 			if( job != null )
 				job.Invoke( objects );
 
-			GetConnectedNode().Activate(objects);
+			if( m_connectNode != null )
+				m_connectNode.Activate(objects);
 		}
 	}
 }

@@ -5,13 +5,12 @@ namespace SpaceSandbox
 {
 	public class Container : Entity 
 	{
-		public ContainerView View { get; private set; }
+		public Container() : base( "NewContainer" ) {}
+		public Container( string name ) : base ( name ) {}
 
-		/// <summary>
-		/// The m_generated device. Each container represents a compund device,
-		/// with blueprint logic attached.
-		/// </summary>
-		private Device m_integratedDevice = null;
+
+		public ContainerView View { get; set; }
+
 
 		/// <summary>
 		/// The m_blueprint. The blueprint logic scheme storage.
@@ -27,7 +26,13 @@ namespace SpaceSandbox
 		/// <summary>
 		/// The m_cargo. The inventory of this specific container
 		/// </summary>
-		private List<Entity> m_cargo = null;
+		private List<Entity> m_cargo = new List<Entity>();
+
+		/// <summary>
+		/// The m_generated device. Each container represents a compund device,
+		/// with blueprint logic attached.
+		/// </summary>
+		private Device m_integratedDevice = null;
 
 		/// <summary>
 		/// Gets the integrated device. If never asked, will generate device
@@ -38,22 +43,17 @@ namespace SpaceSandbox
 			get
 			{
 				if( m_integratedDevice == null )
+				{
 					m_integratedDevice = new Device();
+					m_integratedDevice.AssignContainer( this );
+				}
 				
 				return m_integratedDevice;
 			}
 		}
 
-		public void InstallDevice( Device device)
-		{
-			m_integratedDevice = device;
-		}
-
 		public void AddToCargo( Entity entity )
 		{
-			if( m_cargo == null )
-				m_cargo = new List<Entity>();
-
 			m_cargo.Add( entity );
 		}
 
@@ -78,7 +78,7 @@ namespace SpaceSandbox
 		{
 			UnityEngine.Debug.Log( EntityName + " is destroyed.");
 			foreach( Entity entity in m_cargo )
-				entity.TakeDamage();
+				entity.Destroy();
 
 			m_integratedDevice.Destroy();
 		}
@@ -95,11 +95,6 @@ namespace SpaceSandbox
 		public void Update() 
 		{
 			IntegratedDevice.Update();
-		}
-
-		public void Delete() 
-		{
-			IntegratedDevice.Delete();
 		}
 
 		public void OnObjectEntered( Container container )

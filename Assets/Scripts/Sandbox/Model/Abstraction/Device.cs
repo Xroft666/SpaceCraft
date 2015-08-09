@@ -23,7 +23,7 @@ namespace SpaceSandbox
 		/// The m_integrated devices. If the device is compud, this list will
 		/// store all the simplier devices in it
 		/// </summary>
-		protected List<Device> m_integratedDevices = null;
+		protected List<Device> m_integratedDevices = new List<Device>();
 
 		/// <summary>
 		/// The m_functions. List of functions that are exposed to the logic scheme
@@ -33,7 +33,7 @@ namespace SpaceSandbox
 		/// The m_events. List of trigger events that are exposed to the logic scheme
 		/// </summary>
 //		protected Dictionary<string, UnityEvent> m_events = new Dictionary<string, UnityEvent>();
-		protected Dictionary<string, DeviceEvent> m_events = new Dictionary<string, DeviceEvent>();
+		public Dictionary<string, DeviceEvent> m_events = new Dictionary<string, DeviceEvent>();
 
 		public void AssignContainer( Container container )
 		{
@@ -62,6 +62,7 @@ namespace SpaceSandbox
 
 		public void AddFunction ( string name, DeviceEvent function )
 		{
+			m_functions.Add( name, null );
 			m_functions[name] += function;
 		}
 
@@ -132,9 +133,6 @@ namespace SpaceSandbox
 		/// <param name="device">Device.</param>
 		public void IntegrateDevice( Device device )
 		{
-			if( m_integratedDevices == null )
-				m_integratedDevices = new List<Device>();
-
 			device.AssignContainer( m_containerAttachedTo );
 			m_integratedDevices.Add( device );
 			device.OnDeviceInstalled();
@@ -146,7 +144,6 @@ namespace SpaceSandbox
 		/// <param name="functionName">Function name to be activated.</param>
 		public void Activate( string functionName )
 		{
-//			m_functions[functionName].start();
 			if( m_functions[functionName] != null )
 				m_functions[functionName].Invoke();
 		}
@@ -173,36 +170,23 @@ namespace SpaceSandbox
 			foreach( Device device in m_integratedDevices )
 				device.OnDeviceInstalled();
 		}
-		/// <summary>
-		/// OnDeviceInstalled. Initializes device when installed on container.
-		/// If is compound, will call the respected function in children
-		/// If not, will call the overwriten virtual function
-		/// </summary>
+
 		public virtual void Initialize() 
 		{
 			foreach( Device device in m_integratedDevices )
 				device.Initialize();
 		}
-		/// <summary>
-		/// OnDeviceInstalled. Initializes device when installed on container.
-		/// If is compound, will call the respected function in children
-		/// If not, will call the overwriten virtual function
-		/// </summary>
+
 		public virtual void Update() 
 		{
 			foreach( Device device in m_integratedDevices )
 				device.Update();
 		}
-		/// <summary>
-		/// OnDeviceInstalled. Initializes device when installed on container.
-		/// If is compound, will call the respected function in children
-		/// If not, will call the overwriten virtual function
-		/// </summary>
-		public virtual void Delete() 
+
+		public override void Destroy() 
 		{
 			foreach( Device device in m_integratedDevices )
-				device.Delete();
-
+				device.Destroy();
 		}
 
 		public virtual void OnObjectEntered( Container container ) 
@@ -218,21 +202,5 @@ namespace SpaceSandbox
         }
 
 		#endregion
-
-		#region IDamagable interface
-
-		public override void TakeDamage()
-		{
-			foreach( Device device in m_integratedDevices )
-				device.TakeDamage();
-		}
-
-		public override void Destroy()
-		{
-			foreach( Device device in m_integratedDevices )
-				device.Destroy();
-		}
-        
-        #endregion
 	}
 }

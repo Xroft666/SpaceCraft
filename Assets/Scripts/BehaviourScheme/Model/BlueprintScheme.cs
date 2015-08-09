@@ -36,9 +36,8 @@ namespace SpaceSandbox
 		{
 			BSEntry node = new BSEntry();
 
-			DeviceEvent trigger = device.GetEvent( eventName );
-			trigger += node.Activate ;
-
+			device.m_events[eventName] += node.Activate ;
+		
 			return node;
 		}
 		

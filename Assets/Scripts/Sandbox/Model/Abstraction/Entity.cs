@@ -4,10 +4,19 @@ namespace SpaceSandbox
 {
 	public class Entity : Object
 	{
-		private string m_entityName;
+		public Entity()
+		{
+
+		}
+
+		public Entity( string name )
+		{
+			EntityName = name;
+		}
+
 		public string EntityName
 		{
-			get{ return m_entityName; }
+			get; protected set;
 		}
 
 		public virtual void TakeDamage() {}
