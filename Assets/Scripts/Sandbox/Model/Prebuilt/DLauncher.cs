@@ -12,27 +12,33 @@ public class DLauncher : Device
 	// temporary variable
 	// for now we connect Consumable with Consumers by names
 	// which should be somewhat different
+	// Exportable variable
 	private string m_projectileName;
-
-	#region device's functions
 
 	public void SetProjectile(params object[] objects)
 	{
 		m_projectileName = (string) objects[0];
 	}
 
+	#region device's functions
+
 	public void Fire(params object[] objects)
 	{
+		Entity projectileEntity = null;
 		foreach( Entity ent in m_containerAttachedTo.GetCargoList() )
 		{
 			Container cont = ent as Container;
 			if( cont != null && ent.EntityName == m_projectileName )
 			{
+				projectileEntity = ent;
 				WorldManager.SpawnContainer(cont, 
 				                            m_containerAttachedTo.View.transform.position,
 				                            m_containerAttachedTo.View.transform.rotation);
 			}
 		}
+
+		if( projectileEntity != null )
+			m_containerAttachedTo.RemoveFromCargo( projectileEntity );
 	}
 	#endregion
 
@@ -40,8 +46,6 @@ public class DLauncher : Device
 
 	public override void OnDeviceInstalled()
 	{
-	//	AddEvent( "OnTimerTrigger", new UnityEvent() );
-		AddFunction("SetProjectile", SetProjectile );
 		AddFunction("Fire", Fire );
 	}
 

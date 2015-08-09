@@ -68,29 +68,17 @@ public class WorldManager : MonoBehaviour
 
 		// Generating random targets
 		for( int i = 0; i < 10; i++ )
-			SpawnContainer( new Container("Target" + i), (Random.insideUnitCircle + Vector2.one) * (Camera.main.orthographicSize - 1f), Quaternion.identity );
-	
+		{
+			GenerateTarget();
+		}
+
+		// Generating the ship
+		Container ship = GenerateShip();
 
 		// Generating missiles
-		for( int i = 0; i < 1; i++ )
+		for( int i = 0; i < 2; i++ )
 		{
-			Container missile = new Container("Missile");
-
-			DEngine engine = new DEngine();
-			DTimer timer = new DTimer();
-			DDetonator detonator = new DDetonator();
-
-			engine.isEngaged = true;
-			timer.m_timerSetUp = 5f;
-			timer.m_started = true;
-
-			missile.IntegratedDevice.IntegrateDevice( engine );
-			missile.IntegratedDevice.IntegrateDevice( timer );
-			missile.IntegratedDevice.IntegrateDevice( detonator );
-
-			BSEntry onTimer = missile.Blueprint.CreateEntry( "OnTimerTrigger", timer );
-			BSAction toDetonate = missile.Blueprint.CreateAction( "Detonate", detonator );
-			missile.Blueprint.ConnectElements( onTimer, toDetonate );
+			ship.AddToCargo( GenerateMissile() );
 		}
 	}
 
@@ -98,5 +86,61 @@ public class WorldManager : MonoBehaviour
 	{
 		container.Destroy();
 		GameObject.Destroy( container.View.gameObject );
+	}
+
+
+
+	private static Container GenerateMissile()
+	{
+		Container missile = new Container("Missile");
+		
+		DEngine engine = new DEngine();
+		DTimer timer = new DTimer();
+		DDetonator detonator = new DDetonator();
+		
+		engine.isEngaged = true;
+		timer.m_timerSetUp = 5f;
+		timer.m_started = true;
+		
+		missile.IntegratedDevice.IntegrateDevice( engine );
+		missile.IntegratedDevice.IntegrateDevice( timer );
+		missile.IntegratedDevice.IntegrateDevice( detonator );
+		
+		BSEntry onTimer = missile.Blueprint.CreateEntry( "OnTimerTrigger", timer );
+		BSAction toDetonate = missile.Blueprint.CreateAction( "Detonate", detonator );
+		missile.Blueprint.ConnectElements( onTimer, toDetonate );
+
+		return missile;
+	}
+
+	private static void GenerateTarget()
+	{
+		SpawnContainer(new Container("Target"), 
+		              (Random.insideUnitCircle + Vector2.one) * (Camera.main.orthographicSize - 1f), 
+		               Quaternion.identity );
+	}
+
+	private static Container GenerateShip()
+	{
+		Container ship = new Container("Ship");
+		
+		DEngine engine = new DEngine();
+		DLauncher launcher = new DLauncher();
+		DInputModule fireInput = new DInputModule();
+
+		launcher.SetProjectile("Missile");
+		fireInput.m_keyCode = KeyCode.Mouse0;
+
+		ship.IntegratedDevice.IntegrateDevice( engine );
+		ship.IntegratedDevice.IntegrateDevice( launcher );
+		ship.IntegratedDevice.IntegrateDevice( fireInput );
+
+		BSEntry onMouseUp = ship.Blueprint.CreateEntry( "OnInputReleased", fireInput );
+		BSAction toFire = ship.Blueprint.CreateAction( "Fire", launcher );
+		ship.Blueprint.ConnectElements( onMouseUp, toFire );
+
+		SpawnContainer( ship, Vector3.zero, Quaternion.identity );
+
+		return ship;
 	}
 }

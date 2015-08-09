@@ -62,6 +62,11 @@ namespace SpaceSandbox
 			return m_cargo;
 		}
 
+		public void RemoveFromCargo( Entity entity )
+		{
+			m_cargo.Remove( entity );
+		}
+
 		/// <summary>
 		/// Takes the damage. Just an example of the interface usage.
 		/// </summary>
