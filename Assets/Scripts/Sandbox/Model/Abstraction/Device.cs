@@ -28,7 +28,7 @@ namespace SpaceSandbox
 		/// <summary>
 		/// The m_functions. List of functions that are exposed to the logic scheme
 		/// </summary>
-		protected Dictionary<string, DeviceEvent> m_functions = new Dictionary<string, DeviceEvent>();
+		protected Dictionary<string, DeviceEvent> m_actions = new Dictionary<string, DeviceEvent>();
 		/// <summary>
 		/// The m_events. List of trigger events that are exposed to the logic scheme
 		/// </summary>
@@ -47,7 +47,7 @@ namespace SpaceSandbox
 		/// <returns>The functions list.</returns>
 		public Dictionary<string, DeviceEvent> GetCompleteFunctionsList()
 		{
-			Dictionary<string, DeviceEvent> functionsList = new Dictionary<string, DeviceEvent>(m_functions);
+			Dictionary<string, DeviceEvent> functionsList = new Dictionary<string, DeviceEvent>(m_actions);
 
 			foreach( Device device in m_integratedDevices )
 			{
@@ -60,20 +60,20 @@ namespace SpaceSandbox
 			return functionsList;
 		}
 
-		public void AddFunction ( string name, DeviceEvent function )
+		public void AddAction ( string name, DeviceEvent function )
 		{
-			m_functions.Add( name, null );
-			m_functions[name] += function;
+			m_actions.Add( name, null );
+			m_actions[name] += function;
 		}
 
 		public DeviceEvent GetFunction ( string name )
 		{
-			return m_functions[name];
+			return m_actions[name];
 		}
 
 		public void RemoveFunction ( string name )
 		{
-			m_functions.Remove( name );
+			m_actions.Remove( name );
 		}
 
 
@@ -149,8 +149,8 @@ namespace SpaceSandbox
 		/// <param name="functionName">Function name to be activated.</param>
 		public void Activate( string functionName )
 		{
-			if( m_functions[functionName] != null )
-				m_functions[functionName].Invoke();
+			if( m_actions[functionName] != null )
+				m_actions[functionName].Invoke();
 		}
 
 		/// <summary>

@@ -28,6 +28,11 @@ public class DEngine : Device
 		isEngaged = false;
 	}
 
+	public void Move( params object[] objects )
+	{
+		MoveForward();
+	}
+
 	#endregion
 
 	#region device's interface implementation
@@ -39,9 +44,9 @@ public class DEngine : Device
 		// Steering ability?
 
 
-		AddFunction("EngageEngine", EngageEngine );
-		AddFunction("DisengageEngine", DisengageEngine );
-
+		AddAction("EngageEngine", EngageEngine );
+		AddAction("DisengageEngine", DisengageEngine );
+		AddAction("Move", Move );
 
 	}
 
@@ -53,11 +58,8 @@ public class DEngine : Device
 
 	public override void Update()
 	{
-		// Move the object and consume fuel
-
-		Vector3 dir = m_containerAttachedTo.View.transform.up * speed * Time.fixedDeltaTime;
 		if( isEngaged )
-			m_rigidbody.MovePosition ( m_rigidbody.position + new Vector2( dir.x, dir.y) );
+			MoveForward();
 	}
 
 	public override void Destroy()
@@ -66,4 +68,12 @@ public class DEngine : Device
 	}
 
 	#endregion
+
+	private void MoveForward()
+	{
+		// Move the object and consume fuel
+
+		Vector3 dir = m_containerAttachedTo.View.transform.up * speed * Time.deltaTime;
+		m_rigidbody.MovePosition ( m_rigidbody.position + new Vector2( dir.x, dir.y) );
+	}
 }

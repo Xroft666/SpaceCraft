@@ -109,8 +109,8 @@ public class WorldManager : MonoBehaviour
 		missile.IntegratedDevice.IntegrateDevice( timer );
 		missile.IntegratedDevice.IntegrateDevice( detonator );
 		
-		BSEntry onTimer = missile.Blueprint.CreateEntry( "timer/OnTimerTrigger",missile.IntegratedDevice );
-		BSAction toDetonate = missile.Blueprint.CreateAction( "detonator/Detonate", missile.IntegratedDevice );
+		BSEntry onTimer = missile.Blueprint.CreateEntry( "OnTimerTrigger", timer );
+		BSAction toDetonate = missile.Blueprint.CreateAction( "Detonate", detonator );
 		missile.Blueprint.ConnectElements( onTimer, toDetonate );
 
 		return missile;
@@ -129,26 +129,28 @@ public class WorldManager : MonoBehaviour
 		
 		DEngine engine = new DEngine(){ EntityName = "engine"};
 		DLauncher launcher = new DLauncher(){ EntityName = "launcher"};
+		DSteeringModule steerer = new DSteeringModule(){ EntityName = "steerer"};
 		Device input = GenerateInclusiveInputModule();
 
 		launcher.SetProjectile("Missile");
 
 		ship.IntegratedDevice.IntegrateDevice( engine );
 		ship.IntegratedDevice.IntegrateDevice( launcher );
+		ship.IntegratedDevice.IntegrateDevice( steerer );
 		ship.IntegratedDevice.IntegrateDevice( input );
 
 		BSEntry onMouseUp = ship.Blueprint.CreateEntry( "input/mouse0/OnInputReleased", ship.IntegratedDevice);
 		BSAction toFire = ship.Blueprint.CreateAction( "launcher/Fire", ship.IntegratedDevice);
 		ship.Blueprint.ConnectElements( onMouseUp, toFire );
 
-		BSEntry onForwardDown = ship.Blueprint.CreateEntry( "input/w/OnInputPressed", ship.IntegratedDevice);
-		BSAction toGoForward = ship.Blueprint.CreateAction( "engine/EngageEngine", ship.IntegratedDevice);
+		BSEntry onForwardDown = ship.Blueprint.CreateEntry( "input/w/OnInputHeld", ship.IntegratedDevice);
+		BSAction toGoForward = ship.Blueprint.CreateAction( "engine/Move", ship.IntegratedDevice);
 		ship.Blueprint.ConnectElements( onForwardDown, toGoForward );
 
-		BSEntry onForwardUp = ship.Blueprint.CreateEntry( "input/w/OnInputReleased", ship.IntegratedDevice);
-		BSAction toStop = ship.Blueprint.CreateAction( "engine/DisengageEngine", ship.IntegratedDevice);
-		ship.Blueprint.ConnectElements( onForwardUp, toStop );
-
+		BSEntry onMouseWorld = ship.Blueprint.CreateEntry( "input/mousePos/OnMouseWorldPosition", ship.IntegratedDevice);
+		BSAction toSteer = ship.Blueprint.CreateAction( "steerer/SteerTowards", ship.IntegratedDevice);
+		ship.Blueprint.ConnectElements( onMouseWorld, toSteer );
+		
 		SpawnContainer( ship, Vector3.zero, Quaternion.identity );
 
 		return ship;
@@ -162,7 +164,8 @@ public class WorldManager : MonoBehaviour
 			new DInputModule(){ EntityName = "w", m_keyCode = KeyCode.W },
 			new DInputModule(){ EntityName = "s", m_keyCode = KeyCode.S },
 			new DInputModule(){ EntityName = "a", m_keyCode = KeyCode.A },
-			new DInputModule(){ EntityName = "d", m_keyCode = KeyCode.D }
+			new DInputModule(){ EntityName = "d", m_keyCode = KeyCode.D },
+			new DInputModule(){ EntityName = "mousePos" }
 		};
 
 		Device inclusiveDevice = new Device(){ EntityName = "input"};

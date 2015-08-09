@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -47,7 +47,7 @@ public class DLauncher : Device
 
 	public override void OnDeviceInstalled()
 	{
-		AddFunction("Fire", Fire );
+		AddAction("Fire", Fire );
 	}
 
 	public override void Initialize()

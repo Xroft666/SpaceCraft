@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 
 using UnityEngine;
@@ -46,8 +46,8 @@ public class DTimer : Device
 	{
 		AddEvent( "OnTimerTrigger", null );
 
-		AddFunction("StartTimer", StartTimer );
-		AddFunction("ResetTimer", ResetTimer );
+		AddAction("StartTimer", StartTimer );
+		AddAction("ResetTimer", ResetTimer );
 	}
 
 	public void OnTimerTrigger(params Entity[] objs)

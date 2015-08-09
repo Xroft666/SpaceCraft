@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 
 using UnityEngine;
@@ -19,6 +19,6 @@ public class DDetonator : Device
 
 	public override void OnDeviceInstalled()
 	{
-		AddFunction("Detonate", DetonateExplosives );
+		AddAction("Detonate", DetonateExplosives );
 	}	
 }

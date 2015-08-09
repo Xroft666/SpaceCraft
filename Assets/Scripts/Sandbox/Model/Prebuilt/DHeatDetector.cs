@@ -63,8 +63,8 @@ public class DHeatDetector : Device
 	public override void OnDeviceInstalled()
 	{
 	//	AddEvent( "OnTimerTrigger", new UnityEvent() );
-		AddFunction("SetTarget", SetTarget );
-		AddFunction("SearchForClosestTarget", SearchForClosestTarget );
+		AddAction("SetTarget", SetTarget );
+		AddAction("SearchForClosestTarget", SearchForClosestTarget );
 	}
 
 	public override void Initialize()
