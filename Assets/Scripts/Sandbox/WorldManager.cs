@@ -29,8 +29,12 @@ public class WorldManager : MonoBehaviour
 
 		InitializeVisuals( view );
 
+		Rigidbody2D body = newContainer.gameObject.AddComponent<Rigidbody2D>();
+		body.gravityScale = 0f;
+		body.drag = 0.35f;
+
 		BoxCollider2D clickZone = newContainer.AddComponent<BoxCollider2D>();
-		clickZone.isTrigger = true;
+	//	clickZone.isTrigger = true;
 
 		EventTriggerInitializer inputInitializer = newContainer.AddComponent<EventTriggerInitializer>();
 		inputInitializer.InitializeCallback( view );
@@ -47,9 +51,6 @@ public class WorldManager : MonoBehaviour
 		sRenderer.sprite = World.m_visuals;
 
 		body.transform.SetParent( view.transform, false );
-
-		// and then go for each device and create their visuals
-		// note: remove collider if exists
 	}
 
 	private void Awake()
@@ -59,13 +60,6 @@ public class WorldManager : MonoBehaviour
 
 	private void Start()
 	{
-		// Generate a ship that holds some amount of missiles
-		// Ship can move, fire missiles, and a missile when shot
-		// picks a target and destroys it
-
-		// Include the whole ship-controlling input setting
-		// under a new generated device
-
 		// Initialize background trigger
 		m_backgroundClicker.InitializeCallback( null );
 
@@ -88,7 +82,8 @@ public class WorldManager : MonoBehaviour
 	public static void UnspawnContainer( Container container )
 	{
 		container.Destroy();
-		GameObject.Destroy( container.View.gameObject );
+//		GameObject.Destroy( container.View.gameObject );
+		container.View.gameObject.SetActive( false );
 	}
 
 
@@ -102,7 +97,7 @@ public class WorldManager : MonoBehaviour
 		DDetonator detonator = new DDetonator(){ EntityName = "detonator"};
 		
 		engine.isEngaged = true;
-		timer.m_timerSetUp = 5f;
+		timer.m_timerSetUp = 3f;
 		timer.m_started = true;
 		
 		missile.IntegratedDevice.IntegrateDevice( engine );
@@ -151,7 +146,8 @@ public class WorldManager : MonoBehaviour
 		BSAction toSteer = ship.Blueprint.CreateAction( "steerer/SteerTowards", ship.IntegratedDevice);
 		ship.Blueprint.ConnectElements( onMouseWorld, toSteer );
 		
-		SpawnContainer( ship, Vector3.zero, Quaternion.identity );
+		ContainerView shipView = SpawnContainer( ship, Vector3.zero, Quaternion.identity );
+		shipView.gameObject.layer = 8;
 
 		return ship;
 	}

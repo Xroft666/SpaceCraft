@@ -31,9 +31,18 @@ public class DLauncher : Device
 			if( cont != null && ent.EntityName == m_projectileName )
 			{
 				projectileEntity = ent;
-				WorldManager.SpawnContainer(cont, 
+				ContainerView projectile =  WorldManager.SpawnContainer(cont, 
 				                            m_containerAttachedTo.View.transform.position,
 				                            m_containerAttachedTo.View.transform.rotation);
+
+				projectile.gameObject.layer = 10;
+
+				Collider2D collider = projectile.GetComponent<Collider2D>();
+				collider.isTrigger = true;
+
+				Rigidbody2D rigid = projectile.GetComponent<Rigidbody2D>();
+				rigid.velocity = m_containerAttachedTo.View.GetComponent<Rigidbody2D>().velocity;
+
 				break;
 			}
 		}

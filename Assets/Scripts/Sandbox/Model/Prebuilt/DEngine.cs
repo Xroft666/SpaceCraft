@@ -52,8 +52,8 @@ public class DEngine : Device
 
 	public override void Initialize()
 	{
-		m_rigidbody = m_containerAttachedTo.View.gameObject.AddComponent<Rigidbody2D>();
-		m_rigidbody.gravityScale = 0f;
+		m_rigidbody = m_containerAttachedTo.View.gameObject.GetComponent<Rigidbody2D>();
+
 	}
 
 	public override void Update()
@@ -74,6 +74,7 @@ public class DEngine : Device
 		// Move the object and consume fuel
 
 		Vector3 dir = m_containerAttachedTo.View.transform.up * speed * Time.deltaTime;
-		m_rigidbody.MovePosition ( m_rigidbody.position + new Vector2( dir.x, dir.y) );
+//		m_rigidbody.MovePosition ( m_rigidbody.position + new Vector2( dir.x, dir.y) );
+		m_rigidbody.AddForce( dir * speed * 100f, ForceMode2D.Force );
 	}
 }
