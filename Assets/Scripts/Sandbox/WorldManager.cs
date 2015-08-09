@@ -63,6 +63,9 @@ public class WorldManager : MonoBehaviour
 		// Ship can move, fire missiles, and a missile when shot
 		// picks a target and destroys it
 
+		// Include the whole ship-controlling input setting
+		// under a new generated device
+
 		// Initialize background trigger
 		m_backgroundClicker.InitializeCallback( null );
 
@@ -92,11 +95,11 @@ public class WorldManager : MonoBehaviour
 
 	private static Container GenerateMissile()
 	{
-		Container missile = new Container("Missile");
+		Container missile = new Container(){ EntityName = "Missile" };
 		
-		DEngine engine = new DEngine();
-		DTimer timer = new DTimer();
-		DDetonator detonator = new DDetonator();
+		DEngine engine = new DEngine(){ EntityName = "engine"};
+		DTimer timer = new DTimer(){ EntityName = "timer"};
+		DDetonator detonator = new DDetonator(){ EntityName = "detonator"};
 		
 		engine.isEngaged = true;
 		timer.m_timerSetUp = 5f;
@@ -106,8 +109,8 @@ public class WorldManager : MonoBehaviour
 		missile.IntegratedDevice.IntegrateDevice( timer );
 		missile.IntegratedDevice.IntegrateDevice( detonator );
 		
-		BSEntry onTimer = missile.Blueprint.CreateEntry( "OnTimerTrigger", timer );
-		BSAction toDetonate = missile.Blueprint.CreateAction( "Detonate", detonator );
+		BSEntry onTimer = missile.Blueprint.CreateEntry( "timer/OnTimerTrigger",missile.IntegratedDevice );
+		BSAction toDetonate = missile.Blueprint.CreateAction( "detonator/Detonate", missile.IntegratedDevice );
 		missile.Blueprint.ConnectElements( onTimer, toDetonate );
 
 		return missile;
@@ -115,32 +118,56 @@ public class WorldManager : MonoBehaviour
 
 	private static void GenerateTarget()
 	{
-		SpawnContainer(new Container("Target"), 
+		SpawnContainer(new Container(){ EntityName = "Target"}, 
 		              (Random.insideUnitCircle + Vector2.one) * (Camera.main.orthographicSize - 1f), 
 		               Quaternion.identity );
 	}
 
 	private static Container GenerateShip()
 	{
-		Container ship = new Container("Ship");
+		Container ship = new Container(){ EntityName = "ship"};
 		
-		DEngine engine = new DEngine();
-		DLauncher launcher = new DLauncher();
-		DInputModule fireInput = new DInputModule();
+		DEngine engine = new DEngine(){ EntityName = "engine"};
+		DLauncher launcher = new DLauncher(){ EntityName = "launcher"};
+		Device input = GenerateInclusiveInputModule();
 
 		launcher.SetProjectile("Missile");
-		fireInput.m_keyCode = KeyCode.Mouse0;
 
 		ship.IntegratedDevice.IntegrateDevice( engine );
 		ship.IntegratedDevice.IntegrateDevice( launcher );
-		ship.IntegratedDevice.IntegrateDevice( fireInput );
+		ship.IntegratedDevice.IntegrateDevice( input );
 
-		BSEntry onMouseUp = ship.Blueprint.CreateEntry( "OnInputReleased", fireInput );
-		BSAction toFire = ship.Blueprint.CreateAction( "Fire", launcher );
+		BSEntry onMouseUp = ship.Blueprint.CreateEntry( "input/mouse0/OnInputReleased", ship.IntegratedDevice);
+		BSAction toFire = ship.Blueprint.CreateAction( "launcher/Fire", ship.IntegratedDevice);
 		ship.Blueprint.ConnectElements( onMouseUp, toFire );
+
+		BSEntry onForwardDown = ship.Blueprint.CreateEntry( "input/w/OnInputPressed", ship.IntegratedDevice);
+		BSAction toGoForward = ship.Blueprint.CreateAction( "engine/EngageEngine", ship.IntegratedDevice);
+		ship.Blueprint.ConnectElements( onForwardDown, toGoForward );
+
+		BSEntry onForwardUp = ship.Blueprint.CreateEntry( "input/w/OnInputReleased", ship.IntegratedDevice);
+		BSAction toStop = ship.Blueprint.CreateAction( "engine/DisengageEngine", ship.IntegratedDevice);
+		ship.Blueprint.ConnectElements( onForwardUp, toStop );
 
 		SpawnContainer( ship, Vector3.zero, Quaternion.identity );
 
 		return ship;
+	}
+
+	private static Device GenerateInclusiveInputModule()
+	{
+		List<Device> inputs = new List<Device>() 
+		{
+			new DInputModule(){ EntityName = "mouse0", m_keyCode = KeyCode.Mouse0 },
+			new DInputModule(){ EntityName = "w", m_keyCode = KeyCode.W },
+			new DInputModule(){ EntityName = "s", m_keyCode = KeyCode.S },
+			new DInputModule(){ EntityName = "a", m_keyCode = KeyCode.A },
+			new DInputModule(){ EntityName = "d", m_keyCode = KeyCode.D }
+		};
+
+		Device inclusiveDevice = new Device(){ EntityName = "input"};
+		inclusiveDevice.IntegrateDevices( inputs );
+
+		return inclusiveDevice;
 	}
 }

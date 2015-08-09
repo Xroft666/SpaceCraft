@@ -5,10 +5,6 @@ namespace SpaceSandbox
 {
 	public class Container : Entity 
 	{
-		public Container() : base( "NewContainer" ) {}
-		public Container( string name ) : base ( name ) {}
-
-
 		public ContainerView View { get; set; }
 
 

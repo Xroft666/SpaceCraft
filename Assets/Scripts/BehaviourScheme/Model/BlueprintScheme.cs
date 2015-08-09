@@ -13,8 +13,6 @@ namespace SpaceSandbox
 		public BSFunction RootFuntion { get; private set; }
 		public MemoryStack Memory { get; private set; }
 
-		private List<DeviceEvent> m_plannedActions = new List<DeviceEvent>();
-
 		public BSFunction CreateFunction( string stateName, Device device )
 		{
 			BSFunction node = new BSFunction();
@@ -23,20 +21,48 @@ namespace SpaceSandbox
 			return node;
 		}
 
-		public BSAction CreateAction( string functionName, Device device )
+		public BSAction CreateAction( string functionName, Device device)
 		{
 			BSAction node = new BSAction();
 
-			node.SetAction( device.GetFunction( functionName ) );
+			// Search for an integrated inclusive device
+			string[] hierarchy = functionName.Split('/');
+			for( int i = 0; i < hierarchy.Length - 1; i++ )
+			{
+				foreach( Device inclusiveDevice in device.GetDevicesList() )
+				{
+					if( inclusiveDevice.EntityName.Equals( hierarchy[i] ) )
+					{
+						device = inclusiveDevice;
+						break;
+					}
+				}
+			}
+
+			node.SetAction( device.GetFunction( hierarchy[hierarchy.Length-1] ) );
 
 			return node;
 		}
 		
-		public BSEntry CreateEntry( string eventName, Device device )
+		public BSEntry CreateEntry( string eventName, Device device)
 		{
 			BSEntry node = new BSEntry();
 
-			device.m_events[eventName] += node.Activate ;
+			// Search for an integrated inclusive device
+			string[] hierarchy = eventName.Split('/');
+			for( int i = 0; i < hierarchy.Length - 1; i++ )
+			{
+				foreach( Device inclusiveDevice in device.GetDevicesList() )
+				{
+					if( inclusiveDevice.EntityName.Equals( hierarchy[i] ) )
+					{
+						device = inclusiveDevice;
+						break;
+					}
+				}
+			}
+
+			device.m_events[hierarchy[hierarchy.Length-1]] += node.Activate ;
 		
 			return node;
 		}
@@ -64,41 +90,10 @@ namespace SpaceSandbox
 			return node;
 		}
 
-
 		public void ConnectElements( BSNode left, BSNode right )
 		{
 			left.AddChild( right );
 		}
 
-
-		public void AddActionToPlanner( DeviceEvent job )
-		{
-			m_plannedActions.Add( job );
-		}
-
-		public void AddActionToPlanner( Device device, string functionName )
-		{
-			m_plannedActions.Add( device.GetFunction( functionName ));
-		}
-
-		public void ExecutePlanner()
-		{
-			// a planner can be interrupted if (high priority event kicks in?)
-			// a planner can be interrupted if an action (or a check) fails?
-
-			// should be using STATES as yelded actions instead of enums 
-		}
-
-
-
-		public void OnPlannerCompleted()
-		{
-
-		}
-
-		public void OnPlannedFailed()
-		{
-
-		}
 	}
 }

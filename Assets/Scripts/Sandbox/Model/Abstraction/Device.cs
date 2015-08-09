@@ -119,7 +119,7 @@ namespace SpaceSandbox
 		/// <param name="devices">Devices. List of devices</param>
 		public void IntegrateDevices( List<Device> devices )
 		{
-			m_integratedDevices = devices;
+			m_integratedDevices.AddRange( devices );
 			foreach( Device device in devices )
 			{
 				device.AssignContainer( m_containerAttachedTo );
@@ -136,6 +136,11 @@ namespace SpaceSandbox
 			device.AssignContainer( m_containerAttachedTo );
 			m_integratedDevices.Add( device );
 			device.OnDeviceInstalled();
+		}
+
+		public List<Device> GetDevicesList()
+		{
+			return m_integratedDevices;
 		}
 
 		/// <summary>
@@ -167,8 +172,8 @@ namespace SpaceSandbox
 		/// </summary>
 		public virtual void OnDeviceInstalled() 
 		{
-			foreach( Device device in m_integratedDevices )
-				device.OnDeviceInstalled();
+//			foreach( Device device in m_integratedDevices )
+//				device.OnDeviceInstalled();
 		}
 
 		public virtual void Initialize() 

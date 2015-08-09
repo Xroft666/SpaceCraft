@@ -16,7 +16,7 @@ namespace SpaceSandbox
 
 		public string EntityName
 		{
-			get; protected set;
+			get; set;
 		}
 
 		public virtual void TakeDamage() {}
