@@ -34,6 +34,7 @@ public class DLauncher : Device
 				WorldManager.SpawnContainer(cont, 
 				                            m_containerAttachedTo.View.transform.position,
 				                            m_containerAttachedTo.View.transform.rotation);
+				break;
 			}
 		}
 
