@@ -13,11 +13,6 @@ using BehaviourScheme;
 public class ContainerView : MonoBehaviour 
 {
 	public Container m_contain;
-	
-	private void Awake()
-	{
-
-	}
 
 	private void Start()
 	{
@@ -28,14 +23,4 @@ public class ContainerView : MonoBehaviour
 	{
 		m_contain.Update();
 	}
-
-	private void OnTriggerEnter( Collider other )
-	{
-		m_contain.OnObjectEntered(other.gameObject.GetComponent<ContainerView>().m_contain);
-	}
-
-	private void OnTriggerExit( Collider other )
-	{
-		m_contain.OnObjectEscaped(other.gameObject.GetComponent<ContainerView>().m_contain);
-    }
 }

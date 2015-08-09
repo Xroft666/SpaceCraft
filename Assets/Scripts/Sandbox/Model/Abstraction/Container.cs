@@ -68,7 +68,6 @@ namespace SpaceSandbox
 		/// </summary>
 		public override void TakeDamage()
 		{
-			UnityEngine.Debug.Log( EntityName + " took damage.");
 			foreach( Entity entity in m_cargo )
 				entity.TakeDamage();
 
@@ -77,7 +76,6 @@ namespace SpaceSandbox
 
 		public override void Destroy()
 		{
-			UnityEngine.Debug.Log( EntityName + " is destroyed.");
 			foreach( Entity entity in m_cargo )
 				entity.Destroy();
 
@@ -96,18 +94,6 @@ namespace SpaceSandbox
 		public void Update() 
 		{
 			IntegratedDevice.Update();
-		}
-
-		public void OnObjectEntered( Container container )
-		{
-			m_blueprint.Memory.AddObject(container.EntityName, container);
-			m_integratedDevice.OnObjectEntered( container );
-		}
-
-		public void OnObjectEscaped( Container container )
-		{
-			m_blueprint.Memory.RemoveObject(container.EntityName);
-			m_integratedDevice.OnObjectEscaped( container );
 		}
 	}
 }

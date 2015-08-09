@@ -9,19 +9,20 @@ using SpaceSandbox;
 
 public class DHeatDetector : Device 
 {
+	// Exportable variable
+	public ContainerView m_target;
 
-	private ContainerView m_target;
-	private Rigidbody2D m_rigidbody;
-	private Transform m_transform;
-
-	// temporary variable. Should be changed to something more physical realistic
-	private float torqueSpeed = 10f;
 
 	#region device's functions
 
 	private void SetTarget( params object[] objects )
 	{
 		m_target = (objects[0] as Container).View;
+	}
+
+	private void ResetTarget( params object[] objects )
+	{
+		m_target = null;
 	}
 
 	private void SearchForClosestTarget(params object[] objects)
@@ -62,27 +63,27 @@ public class DHeatDetector : Device
 
 	public override void OnDeviceInstalled()
 	{
-	//	AddEvent( "OnTimerTrigger", new UnityEvent() );
+		AddEvent( "TargetPosition", null );
+
 		AddAction("SetTarget", SetTarget );
+		AddAction("ResetTarget", ResetTarget);
 		AddAction("SearchForClosestTarget", SearchForClosestTarget );
 	}
 
 	public override void Initialize()
 	{
-		m_rigidbody = m_containerAttachedTo.View.GetComponent<Rigidbody2D>();
-		m_transform = m_containerAttachedTo.View.GetComponent<Transform>();
+
 	}
 
 	public override void Update()
 	{
-		RotateObjectTowardsTarget();
+		DeviceEvent targetPos = GetEvent("TargetPosition");
+		if( targetPos != null && m_target != null )
+			targetPos.Invoke( m_target.transform.position );
+
 	}
 
 	#endregion
 
-	private void RotateObjectTowardsTarget()
-	{
-		Vector3 dir = (m_target.transform.position - m_transform.position).normalized;
-		m_transform.rotation = Quaternion.Lerp( m_transform.rotation, Quaternion.Euler(dir), Time.fixedDeltaTime * torqueSpeed ); 
-	}
+
 }

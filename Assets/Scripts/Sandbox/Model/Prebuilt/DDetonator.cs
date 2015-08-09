@@ -20,6 +20,8 @@ public class DDetonator : Device
 
 		// Do big splosion
 		GameObject explosion = new GameObject("Explosion Area");
+		explosion.layer = 11;
+
 		CircleCollider2D collider = explosion.AddComponent<CircleCollider2D>();
 		EventTrigger2DHandler handler = explosion.AddComponent<EventTrigger2DHandler>();
 

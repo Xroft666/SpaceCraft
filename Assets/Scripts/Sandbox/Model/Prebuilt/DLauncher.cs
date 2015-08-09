@@ -43,6 +43,8 @@ public class DLauncher : Device
 				Rigidbody2D rigid = projectile.GetComponent<Rigidbody2D>();
 				rigid.velocity = m_containerAttachedTo.View.GetComponent<Rigidbody2D>().velocity;
 
+				projectile.transform.FindChild("body").localScale = new Vector3(0.25f, 1f, 1f);
+
 				break;
 			}
 		}

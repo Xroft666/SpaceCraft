@@ -172,8 +172,7 @@ namespace SpaceSandbox
 		/// </summary>
 		public virtual void OnDeviceInstalled() 
 		{
-//			foreach( Device device in m_integratedDevices )
-//				device.OnDeviceInstalled();
+
 		}
 
 		public virtual void Initialize() 
@@ -193,18 +192,6 @@ namespace SpaceSandbox
 			foreach( Device device in m_integratedDevices )
 				device.Destroy();
 		}
-
-		public virtual void OnObjectEntered( Container container ) 
-		{
-			foreach( Device device in m_integratedDevices )
-				device.OnObjectEntered(container);
-        }
-
-		public virtual void OnObjectEscaped( Container container ) 
-        {
-            foreach( Device device in m_integratedDevices )
-				device.OnObjectEscaped(container);
-        }
 
 		#endregion
 	}
