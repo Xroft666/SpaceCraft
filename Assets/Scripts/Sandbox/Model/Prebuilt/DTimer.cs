@@ -16,8 +16,9 @@ public class DTimer : Device
 	public bool m_started = false;
 
 	private float m_timer = 0f;
-
 	private bool m_fired = false;
+	private TextMesh m_timeText;
+
 
 	public void SetUpTimer( float time )
 	{
@@ -57,7 +58,13 @@ public class DTimer : Device
 
 	public override void Initialize()
 	{
+		GameObject text = new GameObject("TimerText");
+		text.transform.SetParent( m_containerAttachedTo.View.transform, false );
+		text.transform.localPosition = Vector3.right * 0.5f;
+		text.transform.localScale = Vector3.one * 0.25f;
 
+		m_timeText = text.AddComponent<TextMesh>();
+		m_timeText.text = m_timerSetUp.ToString("0");
 	}
 
 	public override void Update()
@@ -69,6 +76,7 @@ public class DTimer : Device
 			return;
 
 		m_timer += Time.deltaTime;
+		m_timeText.text = (m_timerSetUp - m_timer).ToString("0");
 
 		if( m_timer >= m_timerSetUp )
 		{
@@ -78,6 +86,11 @@ public class DTimer : Device
 			if( timerEvent != null )
 				timerEvent.Invoke();
 		}
+	}
+
+	public override void Destroy ()
+	{
+		GameObject.Destroy( m_timeText.gameObject );
 	}
 
 	#endregion
