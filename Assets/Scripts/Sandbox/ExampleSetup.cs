@@ -33,6 +33,21 @@ public class ExampleSetup : MonoBehaviour {
 			EntitySelection.Cleanup();
 			Application.LoadLevel( Application.loadedLevel );
 		}
+
+		Vector3 input = Vector3.zero; 
+		if( Input.GetKey(KeyCode.UpArrow) )
+			input += Vector3.up;
+
+		if( Input.GetKey(KeyCode.DownArrow) )
+			input += Vector3.down;
+
+		if( Input.GetKey(KeyCode.LeftArrow) )
+			input += Vector3.left;
+
+		if( Input.GetKey(KeyCode.RightArrow) )
+			input = Vector3.right;
+
+		Camera.main.transform.position += input * Time.deltaTime;
 	}
 	
 	private static Container GenerateMissile()
