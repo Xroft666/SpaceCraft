@@ -78,4 +78,10 @@ public class InGameUIController : MonoBehaviour
 		
 		selections.Add( container, newSelection );
 	}
+
+	private void OnDestroy()
+	{
+		selections.Clear();
+		EntitySelection.onEntityClicked -= OnContainerSelectedEvent;
+	}
 }

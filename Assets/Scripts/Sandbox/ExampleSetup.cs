@@ -25,6 +25,15 @@ public class ExampleSetup : MonoBehaviour {
 
 		GeneratePatrolShip();
 	}
+
+	private void Update()
+	{
+		if( Input.GetKeyUp(KeyCode.R) )
+		{
+			EntitySelection.Cleanup();
+			Application.LoadLevel( Application.loadedLevel );
+		}
+	}
 	
 	private static Container GenerateMissile()
 	{

@@ -24,4 +24,9 @@ public static class EntitySelection
 		if( onEntityClicked != null )
 			onEntityClicked( selectedContainer );
 	}
+
+	public static void Cleanup()
+	{
+		selectedContainers.Clear();
+	}
 }
