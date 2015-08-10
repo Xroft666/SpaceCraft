@@ -150,7 +150,6 @@ public class ExampleSetup : MonoBehaviour {
 		markers[2].transform.position = Vector3.up * 3f;
 		markers[3].transform.position = Vector3.down * 3f;
 
-		engine.EngageEngine();
 		patrol.SetPatrolPoints(markers[0].transform.position,
 		                       markers[1].transform.position,
 		                       markers[2].transform.position,
@@ -165,6 +164,14 @@ public class ExampleSetup : MonoBehaviour {
 		BSEntry onPatrolPosition = ship.Blueprint.CreateEntry( "TargetPosition", patrol);
 		BSAction toSteer = ship.Blueprint.CreateAction( "SteerTowards", steerer);
 		ship.Blueprint.ConnectElements( onPatrolPosition, toSteer );
+
+		BSEntry onSteering = ship.Blueprint.CreateEntry( "OnSteering", steerer);
+		BSAction toDisableEngine = ship.Blueprint.CreateAction( "DisengageEngine", engine);
+		ship.Blueprint.ConnectElements( onSteering, toDisableEngine );
+
+		BSEntry onSteerComplete = ship.Blueprint.CreateEntry( "OnSteerComplete", steerer);
+		BSAction toEnableEngine = ship.Blueprint.CreateAction( "EngageEngine", engine);
+		ship.Blueprint.ConnectElements( onSteerComplete, toEnableEngine );
 		
 		ContainerView shipView = WorldManager.SpawnContainer( ship, Vector3.zero, Quaternion.identity );
 		

@@ -9,11 +9,11 @@ using SpaceSandbox;
 
 public class DSteerModule : Device 
 {
-	private Rigidbody2D m_rigidbody;
 	private Transform m_transform;
 
 	// temporary variable. Should be changed to something more physical realistic
-	private float torqueSpeed = 3f;
+	private float torqueSpeed = 100f;
+	private float angleTreshold = 5f;
 
 	#region device's functions
 
@@ -29,12 +29,14 @@ public class DSteerModule : Device
 
 	public override void OnDeviceInstalled()
 	{
+		AddEvent("OnSteering", null );
+		AddEvent("OnSteerComplete", null );
+
 		AddAction("SteerTowards", SteerTowards );
 	}
 
 	public override void Initialize()
 	{
-		m_rigidbody = m_containerAttachedTo.View.GetComponent<Rigidbody2D>();
 		m_transform = m_containerAttachedTo.View.GetComponent<Transform>();
 	}
 
@@ -47,11 +49,29 @@ public class DSteerModule : Device
 
 	private void RotateTowards( Vector3 worldPos )
 	{
+		Quaternion finalRotation = RatationToTargetPoint(worldPos);
+
+		m_transform.rotation = Quaternion.RotateTowards( m_transform.rotation, finalRotation, torqueSpeed * Time.deltaTime );
+
+		if( Quaternion.Angle( m_transform.rotation, finalRotation ) < angleTreshold )
+		{
+			DeviceEvent onSteerComplete = GetEvent("OnSteerComplete");
+			if( onSteerComplete != null )
+				onSteerComplete.Invoke();
+		}
+		else
+		{
+			DeviceEvent onSteering = GetEvent("OnSteering");
+			if( onSteering != null )
+				onSteering.Invoke();
+		}
+	}
+
+	private Quaternion RatationToTargetPoint( Vector3 worldPos )
+	{
 		Vector3 dir = (worldPos - m_transform.position).normalized;
 		float zEuler = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-		Quaternion finalRotation = Quaternion.Euler( 0f, 0f, zEuler - 90f );
 
-		m_transform.rotation = finalRotation;
-								//Quaternion.RotateTowards( m_transform.rotation, finalRotation, torqueSpeed * Time.deltaTime );
+		return Quaternion.Euler( 0f, 0f, zEuler - 90f );
 	}
 }
