@@ -7,7 +7,7 @@ using UnityEngine.Events;
 
 using SpaceSandbox;
 
-public class DSteeringModule : Device 
+public class DSteerModule : Device 
 {
 	private Rigidbody2D m_rigidbody;
 	private Transform m_transform;
@@ -49,8 +49,9 @@ public class DSteeringModule : Device
 	{
 		Vector3 dir = (worldPos - m_transform.position).normalized;
 		float zEuler = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+		Quaternion finalRotation = Quaternion.Euler( 0f, 0f, zEuler - 90f );
 
-		m_transform.rotation = 
-			Quaternion.Lerp( m_transform.rotation, Quaternion.Euler( 0f, 0f, zEuler - 90f ), Time.fixedDeltaTime * torqueSpeed );
+		m_transform.rotation = finalRotation;
+								//Quaternion.RotateTowards( m_transform.rotation, finalRotation, torqueSpeed * Time.deltaTime );
 	}
 }

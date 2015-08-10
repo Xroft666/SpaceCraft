@@ -10,7 +10,10 @@ public class BlueprintSchemeView : MonoBehaviour
 
 	[Header("Inspector references")]
 	// UI transforms references for all the UI sections
-	public Transform m_hardwareList, m_hardwareBP, m_softwareBP, m_softwareAPI;
+	public Transform m_hardwareList;
+	public Transform m_hardwareBP; 
+	public Transform m_softwareBP; 
+	public Transform m_softwareAPI;
 
 	#endregion
 

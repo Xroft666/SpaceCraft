@@ -9,7 +9,7 @@ public class ExampleSetup : MonoBehaviour {
 	private void Start()
 	{
 		// Generating random targets
-		for( int i = 0; i < 10; i++ )
+		for( int i = 0; i < 5; i++ )
 		{
 			GenerateTarget();
 		}
@@ -22,6 +22,8 @@ public class ExampleSetup : MonoBehaviour {
 		{
 			ship.AddToCargo( GenerateMissile() );
 		}
+
+		GeneratePatrolShip();
 	}
 	
 	private static Container GenerateMissile()
@@ -33,7 +35,7 @@ public class ExampleSetup : MonoBehaviour {
 		DDetonator detonator = new DDetonator(){ EntityName = "detonator"};
 		DRanger ranger = new DRanger(){ EntityName = "ranger" };
 		DHeatDetector detector = new DHeatDetector(){ EntityName = "detector" };
-		DSteeringModule steerer = new DSteeringModule() { EntityName = "steerer" };
+		DSteerModule steerer = new DSteerModule() { EntityName = "steerer" };
 		
 		engine.isEngaged = true;
 		timer.m_timerSetUp = 3f;
@@ -80,7 +82,7 @@ public class ExampleSetup : MonoBehaviour {
 		
 		DEngine engine = new DEngine(){ EntityName = "engine"};
 		DLauncher launcher = new DLauncher(){ EntityName = "launcher"};
-		DSteeringModule steerer = new DSteeringModule(){ EntityName = "steerer"};
+		DSteerModule steerer = new DSteerModule(){ EntityName = "steerer"};
 		Device input = GenerateInclusiveInputModule();
 		
 		launcher.SetProjectile("Missile");
@@ -124,5 +126,48 @@ public class ExampleSetup : MonoBehaviour {
 		inclusiveDevice.IntegrateDevices( inputs );
 		
 		return inclusiveDevice;
+	}
+
+	private static Container GeneratePatrolShip()
+	{
+		Container ship = new Container(){ EntityName = "patrolship"};
+		
+		DEngine engine = new DEngine(){ EntityName = "engine"};
+		DSteerModule steerer = new DSteerModule(){ EntityName = "steerer"};
+		DPatrolModule patrol = new DPatrolModule(){ EntityName = "patrol"};
+		DTimer timer = new DTimer(){ EntityName = "timer" };
+
+		GameObject[] markers = new GameObject[]
+		{
+			new GameObject("Marker1", typeof( TransformMarker )),
+			new GameObject("Marker2", typeof( TransformMarker )),
+			new GameObject("Marker3", typeof( TransformMarker )),
+			new GameObject("Marker4", typeof( TransformMarker )),
+		};
+
+		markers[0].transform.position = Vector3.right * 3f;
+		markers[1].transform.position = Vector3.left * 3f;
+		markers[2].transform.position = Vector3.up * 3f;
+		markers[3].transform.position = Vector3.down * 3f;
+
+		engine.EngageEngine();
+		patrol.SetPatrolPoints(markers[0].transform.position,
+		                       markers[1].transform.position,
+		                       markers[2].transform.position,
+		                       markers[3].transform.position);
+
+		ship.IntegratedDevice.IntegrateDevice( engine );
+		ship.IntegratedDevice.IntegrateDevice( steerer );
+		ship.IntegratedDevice.IntegrateDevice( patrol );
+		ship.IntegratedDevice.IntegrateDevice( timer );
+
+		
+		BSEntry onPatrolPosition = ship.Blueprint.CreateEntry( "TargetPosition", patrol);
+		BSAction toSteer = ship.Blueprint.CreateAction( "SteerTowards", steerer);
+		ship.Blueprint.ConnectElements( onPatrolPosition, toSteer );
+		
+		ContainerView shipView = WorldManager.SpawnContainer( ship, Vector3.zero, Quaternion.identity );
+		
+		return ship;
 	}
 }
