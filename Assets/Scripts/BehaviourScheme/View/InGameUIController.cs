@@ -23,7 +23,20 @@ public class InGameUIController : MonoBehaviour
 
 	private void Update()
 	{
+		foreach( KeyValuePair<ContainerView, GameObject> selection in selections )
+		{
+			if( selection.Value.activeInHierarchy )
+			{
+				// Should be changed for events instead if update checks
+				if( !selection.Key.gameObject.activeInHierarchy )
+				{
+					selection.Value.SetActive(false);
+					return;
+				}
 
+				selection.Value.transform.localPosition = Camera.main.WorldToScreenPoint( selection.Key.transform.position );
+			}
+		}
 	}
 
 	private void OnContainerSelectedEvent( ContainerView container )
