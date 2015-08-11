@@ -17,7 +17,19 @@ namespace SpaceSandbox
 
 	public class Device : Entity
 	{
+		public Device()
+		{
+			Blueprint = new BlueprintScheme();
+		}
+
+
 		protected Container m_containerAttachedTo = null;
+
+		/// <summary>
+		/// The m_blueprint. The blueprint logic scheme storage.
+		/// </summary>
+		public BlueprintScheme Blueprint { get;  private set; }
+
 
 		/// <summary>
 		/// The m_integrated devices. If the device is compud, this list will
@@ -38,6 +50,8 @@ namespace SpaceSandbox
 		public void AssignContainer( Container container )
 		{
 			m_containerAttachedTo = container;
+			foreach( Device device in m_integratedDevices )
+				device.AssignContainer( container );
 		}
 
 		/// <summary>

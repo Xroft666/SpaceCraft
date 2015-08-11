@@ -36,6 +36,8 @@ public class DDetonator : Device
 
 	#endregion
 
+	#region Device interface
+
 	public override void OnDeviceInstalled()
 	{
 		AddAction("Detonate", DetonateExplosives );
@@ -43,9 +45,18 @@ public class DDetonator : Device
 
 	public override void Initialize()
 	{
-		EventTrigger2DHandler trigger = m_containerAttachedTo.View.gameObject.AddComponent<EventTrigger2DHandler>();
-		trigger.onTriggerEnter += OnCollideWithSomething;
+		// the case of explode on collision, which maybe we dont want to hardcode
+//		EventTrigger2DHandler trigger = m_containerAttachedTo.View.gameObject.AddComponent<EventTrigger2DHandler>();
+//		trigger.onTriggerEnter += OnCollideWithSomething;
 	}
+
+	public override void Destroy ()
+	{
+		// do we want to explode detonator if container was destroyed?
+//		DetonateExplosives();
+	}
+
+	#endregion
 
 	private void OnObjectInExplosionArea( Collider2D other )
 	{
@@ -55,8 +66,8 @@ public class DDetonator : Device
 		rigid.AddForce( outwardsDir.normalized * detonateForce * outwardsDir.magnitude / explosionRadius, ForceMode2D.Impulse );
 	}
 
-	private void OnCollideWithSomething( Collider2D other )
-	{
-		DetonateExplosives();
-	}
+//	private void OnCollideWithSomething( Collider2D other )
+//	{
+//		DetonateExplosives();
+//	}
 }

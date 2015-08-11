@@ -7,7 +7,7 @@ using UnityEngine.Events;
 
 using SpaceSandbox;
 
-public class DHeatDetector : Device 
+public class DRadar : Device 
 {
 	// Exportable variable
 	public ContainerView m_target;
@@ -27,7 +27,7 @@ public class DHeatDetector : Device
 
 	private void SearchForClosestTarget(params object[] objects)
 	{
-		Dictionary<string, Entity> memoryObjects = m_containerAttachedTo.Blueprint.Memory.GetAllObjects();
+		Dictionary<string, Entity> memoryObjects = Blueprint.Memory.GetAllObjects();
 
 		ContainerView thisContainer = m_containerAttachedTo.View;
 		ContainerView closestContainer = null;

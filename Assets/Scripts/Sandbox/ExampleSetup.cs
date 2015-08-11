@@ -87,42 +87,15 @@ public class ExampleSetup : MonoBehaviour {
 	{
 		Container missile = new Container(){ EntityName = "Missile" };
 		
-		DEngine engine = new DEngine(){ EntityName = "engine"};
-		DTimer timer = new DTimer(){ EntityName = "timer"};
-		DDetonator detonator = new DDetonator(){ EntityName = "detonator"};
-		DRanger ranger = new DRanger(){ EntityName = "ranger" };
-		DHeatDetector detector = new DHeatDetector(){ EntityName = "detector" };
-		DSteerModule steerer = new DSteerModule() { EntityName = "steerer" };
-		
-		engine.isEngaged = true;
-		timer.m_timerSetUp = 3f;
-		timer.m_started = true;
+		DEngine engine = new DEngine(){ EntityName = "engine", isEngaged = true };
+
+		Device heatSeeker = GenerateHeatSeeker(3f);
+		Device timeBomb = GenerateTimeBomb( 3f );
 		
 		missile.IntegratedDevice.IntegrateDevice( engine );
-		missile.IntegratedDevice.IntegrateDevice( timer );
-		missile.IntegratedDevice.IntegrateDevice( detonator );
-		missile.IntegratedDevice.IntegrateDevice( ranger );
-		missile.IntegratedDevice.IntegrateDevice( detector );
-		missile.IntegratedDevice.IntegrateDevice( steerer );
-		
-		// Generating warhead
-		BSEntry onTimer = missile.Blueprint.CreateEntry( "OnTimerTrigger", timer );
-		BSAction toDetonate = missile.Blueprint.CreateAction( "Detonate", detonator );
-		missile.Blueprint.ConnectElements( onTimer, toDetonate );
-		
-		// Generating navigation
-		BSEntry onObjectInRange = missile.Blueprint.CreateEntry( "OnRangerEntered", ranger );
-		BSAction toMarkTarget = missile.Blueprint.CreateAction( "SetTarget", detector );
-		missile.Blueprint.ConnectElements( onObjectInRange, toMarkTarget );
+		missile.IntegratedDevice.IntegrateDevice( timeBomb );
+		missile.IntegratedDevice.IntegrateDevice( heatSeeker );
 
-		BSEntry onObjectOutRange = missile.Blueprint.CreateEntry( "OnRangerEscaped", ranger );
-		BSAction toNullTarget = missile.Blueprint.CreateAction( "ResetTarget", detector );
-		missile.Blueprint.ConnectElements( onObjectOutRange, toNullTarget );
-		
-		BSEntry onTargetPos = missile.Blueprint.CreateEntry( "TargetPosition", detector);
-		BSAction toSteer = missile.Blueprint.CreateAction( "SteerTowards", steerer);
-		missile.Blueprint.ConnectElements( onTargetPos, toSteer );
-		
 		return missile;
 	}
 	
@@ -136,53 +109,26 @@ public class ExampleSetup : MonoBehaviour {
 	private static Container GenerateShip()
 	{
 		Container ship = new Container(){ EntityName = "ship"};
-		
-		DEngine engine = new DEngine(){ EntityName = "engine"};
-		DLauncher launcher = new DLauncher(){ EntityName = "launcher"};
-		DSteerModule steerer = new DSteerModule(){ EntityName = "steerer"};
-		Device input = GenerateInclusiveInputModule();
-		
-		launcher.SetProjectile("Missile");
-		
-		ship.IntegratedDevice.IntegrateDevice( engine );
+
+		Device cockpit = GeneratePilotCockpit();
+		DLauncher launcher = new DLauncher(){ EntityName = "launcher", m_projectileName = "Missile" };
+		DInputModule mouseInput = new DInputModule() { EntityName = "mouse0", m_keyCode = KeyCode.Mouse0 };
+
+
 		ship.IntegratedDevice.IntegrateDevice( launcher );
-		ship.IntegratedDevice.IntegrateDevice( steerer );
-		ship.IntegratedDevice.IntegrateDevice( input );
+		ship.IntegratedDevice.IntegrateDevice( cockpit );
+		ship.IntegratedDevice.IntegrateDevice( mouseInput );
+
 		
-		BSEntry onMouseUp = ship.Blueprint.CreateEntry( "input/mouse0/OnInputReleased", ship.IntegratedDevice);
-		BSAction toFire = ship.Blueprint.CreateAction( "launcher/Fire", ship.IntegratedDevice);
-		ship.Blueprint.ConnectElements( onMouseUp, toFire );
-		
-		BSEntry onForwardDown = ship.Blueprint.CreateEntry( "input/w/OnInputHeld", ship.IntegratedDevice);
-		BSAction toGoForward = ship.Blueprint.CreateAction( "engine/Move", ship.IntegratedDevice);
-		ship.Blueprint.ConnectElements( onForwardDown, toGoForward );
-		
-		BSEntry onMouseWorld = ship.Blueprint.CreateEntry( "input/mousePos/OnMouseWorldPosition", ship.IntegratedDevice);
-		BSAction toSteer = ship.Blueprint.CreateAction( "steerer/SteerTowards", ship.IntegratedDevice);
-		ship.Blueprint.ConnectElements( onMouseWorld, toSteer );
+		BSEntry onMouseUp = ship.IntegratedDevice.Blueprint.CreateEntry( "mouse0/OnInputReleased", ship.IntegratedDevice);
+		BSAction toFire = ship.IntegratedDevice.Blueprint.CreateAction( "launcher/Fire", ship.IntegratedDevice);
+		ship.IntegratedDevice.Blueprint.ConnectElements( onMouseUp, toFire );
+
 		
 		ContainerView shipView = WorldManager.SpawnContainer( ship, Vector3.zero, Quaternion.identity );
 		shipView.gameObject.layer = 8;
 		
 		return ship;
-	}
-	
-	private static Device GenerateInclusiveInputModule()
-	{
-		List<Device> inputs = new List<Device>() 
-		{
-			new DInputModule(){ EntityName = "mouse0", m_keyCode = KeyCode.Mouse0 },
-			new DInputModule(){ EntityName = "w", m_keyCode = KeyCode.W },
-			new DInputModule(){ EntityName = "s", m_keyCode = KeyCode.S },
-			new DInputModule(){ EntityName = "a", m_keyCode = KeyCode.A },
-			new DInputModule(){ EntityName = "d", m_keyCode = KeyCode.D },
-			new DInputModule(){ EntityName = "mousePos" }
-		};
-		
-		Device inclusiveDevice = new Device(){ EntityName = "input"};
-		inclusiveDevice.IntegrateDevices( inputs );
-		
-		return inclusiveDevice;
 	}
 
 	private static Container GeneratePatrolShip()
@@ -218,20 +164,156 @@ public class ExampleSetup : MonoBehaviour {
 		ship.IntegratedDevice.IntegrateDevice( timer );
 
 		
-		BSEntry onPatrolPosition = ship.Blueprint.CreateEntry( "TargetPosition", patrol);
-		BSAction toSteer = ship.Blueprint.CreateAction( "SteerTowards", steerer);
-		ship.Blueprint.ConnectElements( onPatrolPosition, toSteer );
+		BSEntry onPatrolPosition = ship.IntegratedDevice.Blueprint.CreateEntry( "TargetPosition", patrol);
+		BSAction toSteer = ship.IntegratedDevice.Blueprint.CreateAction( "SteerTowards", steerer);
+		ship.IntegratedDevice.Blueprint.ConnectElements( onPatrolPosition, toSteer );
 
-		BSEntry onSteering = ship.Blueprint.CreateEntry( "OnSteering", steerer);
-		BSAction toDisableEngine = ship.Blueprint.CreateAction( "DisengageEngine", engine);
-		ship.Blueprint.ConnectElements( onSteering, toDisableEngine );
+		BSEntry onSteering = ship.IntegratedDevice.Blueprint.CreateEntry( "OnSteering", steerer);
+		BSAction toDisableEngine = ship.IntegratedDevice.Blueprint.CreateAction( "DisengageEngine", engine);
+		ship.IntegratedDevice.Blueprint.ConnectElements( onSteering, toDisableEngine );
 
-		BSEntry onSteerComplete = ship.Blueprint.CreateEntry( "OnSteerComplete", steerer);
-		BSAction toEnableEngine = ship.Blueprint.CreateAction( "EngageEngine", engine);
-		ship.Blueprint.ConnectElements( onSteerComplete, toEnableEngine );
+		BSEntry onSteerComplete = ship.IntegratedDevice.Blueprint.CreateEntry( "OnSteerComplete", steerer);
+		BSAction toEnableEngine = ship.IntegratedDevice.Blueprint.CreateAction( "EngageEngine", engine);
+		ship.IntegratedDevice.Blueprint.ConnectElements( onSteerComplete, toEnableEngine );
 		
 		ContainerView shipView = WorldManager.SpawnContainer( ship, Vector3.zero, Quaternion.identity );
 		
 		return ship;
+	}
+
+	private static Device GeneratePilotCockpit()
+	{
+		Device input = GenerateInclusiveInputModule();
+		Device engines = GenerateInclusiveEngineModule();
+		DSteerModule steerer = new DSteerModule(){ EntityName = "steerer" };
+
+		Device cockpitDevice = new Device(){ EntityName = "cockpit"};
+		cockpitDevice.IntegrateDevice( input );
+		cockpitDevice.IntegrateDevice( engines );
+		cockpitDevice.IntegrateDevice( steerer );
+
+		// Steering module
+
+		BSEntry onMouseWorld = cockpitDevice.Blueprint.CreateEntry( "input/mousePos/OnMouseWorldPosition", cockpitDevice);
+		BSAction toSteer = cockpitDevice.Blueprint.CreateAction( "steerer/SteerTowards", cockpitDevice);
+		cockpitDevice.Blueprint.ConnectElements( onMouseWorld, toSteer );
+
+		// Movement module
+
+		BSEntry onForwardDown = cockpitDevice.Blueprint.CreateEntry( "input/w/OnInputHeld", cockpitDevice);
+		BSAction toGoForward = cockpitDevice.Blueprint.CreateAction( "engines/forward/Move", cockpitDevice);
+		cockpitDevice.Blueprint.ConnectElements( onForwardDown, toGoForward );
+		
+		BSEntry onBackwardDown = cockpitDevice.Blueprint.CreateEntry( "input/s/OnInputHeld", cockpitDevice);
+		BSAction toGoBackward = cockpitDevice.Blueprint.CreateAction( "engines/backward/Move", cockpitDevice);
+		cockpitDevice.Blueprint.ConnectElements( onBackwardDown, toGoBackward );
+		
+		BSEntry onLeftDown = cockpitDevice.Blueprint.CreateEntry( "input/a/OnInputHeld", cockpitDevice);
+		BSAction toGoleft = cockpitDevice.Blueprint.CreateAction( "engines/left/Move", cockpitDevice);
+		cockpitDevice.Blueprint.ConnectElements( onLeftDown, toGoleft );
+		
+		BSEntry onRightDown = cockpitDevice.Blueprint.CreateEntry( "input/d/OnInputHeld", cockpitDevice);
+		BSAction toGoRight = cockpitDevice.Blueprint.CreateAction( "engines/right/Move", cockpitDevice);
+		cockpitDevice.Blueprint.ConnectElements( onRightDown, toGoRight );
+
+		return cockpitDevice;
+	}
+
+	private static Device GenerateInclusiveInputModule()
+	{
+		List<Device> inputs = new List<Device>() 
+		{
+			new DInputModule(){ EntityName = "w", m_keyCode = KeyCode.W },
+			new DInputModule(){ EntityName = "s", m_keyCode = KeyCode.S },
+			new DInputModule(){ EntityName = "a", m_keyCode = KeyCode.A },
+			new DInputModule(){ EntityName = "d", m_keyCode = KeyCode.D },
+			new DInputModule(){ EntityName = "mousePos" }
+		};
+		
+		Device inclusiveDevice = new Device(){ EntityName = "input"};
+		inclusiveDevice.IntegrateDevices( inputs );
+		
+		return inclusiveDevice;
+	}
+
+	private static Device GenerateInclusiveEngineModule()
+	{
+		List<Device> inputs = new List<Device>() 
+		{
+			new DEngine(){ EntityName = "forward", m_lookDirection = Vector3.up },
+			new DEngine(){ EntityName = "backward", m_lookDirection = Vector3.down },
+			new DEngine(){ EntityName = "left", m_lookDirection = Vector3.left },
+			new DEngine(){ EntityName = "right", m_lookDirection = Vector3.right }
+		};
+		
+		Device inclusiveDevice = new Device(){ EntityName = "engines"};
+		inclusiveDevice.IntegrateDevices( inputs );
+		
+		return inclusiveDevice;
+	}
+
+	// Can be a mine as it is
+	private static Device GenerateWarhead( float detectionRange )
+	{
+		Device warheadDevice = new Device(){ EntityName = "warhead"};
+
+		DDetonator detonator = new DDetonator(){ EntityName = "detonator"};
+		DRanger ranger = new DRanger(){ EntityName = "ranger", detectionRange = detectionRange };
+
+		warheadDevice.IntegrateDevice( detonator );
+		warheadDevice.IntegrateDevice( ranger );
+
+		BSEntry onClose = warheadDevice.Blueprint.CreateEntry( "ranger/OnRangerEntered", warheadDevice );
+		BSAction toDetonate = warheadDevice.Blueprint.CreateAction( "detonator/Detonate", warheadDevice );
+		warheadDevice.Blueprint.ConnectElements( onClose, toDetonate );
+		
+		return warheadDevice;
+	}
+
+
+	private static Device GenerateTimeBomb( float time )
+	{
+		Device timeBomb = new Device(){ EntityName = "timebomb" };
+
+		Device warhead = GenerateWarhead( 1f );
+		DTimer timer = new DTimer() { EntityName = "timer", m_timerSetUp = time, m_started = true };
+
+		timeBomb.IntegrateDevice( warhead );
+		timeBomb.IntegrateDevice( timer );
+
+		// Generating warhead
+		BSEntry onTimer = timeBomb.Blueprint.CreateEntry( "OnTimerTrigger", timer );
+		BSAction toDetonate = timeBomb.Blueprint.CreateAction( "warhead/detonator/Detonate", warhead );
+		timeBomb.Blueprint.ConnectElements( onTimer, toDetonate );
+
+		return timeBomb;
+	}
+
+	// Heat seeker
+	private static Device GenerateHeatSeeker( float detectionRange )
+	{
+		Device heatSeeker = new Device(){ EntityName = "heatseeker"};
+		
+		DRadar radar = new DRadar(){ EntityName = "radar"};
+		DRanger ranger = new DRanger(){ EntityName = "ranger", detectionRange = detectionRange };
+		DSteerModule steerer = new DSteerModule() { EntityName = "steerer" };
+		
+		heatSeeker.IntegrateDevice( radar );
+		heatSeeker.IntegrateDevice( ranger );
+		heatSeeker.IntegrateDevice( steerer );
+		
+		BSEntry inRange = heatSeeker.Blueprint.CreateEntry( "ranger/OnRangerEntered", heatSeeker );
+		BSAction toFollow = heatSeeker.Blueprint.CreateAction( "radar/SetTarget", heatSeeker );
+		heatSeeker.Blueprint.ConnectElements( inRange, toFollow );
+
+		BSEntry outRange = heatSeeker.Blueprint.CreateEntry( "ranger/OnRangerEscaped", heatSeeker );
+		BSAction toNullTarget = heatSeeker.Blueprint.CreateAction( "radar/ResetTarget", heatSeeker );
+		heatSeeker.Blueprint.ConnectElements( outRange, toNullTarget );
+
+		BSEntry onTargetPos = heatSeeker.Blueprint.CreateEntry( "radar/TargetPosition", heatSeeker);
+		BSAction toSteer = heatSeeker.Blueprint.CreateAction( "steerer/SteerTowards", heatSeeker);
+		heatSeeker.Blueprint.ConnectElements( onTargetPos, toSteer );
+		
+		return heatSeeker;
 	}
 }

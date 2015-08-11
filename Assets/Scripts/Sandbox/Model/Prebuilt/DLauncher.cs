@@ -13,7 +13,7 @@ public class DLauncher : Device
 	// for now we connect Consumable with Consumers by names
 	// which should be somewhat different
 	// Exportable variable
-	private string m_projectileName;
+	public string m_projectileName;
 
 	public void SetProjectile(params object[] objects)
 	{

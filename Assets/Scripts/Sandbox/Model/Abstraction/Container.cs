@@ -9,17 +9,6 @@ namespace SpaceSandbox
 
 
 		/// <summary>
-		/// The m_blueprint. The blueprint logic scheme storage.
-		/// </summary>
-		private BlueprintScheme m_blueprint = new BlueprintScheme();
-		public BlueprintScheme Blueprint
-		{
-			get { return m_blueprint; }
-			set { m_blueprint = value; }
-		}
-
-
-		/// <summary>
 		/// The m_cargo. The inventory of this specific container
 		/// </summary>
 		private List<Entity> m_cargo = new List<Entity>();
