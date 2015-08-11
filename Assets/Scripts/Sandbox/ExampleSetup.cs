@@ -26,63 +26,6 @@ public class ExampleSetup : MonoBehaviour {
 		GeneratePatrolShip();
 	}
 
-	private void Update()
-	{
-		UtilsKeys();
-		CameraControls();
-	}
-
-	private void UtilsKeys()
-	{
-		if( Input.GetKeyUp(KeyCode.R) )
-		{
-			EntitySelection.Cleanup();
-			Application.LoadLevel( Application.loadedLevel );
-		}
-	}
-
-	private void CameraControls()
-	{
-		if( EntitySelection.selectedContainer == null || !EntitySelection.selectedContainer.gameObject.activeInHierarchy )
-		{
-			Vector3 input = Vector3.zero; 
-			if( Input.GetKey(KeyCode.UpArrow) )
-				input += Vector3.up;
-			
-			if( Input.GetKey(KeyCode.DownArrow) )
-				input += Vector3.down;
-			
-			if( Input.GetKey(KeyCode.LeftArrow) )
-				input += Vector3.left;
-			
-			if( Input.GetKey(KeyCode.RightArrow) )
-				input = Vector3.right;
-			
-			Camera.main.transform.position += input * Time.deltaTime;
-		}
-		else
-		{
-			Vector3 position = Vector3.zero;
-			position.x = EntitySelection.selectedContainer.transform.position.x;
-			position.y = EntitySelection.selectedContainer.transform.position.y;
-			position.z = Camera.main.transform.position.z;
-			
-			Camera.main.transform.position = position;
-		}
-		
-		Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize + Input.GetAxis( "Mouse ScrollWheel"), 1f, 10f);
-	}
-
-	public void OnGUI()
-	{
-		GUILayout.Label("W to move your ship forward");
-		GUILayout.Label("LMB to fire missiles");
-		GUILayout.Label("Arrows to move your camera");
-		GUILayout.Label("Select any object to have your camera focused on it");
-		GUILayout.Label("Scroll to zoom");
-		GUILayout.Label("R to restart");
-	}
-	
 	private static Container GenerateMissile()
 	{
 		Container missile = new Container(){ EntityName = "Missile" };
