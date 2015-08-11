@@ -28,12 +28,21 @@ public class ExampleSetup : MonoBehaviour {
 
 	private void Update()
 	{
+		UtilsKeys();
+		CameraControls();
+	}
+
+	private void UtilsKeys()
+	{
 		if( Input.GetKeyUp(KeyCode.R) )
 		{
 			EntitySelection.Cleanup();
 			Application.LoadLevel( Application.loadedLevel );
 		}
+	}
 
+	private void CameraControls()
+	{
 		if( EntitySelection.selectedContainer == null || !EntitySelection.selectedContainer.gameObject.activeInHierarchy )
 		{
 			Vector3 input = Vector3.zero; 
@@ -57,10 +66,10 @@ public class ExampleSetup : MonoBehaviour {
 			position.x = EntitySelection.selectedContainer.transform.position.x;
 			position.y = EntitySelection.selectedContainer.transform.position.y;
 			position.z = Camera.main.transform.position.z;
-
+			
 			Camera.main.transform.position = position;
 		}
-
+		
 		Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize + Input.GetAxis( "Mouse ScrollWheel"), 1f, 10f);
 	}
 

@@ -74,7 +74,7 @@ public class DEngine : Device
 		// Move the object and consume fuel
 
 		Vector3 dir = m_containerAttachedTo.View.transform.up * speed * Time.deltaTime;
-//		m_rigidbody.MovePosition ( m_rigidbody.position + new Vector2( dir.x, dir.y) );
+
 		m_rigidbody.AddForce( dir * speed * 100f, ForceMode2D.Force );
 	}
 }
