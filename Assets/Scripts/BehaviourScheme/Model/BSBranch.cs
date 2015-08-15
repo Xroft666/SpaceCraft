@@ -3,41 +3,18 @@ using System.Collections.Generic;
 
 namespace BehaviourScheme
 {
-	public class BSBranch : BSNode 
+	public class BSBranch : BSMultiChildNode 
 	{		
-		public delegate bool BSPredecate();
-		protected Dictionary<BSNode,BSPredecate> m_transitions = null;
-
-
-		public void AddChild( BSNode node, BSPredecate predecate )
-		{
-			m_transitions[node] = predecate;
-			node.SetParent( this );
-		}
-
-		public void RemoveChild( BSNode node )
-		{
-			m_transitions.Remove(node);
-			node.RemoveParent();
-		}
-
 		public override void Activate(params object[] objects)
 		{
-			foreach( KeyValuePair<BSNode,BSPredecate> transition in m_transitions )
+			for( int i = 0; i < m_children.Count; i++ )
 			{
-				if( transition.Value() )
+				if( m_conditions[i].Invoke() )
 				{
-					transition.Key.Activate(objects);
+					m_children[i].Activate(objects);
 					break;
 				}
 			}
 		}
-
-
-		// disabling upcast functionality
-
-		public new BSNode GetConnectedNode() { return null; }
-		public new void AddChild( BSNode node ) {}
-		public new void RemoveChild() {}
 	}
 }

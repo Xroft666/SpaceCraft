@@ -5,6 +5,9 @@ namespace BehaviourScheme
 {
 	public class BSNode 
 	{
+		public delegate bool BSPredecate();
+		protected BSPredecate m_condition = null;
+
 		protected BSNode m_parentNode = null;
 		protected BSNode m_connectNode = null;
 
@@ -19,9 +22,9 @@ namespace BehaviourScheme
 			node.SetParent( this );
 		}
 
-		public void RemoveChild()
+		public void RemoveChild( BSNode node )
 		{
-			m_connectNode.RemoveParent();
+			m_connectNode.RemoveParent( this );
 			m_connectNode = null;
 		}
 
@@ -30,14 +33,9 @@ namespace BehaviourScheme
 			m_parentNode = node;
 		}
 
-		public void RemoveParent()
+		public void RemoveParent( BSNode node )
 		{
 			m_parentNode = null;
-		}
-
-		public void IncludeNode( BSNode node )
-		{
-			
 		}
 
 		public virtual void Activate(params object[] objects){}

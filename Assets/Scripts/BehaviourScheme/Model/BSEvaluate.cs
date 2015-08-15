@@ -18,7 +18,7 @@ namespace BehaviourScheme
 		public void RemoveChild( BSNode node )
 		{
 			m_transitions.Remove(node);
-			node.RemoveParent();
+			node.RemoveParent( this );
 		}
 
 		public override void Activate(params object[] objects)

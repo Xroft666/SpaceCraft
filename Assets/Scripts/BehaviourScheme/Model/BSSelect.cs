@@ -3,41 +3,22 @@ using System.Collections.Generic;
 
 namespace BehaviourScheme
 {
-	public class BSSelect : BSNode 
+	public class BSSelect : BSMultuParentNode 
 	{		
-		public delegate bool BSPredecate();
-		protected Dictionary<BSNode,BSPredecate> m_transitions = null;
-
-
-		public void AddChild( BSNode node, BSPredecate predecate )
-		{
-			m_transitions[node] = predecate;
-			node.SetParent( this );
-		}
-
-		public void RemoveChild( BSNode node )
-		{
-			m_transitions.Remove(node);
-			node.RemoveParent();
-		}
-
 		public override void Activate(params object[] objects)
 		{
-			foreach( KeyValuePair<BSNode,BSPredecate> transition in m_transitions )
+			for( int i = 0; i < m_parents.Count; i ++ )
 			{
-				if( transition.Value() )
+				if( m_conditions[i].Invoke() )
 				{
-//					transition.Key.Activate(objects);
+					// Retrive data from the respective parent
+					// Remove the parent from the scheduled events list (somhow), or flag it out here
+					// Pass its data here to the child
+
+					m_connectNode.Activate( objects );
 					break;
 				}
 			}
 		}
-
-
-		// disabling upcast functionality
-
-		public new BSNode GetConnectedNode() { return null; }
-		public new void AddChild( BSNode node ) {}
-		public new void RemoveChild() {}
 	}
 }
