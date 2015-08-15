@@ -157,25 +157,25 @@ namespace SpaceSandbox
 			return m_integratedDevices;
 		}
 
-		/// <summary>
-		/// Activates the specified action by name.
-		/// </summary>
-		/// <param name="functionName">Function name to be activated.</param>
-		public void Activate( string functionName )
+
+		protected void ScheduleEvent(DeviceEvent evt, System.Object[] data)
 		{
-			if( m_actions[functionName] != null )
-				m_actions[functionName].Invoke();
+			Blueprint.ScheduledEvents.Add( evt, data );
 		}
 
-		/// <summary>
-		/// Activates the action by name and returns coroutine
-		/// </summary>
-		/// <returns> Returns Coroutine.</returns>
-		/// <param name="functionName">Function name to be activated.</param>
-//		public IEnumerator ActivateAndWait( string functionName )
-//		{
-//			yield return m_functions[functionName].startAsCoroutine();
-//		}
+		public void ExecuteLogic()
+		{
+			Blueprint.ExecuteSceduledEvents();
+			foreach( Device device in m_integratedDevices )
+				device.ExecuteLogic();
+		}
+
+		public void CleanScheduledEvents()
+		{
+			Blueprint.ScheduledEvents.Clear();
+			foreach( Device device in m_integratedDevices )
+				device.CleanScheduledEvents();
+		}
 
 		#region Device Callback Interface
 

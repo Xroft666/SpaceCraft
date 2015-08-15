@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BehaviourScheme
 {
-	public class BSSelect : BSNode 
+	public class BSBranch : BSNode 
 	{		
 		public delegate bool BSPredecate();
 		protected Dictionary<BSNode,BSPredecate> m_transitions = null;
@@ -27,7 +27,7 @@ namespace BehaviourScheme
 			{
 				if( transition.Value() )
 				{
-//					transition.Key.Activate(objects);
+					transition.Key.Activate(objects);
 					break;
 				}
 			}

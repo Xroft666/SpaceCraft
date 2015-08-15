@@ -80,6 +80,6 @@ public class DPatrolModule : Device
 	{
 		DeviceEvent targetPos = GetEvent("TargetPosition");
 		if( targetPos != null )
-			targetPos.Invoke( m_patrolPoints[currentTargetIdx] );
+			ScheduleEvent( targetPos, new System.Object[]{m_patrolPoints[currentTargetIdx]} );
 	}
 }

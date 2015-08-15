@@ -31,7 +31,6 @@ public class BlueprintSchemeView : MonoBehaviour
 	public void InitializeView( BlueprintScheme scheme )
 	{
 		m_blueprint = scheme;
-		m_currentView = m_root = scheme.RootFuntion;
 	}
 
 	// Loading up and rendering all he containment

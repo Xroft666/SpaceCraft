@@ -30,7 +30,7 @@ public class ExampleSetup : MonoBehaviour {
 	{
 		Container missile = new Container(){ EntityName = "Missile" };
 		
-		DEngine engine = new DEngine(){ EntityName = "engine", isEngaged = true };
+		DEngine engine = new DEngine(){ EntityName = "engine", isEngaged = true, m_lookDirection = Vector3.up, m_space = Space.Self };
 
 		Device heatSeeker = GenerateHeatSeeker(3f);
 		Device timeBomb = GenerateTimeBomb( 3f );
@@ -55,7 +55,7 @@ public class ExampleSetup : MonoBehaviour {
 
 		Device cockpit = GeneratePilotCockpit();
 		DLauncher launcher = new DLauncher(){ EntityName = "launcher", m_projectileName = "Missile" };
-		DInputModule mouseInput = new DInputModule() { EntityName = "mouse0", m_keyCode = KeyCode.Mouse0 };
+		DInputModule mouseInput = new DInputModule() { EntityName = "space", m_keyCode = KeyCode.Space };
 
 
 		ship.IntegratedDevice.IntegrateDevice( launcher );
@@ -63,7 +63,7 @@ public class ExampleSetup : MonoBehaviour {
 		ship.IntegratedDevice.IntegrateDevice( mouseInput );
 
 		
-		BSEntry onMouseUp = ship.IntegratedDevice.Blueprint.CreateEntry( "mouse0/OnInputReleased", ship.IntegratedDevice);
+		BSEntry onMouseUp = ship.IntegratedDevice.Blueprint.CreateEntry( "space/OnInputReleased", ship.IntegratedDevice);
 		BSAction toFire = ship.IntegratedDevice.Blueprint.CreateAction( "launcher/Fire", ship.IntegratedDevice);
 		ship.IntegratedDevice.Blueprint.ConnectElements( onMouseUp, toFire );
 
@@ -78,7 +78,7 @@ public class ExampleSetup : MonoBehaviour {
 	{
 		Container ship = new Container(){ EntityName = "patrolship"};
 		
-		DEngine engine = new DEngine(){ EntityName = "engine"};
+		DEngine engine = new DEngine(){ EntityName = "engine", m_lookDirection = Vector3.up, m_space = Space.Self };
 		DSteerModule steerer = new DSteerModule(){ EntityName = "steerer"};
 		DPatrolModule patrol = new DPatrolModule(){ EntityName = "patrol"};
 		DTimer timer = new DTimer(){ EntityName = "timer" };
@@ -144,19 +144,19 @@ public class ExampleSetup : MonoBehaviour {
 		// Movement module
 
 		BSEntry onForwardDown = cockpitDevice.Blueprint.CreateEntry( "input/w/OnInputHeld", cockpitDevice);
-		BSAction toGoForward = cockpitDevice.Blueprint.CreateAction( "engines/forward/Move", cockpitDevice);
+		BSAction toGoForward = cockpitDevice.Blueprint.CreateAction( "engines/forward/MoveForward", cockpitDevice);
 		cockpitDevice.Blueprint.ConnectElements( onForwardDown, toGoForward );
 		
 		BSEntry onBackwardDown = cockpitDevice.Blueprint.CreateEntry( "input/s/OnInputHeld", cockpitDevice);
-		BSAction toGoBackward = cockpitDevice.Blueprint.CreateAction( "engines/backward/Move", cockpitDevice);
+		BSAction toGoBackward = cockpitDevice.Blueprint.CreateAction( "engines/backward/MoveForward", cockpitDevice);
 		cockpitDevice.Blueprint.ConnectElements( onBackwardDown, toGoBackward );
 		
 		BSEntry onLeftDown = cockpitDevice.Blueprint.CreateEntry( "input/a/OnInputHeld", cockpitDevice);
-		BSAction toGoleft = cockpitDevice.Blueprint.CreateAction( "engines/left/Move", cockpitDevice);
+		BSAction toGoleft = cockpitDevice.Blueprint.CreateAction( "engines/left/MoveForward", cockpitDevice);
 		cockpitDevice.Blueprint.ConnectElements( onLeftDown, toGoleft );
 		
 		BSEntry onRightDown = cockpitDevice.Blueprint.CreateEntry( "input/d/OnInputHeld", cockpitDevice);
-		BSAction toGoRight = cockpitDevice.Blueprint.CreateAction( "engines/right/Move", cockpitDevice);
+		BSAction toGoRight = cockpitDevice.Blueprint.CreateAction( "engines/right/MoveForward", cockpitDevice);
 		cockpitDevice.Blueprint.ConnectElements( onRightDown, toGoRight );
 
 		return cockpitDevice;
@@ -183,10 +183,10 @@ public class ExampleSetup : MonoBehaviour {
 	{
 		List<Device> inputs = new List<Device>() 
 		{
-			new DEngine(){ EntityName = "forward", m_lookDirection = Vector3.up },
-			new DEngine(){ EntityName = "backward", m_lookDirection = Vector3.down },
-			new DEngine(){ EntityName = "left", m_lookDirection = Vector3.left },
-			new DEngine(){ EntityName = "right", m_lookDirection = Vector3.right }
+			new DEngine(){ EntityName = "forward", m_lookDirection = Vector3.up, m_space = Space.World },
+			new DEngine(){ EntityName = "backward", m_lookDirection = Vector3.down, m_space = Space.World },
+			new DEngine(){ EntityName = "left", m_lookDirection = Vector3.left, m_space = Space.World },
+			new DEngine(){ EntityName = "right", m_lookDirection = Vector3.right, m_space = Space.World }
 		};
 		
 		Device inclusiveDevice = new Device(){ EntityName = "engines"};

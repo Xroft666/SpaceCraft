@@ -79,7 +79,7 @@ public class DRadar : Device
 	{
 		DeviceEvent targetPos = GetEvent("TargetPosition");
 		if( targetPos != null && m_target != null )
-			targetPos.Invoke( m_target.transform.position );
+			ScheduleEvent( targetPos, new System.Object[]{ m_target.transform.position } );
 
 	}
 

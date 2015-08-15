@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 
 using UnityEngine;
 using UnityEngine.Events;
@@ -62,7 +63,8 @@ public class DRanger : Device
 			ContainerView othersView = other.gameObject.GetComponent<ContainerView>();
 			if( othersView == null )
 				Debug.LogError("Unexpected interaction with: " + other.gameObject.name);
-			onEnter.Invoke( othersView.m_contain );
+
+			ScheduleEvent( onEnter, new System.Object[]{ othersView.m_contain } );
 		}
 	}
 
@@ -74,7 +76,8 @@ public class DRanger : Device
 			ContainerView othersView = other.gameObject.GetComponent<ContainerView>();
 			if( othersView == null )
 				Debug.LogError("Unexpected interaction with: " + other.gameObject.name);
-			onExit.Invoke( othersView.m_contain );
+		
+			ScheduleEvent( onExit, new System.Object[]{ othersView.m_contain } );
 		}
 	}
 	

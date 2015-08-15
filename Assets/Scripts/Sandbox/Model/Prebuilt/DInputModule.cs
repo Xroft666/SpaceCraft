@@ -33,25 +33,25 @@ public class DInputModule : Device
 		{
 			DeviceEvent onPressed = GetEvent("OnInputPressed");
 			if( onPressed != null )
-				onPressed.Invoke(m_keyCode);
+				ScheduleEvent( onPressed, new System.Object[]{m_keyCode} );
 		}
 		if( Input.GetKeyUp(m_keyCode) )
 		{
 			DeviceEvent onReleased = GetEvent("OnInputReleased");
 			if( onReleased != null )
-				onReleased.Invoke(m_keyCode);
+				ScheduleEvent( onReleased, new System.Object[]{m_keyCode} );
 		}
 		if( Input.GetKey(m_keyCode) )
 		{
-			DeviceEvent onReleased = GetEvent("OnInputHeld");
-			if( onReleased != null )
-				onReleased.Invoke(m_keyCode);
+			DeviceEvent onHeld = GetEvent("OnInputHeld");
+			if( onHeld != null )
+				ScheduleEvent( onHeld, new System.Object[]{m_keyCode} );
 		}
 
 		// Mouse cursor events
 		DeviceEvent screenPos = GetEvent("OnMouseScreenPosition");
 		if( screenPos != null )
-			screenPos.Invoke( Input.mousePosition );
+			ScheduleEvent( screenPos, new System.Object[]{Input.mousePosition} );
 
 		DeviceEvent worldScreenPos = GetEvent("OnMouseWorldPosition");
 		if( worldScreenPos != null )
@@ -60,7 +60,7 @@ public class DInputModule : Device
 			                              	Input.mousePosition.y, 
 			                               -Camera.main.transform.position.z);
 			                                             
-			worldScreenPos.Invoke( Camera.main.ScreenToWorldPoint(mousePos) );
+			ScheduleEvent( worldScreenPos, new System.Object[]{Camera.main.ScreenToWorldPoint(mousePos)} );
 		}
 	}
 

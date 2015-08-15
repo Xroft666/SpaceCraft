@@ -14,6 +14,7 @@ public class DEngine : Device
 	// temporary variable. Should be changed to something more physical realistic
 	public float speed = 100f;
 	public Vector3 m_lookDirection = Vector3.up;
+	public Space m_space;
 
 	private Rigidbody2D m_rigidbody = null;
 
@@ -29,9 +30,9 @@ public class DEngine : Device
 		isEngaged = false;
 	}
 
-	public void Move( params object[] objects )
+	public void MoveForward( params object[] objects )
 	{
-		MoveForward();
+		ApplyForce();
 	}
 
 	#endregion
@@ -47,8 +48,8 @@ public class DEngine : Device
 
 		AddAction("EngageEngine", EngageEngine );
 		AddAction("DisengageEngine", DisengageEngine );
-		AddAction("Move", Move );
 
+		AddAction("MoveForward", MoveForward );
 	}
 
 	public override void Initialize()
@@ -65,16 +66,18 @@ public class DEngine : Device
 
 	public override void Destroy()
 	{
-		Component.Destroy(m_rigidbody);
+	
 	}
 
 	#endregion
 
-	private void MoveForward()
+	private void ApplyForce()
 	{
 		// Move the object and consume fuel
 
-		Vector3 dir = m_containerAttachedTo.View.transform.TransformDirection( m_lookDirection ).normalized;
+		Vector3 dir = m_lookDirection.normalized;
+		if( m_space == Space.Self )
+			dir = m_containerAttachedTo.View.transform.TransformDirection( m_lookDirection ).normalized;
 
 		m_rigidbody.AddForce( dir * speed * Time.deltaTime, ForceMode2D.Force );
 	}

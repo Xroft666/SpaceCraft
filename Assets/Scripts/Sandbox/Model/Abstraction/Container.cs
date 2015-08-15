@@ -83,6 +83,8 @@ namespace SpaceSandbox
 		public void Update() 
 		{
 			IntegratedDevice.Update();
+			IntegratedDevice.ExecuteLogic();
+			IntegratedDevice.CleanScheduledEvents();
 		}
 	}
 }

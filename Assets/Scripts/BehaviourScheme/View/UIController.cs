@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using SpaceSandbox;
 
-public class InGameUIController : MonoBehaviour 
+public class UIController : MonoBehaviour 
 {
 	public RectTransform m_selectListTransform;
 	public GameObject m_selectionGroupPrefab;
@@ -19,6 +19,7 @@ public class InGameUIController : MonoBehaviour
 	private void Start()
 	{
 		EntitySelection.onEntityClicked += OnContainerSelectedEvent;
+		EntitySelection.onCleanSpaceClicked += HideAllSelections;
 	}
 
 	private void Update()
@@ -71,8 +72,8 @@ public class InGameUIController : MonoBehaviour
 	
 	public void OnGUI()
 	{
-		GUILayout.Label("W to move your ship forward");
-		GUILayout.Label("LMB to fire missiles");
+		GUILayout.Label("WASD to move your ship");
+		GUILayout.Label("Space to fire missiles");
 		GUILayout.Label("Arrows to move your camera");
 		GUILayout.Label("Select any object to have your camera focused on it");
 		GUILayout.Label("Scroll to zoom");
@@ -99,11 +100,7 @@ public class InGameUIController : MonoBehaviour
 
 	private void OnContainerSelectedEvent( ContainerView container )
 	{
-		foreach( GameObject selectionGO in selections.Values )
-			selectionGO.SetActive( false );
-
-		if( container == null )
-			return;
+		HideAllSelections();
 
 		if( selections.ContainsKey( container ) )
 		{
@@ -114,11 +111,14 @@ public class InGameUIController : MonoBehaviour
 		GenerateNewSelection( container );
 	}
 
+	private void HideAllSelections()
+	{
+		foreach( GameObject selectionGO in selections.Values )
+			selectionGO.SetActive( false );
+	}
+
 	private void GenerateNewSelection( ContainerView container )
 	{
-//		Vector2 selectionViewPos = Camera.main.WorldToViewportPoint( container.transform.position );
-//		Vector2 offsetVector = selectionViewPos - Vector2.one * 0.5f;
-		
 		Vector2 selectionScreenPos = Camera.main.WorldToScreenPoint( container.transform.position );
 
 		GameObject newSelection = Instantiate(m_selectionGroupPrefab);
@@ -127,10 +127,8 @@ public class InGameUIController : MonoBehaviour
 		RectTransform newSelectTransform = newSelection.GetComponent<RectTransform>();
 		newSelectTransform.localPosition = selectionScreenPos;
 		newSelectTransform.localRotation = Quaternion.identity;
-		//rotation = Quaternion.Euler( Vector3.forward * Vector2.Angle(Vector2.right, offsetVector.normalized) );
+
 		newSelectTransform.localScale = Vector3.one;
-//		newSelectTransform.sizeDelta = new Vector2(1f, Screen.height * offsetVector.magnitude);
-//		newSelectTransform.pivot = new Vector2(0.5f, 0f);
 
 		newSelection.GetComponentInChildren<Text>().text = container.name;
 		
@@ -141,5 +139,6 @@ public class InGameUIController : MonoBehaviour
 	{
 		selections.Clear();
 		EntitySelection.onEntityClicked -= OnContainerSelectedEvent;
+		EntitySelection.onCleanSpaceClicked -= HideAllSelections;
 	}
 }

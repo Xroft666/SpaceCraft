@@ -11,8 +11,25 @@ namespace SpaceSandbox
 {
 	public class BlueprintScheme : Entity 
 	{
-		public BSFunction RootFuntion { get; private set; }
+		public BlueprintScheme ()
+		{
+			Memory = new MemoryStack();
+			ScheduledEvents = new Dictionary<DeviceEvent, System.Object[]>();
+		}
+
 		public MemoryStack Memory { get; private set; }
+		public Dictionary< DeviceEvent, System.Object[] > ScheduledEvents { get; private set; }
+
+		public void ExecuteSceduledEvents()
+		{
+			foreach( KeyValuePair< DeviceEvent, System.Object[] > evt in ScheduledEvents )
+			{
+				if( evt.Value == null )
+					evt.Key.Invoke();
+				else
+					evt.Key.Invoke( evt.Value );
+			}
+		}
 
 		public BSFunction CreateFunction( string stateName, Device device )
 		{
@@ -94,9 +111,9 @@ namespace SpaceSandbox
 			return node;
 		}
 
-		public BSSelect CreateSelect()
+		public BSBranch CreateSelect()
 		{
-			BSSelect node = new BSSelect();
+			BSBranch node = new BSBranch();
 
 			return node;
 		}

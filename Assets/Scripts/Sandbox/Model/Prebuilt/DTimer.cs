@@ -84,7 +84,7 @@ public class DTimer : Device
 
 			DeviceEvent timerEvent = GetEvent("OnTimerTrigger");
 			if( timerEvent != null )
-				timerEvent.Invoke();
+				ScheduleEvent( timerEvent, null );
 		}
 	}
 

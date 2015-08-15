@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 using BehaviourScheme;
@@ -37,7 +37,7 @@ public class NodeView : MonoBehaviour
 		{
 			// Initialize as Evaluate
 		}
-		else if( (node as BSSelect) != null )
+		else if( (node as BSBranch) != null )
 		{
 			// Initialize as Select
 		}
