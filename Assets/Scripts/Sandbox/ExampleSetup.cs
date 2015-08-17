@@ -39,7 +39,7 @@ public class ExampleSetup : MonoBehaviour {
 		DEngine engine = new DEngine(){ EntityName = "engine", isEngaged = true, m_lookDirection = Vector3.up, m_space = Space.Self };
 
 		Device heatSeeker = GenerateHeatSeeker(3f);
-		Device timeBomb = GenerateTimeBomb( 2f );
+		Device timeBomb = GenerateTimeBomb( 5f );
 		DTimer activeTimer = new DTimer(){ EntityName = "activationtimer", m_timerSetUp = 2f, m_started = true };
 
 		missile.IntegratedDevice.IntegrateDevice( engine );

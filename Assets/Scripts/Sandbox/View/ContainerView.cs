@@ -38,4 +38,10 @@ public class ContainerView : MonoBehaviour
 		Gizmos.color = Color.red;
 		Gizmos.DrawLine(transform.position, transform.position + transform.up);
 	}
+
+	void OnDrawGizmosSelected()
+	{
+		if( EntitySelection.selectedContainer != this )
+			EntitySelection.OnEntityClicked( this );
+	}
 }
