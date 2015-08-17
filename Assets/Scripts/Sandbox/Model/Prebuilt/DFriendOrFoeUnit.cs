@@ -10,51 +10,70 @@ using SpaceSandbox;
 public class DFriendOrFoeUnit : Device 
 {
 	// Exportable variable
-	public ContainerView m_target;
+	public ContainerView m_target = null;
+	public List<ContainerView> m_targets = new List<ContainerView>();
 
 
 	#region device's functions
 
-	private void SetTarget( params object[] objects )
+	private void SetTarget( params object[] data )
 	{
-		m_target = (objects[0] as Container).View;
+		m_target = (data[0] as Container).View ;
 	}
 
-	private void ResetTarget( params object[] objects )
+	private void ResetTarget( params object[] data )
 	{
 		m_target = null;
 	}
 
-	private void SearchForClosestTarget(params object[] objects)
+	private void AddTarget( params object[] data )
 	{
-		Dictionary<string, Entity> memoryObjects = Blueprint.Memory.GetAllObjects();
+		m_targets.Add( (data[0] as Container).View );
+		if( m_target == null )
+			m_target = m_targets[0];
+	}
 
+	private void RemoveTarget( params object[] data )
+	{
+		m_targets.Remove( (data[0] as Container).View );
+
+		if( m_targets.Count == 0 )
+			m_target = null;
+		else
+			m_target = m_targets[0];
+	}
+
+	private void DesignateClosestTarget( params object[] objects )
+	{
 		ContainerView thisContainer = m_containerAttachedTo.View;
 		ContainerView closestContainer = null;
 
 		float minDistance = float.MaxValue;
 
-		foreach( KeyValuePair<string, Entity> pair in memoryObjects )
+		foreach( ContainerView view in m_targets )
 		{
-			Container container = pair.Value as Container;
-			if( container == null )
-				continue;
 
-			float distance = (thisContainer.transform.position - container.View.transform.position).magnitude;
+			float distance = (thisContainer.transform.position - view.transform.position).magnitude;
 			if( distance < minDistance )
 			{
 				minDistance = distance;
-				closestContainer = container.View;
+				closestContainer = view;
 			}
 		}
 
 		if( closestContainer == null )
-		{
-			Debug.Log("HeatDetector: No targets nearby.");
-			return;
-		}
+			Debug.LogWarning("No targets nearby. Designating null");
 
 		m_target = closestContainer;
+	}
+
+	#endregion
+
+	#region Predecates 
+
+	public bool IsAnyTarget()
+	{
+		return m_target != null || m_targets.Count > 0;
 	}
 
 	#endregion
@@ -67,7 +86,11 @@ public class DFriendOrFoeUnit : Device
 
 		AddAction("SetTarget", SetTarget );
 		AddAction("ResetTarget", ResetTarget);
-		AddAction("SearchForClosestTarget", SearchForClosestTarget );
+		AddAction("AddTarget", SetTarget );
+		AddAction("RemoveTarget", ResetTarget);
+		AddAction("DesignateClosestTarget", ResetTarget);
+
+		AddCheck("IsAnyTarget", IsAnyTarget );
 	}
 
 	public override void Initialize()

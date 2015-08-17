@@ -14,6 +14,7 @@ namespace SpaceSandbox
 	/// </summary>
 
 	public delegate void DeviceEvent(params object[] objects ); 
+	public delegate bool DeviceCheck();
 
 	public class Device : Entity
 	{
@@ -44,8 +45,9 @@ namespace SpaceSandbox
 		/// <summary>
 		/// The m_events. List of trigger events that are exposed to the logic scheme
 		/// </summary>
-//		protected Dictionary<string, UnityEvent> m_events = new Dictionary<string, UnityEvent>();
 		public Dictionary<string, DeviceEvent> m_events = new Dictionary<string, DeviceEvent>();
+
+		public Dictionary<string, DeviceCheck> m_checks = new Dictionary<string, DeviceCheck>();
 
 		public void AssignContainer( Container container )
 		{
@@ -73,6 +75,35 @@ namespace SpaceSandbox
 
 			return functionsList;
 		}
+
+
+		public Device GetInternalDevice(string path)
+		{
+			Device device = this;
+			bool existenceFlag = true;
+
+			string[] hierarchy = path.Split('/');
+			for( int i = 0; i < hierarchy.Length; i++ )
+			{
+				existenceFlag = false;
+				foreach( Device inclusiveDevice in device.m_integratedDevices )
+				{
+					if( inclusiveDevice.EntityName.Equals( hierarchy[i] ) )
+					{
+						existenceFlag = true;
+						device = inclusiveDevice;
+						break;
+					}
+				}
+			}
+
+			if( !existenceFlag )
+				device = null;
+
+			return device;
+		}
+
+
 
 		public void AddAction ( string name, DeviceEvent function )
 		{
@@ -124,6 +155,23 @@ namespace SpaceSandbox
 		public void RemoveEvent ( string name )
 		{
 			m_events.Remove( name );
+		}
+
+		// Predecates
+
+		public void AddCheck( string name, DeviceCheck check )
+		{
+			m_checks.Add( name, check );
+		}
+
+		public DeviceCheck GetCheck( string name )
+		{
+			return m_checks[name];
+		}
+		
+		public void RemoveCheck ( string name )
+		{
+			m_checks.Remove( name );
 		}
 
 

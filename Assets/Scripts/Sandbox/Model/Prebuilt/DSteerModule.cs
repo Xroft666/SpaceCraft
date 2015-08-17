@@ -51,6 +51,7 @@ public class DSteerModule : Device
 			DeviceEvent onSteerComplete = GetEvent("OnSteerComplete");
 			if( onSteerComplete != null )
 				m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onSteerComplete, null );
+
 		}
 		else
 		{

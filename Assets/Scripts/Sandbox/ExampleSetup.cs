@@ -11,20 +11,23 @@ public class ExampleSetup : MonoBehaviour {
 		// Generating random targets
 		for( int i = 0; i < 5; i++ )
 		{
-//			GenerateTarget();
+			GenerateTarget();
 		}
 		
 		// Generating the ship
 		Container ship = GenerateShip();
 		ship.View.transform.position = Vector3.left * 8f;
 
+		Container patrol = GeneratePatrolShip();
+
 		// Generating missiles
 		for( int i = 0; i < 20; i++ )
 		{
+			patrol.AddToCargo( GenerateMissile() );
 			ship.AddToCargo( GenerateMissile() );
 		}
 
-		GeneratePatrolShip();
+
 
 //		WorldManager.SpawnContainer( GenerateMissile(), Vector3.zero, Quaternion.identity );
 	}
@@ -96,6 +99,9 @@ public class ExampleSetup : MonoBehaviour {
 		DSteerModule steerer = new DSteerModule(){ EntityName = "steerer"};
 		DPatrolModule patrol = new DPatrolModule(){ EntityName = "patrol"};
 
+//		Device heatSeeker = GenerateHeatSeeker();
+		DLauncher launcher = new DLauncher(){ EntityName = "launcher", m_projectileName = "Missile" };
+
 		Device enemyDetector = GenerateEnemyDetector( 5f );
 
 		GameObject[] markers = new GameObject[]
@@ -120,14 +126,15 @@ public class ExampleSetup : MonoBehaviour {
 		ship.IntegratedDevice.IntegrateDevice( steerer );
 		ship.IntegratedDevice.IntegrateDevice( patrol );
 		ship.IntegratedDevice.IntegrateDevice( enemyDetector );
+		ship.IntegratedDevice.IntegrateDevice( launcher );
 
 
 		BSEntry inRange = ship.IntegratedDevice.Blueprint.CreateEntry( "enemydetector/ranger/OnRangerEntered", ship.IntegratedDevice );
-		BSAction toFollow = ship.IntegratedDevice.Blueprint.CreateAction( "enemydetector/radar/SetTarget", ship.IntegratedDevice );
+		BSAction toFollow = ship.IntegratedDevice.Blueprint.CreateAction( "enemydetector/radar/AddTarget", ship.IntegratedDevice );
 		ship.IntegratedDevice.Blueprint.ConnectElements( inRange, toFollow );
 		
 		BSEntry outRange = ship.IntegratedDevice.Blueprint.CreateEntry( "enemydetector/ranger/OnRangerEscaped", ship.IntegratedDevice );
-		BSAction toNullTarget = ship.IntegratedDevice.Blueprint.CreateAction( "enemydetector/radar/ResetTarget", ship.IntegratedDevice );
+		BSAction toNullTarget = ship.IntegratedDevice.Blueprint.CreateAction( "enemydetector/radar/RemoveTarget", ship.IntegratedDevice );
 		ship.IntegratedDevice.Blueprint.ConnectElements( outRange, toNullTarget );
 
 
@@ -153,9 +160,25 @@ public class ExampleSetup : MonoBehaviour {
 		BSAction toDisableEngine = ship.IntegratedDevice.Blueprint.CreateAction( "DisengageEngine", engine);
 		ship.IntegratedDevice.Blueprint.ConnectElements( onSteering, toDisableEngine );
 
+
+
+
+
+
+
 		BSEntry onSteerComplete = ship.IntegratedDevice.Blueprint.CreateEntry( "OnSteerComplete", steerer);
+
+		BSBranch movingOrShooting = ship.IntegratedDevice.Blueprint.CreateBranch();
+		movingOrShooting.AddCondition( ship.IntegratedDevice.GetInternalDevice("enemydetector/radar").GetCheck("IsAnyTarget") );
+
+		ship.IntegratedDevice.Blueprint.ConnectElements( onSteerComplete, movingOrShooting );
+
+
+		BSAction toShootMissiles = ship.IntegratedDevice.Blueprint.CreateAction( "Fire", launcher);
+		ship.IntegratedDevice.Blueprint.ConnectElements( movingOrShooting, toShootMissiles );
+
 		BSAction toEnableEngine = ship.IntegratedDevice.Blueprint.CreateAction( "EngageEngine", engine);
-		ship.IntegratedDevice.Blueprint.ConnectElements( onSteerComplete, toEnableEngine );
+		ship.IntegratedDevice.Blueprint.ConnectElements( movingOrShooting, toEnableEngine );
 
 		ContainerView shipView = WorldManager.SpawnContainer( ship, Vector3.zero, Quaternion.identity );
 		

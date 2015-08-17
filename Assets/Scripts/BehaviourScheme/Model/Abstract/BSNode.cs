@@ -5,8 +5,6 @@ namespace BehaviourScheme
 {
 	public class BSNode 
 	{
-		public delegate bool BSPredecate();
-
 		public SpaceSandbox.BlueprintScheme m_scheme;
 
 		protected BSNode m_parentNode = null;

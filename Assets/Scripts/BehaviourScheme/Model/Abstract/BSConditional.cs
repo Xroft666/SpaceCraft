@@ -5,6 +5,6 @@ namespace BehaviourScheme
 {
 	public class BSConditional : BSNode 
 	{
-		protected BSPredecate m_condition = null;
+		protected SpaceSandbox.DeviceCheck m_condition = null;
 	}
 }

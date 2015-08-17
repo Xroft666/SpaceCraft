@@ -31,7 +31,7 @@ public class WorldManager : MonoBehaviour
 
 		Rigidbody2D body = newContainer.gameObject.AddComponent<Rigidbody2D>();
 		body.gravityScale = 0f;
-		body.drag = 0.35f;
+		body.drag = 1.35f;
 		body.angularDrag = 0.1f;
 
 		BoxCollider2D clickZone = newContainer.AddComponent<BoxCollider2D>();

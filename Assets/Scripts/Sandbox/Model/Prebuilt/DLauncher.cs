@@ -14,6 +14,9 @@ public class DLauncher : Device
 	// which should be somewhat different
 	// Exportable variable
 	public string m_projectileName;
+	public float fireRate = 0.5f;	// projectiles a second
+
+	private float m_timer = 0f;
 
 	public void SetProjectile(params object[] objects)
 	{
@@ -24,6 +27,11 @@ public class DLauncher : Device
 
 	public void Fire(params object[] objects)
 	{
+		if( !IsEligableToShoot() )
+			return;
+
+		m_timer = 0f;
+
 		Entity projectileEntity = null;
 		foreach( Entity ent in m_containerAttachedTo.GetCargoList() )
 		{
@@ -68,9 +76,13 @@ public class DLauncher : Device
 
 	public override void Update()
 	{
-
+		m_timer += Time.deltaTime; 
 	}
 
 	#endregion
-	
+
+	private bool IsEligableToShoot()
+	{
+		return m_timer > 1f / fireRate;
+	}
 }

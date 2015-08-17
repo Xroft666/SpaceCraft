@@ -125,7 +125,7 @@ namespace SpaceSandbox
 			return node;
 		}
 
-		public BSBranch CreateSelect()
+		public BSBranch CreateBranch()
 		{
 			BSBranch node = new BSBranch() { m_scheme = this };
 

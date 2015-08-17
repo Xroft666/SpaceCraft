@@ -31,6 +31,10 @@ public class DDetonator : Device
 
 		handler.onTriggerEnter += OnObjectInExplosionArea;
 
+		TransformMarker explosionGizmo = explosion.AddComponent<TransformMarker>();
+		explosionGizmo.m_color = Color.red;
+		explosionGizmo.m_radius = explosionRadius;
+
 		GameObject.Destroy( explosion, 0.1f );
 	}
 
