@@ -27,13 +27,26 @@ public class DRanger : Device
 	{
 		AddEvent( "OnRangerEntered", null );
 		AddEvent( "OnRangerEscaped", null );
+	}
 
+	public override void ActivateDevice (params object[] objects)
+	{
+		m_isActive = true;
+		if( m_collider != null )
+			m_collider.enabled = true;
+	} 
+
+	public override void DeactivateDevice(params object[] objects)
+	{
+		m_isActive = false;
+		if( m_collider != null )
+			m_collider.enabled = false;
 	}
 
 	public override void Initialize ()
 	{
-		GameObject rangerGO = new GameObject("Ranger");
-		rangerGO.layer = 10;
+		GameObject rangerGO = new GameObject(EntityName);
+//		rangerGO.layer = 10;
 		
 		rangerGO.transform.SetParent( m_containerAttachedTo.View.transform, false );
 
@@ -43,6 +56,7 @@ public class DRanger : Device
 		m_collider = rangerGO.AddComponent<CircleCollider2D>();
 		m_collider.isTrigger = true;
 		m_collider.radius = detectionRange;
+		m_collider.enabled = m_isActive;
 		
 		EventTrigger2DHandler trigger = rangerGO.AddComponent<EventTrigger2DHandler>();
 		trigger.onTriggerEnter += OnColliderEntered;
@@ -58,27 +72,38 @@ public class DRanger : Device
 	private void OnColliderEntered( Collider2D other )
 	{
 		DeviceEvent onEnter = GetEvent("OnRangerEntered");
-		if( onEnter != null )
+		if( onEnter != null && !IsColliderMine( other ))
 		{
 			ContainerView othersView = other.gameObject.GetComponent<ContainerView>();
 			if( othersView == null )
-				Debug.LogError("Unexpected interaction with: " + other.gameObject.name);
+			{
+				Debug.LogWarning("Unexpected interaction with: " + other.gameObject.name);
+				return;
+			}
 
-			ScheduleEvent( onEnter, new System.Object[]{ othersView.m_contain } );
+			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onEnter, new System.Object[]{ othersView.m_contain } );
 		}
 	}
 
 	private void OnColliderEscaped( Collider2D other )
 	{
 		DeviceEvent onExit = GetEvent("OnRangerEscaped");
-		if( onExit != null )
+		if( onExit != null && !IsColliderMine( other ))
 		{
 			ContainerView othersView = other.gameObject.GetComponent<ContainerView>();
 			if( othersView == null )
-				Debug.LogError("Unexpected interaction with: " + other.gameObject.name);
+			{
+				Debug.LogWarning("Unexpected interaction with: " + other.gameObject.name);
+				return;
+			}
 		
-			ScheduleEvent( onExit, new System.Object[]{ othersView.m_contain } );
+			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onExit, new System.Object[]{ othersView.m_contain } );
 		}
 	}
-	
+
+	private bool IsColliderMine(Collider2D collider)
+	{
+		// check all the colliders on the container
+		return m_containerAttachedTo.View.gameObject == collider.gameObject;
+	}
 }

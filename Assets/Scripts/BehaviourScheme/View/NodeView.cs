@@ -29,10 +29,6 @@ public class NodeView : MonoBehaviour
 		{
 			// Initialize as Action
 		}
-		else if( (node as BSFunction) != null )
-		{
-			// Initialize as Function
-		}
 		else if( (node as BSEvaluate) != null )
 		{
 			// Initialize as Evaluate

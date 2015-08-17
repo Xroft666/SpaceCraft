@@ -22,8 +22,8 @@ namespace SpaceSandbox
 			Blueprint = new BlueprintScheme();
 		}
 
-
 		protected Container m_containerAttachedTo = null;
+		protected bool m_isActive = true;
 
 		/// <summary>
 		/// The m_blueprint. The blueprint logic scheme storage.
@@ -126,6 +126,7 @@ namespace SpaceSandbox
 			m_events.Remove( name );
 		}
 
+
 		/// <summary>
 		/// Installs the equipment. Sets up a list of devices at one go.
 		/// And then initializes them
@@ -158,9 +159,9 @@ namespace SpaceSandbox
 		}
 
 
-		protected void ScheduleEvent(DeviceEvent evt, System.Object[] data)
+		public void ScheduleEvent(DeviceEvent evt, System.Object[] data)
 		{
-			Blueprint.ScheduledEvents.Add( evt, data );
+			Blueprint.AddScheduledEvent( evt, data );
 		}
 
 		public void ExecuteLogic()
@@ -172,10 +173,31 @@ namespace SpaceSandbox
 
 		public void CleanScheduledEvents()
 		{
-			Blueprint.ScheduledEvents.Clear();
+			Blueprint.ClearEventsAndData();
 			foreach( Device device in m_integratedDevices )
 				device.CleanScheduledEvents();
 		}
+
+		#region Common events and function
+
+		public virtual void ActivateDevice(params object[] objects)
+		{
+			bool oldState = m_isActive;
+			m_isActive = true;
+
+			foreach( Device device in m_integratedDevices )
+				device.ActivateDevice();
+		}
+
+		public virtual void DeactivateDevice(params object[] objects)
+		{
+			m_isActive = false;
+			
+			foreach( Device device in m_integratedDevices )
+				device.DeactivateDevice();
+		}
+
+		#endregion
 
 		#region Device Callback Interface
 
@@ -186,7 +208,8 @@ namespace SpaceSandbox
 		/// </summary>
 		public virtual void OnDeviceInstalled() 
 		{
-
+			AddAction("ActivateDevice", ActivateDevice );
+			AddAction("DeactivateDevice", DeactivateDevice );
 		}
 
 		public virtual void Initialize() 
@@ -197,6 +220,9 @@ namespace SpaceSandbox
 
 		public virtual void Update() 
 		{
+			if( !m_isActive )
+				return;
+
 			foreach( Device device in m_integratedDevices )
 				device.Update();
 		}

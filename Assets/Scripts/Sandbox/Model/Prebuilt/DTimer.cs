@@ -43,6 +43,20 @@ public class DTimer : Device
 
 	#region device's interface implementation
 
+	public override void ActivateDevice (params object[] objects)
+	{
+		m_isActive = true;
+		if( m_timeText != null )
+			m_timeText.gameObject.SetActive(true);
+	} 
+	
+	public override void DeactivateDevice(params object[] objects)
+	{
+		m_isActive = false;
+		if( m_timeText != null )
+			m_timeText.gameObject.SetActive(false);
+	}
+
 	public override void OnDeviceInstalled()
 	{
 		AddEvent( "OnTimerTrigger", null );
@@ -58,13 +72,15 @@ public class DTimer : Device
 
 	public override void Initialize()
 	{
-		GameObject text = new GameObject("TimerText");
+		GameObject text = new GameObject(EntityName);
 		text.transform.SetParent( m_containerAttachedTo.View.transform, false );
 		text.transform.localPosition = Vector3.right * 0.5f;
 		text.transform.localScale = Vector3.one * 0.25f;
 
 		m_timeText = text.AddComponent<TextMesh>();
 		m_timeText.text = m_timerSetUp.ToString("0");
+
+		m_timeText.gameObject.SetActive(m_isActive);
 	}
 
 	public override void Update()
@@ -84,7 +100,9 @@ public class DTimer : Device
 
 			DeviceEvent timerEvent = GetEvent("OnTimerTrigger");
 			if( timerEvent != null )
-				ScheduleEvent( timerEvent, null );
+				m_containerAttachedTo.IntegratedDevice.ScheduleEvent( timerEvent, null );
+
+			m_timeText.gameObject.SetActive(false);
 		}
 	}
 

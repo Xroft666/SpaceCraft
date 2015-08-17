@@ -19,18 +19,14 @@ public class BlueprintSchemeView : MonoBehaviour
 
 	#region data references
 
-	private BlueprintScheme m_blueprint;
-
-	private BSFunction m_root;
-	private BSFunction m_currentView;
-
+	private Device m_device;
 	private NodeView m_selectedNode;
 
 	#endregion
 
-	public void InitializeView( BlueprintScheme scheme )
+	public void InitializeView( Device device )
 	{
-		m_blueprint = scheme;
+		m_device = device;
 	}
 
 	// Loading up and rendering all he containment
@@ -81,12 +77,9 @@ public class BlueprintSchemeView : MonoBehaviour
 	{
 		m_selectedNode = node;
 
-		BSFunction asFunction = node.Node as BSFunction;
-		if( asFunction != null )
-		{
-			m_currentView = asFunction;
-			UpdateSchemeView();
-		}
+		// Check if the node represents a composite Device
+		// load up its Blueprint scheme
+		// update UI
 	}
 
 	#endregion
@@ -131,9 +124,8 @@ public class BlueprintSchemeView : MonoBehaviour
 
 	#endregion
 
-	private void AddNodeToCurrentFunction( BSNode node )
+	public void AddNodeToCurrentFunction( BSNode node )
 	{
-		// Add node where needed, create a node view, etc
-		m_currentView.IncludeNode ( node );
+
 	}
 }

@@ -11,12 +11,13 @@ public class ExampleSetup : MonoBehaviour {
 		// Generating random targets
 		for( int i = 0; i < 5; i++ )
 		{
-			GenerateTarget();
+//			GenerateTarget();
 		}
 		
 		// Generating the ship
 		Container ship = GenerateShip();
-		
+		ship.View.transform.position = Vector3.left * 8f;
+
 		// Generating missiles
 		for( int i = 0; i < 20; i++ )
 		{
@@ -24,6 +25,8 @@ public class ExampleSetup : MonoBehaviour {
 		}
 
 		GeneratePatrolShip();
+
+//		WorldManager.SpawnContainer( GenerateMissile(), Vector3.zero, Quaternion.identity );
 	}
 
 	private static Container GenerateMissile()
@@ -33,11 +36,23 @@ public class ExampleSetup : MonoBehaviour {
 		DEngine engine = new DEngine(){ EntityName = "engine", isEngaged = true, m_lookDirection = Vector3.up, m_space = Space.Self };
 
 		Device heatSeeker = GenerateHeatSeeker(3f);
-		Device timeBomb = GenerateTimeBomb( 3f );
-		
+		Device timeBomb = GenerateTimeBomb( 2f );
+		DTimer activeTimer = new DTimer(){ EntityName = "activationtimer", m_timerSetUp = 2f, m_started = true };
+
 		missile.IntegratedDevice.IntegrateDevice( engine );
 		missile.IntegratedDevice.IntegrateDevice( timeBomb );
 		missile.IntegratedDevice.IntegrateDevice( heatSeeker );
+		missile.IntegratedDevice.IntegrateDevice( activeTimer );
+
+		timeBomb.DeactivateDevice();
+		heatSeeker.DeactivateDevice();
+
+		BSEntry onTimer = missile.IntegratedDevice.Blueprint.CreateEntry( "OnTimerTrigger", activeTimer );
+		BSAction toActivateWarhead = missile.IntegratedDevice.Blueprint.CreateAction( "ActivateDevice", timeBomb );
+		BSAction toActivateSeeker = missile.IntegratedDevice.Blueprint.CreateAction( "ActivateDevice", heatSeeker );
+
+		missile.IntegratedDevice.Blueprint.ConnectElements( onTimer, toActivateWarhead );
+		missile.IntegratedDevice.Blueprint.ConnectElements( onTimer, toActivateSeeker );
 
 		return missile;
 	}
@@ -69,7 +84,6 @@ public class ExampleSetup : MonoBehaviour {
 
 		
 		ContainerView shipView = WorldManager.SpawnContainer( ship, Vector3.zero, Quaternion.identity );
-		shipView.gameObject.layer = 8;
 		
 		return ship;
 	}
@@ -81,7 +95,8 @@ public class ExampleSetup : MonoBehaviour {
 		DEngine engine = new DEngine(){ EntityName = "engine", m_lookDirection = Vector3.up, m_space = Space.Self };
 		DSteerModule steerer = new DSteerModule(){ EntityName = "steerer"};
 		DPatrolModule patrol = new DPatrolModule(){ EntityName = "patrol"};
-		DTimer timer = new DTimer(){ EntityName = "timer" };
+
+		Device enemyDetector = GenerateEnemyDetector( 5f );
 
 		GameObject[] markers = new GameObject[]
 		{
@@ -104,12 +119,35 @@ public class ExampleSetup : MonoBehaviour {
 		ship.IntegratedDevice.IntegrateDevice( engine );
 		ship.IntegratedDevice.IntegrateDevice( steerer );
 		ship.IntegratedDevice.IntegrateDevice( patrol );
-		ship.IntegratedDevice.IntegrateDevice( timer );
+		ship.IntegratedDevice.IntegrateDevice( enemyDetector );
 
+
+		BSEntry inRange = ship.IntegratedDevice.Blueprint.CreateEntry( "enemydetector/ranger/OnRangerEntered", ship.IntegratedDevice );
+		BSAction toFollow = ship.IntegratedDevice.Blueprint.CreateAction( "enemydetector/radar/SetTarget", ship.IntegratedDevice );
+		ship.IntegratedDevice.Blueprint.ConnectElements( inRange, toFollow );
 		
-		BSEntry onPatrolPosition = ship.IntegratedDevice.Blueprint.CreateEntry( "TargetPosition", patrol);
-		BSAction toSteer = ship.IntegratedDevice.Blueprint.CreateAction( "SteerTowards", steerer);
-		ship.IntegratedDevice.Blueprint.ConnectElements( onPatrolPosition, toSteer );
+		BSEntry outRange = ship.IntegratedDevice.Blueprint.CreateEntry( "enemydetector/ranger/OnRangerEscaped", ship.IntegratedDevice );
+		BSAction toNullTarget = ship.IntegratedDevice.Blueprint.CreateAction( "enemydetector/radar/ResetTarget", ship.IntegratedDevice );
+		ship.IntegratedDevice.Blueprint.ConnectElements( outRange, toNullTarget );
+
+
+		// Selecting movement target (player / patrol point )
+		
+		BSEntry onPatrol = ship.IntegratedDevice.Blueprint.CreateEntry( "patrol/TargetPosition", ship.IntegratedDevice);
+		BSEntry onEnemyChasing = ship.IntegratedDevice.Blueprint.CreateEntry( "enemydetector/radar/TargetPosition", ship.IntegratedDevice);
+
+
+		BSPriority patrolPriority = ship.IntegratedDevice.Blueprint.CreatePriority();
+		ship.IntegratedDevice.Blueprint.ConnectElements( onEnemyChasing, patrolPriority );
+		ship.IntegratedDevice.Blueprint.ConnectElements( onPatrol, patrolPriority );
+
+
+		BSAction toSteerToEnemy = ship.IntegratedDevice.Blueprint.CreateAction( "steerer/SteerTowards", ship.IntegratedDevice);
+		ship.IntegratedDevice.Blueprint.ConnectElements( patrolPriority, toSteerToEnemy );
+
+
+
+		// Thrust mechanics 
 
 		BSEntry onSteering = ship.IntegratedDevice.Blueprint.CreateEntry( "OnSteering", steerer);
 		BSAction toDisableEngine = ship.IntegratedDevice.Blueprint.CreateAction( "DisengageEngine", engine);
@@ -118,7 +156,7 @@ public class ExampleSetup : MonoBehaviour {
 		BSEntry onSteerComplete = ship.IntegratedDevice.Blueprint.CreateEntry( "OnSteerComplete", steerer);
 		BSAction toEnableEngine = ship.IntegratedDevice.Blueprint.CreateAction( "EngageEngine", engine);
 		ship.IntegratedDevice.Blueprint.ConnectElements( onSteerComplete, toEnableEngine );
-		
+
 		ContainerView shipView = WorldManager.SpawnContainer( ship, Vector3.zero, Quaternion.identity );
 		
 		return ship;
@@ -237,7 +275,7 @@ public class ExampleSetup : MonoBehaviour {
 	{
 		Device heatSeeker = new Device(){ EntityName = "heatseeker"};
 		
-		DRadar radar = new DRadar(){ EntityName = "radar"};
+		DFriendOrFoeUnit radar = new DFriendOrFoeUnit(){ EntityName = "radar"};
 		DRanger ranger = new DRanger(){ EntityName = "ranger", detectionRange = detectionRange };
 		DSteerModule steerer = new DSteerModule() { EntityName = "steerer" };
 		
@@ -258,5 +296,19 @@ public class ExampleSetup : MonoBehaviour {
 		heatSeeker.Blueprint.ConnectElements( onTargetPos, toSteer );
 		
 		return heatSeeker;
+	}
+
+	private static Device GenerateEnemyDetector( float detectionRange )
+	{
+		Device detector = new Device(){ EntityName = "enemydetector"};
+		
+		DFriendOrFoeUnit radar = new DFriendOrFoeUnit(){ EntityName = "radar"};
+		DRanger ranger = new DRanger(){ EntityName = "ranger", detectionRange = detectionRange };
+		
+		detector.IntegrateDevice( radar );
+		detector.IntegrateDevice( ranger );
+
+		
+		return detector;
 	}
 }

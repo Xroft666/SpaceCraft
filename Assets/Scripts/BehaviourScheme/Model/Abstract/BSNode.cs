@@ -6,38 +6,41 @@ namespace BehaviourScheme
 	public class BSNode 
 	{
 		public delegate bool BSPredecate();
-		protected BSPredecate m_condition = null;
+
+		public SpaceSandbox.BlueprintScheme m_scheme;
 
 		protected BSNode m_parentNode = null;
 		protected BSNode m_connectNode = null;
+
+		public object[] m_outputData = null;
 
 		public BSNode GetConnectedNode()
 		{
 			return m_connectNode;
 		}
 
-		public void AddChild( BSNode node )
+		public virtual void AddChild( BSNode node )
 		{
 			m_connectNode = node;
 			node.SetParent( this );
 		}
 
-		public void RemoveChild( BSNode node )
+		public virtual void RemoveChild( BSNode node )
 		{
 			m_connectNode.RemoveParent( this );
 			m_connectNode = null;
 		}
 
-		public void SetParent( BSNode node )
+		public virtual void SetParent( BSNode node )
 		{
 			m_parentNode = node;
 		}
 
-		public void RemoveParent( BSNode node )
+		public virtual void RemoveParent( BSNode node )
 		{
 			m_parentNode = null;
 		}
 
-		public virtual void Activate(params object[] objects){}
+		public virtual void Traverse(){}
 	}
 }

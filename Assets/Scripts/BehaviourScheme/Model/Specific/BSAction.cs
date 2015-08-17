@@ -10,14 +10,13 @@ namespace BehaviourScheme
 		public void SetAction( SpaceSandbox.DeviceEvent action )	{ job += action; }
 		public void RemoveAction() { job = null; }
 
-		// executes a single action and continues to the next node
-		public override void Activate(params object[] objects)
+		public override void Traverse()
 		{
 			if( job != null )
-				job.Invoke( objects );
+				job.Invoke( m_parentNode.m_outputData );
 
 			if( m_connectNode != null )
-				m_connectNode.Activate(objects);
+				m_connectNode.Traverse();
 		}
 	}
 }

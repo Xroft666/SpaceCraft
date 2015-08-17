@@ -14,35 +14,44 @@ namespace SpaceSandbox
 		public BlueprintScheme ()
 		{
 			Memory = new MemoryStack();
-			ScheduledEvents = new Dictionary<DeviceEvent, System.Object[]>();
 		}
 
 		public MemoryStack Memory { get; private set; }
-		public Dictionary< DeviceEvent, System.Object[] > ScheduledEvents { get; private set; }
+
+		public List<DeviceEvent> scheduledEventsList = new List<DeviceEvent>();
+		public List<object[]> scheduledEventsDataList = new List<object[]>();
+
+		public List<BSNode> m_nodes = new List<BSNode>();
+
+		public void AddScheduledEvent(DeviceEvent evt, object[] data)
+		{
+			scheduledEventsList.Add( evt );
+			scheduledEventsDataList.Add( data );
+		}
 
 		public void ExecuteSceduledEvents()
 		{
-			foreach( KeyValuePair< DeviceEvent, System.Object[] > evt in ScheduledEvents )
+			for( int i = 0; i < scheduledEventsList.Count; i++ )
 			{
-				if( evt.Value == null )
-					evt.Key.Invoke();
+				if( scheduledEventsDataList[i] == null )
+					scheduledEventsList[i].Invoke();
 				else
-					evt.Key.Invoke( evt.Value );
+					scheduledEventsList[i].Invoke( scheduledEventsDataList[i] );
 			}
 		}
 
-		public BSFunction CreateFunction( string stateName, Device device )
+		public void ClearEventsAndData()
 		{
-			BSFunction node = new BSFunction();
+			scheduledEventsList.Clear(); 
+			scheduledEventsDataList.Clear();
 
-			device.AddAction( stateName, node.Activate );
-			return node;
+			foreach( BSNode node in m_nodes )
+				node.m_outputData = null;
 		}
 
 		public BSAction CreateAction( string functionName, Device device)
 		{
 			bool existenceFlag = false;
-			BSAction node = new BSAction();
 
 			// Search for an integrated inclusive device
 			string[] hierarchy = functionName.Split('/');
@@ -66,15 +75,16 @@ namespace SpaceSandbox
 				return null;
 			}
 
+			BSAction node = new BSAction() { m_scheme = this };
 			node.SetAction( device.GetFunction( hierarchy[hierarchy.Length-1] ) );
 
+			m_nodes.Add(node);
 			return node;
 		}
 		
 		public BSEntry CreateEntry( string eventName, Device device)
 		{
 			bool existenceFlag = false;
-			BSEntry node = new BSEntry();
 
 			// Search for an integrated inclusive device
 			string[] hierarchy = eventName.Split('/');
@@ -97,31 +107,45 @@ namespace SpaceSandbox
 				Debug.LogError(hierarchy[hierarchy.Length-2] + " device wasn't installed");
 				return null;
 			}
-			device.m_events[hierarchy[hierarchy.Length-1]] += node.Activate ;
+
+			BSEntry node = new BSEntry() { m_scheme = this };
+			device.m_events[hierarchy[hierarchy.Length-1]] += node.Initialize ;
 		
+			m_nodes.Add(node);
 			return node;
 		}
 		
 		public BSExit CreateExit( string eventName, Device device)
 		{
-			BSExit node = new BSExit();
+			BSExit node = new BSExit() { m_scheme = this };
 
 			device.AddEvent(eventName, null);
 
+			m_nodes.Add(node);
 			return node;
 		}
 
 		public BSBranch CreateSelect()
 		{
-			BSBranch node = new BSBranch();
+			BSBranch node = new BSBranch() { m_scheme = this };
 
+			m_nodes.Add(node);
+			return node;
+		}
+
+		public BSPriority CreatePriority()
+		{
+			BSPriority node = new BSPriority() { m_scheme = this };
+
+			m_nodes.Add(node);
 			return node;
 		}
 
 		public BSEvaluate CreateEvaluate()
 		{
-			BSEvaluate node = new BSEvaluate();
+			BSEvaluate node = new BSEvaluate() { m_scheme = this };
 
+			m_nodes.Add(node);
 			return node;
 		}
 

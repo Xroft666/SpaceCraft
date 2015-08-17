@@ -7,7 +7,7 @@ using UnityEngine.Events;
 
 using SpaceSandbox;
 
-public class DRadar : Device 
+public class DFriendOrFoeUnit : Device 
 {
 	// Exportable variable
 	public ContainerView m_target;
@@ -79,8 +79,9 @@ public class DRadar : Device
 	{
 		DeviceEvent targetPos = GetEvent("TargetPosition");
 		if( targetPos != null && m_target != null )
-			ScheduleEvent( targetPos, new System.Object[]{ m_target.transform.position } );
-
+		{
+			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( targetPos, new System.Object[]{ m_target.transform.position } );
+		}
 	}
 
 	#endregion

@@ -14,9 +14,9 @@ namespace BehaviourScheme
 			set{ exitEvent = value; }
 		}
 
-		public override void Activate(params object[] objects)
+		public override void Traverse()
 		{
-			exitEvent.Invoke(objects);
+			exitEvent.Invoke();
 		}
 	}
 }

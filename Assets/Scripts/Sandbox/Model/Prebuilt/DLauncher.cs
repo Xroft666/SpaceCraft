@@ -35,7 +35,7 @@ public class DLauncher : Device
 				                            m_containerAttachedTo.View.transform.position,
 				                            m_containerAttachedTo.View.transform.rotation);
 
-				projectile.gameObject.layer = 10;
+//				projectile.gameObject.layer = 10;
 
 				Collider2D collider = projectile.GetComponent<Collider2D>();
 				collider.isTrigger = true;

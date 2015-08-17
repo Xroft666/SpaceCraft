@@ -21,7 +21,7 @@ namespace BehaviourScheme
 			node.RemoveParent( this );
 		}
 
-		public override void Activate(params object[] objects)
+		public override void Traverse()
 		{
 			float bestValue = -1f;
 			BSNode bestNode = null;
@@ -36,7 +36,7 @@ namespace BehaviourScheme
 				}
 			}
 
-			bestNode.Activate(objects);
+			bestNode.Traverse();
 		}
 		
 		

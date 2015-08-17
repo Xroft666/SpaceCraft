@@ -50,13 +50,13 @@ public class DSteerModule : Device
 		{
 			DeviceEvent onSteerComplete = GetEvent("OnSteerComplete");
 			if( onSteerComplete != null )
-				ScheduleEvent( onSteerComplete, null );
+				m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onSteerComplete, null );
 		}
 		else
 		{
 			DeviceEvent onSteering = GetEvent("OnSteering");
 			if( onSteering != null )
-				ScheduleEvent( onSteering, null );
+				m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onSteering, null );
 		}
 	}
 
