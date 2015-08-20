@@ -10,37 +10,53 @@ public class UIController : MonoBehaviour
 	public GameObject m_selectionGroupPrefab;
 
 	private Dictionary<ContainerView, GameObject> selections = new Dictionary<ContainerView, GameObject>();
+	private ContainerView selectedContainer = null;
 
-	private void Awake()
-	{
-
-	}
-
-	private void Start()
-	{
-		EntitySelection.onEntityClicked += OnContainerSelectedEvent;
-		EntitySelection.onCleanSpaceClicked += HideAllSelections;
-	}
 
 	private void Update()
 	{
+		MouseClickHandler();
 		UtilsKeys();
 		CameraControls();
 		UpdateSelections();
+	}
+
+	private void MouseClickHandler()
+	{
+		if( Input.GetMouseButtonUp( 0 ) )
+		{
+			selectedContainer = null;
+			HideAllSelections();
+
+			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+			RaycastHit2D[] hits = Physics2D.RaycastAll(ray.origin, ray.direction);
+			foreach( RaycastHit2D hit in hits )
+			{
+				if( hit.collider == null )
+					continue;
+			
+				ContainerView view = hit.collider.GetComponent<ContainerView>();
+				if( view != null )
+				{
+					selectedContainer = view;
+					OnContainerSelectedEvent(selectedContainer);
+					break;
+				}
+			}
+		}
 	}
 	
 	private void UtilsKeys()
 	{
 		if( Input.GetKeyUp(KeyCode.R) )
 		{
-			EntitySelection.Cleanup();
 			Application.LoadLevel( Application.loadedLevel );
 		}
 	}
 	
 	private void CameraControls()
 	{
-		if( EntitySelection.selectedContainer == null || !EntitySelection.selectedContainer.gameObject.activeInHierarchy )
+		if( selectedContainer == null || !selectedContainer.gameObject.activeInHierarchy )
 		{
 			Vector3 input = Vector3.zero; 
 			if( Input.GetKey(KeyCode.UpArrow) )
@@ -60,8 +76,8 @@ public class UIController : MonoBehaviour
 		else
 		{
 			Vector3 position = Vector3.zero;
-			position.x = EntitySelection.selectedContainer.transform.position.x;
-			position.y = EntitySelection.selectedContainer.transform.position.y;
+			position.x = selectedContainer.transform.position.x;
+			position.y = selectedContainer.transform.position.y;
 			position.z = Camera.main.transform.position.z;
 			
 			Camera.main.transform.position = position;
@@ -100,8 +116,6 @@ public class UIController : MonoBehaviour
 
 	private void OnContainerSelectedEvent( ContainerView container )
 	{
-		HideAllSelections();
-
 		if( selections.ContainsKey( container ) )
 		{
 			selections[container].SetActive(true);
@@ -138,7 +152,5 @@ public class UIController : MonoBehaviour
 	private void OnDestroy()
 	{
 		selections.Clear();
-		EntitySelection.onEntityClicked -= OnContainerSelectedEvent;
-		EntitySelection.onCleanSpaceClicked -= HideAllSelections;
 	}
 }

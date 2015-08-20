@@ -6,17 +6,6 @@ using BehaviourScheme;
 
 public class BlueprintSchemeView : MonoBehaviour 
 {
-	#region Unity references
-
-	[Header("Inspector references")]
-	// UI transforms references for all the UI sections
-	public Transform m_hardwareList;
-	public Transform m_hardwareBP; 
-	public Transform m_softwareBP; 
-	public Transform m_softwareAPI;
-
-	#endregion
-
 	#region data references
 
 	private Device m_device;

@@ -13,7 +13,6 @@ public class WorldManager : MonoBehaviour
 	// Temporary variable. To be removed with something more sophisticated
 	public Sprite m_visuals;
 	// Temporary variable. I just dont like it
-	public EventTriggerInitializer m_backgroundClicker;
 
 	public static WorldManager World { get; private set; }
 
@@ -37,8 +36,6 @@ public class WorldManager : MonoBehaviour
 		BoxCollider2D clickZone = newContainer.AddComponent<BoxCollider2D>();
 	//	clickZone.isTrigger = true;
 
-		EventTriggerInitializer inputInitializer = newContainer.AddComponent<EventTriggerInitializer>();
-		inputInitializer.InitializeCallback( view );
 
 		return view;
 	}
@@ -64,8 +61,5 @@ public class WorldManager : MonoBehaviour
 	private void Awake()
 	{
 		World = this;
-
-		// Initialize background trigger
-		m_backgroundClicker.InitializeCallback( null );
 	}
 }
