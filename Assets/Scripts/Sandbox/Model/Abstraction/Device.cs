@@ -230,7 +230,6 @@ namespace SpaceSandbox
 
 		public virtual void ActivateDevice(params object[] objects)
 		{
-			bool oldState = m_isActive;
 			m_isActive = true;
 
 			foreach( Device device in m_integratedDevices )

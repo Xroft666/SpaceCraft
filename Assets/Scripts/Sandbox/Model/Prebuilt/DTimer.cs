@@ -13,7 +13,6 @@ public class DTimer : Device
 {
 	// Exported values
 	public float m_timerSetUp = 0f;
-	public bool m_started = false;
 
 	private float m_timer = 0f;
 	private bool m_fired = false;
@@ -26,17 +25,11 @@ public class DTimer : Device
 	}
 
 	#region device's functions
-
-	public void StartTimer(params object[] objects)
-	{
-		m_started = true;
-	}
 	
 	public void ResetTimer(params object[] objects)
 	{
 		m_timer = 0f;
 		m_fired = false;
-		m_started = false;
 	}
 
 	#endregion
@@ -59,15 +52,9 @@ public class DTimer : Device
 
 	public override void OnDeviceInstalled()
 	{
-		AddEvent( "OnTimerTrigger", null );
-
-		AddAction("StartTimer", StartTimer );
+		AddEvent( "OnTimerComplete", null );
+	
 		AddAction("ResetTimer", ResetTimer );
-	}
-
-	public void OnTimerTrigger(params Entity[] objs)
-	{
-		
 	}
 
 	public override void Initialize()
@@ -88,9 +75,6 @@ public class DTimer : Device
 		if( m_fired )
 			return;
 
-		if( !m_started )
-			return;
-
 		m_timer += Time.deltaTime;
 		m_timeText.text = (m_timerSetUp - m_timer).ToString("0");
 
@@ -98,7 +82,7 @@ public class DTimer : Device
 		{
 			m_fired = true;
 
-			DeviceEvent timerEvent = GetEvent("OnTimerTrigger");
+			DeviceEvent timerEvent = GetEvent("OnTimerComplete");
 			if( timerEvent != null )
 				m_containerAttachedTo.IntegratedDevice.ScheduleEvent( timerEvent, null );
 

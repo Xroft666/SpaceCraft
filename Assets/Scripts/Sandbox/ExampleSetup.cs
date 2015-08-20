@@ -36,11 +36,11 @@ public class ExampleSetup : MonoBehaviour {
 	{
 		Container missile = new Container(){ EntityName = "Missile" };
 		
-		DEngine engine = new DEngine(){ EntityName = "engine", isEngaged = true, m_lookDirection = Vector3.up, m_space = Space.Self };
+		DEngine engine = new DEngine(){ EntityName = "engine", m_lookDirection = Vector3.up, m_space = Space.Self };
 
 		Device heatSeeker = GenerateHeatSeeker(3f);
 		Device timeBomb = GenerateTimeBomb( 5f );
-		DTimer activeTimer = new DTimer(){ EntityName = "activationtimer", m_timerSetUp = 2f, m_started = true };
+		DTimer activeTimer = new DTimer(){ EntityName = "activationtimer", m_timerSetUp = 2f };
 
 		missile.IntegratedDevice.IntegrateDevice( engine );
 		missile.IntegratedDevice.IntegrateDevice( timeBomb );
@@ -50,7 +50,7 @@ public class ExampleSetup : MonoBehaviour {
 		timeBomb.DeactivateDevice();
 		heatSeeker.DeactivateDevice();
 
-		BSEntry onTimer = missile.IntegratedDevice.Blueprint.CreateEntry( "OnTimerTrigger", activeTimer );
+		BSEntry onTimer = missile.IntegratedDevice.Blueprint.CreateEntry( "OnTimerComplete", activeTimer );
 		BSAction toActivateWarhead = missile.IntegratedDevice.Blueprint.CreateAction( "ActivateDevice", timeBomb );
 		BSAction toActivateSeeker = missile.IntegratedDevice.Blueprint.CreateAction( "ActivateDevice", heatSeeker );
 
@@ -99,7 +99,6 @@ public class ExampleSetup : MonoBehaviour {
 		DSteerModule steerer = new DSteerModule(){ EntityName = "steerer"};
 		DPatrolModule patrol = new DPatrolModule(){ EntityName = "patrol"};
 
-//		Device heatSeeker = GenerateHeatSeeker();
 		DLauncher launcher = new DLauncher(){ EntityName = "launcher", m_projectileName = "Missile" };
 
 		Device enemyDetector = GenerateEnemyDetector( 5f );
@@ -157,7 +156,7 @@ public class ExampleSetup : MonoBehaviour {
 		// Thrust mechanics 
 
 		BSEntry onSteering = ship.IntegratedDevice.Blueprint.CreateEntry( "OnSteering", steerer);
-		BSAction toDisableEngine = ship.IntegratedDevice.Blueprint.CreateAction( "DisengageEngine", engine);
+		BSAction toDisableEngine = ship.IntegratedDevice.Blueprint.CreateAction( "DeactivateDevice", engine);
 		ship.IntegratedDevice.Blueprint.ConnectElements( onSteering, toDisableEngine );
 
 
@@ -177,7 +176,7 @@ public class ExampleSetup : MonoBehaviour {
 		BSAction toShootMissiles = ship.IntegratedDevice.Blueprint.CreateAction( "Fire", launcher);
 		ship.IntegratedDevice.Blueprint.ConnectElements( movingOrShooting, toShootMissiles );
 
-		BSAction toEnableEngine = ship.IntegratedDevice.Blueprint.CreateAction( "EngageEngine", engine);
+		BSAction toEnableEngine = ship.IntegratedDevice.Blueprint.CreateAction( "ActivateDevice", engine);
 		ship.IntegratedDevice.Blueprint.ConnectElements( movingOrShooting, toEnableEngine );
 
 		ContainerView shipView = WorldManager.SpawnContainer( ship, Vector3.zero, Quaternion.identity );
@@ -280,13 +279,13 @@ public class ExampleSetup : MonoBehaviour {
 		Device timeBomb = new Device(){ EntityName = "timebomb" };
 
 		Device warhead = GenerateWarhead( 1f );
-		DTimer timer = new DTimer() { EntityName = "timer", m_timerSetUp = time, m_started = true };
+		DTimer timer = new DTimer() { EntityName = "timer", m_timerSetUp = time };
 
 		timeBomb.IntegrateDevice( warhead );
 		timeBomb.IntegrateDevice( timer );
 
 		// Generating warhead
-		BSEntry onTimer = timeBomb.Blueprint.CreateEntry( "OnTimerTrigger", timer );
+		BSEntry onTimer = timeBomb.Blueprint.CreateEntry( "OnTimerComplete", timer );
 		BSAction toDetonate = timeBomb.Blueprint.CreateAction( "warhead/detonator/Detonate", warhead );
 		timeBomb.Blueprint.ConnectElements( onTimer, toDetonate );
 

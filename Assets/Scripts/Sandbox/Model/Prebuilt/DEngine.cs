@@ -9,8 +9,7 @@ using SpaceSandbox;
 
 public class DEngine : Device 
 {
-	// Exported value just as in inspector
-	public bool isEngaged = false;
+
 	// temporary variable. Should be changed to something more physical realistic
 	public float speed = 100f;
 	public Vector3 m_lookDirection = Vector3.up;
@@ -20,15 +19,6 @@ public class DEngine : Device
 
 	#region device's functions
 
-	public void EngageEngine( params object[] objects )
-	{
-		isEngaged = true;
-	}
-
-	public void DisengageEngine( params object[] objects )
-	{
-		isEngaged = false;
-	}
 
 	public void MoveForward( params object[] objects )
 	{
@@ -45,9 +35,7 @@ public class DEngine : Device
 		// Meta movoement functions?
 		// Steering ability?
 
-
-		AddAction("EngageEngine", EngageEngine );
-		AddAction("DisengageEngine", DisengageEngine );
+		base.OnDeviceInstalled();
 
 		AddAction("MoveForward", MoveForward );
 	}
@@ -60,7 +48,7 @@ public class DEngine : Device
 
 	public override void Update()
 	{
-		if( isEngaged )
+		if( m_isActive )
 			MoveForward();
 	}
 
