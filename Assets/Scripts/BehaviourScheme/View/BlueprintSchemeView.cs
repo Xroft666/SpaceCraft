@@ -19,7 +19,7 @@ public class BlueprintSchemeView : MonoBehaviour
 	}
 
 	// Loading up and rendering all he containment
-	public void LoadDevicesList( Container container )
+	public void LoadDevicesList( Ship container )
 	{
 		foreach( Entity ent in container.GetCargoList() )
 		{

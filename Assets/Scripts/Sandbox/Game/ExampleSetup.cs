@@ -11,30 +11,30 @@ public class ExampleSetup : MonoBehaviour {
 		// Generating random targets
 		for( int i = 0; i < 5; i++ )
 		{
-			GenerateTarget();
+//			GenerateTarget();
 		}
 		
 		// Generating the ship
-		Container ship = GenerateShip();
-		ship.View.transform.position = Vector3.left * 8f;
+		Ship ship = GenerateShip();
+//		ship.View.transform.position = Vector3.left * 8f;
 
-		Container patrol = GeneratePatrolShip();
+		//		Ship patrol = GeneratePatrolShip();
 
 		// Generating missiles
 		for( int i = 0; i < 20; i++ )
 		{
-			patrol.AddToCargo( GenerateMissile() );
+//			patrol.AddToCargo( GenerateMissile() );
 			ship.AddToCargo( GenerateMissile() );
 		}
 
-
-
 //		WorldManager.SpawnContainer( GenerateMissile(), Vector3.zero, Quaternion.identity );
+
+		WorldManager.GenerateAsteroids();
 	}
 
-	private static Container GenerateMissile()
+	private static Ship GenerateMissile()
 	{
-		Container missile = new Container(){ EntityName = "Missile" };
+		Ship missile = new Ship(){ EntityName = "Missile" };
 		
 		DEngine engine = new DEngine(){ EntityName = "engine", m_lookDirection = Vector3.up, m_space = Space.Self };
 
@@ -62,14 +62,14 @@ public class ExampleSetup : MonoBehaviour {
 	
 	private static void GenerateTarget()
 	{
-		WorldManager.SpawnContainer(new Container(){ EntityName = "Target"}, 
+		WorldManager.SpawnContainer(new Ship(){ EntityName = "Target"}, 
 		(Random.insideUnitCircle + Vector2.one) * (Camera.main.orthographicSize - 1f), 
 		Quaternion.identity );
 	}
 	
-	private static Container GenerateShip()
+	private static Ship GenerateShip()
 	{
-		Container ship = new Container(){ EntityName = "ship"};
+		Ship ship = new Ship(){ EntityName = "ship"};
 
 		Device cockpit = GeneratePilotCockpit();
 		DLauncher launcher = new DLauncher(){ EntityName = "launcher", m_projectileName = "Missile" };
@@ -91,9 +91,9 @@ public class ExampleSetup : MonoBehaviour {
 		return ship;
 	}
 
-	private static Container GeneratePatrolShip()
+	private static Ship GeneratePatrolShip()
 	{
-		Container ship = new Container(){ EntityName = "patrolship"};
+		Ship ship = new Ship(){ EntityName = "patrolship"};
 		
 		DEngine engine = new DEngine(){ EntityName = "engine", m_lookDirection = Vector3.up, m_space = Space.Self };
 		DSteerModule steerer = new DSteerModule(){ EntityName = "steerer"};

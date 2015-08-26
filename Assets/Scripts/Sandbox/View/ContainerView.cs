@@ -37,5 +37,7 @@ public class ContainerView : MonoBehaviour
 	{
 		Gizmos.color = Color.red;
 		Gizmos.DrawLine(transform.position, transform.position + transform.up);
+
+		m_contain.OnDrawGizmos();
 	}
 }

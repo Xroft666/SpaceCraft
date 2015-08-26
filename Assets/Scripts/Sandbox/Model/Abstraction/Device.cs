@@ -23,7 +23,7 @@ namespace SpaceSandbox
 			Blueprint = new BlueprintScheme();
 		}
 
-		protected Container m_containerAttachedTo = null;
+		protected Ship m_containerAttachedTo = null;
 		protected bool m_isActive = true;
 
 		/// <summary>
@@ -49,7 +49,7 @@ namespace SpaceSandbox
 
 		public Dictionary<string, DeviceCheck> m_checks = new Dictionary<string, DeviceCheck>();
 
-		public void AssignContainer( Container container )
+		public void AssignContainer( Ship container )
 		{
 			m_containerAttachedTo = container;
 			foreach( Device device in m_integratedDevices )

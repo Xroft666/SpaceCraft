@@ -10,7 +10,7 @@ public class DDetonator : Device
 {
 	// Exportable and temporar variable
 	public float detonateForce = 5f;
-	public float explosionRadius = 1f;
+	public float explosionRadius = 1.5f;
 
 	#region Functions
 
@@ -49,29 +49,29 @@ public class DDetonator : Device
 
 	public override void Initialize()
 	{
-		// the case of explode on collision, which maybe we dont want to hardcode
-//		EventTrigger2DHandler trigger = m_containerAttachedTo.View.gameObject.AddComponent<EventTrigger2DHandler>();
-//		trigger.onTriggerEnter += OnCollideWithSomething;
+
 	}
 
 	public override void Destroy ()
 	{
-		// do we want to explode detonator if container was destroyed?
-//		DetonateExplosives();
+
 	}
 
 	#endregion
 
 	private void OnObjectInExplosionArea( Collider2D other )
 	{
+		ContainerView view = other.GetComponent<ContainerView>();
+		if( view == null )
+			return;
+
+		view.m_contain.TakeDamage(detonateForce, explosionRadius, m_containerAttachedTo.View.transform.position);
+
+
 		Vector3 outwardsDir = other.transform.position - m_containerAttachedTo.View.transform.position;
 		Rigidbody2D rigid = other.gameObject.GetComponent<Rigidbody2D>();
 
 		rigid.AddForce( outwardsDir.normalized * detonateForce * outwardsDir.magnitude / explosionRadius, ForceMode2D.Impulse );
 	}
 
-//	private void OnCollideWithSomething( Collider2D other )
-//	{
-//		DetonateExplosives();
-//	}
 }

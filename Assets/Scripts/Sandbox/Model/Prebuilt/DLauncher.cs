@@ -46,7 +46,7 @@ public class DLauncher : Device
 //				projectile.gameObject.layer = 10;
 
 				Collider2D collider = projectile.GetComponent<Collider2D>();
-				collider.isTrigger = true;
+//				collider.isTrigger = true;
 
 				Rigidbody2D rigid = projectile.GetComponent<Rigidbody2D>();
 				rigid.velocity = m_containerAttachedTo.View.GetComponent<Rigidbody2D>().velocity;

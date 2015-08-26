@@ -4,22 +4,12 @@ namespace SpaceSandbox
 {
 	public class Entity : Object
 	{
-		public Entity()
-		{
+		public string EntityName { get; set; }
 
-		}
-
-		public Entity( string name )
-		{
-			EntityName = name;
-		}
-
-		public string EntityName
-		{
-			get; set;
-		}
-
-		public virtual void TakeDamage() {}
+		public virtual void Initialize() {}
+		public virtual void Update(){}
+		
+		public virtual void TakeDamage( float damage, float radius, UnityEngine.Vector2 point ) {}
 		public virtual void Destroy() {}
 	}
 }
