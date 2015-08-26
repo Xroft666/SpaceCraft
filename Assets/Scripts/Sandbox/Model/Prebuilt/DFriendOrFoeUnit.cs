@@ -86,9 +86,9 @@ public class DFriendOrFoeUnit : Device
 
 		AddAction("SetTarget", SetTarget );
 		AddAction("ResetTarget", ResetTarget);
-		AddAction("AddTarget", SetTarget );
-		AddAction("RemoveTarget", ResetTarget);
-		AddAction("DesignateClosestTarget", ResetTarget);
+		AddAction("AddTarget", AddTarget );
+		AddAction("RemoveTarget", RemoveTarget);
+		AddAction("DesignateClosestTarget", DesignateClosestTarget);
 
 		AddCheck("IsAnyTarget", IsAnyTarget );
 	}

@@ -29,7 +29,10 @@ public class ExampleSetup : MonoBehaviour {
 
 //		WorldManager.SpawnContainer( GenerateMissile(), Vector3.zero, Quaternion.identity );
 
-		WorldManager.GenerateAsteroids();
+
+		for( int i = 0; i < 10; i++ )
+			WorldManager.GenerateAsteroid( UnityEngine.Random.insideUnitCircle * 15f, Random.Range(0.3f, 2f));
+
 	}
 
 	private static Ship GenerateMissile()

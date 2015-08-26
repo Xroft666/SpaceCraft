@@ -8,7 +8,8 @@ public class Ship : Container {
 	/// <summary>
 	/// The m_cargo. The inventory of this specific container
 	/// </summary>
-	private List<Entity> m_cargo = new List<Entity>();
+//	private List<Entity> m_cargo = new List<Entity>();
+	private Cargo m_cargo = new Cargo();
 	
 	/// <summary>
 	/// The m_generated device. Each container represents a compund device,
@@ -36,17 +37,17 @@ public class Ship : Container {
 	
 	public void AddToCargo( Entity entity )
 	{
-		m_cargo.Add( entity );
+		m_cargo.AddItem( entity );
 	}
 	
 	public List<Entity> GetCargoList()
 	{
-		return m_cargo;
+		return m_cargo.m_items;
 	}
 	
 	public void RemoveFromCargo( Entity entity )
 	{
-		m_cargo.Remove( entity );
+		m_cargo.RemoveItem( entity );
 	}
 	
 	/// <summary>
@@ -60,7 +61,7 @@ public class Ship : Container {
 	
 	public override void Destroy()
 	{
-		foreach( Entity entity in m_cargo )
+		foreach( Entity entity in m_cargo.m_items )
 			entity.Destroy();
 		
 		m_integratedDevice.Destroy();

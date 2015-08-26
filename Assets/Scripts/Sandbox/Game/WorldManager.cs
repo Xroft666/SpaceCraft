@@ -13,7 +13,7 @@ public class WorldManager : MonoBehaviour
 	// Temporary variable. To be removed with something more sophisticated
 	public Sprite m_visuals;
 
-	private static List<Mesh> m_cachedMeshes = new List<Mesh>();
+	//private static List<Mesh> m_cachedMeshes = new List<Mesh>();
 
 
 	public static WorldManager World { get; private set; }
@@ -35,19 +35,20 @@ public class WorldManager : MonoBehaviour
 	}
 	
 
-	public static void GenerateAsteroids()
+	public static void GenerateAsteroid( Vector3 position, float volume, List<Vector2> shape = null )
 	{
-		for( int i = 0; i < 10; i++ )
-		{
-			Asteroid astr = new Asteroid();
-			astr.InitializeView();
+		Asteroid astr = new Asteroid();
 
-			astr.View.transform.position = UnityEngine.Random.insideUnitCircle * 15f;
+		astr.Containment.Amount = volume;
+		astr.vertices = shape;
 
-			m_cachedMeshes.Add( astr.View.GetComponent<MeshFilter>().sharedMesh );
-		}
+		astr.InitializeView( );
+
+		astr.View.transform.position = position;
+
+	//	m_cachedMeshes.Add( astr.View.GetComponent<MeshFilter>().sharedMesh );
 	}
-
+	
 	private void Awake()
 	{
 		World = this;
@@ -55,8 +56,8 @@ public class WorldManager : MonoBehaviour
 
 	private void Destroy()
 	{
-		for( int i = 0; i < m_cachedMeshes.Count; i++ )
-			Destroy(m_cachedMeshes[i]);
-		m_cachedMeshes.Clear();
+	//	for( int i = 0; i < m_cachedMeshes.Count; i++ )
+	//		Destroy(m_cachedMeshes[i]);
+	//	m_cachedMeshes.Clear();
 	}
 }

@@ -5,14 +5,17 @@ namespace SpaceSandbox
 {
 	public class Asteroid : Container 
 	{
-		public Resource Containment { get; set; }
+		public Resource Containment = new Resource();
 
 		private float fidelity = 30f;
-		private List<Vector2> vertices = new List<Vector2>();
+		private float volumeTreshold = 0.05f;
+
+
+		public List<Vector2> vertices = null;
 
 		private PolygonCollider2D collider;
 	
-		public override void InitializeView()
+		public override void InitializeView( )
 		{
 			GameObject newContainer = new GameObject( "Asteroid" );
 			MeshFilter filter = newContainer.AddComponent<MeshFilter>();
@@ -28,10 +31,13 @@ namespace SpaceSandbox
 
 
 
-			float size = Random.Range(0.3f, 2f);
-			AsteroidGenerator.GenerateCircular(size, 20f, 60f, out vertices);
+			float size = Containment.Amount;
 
-
+			if( vertices == null )
+			{
+				vertices = new List<Vector2>();
+				AsteroidGenerator.GenerateCircular(size, 20f, 60f, out vertices);
+			}
 
 
 			int[] indices;
@@ -112,13 +118,26 @@ namespace SpaceSandbox
 		{
 			// Generate smaller asteroids here 
 
-			SubstructVertices( radius, center );
-			UpdateView();
+//			SubstructVertices( radius, center );
+//			SplitVertices( center );
+//			UpdateView();
+
+			float volume = Containment.Amount / 2f;
+
+			if( volume > volumeTreshold )
+			{
+				WorldManager.GenerateAsteroid( View.transform.position + View.transform.forward * volume * 10f, volume );
+				WorldManager.GenerateAsteroid( View.transform.position - View.transform.forward * volume * 10f, volume );
+			}
+
+			Destroy();
 		}
 	
 		public override void Destroy() 
 		{
-	
+			Object.Destroy( View.GetComponent<MeshFilter>().sharedMesh);
+	//		GameObject.Destroy( View.gameObject );
+			View.gameObject.SetActive(false);
 		}
 
 		public override void OnDrawGizmos()
@@ -131,6 +150,32 @@ namespace SpaceSandbox
 
 				Gizmos.DrawSphere( View.transform.TransformPoint( vertices[i] ), 0.05f );
 			}
+		}
+
+		private void SplitVertices( UnityEngine.Vector2 center )
+		{
+			Vector2 direction = ( (Vector2) View.transform.position - center).normalized;
+
+			List<Vector2> left = new List<Vector2>();
+			List<Vector2> right = new List<Vector2>();
+
+			for( int i = 0; i < vertices.Count; i++ )
+			{
+				Vector2 pointDir = ( ((Vector2)View.transform.position + vertices[i]) - center).normalized;
+				Vector3 perp = Vector3.Cross(direction, pointDir);
+
+				float dot = Vector3.Dot(perp, Vector3.forward );
+
+				if( dot >= 0 )
+					left.Add(vertices[i]);
+				else
+					right.Add(vertices[i]);
+			}
+
+			vertices.Clear();
+			vertices = left;
+
+			WorldManager.GenerateAsteroid( View.transform.position, Containment.Amount / 2f, right );
 		}
 
 		private void SubstructVertices(float radius, UnityEngine.Vector2 center)

@@ -3,7 +3,7 @@ namespace SpaceSandbox
 {
     public class Resource : Entity
 	{
-		public int Amount { get; private set; }
-		public Material Material { get; private set; }
+		public float Amount { get; set; }
+		public Material Material { get; set; }
 	}
 }

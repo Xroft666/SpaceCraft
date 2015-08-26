@@ -35,7 +35,7 @@ public class DDetonator : Device
 		explosionGizmo.m_color = Color.red;
 		explosionGizmo.m_radius = explosionRadius;
 
-		GameObject.Destroy( explosion, 0.1f );
+		GameObject.Destroy( explosion, Time.fixedDeltaTime );
 	}
 
 	#endregion

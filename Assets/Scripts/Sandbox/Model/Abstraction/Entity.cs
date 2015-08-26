@@ -4,6 +4,8 @@ namespace SpaceSandbox
 {
 	public class Entity : Object
 	{
+		public float Volume { get; set; }
+
 		public string EntityName { get; set; }
 
 		public virtual void Initialize() {}
