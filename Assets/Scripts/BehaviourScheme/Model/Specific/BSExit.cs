@@ -16,7 +16,7 @@ namespace BehaviourScheme
 
 		public override void Traverse()
 		{
-			exitEvent.Invoke();
+			exitEvent.Invoke( null );
 		}
 	}
 }

@@ -14,31 +14,35 @@ public class DFriendOrFoeUnit : Device
 
 	#region device's functions
 
-	private void AddTarget( params object[] data )
+	private void AddTarget( EventArgs args )
 	{
-		ContainerView view = (data[0] as Container).View;
+		ContainerArgs cArgs = args as ContainerArgs;
+
+		ContainerView view = cArgs.container.View;
 
 		if( view.m_owner != m_containerAttachedTo.View.m_owner )
 		{
 		   	m_targets.Add( view );
 
-			view.m_contain.onDestroy += () => { RemoveTarget( view.m_contain ); };
+			view.m_contain.onDestroy += () => { RemoveTarget( new ContainerArgs() { container = view.m_contain } ); };
 		}
 	}
 
-	private void RemoveTarget( params object[] data )
+	private void RemoveTarget( EventArgs args )
 	{
-		ContainerView view = (data[0] as Container).View;
+		ContainerArgs cArgs = args as ContainerArgs;
+
+		ContainerView view = cArgs.container.View;
 
 		m_targets.Remove( view );
 	}
 
-	private void ResetTarget( params object[] data )
+	private void ResetTarget( EventArgs args )
 	{
 		m_targets.Clear();
 	}
 
-	private void DesignateClosestTarget( params object[] objects )
+	private void DesignateClosestTarget( EventArgs args )
 	{
 		ContainerView thisContainer = m_containerAttachedTo.View;
 
@@ -87,7 +91,7 @@ public class DFriendOrFoeUnit : Device
 		DeviceEvent targetPos = GetEvent("TargetPosition");
 		if( targetPos != null && m_targets.Count > 0 )
 		{
-			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( targetPos, new System.Object[]{ m_targets[0].transform.position } );
+			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( targetPos, new PositionArgs() { position = m_targets[0].transform.position } );
 		}
 	}
 

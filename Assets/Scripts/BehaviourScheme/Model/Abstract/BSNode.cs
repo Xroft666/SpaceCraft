@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 
 namespace BehaviourScheme
 {
@@ -10,7 +9,7 @@ namespace BehaviourScheme
 		protected BSNode m_parentNode = null;
 		protected BSNode m_connectNode = null;
 
-		public object[] m_outputData = null;
+		public EventArgs m_outputData = null;
 
 		public BSNode GetConnectedNode()
 		{

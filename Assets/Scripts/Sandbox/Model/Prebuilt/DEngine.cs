@@ -20,7 +20,7 @@ public class DEngine : Device
 	#region device's functions
 
 
-	public void MoveForward( params object[] objects )
+	public void MoveForward( EventArgs args )
 	{
 		ApplyForce();
 	}
@@ -49,7 +49,7 @@ public class DEngine : Device
 	public override void Update()
 	{
 		if( m_isActive )
-			MoveForward();
+			MoveForward( null );
 	}
 
 	public override void Destroy()

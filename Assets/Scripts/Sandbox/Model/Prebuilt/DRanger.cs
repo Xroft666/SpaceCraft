@@ -29,14 +29,14 @@ public class DRanger : Device
 		AddEvent( "OnRangerEscaped", null );
 	}
 
-	public override void ActivateDevice (params object[] objects)
+	public override void ActivateDevice ( EventArgs args )
 	{
 		m_isActive = true;
 		if( m_collider != null )
 			m_collider.enabled = true;
 	} 
 
-	public override void DeactivateDevice(params object[] objects)
+	public override void DeactivateDevice( EventArgs args)
 	{
 		m_isActive = false;
 		if( m_collider != null )
@@ -46,7 +46,6 @@ public class DRanger : Device
 	public override void Initialize ()
 	{
 		GameObject rangerGO = new GameObject(EntityName);
-//		rangerGO.layer = 10;
 		
 		rangerGO.transform.SetParent( m_containerAttachedTo.View.transform, false );
 
@@ -81,7 +80,7 @@ public class DRanger : Device
 				return;
 			}
 
-			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onEnter, new System.Object[]{ othersView.m_contain } );
+			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onEnter, new ContainerArgs(){ container = othersView.m_contain } );
 		}
 	}
 
@@ -97,7 +96,7 @@ public class DRanger : Device
 				return;
 			}
 		
-			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onExit, new System.Object[]{ othersView.m_contain } );
+			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onExit, new ContainerArgs(){ container = othersView.m_contain } );
 		}
 	}
 

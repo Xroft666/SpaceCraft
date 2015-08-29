@@ -18,14 +18,16 @@ public class DLauncher : Device
 
 	private float m_timer = 0f;
 
-	public void SetProjectile(params object[] objects)
+	public void SetProjectile( EventArgs args)
 	{
-		m_projectileName = (string) objects[0];
+		StringArgs sArgs = args as StringArgs;
+
+		m_projectileName = sArgs.name;
 	}
 
 	#region device's functions
 
-	public void Fire(params object[] objects)
+	public void Fire( EventArgs args )
 	{
 		if( !IsEligableToShoot() )
 			return;

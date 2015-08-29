@@ -26,7 +26,7 @@ public class DTimer : Device
 
 	#region device's functions
 	
-	public void ResetTimer(params object[] objects)
+	public void ResetTimer( EventArgs args)
 	{
 		m_timer = 0f;
 		m_fired = false;
@@ -36,14 +36,14 @@ public class DTimer : Device
 
 	#region device's interface implementation
 
-	public override void ActivateDevice (params object[] objects)
+	public override void ActivateDevice ( EventArgs args )
 	{
 		m_isActive = true;
 		if( m_timeText != null )
 			m_timeText.gameObject.SetActive(true);
 	} 
 	
-	public override void DeactivateDevice(params object[] objects)
+	public override void DeactivateDevice( EventArgs args )
 	{
 		m_isActive = false;
 		if( m_timeText != null )

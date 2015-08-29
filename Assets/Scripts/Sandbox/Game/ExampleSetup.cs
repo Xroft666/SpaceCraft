@@ -77,8 +77,8 @@ public class ExampleSetup : MonoBehaviour {
 		missile.IntegratedDevice.IntegrateDevice( heatSeeker );
 		missile.IntegratedDevice.IntegrateDevice( activeTimer );
 
-		timeBomb.DeactivateDevice();
-		heatSeeker.DeactivateDevice();
+		timeBomb.DeactivateDevice( null );
+		heatSeeker.DeactivateDevice( null );
 
 		BSEntry onTimer = missile.IntegratedDevice.Blueprint.CreateEntry( "OnTimerComplete", activeTimer );
 		BSAction toActivateWarhead = missile.IntegratedDevice.Blueprint.CreateAction( "ActivateDevice", timeBomb );
@@ -146,10 +146,11 @@ public class ExampleSetup : MonoBehaviour {
 		markers[2].transform.position = Vector3.up * 3f;
 		markers[3].transform.position = Vector3.down * 3f;
 
-		patrol.SetPatrolPoints(markers[0].transform.position,
-		                       markers[1].transform.position,
-		                       markers[2].transform.position,
-		                       markers[3].transform.position);
+		patrol.SetPatrolPoints( new PositionsListArgs() { positions = new Vector3[] {
+								markers[0].transform.position,
+		                       	markers[1].transform.position,
+		                       	markers[2].transform.position,
+								markers[3].transform.position }});
 
 		ship.IntegratedDevice.IntegrateDevice( engine );
 		ship.IntegratedDevice.IntegrateDevice( steerer );

@@ -18,18 +18,20 @@ public class DPatrolModule : Device
 	
 	#region device's functions
 
-	public void SetPatrolPoints( params object[] objects )
+	public void SetPatrolPoints( EventArgs args )
 	{
-		if( objects.Length == 0 )
+		PositionsListArgs plArgs = args as PositionsListArgs;
+
+		if( plArgs.positions.Length == 0 )
 			return;
 
-		m_patrolPoints = new Vector3[objects.Length];
+		m_patrolPoints = new Vector3[plArgs.positions.Length];
 
-		for( int i = 0; i < objects.Length; i++ )
-			m_patrolPoints[i] = (Vector3) objects[i];
+		for( int i = 0; i < plArgs.positions.Length; i++ )
+			m_patrolPoints[i] = plArgs.positions[i];
 	}
 
-	public void CleanPatrolPoints( params object[] objects )
+	public void CleanPatrolPoints( EventArgs args )
 	{
 		m_patrolPoints = null;
 	}
@@ -80,6 +82,6 @@ public class DPatrolModule : Device
 	{
 		DeviceEvent targetPos = GetEvent("TargetPosition");
 		if( targetPos != null )
-			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( targetPos, new System.Object[]{m_patrolPoints[currentTargetIdx]} );
+			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( targetPos, new PositionArgs() { position = m_patrolPoints[currentTargetIdx]} );
 	}
 }

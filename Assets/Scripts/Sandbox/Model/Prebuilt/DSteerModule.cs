@@ -18,9 +18,11 @@ public class DSteerModule : Device
 
 	#region device's functions
 
-	public void SteerTowards( params object[] objects )
+	public void SteerTowards( EventArgs args )
 	{
-		Vector2 worldPos = (Vector2) (Vector3) objects[0];
+		PositionArgs pArgs = args as PositionArgs;
+
+		Vector2 worldPos = (Vector2) pArgs.position;
 		m_targetDirection = ( worldPos - m_rigidbody.position).normalized;
 		RotateTowards();
 	}

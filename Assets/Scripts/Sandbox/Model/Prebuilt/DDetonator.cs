@@ -14,7 +14,7 @@ public class DDetonator : Device
 
 	#region Functions
 
-	public void DetonateExplosives(params object[] objects)
+	public void DetonateExplosives( EventArgs args)
 	{
 		WorldManager.UnspawnContainer( m_containerAttachedTo );
 

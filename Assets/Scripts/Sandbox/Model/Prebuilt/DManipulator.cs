@@ -15,17 +15,19 @@ public class DManipulator : Device
 
 	#region device's functions
 
-	private void Load( params object[] data )
+	private void Load( EventArgs args )
 	{
 		if( !IsEligableToShoot() )
 			return;
-		
+
+		ContainerArgs cArgs = args as ContainerArgs;
+
 		m_timer = 0f;
 
-		StorageObject( (Container) data[0]) ;
+		StorageObject( cArgs.container ) ;
 	}
 
-	private void UnloadAll( params object[] data )
+	private void UnloadAll( EventArgs args )
 	{
 		if( !IsEligableToShoot() )
 			return;

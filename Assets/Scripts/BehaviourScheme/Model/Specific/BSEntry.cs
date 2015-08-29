@@ -1,8 +1,10 @@
-﻿namespace BehaviourScheme
+﻿using System;
+
+namespace BehaviourScheme
 {
 	public class BSEntry : BSMultiChildNode
 	{
-		public void Initialize( params object[] data )
+		public void Initialize( EventArgs data )
 		{
 			m_outputData = data;
 			Traverse();

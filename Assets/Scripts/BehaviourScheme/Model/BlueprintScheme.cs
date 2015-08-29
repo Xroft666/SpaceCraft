@@ -19,11 +19,11 @@ namespace SpaceSandbox
 		public MemoryStack Memory { get; private set; }
 
 		public List<DeviceEvent> scheduledEventsList = new List<DeviceEvent>();
-		public List<object[]> scheduledEventsDataList = new List<object[]>();
+		public List<EventArgs> scheduledEventsDataList = new List<EventArgs>();
 
 		public List<BSNode> m_nodes = new List<BSNode>();
 
-		public void AddScheduledEvent(DeviceEvent evt, object[] data)
+		public void AddScheduledEvent(DeviceEvent evt, EventArgs data)
 		{
 			scheduledEventsList.Add( evt );
 			scheduledEventsDataList.Add( data );
@@ -33,10 +33,9 @@ namespace SpaceSandbox
 		{
 			for( int i = 0; i < scheduledEventsList.Count; i++ )
 			{
-				if( scheduledEventsDataList[i] == null )
-					scheduledEventsList[i].Invoke();
-				else
-					scheduledEventsList[i].Invoke( scheduledEventsDataList[i] );
+				scheduledEventsList[i].Invoke( scheduledEventsDataList[i]);
+	//			IAsyncResult asyncOp = scheduledEventsList[i].BeginInvoke( scheduledEventsDataList[i], null, null );
+	//			scheduledEventsList[i].EndInvoke ( asyncOp );
 			}
 		}
 

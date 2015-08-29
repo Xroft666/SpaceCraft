@@ -13,9 +13,6 @@ namespace SpaceSandbox
 	/// devices inside
 	/// </summary>
 
-	public delegate void DeviceEvent(params object[] objects ); 
-	public delegate bool DeviceCheck();
-
 	public class Device : Entity
 	{
 		public Device()
@@ -207,7 +204,7 @@ namespace SpaceSandbox
 		}
 
 
-		public void ScheduleEvent(DeviceEvent evt, System.Object[] data)
+		public void ScheduleEvent(DeviceEvent evt, EventArgs data)
 		{
 			Blueprint.AddScheduledEvent( evt, data );
 		}
@@ -228,20 +225,20 @@ namespace SpaceSandbox
 
 		#region Common events and function
 
-		public virtual void ActivateDevice(params object[] objects)
+		public virtual void ActivateDevice( EventArgs args )
 		{
 			m_isActive = true;
 
 			foreach( Device device in m_integratedDevices )
-				device.ActivateDevice();
+				device.ActivateDevice( args );
 		}
 
-		public virtual void DeactivateDevice(params object[] objects)
+		public virtual void DeactivateDevice( EventArgs args )
 		{
 			m_isActive = false;
 			
 			foreach( Device device in m_integratedDevices )
-				device.DeactivateDevice();
+				device.DeactivateDevice( args );
 		}
 
 		#endregion
