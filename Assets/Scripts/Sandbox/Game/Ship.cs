@@ -65,6 +65,8 @@ public class Ship : Container {
 			entity.Destroy();
 		
 		m_integratedDevice.Destroy();
+
+		base.Destroy();
 	}
 	
 	/// <summary>

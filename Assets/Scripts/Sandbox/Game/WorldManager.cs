@@ -12,18 +12,17 @@ public class WorldManager : MonoBehaviour
 {
 	// Temporary variable. To be removed with something more sophisticated
 	public Sprite m_visuals;
-
-	//private static List<Mesh> m_cachedMeshes = new List<Mesh>();
-
-
+	
 	public static WorldManager World { get; private set; }
 
-	public static ContainerView SpawnContainer( Container container, Vector3 position, Quaternion rotation )
+	public static ContainerView SpawnContainer( Container container, Vector3 position, Quaternion rotation, int owner = 0 )
 	{
 		container.InitializeView();
 
 		container.View.transform.position = position;
 		container.View.transform.rotation = rotation;
+
+		container.View.m_owner = owner;
 		
 		return container.View;
 	}
@@ -31,22 +30,21 @@ public class WorldManager : MonoBehaviour
 	public static void UnspawnContainer( Container container )
 	{
 		container.Destroy();
-		container.View.gameObject.SetActive( false );
+//		container.View.gameObject.SetActive( false );
 	}
 	
 
-	public static void GenerateAsteroid( Vector3 position, float volume, List<Vector2> shape = null )
+	public static void GenerateAsteroid( Vector3 position, float rotation, float volume)
 	{
 		Asteroid astr = new Asteroid();
 
 		astr.Containment.Amount = volume;
-		astr.vertices = shape;
 
 		astr.InitializeView( );
 
 		astr.View.transform.position = position;
+		astr.View.transform.rotation = Quaternion.Euler( 0f, 0f, rotation);
 
-	//	m_cachedMeshes.Add( astr.View.GetComponent<MeshFilter>().sharedMesh );
 	}
 	
 	private void Awake()
@@ -54,10 +52,8 @@ public class WorldManager : MonoBehaviour
 		World = this;
 	}
 
-	private void Destroy()
+	public bool IsContainerDestroyed( ContainerView view )
 	{
-	//	for( int i = 0; i < m_cachedMeshes.Count; i++ )
-	//		Destroy(m_cachedMeshes[i]);
-	//	m_cachedMeshes.Clear();
+		return !view.gameObject.activeInHierarchy;
 	}
 }

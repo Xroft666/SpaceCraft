@@ -13,6 +13,7 @@ using BehaviourScheme;
 public class ContainerView : MonoBehaviour 
 {
 	public Container m_contain;
+	public int m_owner;
 
 	private void Start()
 	{

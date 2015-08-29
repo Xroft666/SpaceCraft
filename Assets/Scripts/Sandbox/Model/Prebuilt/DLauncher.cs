@@ -40,8 +40,9 @@ public class DLauncher : Device
 			{
 				projectileEntity = ent;
 				ContainerView projectile =  WorldManager.SpawnContainer(cont, 
-				                            m_containerAttachedTo.View.transform.position,
-				                            m_containerAttachedTo.View.transform.rotation);
+				                            m_containerAttachedTo.View.transform.position + m_containerAttachedTo.View.transform.up,
+				                            m_containerAttachedTo.View.transform.rotation,
+				                            m_containerAttachedTo.View.m_owner );
 
 //				projectile.gameObject.layer = 10;
 

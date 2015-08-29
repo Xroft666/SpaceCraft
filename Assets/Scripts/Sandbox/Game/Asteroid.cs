@@ -126,8 +126,8 @@ namespace SpaceSandbox
 
 			if( volume > volumeTreshold )
 			{
-				WorldManager.GenerateAsteroid( View.transform.position + View.transform.forward * volume * 10f, volume );
-				WorldManager.GenerateAsteroid( View.transform.position - View.transform.forward * volume * 10f, volume );
+				WorldManager.GenerateAsteroid( View.transform.position, View.transform.rotation.eulerAngles.z, volume );
+				WorldManager.GenerateAsteroid( View.transform.position + (Vector3) Random.insideUnitCircle.normalized * volume, View.transform.rotation.eulerAngles.z, volume );
 			}
 
 			Destroy();
@@ -136,8 +136,8 @@ namespace SpaceSandbox
 		public override void Destroy() 
 		{
 			Object.Destroy( View.GetComponent<MeshFilter>().sharedMesh);
-	//		GameObject.Destroy( View.gameObject );
-			View.gameObject.SetActive(false);
+
+			base.Destroy();
 		}
 
 		public override void OnDrawGizmos()
@@ -175,7 +175,7 @@ namespace SpaceSandbox
 			vertices.Clear();
 			vertices = left;
 
-			WorldManager.GenerateAsteroid( View.transform.position, Containment.Amount / 2f, right );
+			WorldManager.GenerateAsteroid( View.transform.position, 0f, Containment.Amount / 2f );
 		}
 
 		private void SubstructVertices(float radius, UnityEngine.Vector2 center)

@@ -15,26 +15,53 @@ public class ExampleSetup : MonoBehaviour {
 		}
 		
 		// Generating the ship
-		Ship ship = GenerateShip();
+//		Ship ship = GenerateShip();
 //		ship.View.transform.position = Vector3.left * 8f;
 
-		//		Ship patrol = GeneratePatrolShip();
+		Ship patrol = GeneratePatrolShip();
 
 		// Generating missiles
 		for( int i = 0; i < 20; i++ )
 		{
-//			patrol.AddToCargo( GenerateMissile() );
-			ship.AddToCargo( GenerateMissile() );
+			patrol.AddToCargo( GenerateMissile() );
+//			ship.AddToCargo( GenerateMissile() );
 		}
 
 //		WorldManager.SpawnContainer( GenerateMissile(), Vector3.zero, Quaternion.identity );
 
 
-		for( int i = 0; i < 10; i++ )
-			WorldManager.GenerateAsteroid( UnityEngine.Random.insideUnitCircle * 15f, Random.Range(0.3f, 2f));
+		for( int i = 0; i < 100; i++ )
+		{
 
+			Vector3 pos = Vector3.zero;
+			pos = UnityEngine.Random.insideUnitCircle * 50f;
+
+	//		pos.x = (float) GaussRandom();
+	//		pos.y = (float) GaussRandom();
+
+
+			WorldManager.GenerateAsteroid( pos, Random.Range(0f,360f), Random.Range(0.1f, 2.4f));
+		}
 	}
 
+
+	private double GaussRandom()
+	{
+		int seed = 6666666;
+		double sum = 0.0;
+	
+		for( int i = 0; i < 3; i++ )
+		{
+			long holdseed = seed;
+			seed ^= seed << 13;
+			seed ^= seed >> 17;
+			seed ^= seed << 5;
+			long r = (System.Int64) (holdseed + seed);
+			sum += (double) r * (1.0 / 0x7fffffffffffffff);
+		}
+
+		return sum;
+	}
 	private static Ship GenerateMissile()
 	{
 		Ship missile = new Ship(){ EntityName = "Missile" };
@@ -89,7 +116,7 @@ public class ExampleSetup : MonoBehaviour {
 		ship.IntegratedDevice.Blueprint.ConnectElements( onMouseUp, toFire );
 
 		
-		ContainerView shipView = WorldManager.SpawnContainer( ship, Vector3.zero, Quaternion.identity );
+		ContainerView shipView = WorldManager.SpawnContainer( ship, Vector3.zero, Quaternion.identity, 1 );
 		
 		return ship;
 	}
@@ -163,11 +190,6 @@ public class ExampleSetup : MonoBehaviour {
 		ship.IntegratedDevice.Blueprint.ConnectElements( onSteering, toDisableEngine );
 
 
-
-
-
-
-
 		BSEntry onSteerComplete = ship.IntegratedDevice.Blueprint.CreateEntry( "OnSteerComplete", steerer);
 
 		BSBranch movingOrShooting = ship.IntegratedDevice.Blueprint.CreateBranch();
@@ -182,7 +204,7 @@ public class ExampleSetup : MonoBehaviour {
 		BSAction toEnableEngine = ship.IntegratedDevice.Blueprint.CreateAction( "ActivateDevice", engine);
 		ship.IntegratedDevice.Blueprint.ConnectElements( movingOrShooting, toEnableEngine );
 
-		ContainerView shipView = WorldManager.SpawnContainer( ship, Vector3.zero, Quaternion.identity );
+		ContainerView shipView = WorldManager.SpawnContainer( ship, Vector3.zero, Quaternion.identity, 2 );
 		
 		return ship;
 	}
@@ -309,11 +331,11 @@ public class ExampleSetup : MonoBehaviour {
 		heatSeeker.IntegrateDevice( steerer );
 		
 		BSEntry inRange = heatSeeker.Blueprint.CreateEntry( "ranger/OnRangerEntered", heatSeeker );
-		BSAction toFollow = heatSeeker.Blueprint.CreateAction( "radar/SetTarget", heatSeeker );
+		BSAction toFollow = heatSeeker.Blueprint.CreateAction( "radar/AddTarget", heatSeeker );
 		heatSeeker.Blueprint.ConnectElements( inRange, toFollow );
 
 		BSEntry outRange = heatSeeker.Blueprint.CreateEntry( "ranger/OnRangerEscaped", heatSeeker );
-		BSAction toNullTarget = heatSeeker.Blueprint.CreateAction( "radar/ResetTarget", heatSeeker );
+		BSAction toNullTarget = heatSeeker.Blueprint.CreateAction( "radar/RemoveTarget", heatSeeker );
 		heatSeeker.Blueprint.ConnectElements( outRange, toNullTarget );
 
 		BSEntry onTargetPos = heatSeeker.Blueprint.CreateEntry( "radar/TargetPosition", heatSeeker);
@@ -335,5 +357,47 @@ public class ExampleSetup : MonoBehaviour {
 
 		
 		return detector;
+	}
+
+	private static Device GenerateAsteroidGrabber()
+	{
+		Device grabber = new Device(){ EntityName = "grabber"};
+		
+		DManipulator manipulator = new DManipulator(){ EntityName = "manipulator"};
+		DRanger ranger = new DRanger(){ EntityName = "ranger", detectionRange = 1.5f };
+		
+		grabber.IntegrateDevice( manipulator );
+		grabber.IntegrateDevice( ranger );
+		
+
+		BSEntry inRange = grabber.Blueprint.CreateEntry( "grabber/ranger/OnRangerEntered", grabber );
+		BSAction toFollow = grabber.Blueprint.CreateAction( "grabber/manipulator/Load", grabber );
+		grabber.Blueprint.ConnectElements( inRange, toFollow );
+
+
+		return grabber;
+	}
+
+	private static Device GenerateAsteroidAttractor()
+	{
+		Device attractor = new Device(){ EntityName = "attractor"};
+		
+		DMagnet magnet = new DMagnet(){ EntityName = "magnet"};
+		DRanger ranger = new DRanger(){ EntityName = "ranger", detectionRange = 2.5f };
+		
+		attractor.IntegrateDevice( magnet );
+		attractor.IntegrateDevice( ranger );
+
+
+		BSEntry inRange = attractor.Blueprint.CreateEntry( "attractor/ranger/OnRangerEntered", attractor );
+		BSAction toFollow = attractor.Blueprint.CreateAction( "attractor/magnet/Attract", attractor );
+		attractor.Blueprint.ConnectElements( inRange, toFollow );
+		
+		BSEntry outRange = attractor.Blueprint.CreateEntry( "attractor/ranger/OnRangerEscaped", attractor );
+		BSAction toNullTarget = attractor.Blueprint.CreateAction( "attractor/magnet/RemoveTarget", attractor );
+		attractor.Blueprint.ConnectElements( outRange, toNullTarget );
+
+
+		return attractor;
 	}
 }

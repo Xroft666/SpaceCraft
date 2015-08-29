@@ -10,19 +10,36 @@ using SpaceSandbox;
 public class DMagnet : Device 
 {
 	// Exportable variable
-	public List<ContainerView> m_targets = new List<ContainerView>();
+	public float m_magnetPower = 10f;
+
+
+	public List<Rigidbody2D> m_attractTargets = new List<Rigidbody2D>();
+	public List<Rigidbody2D> m_repusleTargets = new List<Rigidbody2D>();
+
+	private Rigidbody2D myRigid;
 
 
 	#region device's functions
 
-	private void AddTarget( params object[] data )
+	private void Attract( params object[] data )
 	{
-		m_targets.Add( (data[0] as Container).View );
+		m_attractTargets.Add( ((Container) data[0]).View.GetComponent<Rigidbody2D>() );
+	}
+
+	private void Repulse( params object[] data )
+	{
+		m_repusleTargets.Add( ((Container) data[0]).View.GetComponent<Rigidbody2D>() );
 	}
 
 	private void RemoveTarget( params object[] data )
 	{
-		m_targets.Remove( (data[0] as Container).View );
+		Rigidbody2D view = ( (Container) data[0]).View.GetComponent<Rigidbody2D>();
+
+		if( m_attractTargets.Contains(view) )
+			m_attractTargets.Remove( view );
+
+		if( m_repusleTargets.Contains(view) )
+			m_repusleTargets.Remove( view );
 	}
 	
 
@@ -30,10 +47,7 @@ public class DMagnet : Device
 
 	#region Predecates 
 
-	public bool IsAnyTarget()
-	{
-		return m_targets.Count > 0;
-	}
+
 
 	#endregion
 
@@ -41,22 +55,23 @@ public class DMagnet : Device
 
 	public override void OnDeviceInstalled()
 	{
-		AddEvent( "TargetPosition", null );
-
-		AddAction("AddTarget", AddTarget );
-		AddAction("RemoveTarget", RemoveTarget);
-
-		AddCheck("IsAnyTarget", IsAnyTarget );
+		AddAction("Attract", Attract );
+		AddAction("Repulse", Repulse);
+		AddAction("RemoveTarget", Repulse);
 	}
 
 	public override void Initialize()
 	{
-
+		myRigid = m_containerAttachedTo.View.GetComponent<Rigidbody2D>();
 	}
 
 	public override void Update()
 	{
-
+		foreach( Rigidbody2D obj in m_attractTargets )
+			obj.AddForce( (myRigid.position - obj.position).normalized * m_magnetPower );
+		
+		foreach( Rigidbody2D obj in m_repusleTargets )
+			obj.AddForce( (obj.position - myRigid.position).normalized * m_magnetPower );
 	}
 
 	#endregion
