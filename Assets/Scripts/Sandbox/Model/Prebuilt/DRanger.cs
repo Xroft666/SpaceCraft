@@ -14,33 +14,28 @@ public class DRanger : Device
 
 	private CircleCollider2D m_collider = null;
 
-	#region Functions
-
-	public void SetRange( float range )
-	{
-		m_collider.radius = range;
-	}
-
-	#endregion
-
 	public override void OnDeviceInstalled()
 	{
 		AddEvent( "OnRangerEntered", null );
 		AddEvent( "OnRangerEscaped", null );
 	}
 
-	public override void ActivateDevice ( EventArgs args )
+	public override IEnumerator ActivateDevice ( EventArgs args )
 	{
 		m_isActive = true;
 		if( m_collider != null )
 			m_collider.enabled = true;
+
+		yield break;
 	} 
 
-	public override void DeactivateDevice( EventArgs args)
+	public override IEnumerator DeactivateDevice( EventArgs args)
 	{
 		m_isActive = false;
 		if( m_collider != null )
 			m_collider.enabled = false;
+
+		yield break;
 	}
 
 	public override void Initialize ()

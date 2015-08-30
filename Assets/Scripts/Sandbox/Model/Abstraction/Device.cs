@@ -211,7 +211,7 @@ namespace SpaceSandbox
 
 		public void ExecuteLogic()
 		{
-			Blueprint.ExecuteSceduledEvents();
+			Job.make( Blueprint.ExecuteSceduledEvents()).startAsCoroutine();
 			foreach( Device device in m_integratedDevices )
 				device.ExecuteLogic();
 		}
@@ -225,20 +225,28 @@ namespace SpaceSandbox
 
 		#region Common events and function
 
-		public virtual void ActivateDevice( EventArgs args )
+		public virtual IEnumerator ActivateDevice( EventArgs args )
 		{
 			m_isActive = true;
 
 			foreach( Device device in m_integratedDevices )
-				device.ActivateDevice( args );
+				//device.ActivateDevice( args );
+				//m_containerAttachedTo.IntegratedDevice.ScheduleEvent( device.ActivateDevice, args );
+				yield return Job.make(device.ActivateDevice( args ) ).startAsCoroutine();
+
+			yield break;
 		}
 
-		public virtual void DeactivateDevice( EventArgs args )
+		public virtual IEnumerator DeactivateDevice( EventArgs args )
 		{
 			m_isActive = false;
 			
 			foreach( Device device in m_integratedDevices )
-				device.DeactivateDevice( args );
+				//device.DeactivateDevice( args );
+				//m_containerAttachedTo.IntegratedDevice.ScheduleEvent( device.DeactivateDevice, args );
+				yield return Job.make( device.DeactivateDevice( args) ).startAsCoroutine();
+
+			yield break;
 		}
 
 		#endregion

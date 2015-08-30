@@ -15,26 +15,30 @@ public class DManipulator : Device
 
 	#region device's functions
 
-	private void Load( EventArgs args )
+	private IEnumerator Load( EventArgs args )
 	{
 		if( !IsEligableToShoot() )
-			return;
+			yield break;
 
 		ContainerArgs cArgs = args as ContainerArgs;
 
 		m_timer = 0f;
 
 		StorageObject( cArgs.container ) ;
+
+		yield break;
 	}
 
-	private void UnloadAll( EventArgs args )
+	private IEnumerator UnloadAll( EventArgs args )
 	{
 		if( !IsEligableToShoot() )
-			return;
+			yield break;
 		
 		m_timer = 0f;
 
 		RemoveFromStorage();
+
+		yield break;
 	}
 	
 

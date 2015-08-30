@@ -18,22 +18,20 @@ public class DPatrolModule : Device
 	
 	#region device's functions
 
-	public void SetPatrolPoints( EventArgs args )
+	public IEnumerator SetPatrolPoints( EventArgs args )
 	{
 		PositionsListArgs plArgs = args as PositionsListArgs;
 
-		if( plArgs.positions.Length == 0 )
-			return;
+		m_patrolPoints = plArgs.positions;
 
-		m_patrolPoints = new Vector3[plArgs.positions.Length];
-
-		for( int i = 0; i < plArgs.positions.Length; i++ )
-			m_patrolPoints[i] = plArgs.positions[i];
+		yield break;
 	}
 
-	public void CleanPatrolPoints( EventArgs args )
+	public IEnumerator CleanPatrolPoints( EventArgs args )
 	{
 		m_patrolPoints = null;
+
+		yield break;
 	}
 	
 

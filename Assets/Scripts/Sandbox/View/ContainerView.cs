@@ -34,6 +34,11 @@ public class ContainerView : MonoBehaviour
 		m_contain.Update();
 	}
 
+	void LateUpdate()
+	{
+		m_contain.LateUpdate();
+	}
+
 	void OnDrawGizmos()
 	{
 		Gizmos.color = Color.red;

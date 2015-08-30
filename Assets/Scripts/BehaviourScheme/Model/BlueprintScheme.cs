@@ -29,14 +29,14 @@ namespace SpaceSandbox
 			scheduledEventsDataList.Add( data );
 		}
 
-		public void ExecuteSceduledEvents()
+		public IEnumerator ExecuteSceduledEvents()
 		{
 			for( int i = 0; i < scheduledEventsList.Count; i++ )
 			{
-				scheduledEventsList[i].Invoke( scheduledEventsDataList[i]);
-	//			IAsyncResult asyncOp = scheduledEventsList[i].BeginInvoke( scheduledEventsDataList[i], null, null );
-	//			scheduledEventsList[i].EndInvoke ( asyncOp );
+				yield return Job.make( scheduledEventsList[i].Invoke( scheduledEventsDataList[i]) ).startAsCoroutine();
 			}
+
+			yield break;
 		}
 
 		public void ClearEventsAndData()

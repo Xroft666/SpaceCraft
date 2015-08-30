@@ -20,9 +20,11 @@ public class DEngine : Device
 	#region device's functions
 
 
-	public void MoveForward( EventArgs args )
+	public IEnumerator MoveForward( EventArgs args )
 	{
 		ApplyForce();
+
+		yield break;
 	}
 
 	#endregion
@@ -49,7 +51,7 @@ public class DEngine : Device
 	public override void Update()
 	{
 		if( m_isActive )
-			MoveForward( null );
+			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( MoveForward, null );
 	}
 
 	public override void Destroy()

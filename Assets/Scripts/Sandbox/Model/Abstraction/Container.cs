@@ -11,6 +11,7 @@ namespace SpaceSandbox
 
 		public virtual void InitializeView() {}
 		public virtual void UpdateView() {}
+		public virtual void LateUpdate() {}
 
 		public virtual void OnDrawGizmos(){}
 

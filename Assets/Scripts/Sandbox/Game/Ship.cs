@@ -111,6 +111,10 @@ public class Ship : Container {
 	{
 		IntegratedDevice.Update();
 		IntegratedDevice.ExecuteLogic();
+	}
+
+	public override void LateUpdate()
+	{
 		IntegratedDevice.CleanScheduledEvents();
 	}
 

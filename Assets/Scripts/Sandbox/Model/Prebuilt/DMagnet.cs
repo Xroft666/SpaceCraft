@@ -21,19 +21,23 @@ public class DMagnet : Device
 
 	#region device's functions
 
-	private void Attract( EventArgs args )
+	private IEnumerator Attract( EventArgs args )
 	{
 		ContainerArgs cArgs = args as ContainerArgs;
 		m_attractTargets.Add( cArgs.container.View.GetComponent<Rigidbody2D>() );
+
+		yield break;
 	}
 
-	private void Repulse( EventArgs args )
+	private IEnumerator Repulse( EventArgs args )
 	{
 		ContainerArgs cArgs = args as ContainerArgs;
 		m_repusleTargets.Add( cArgs.container.View.GetComponent<Rigidbody2D>() );
+
+		yield break;
 	}
 
-	private void RemoveTarget( EventArgs args )
+	private IEnumerator RemoveTarget( EventArgs args )
 	{
 		ContainerArgs cArgs = args as ContainerArgs;
 		Rigidbody2D view = cArgs.container.View.GetComponent<Rigidbody2D>();
@@ -43,6 +47,8 @@ public class DMagnet : Device
 
 		if( m_repusleTargets.Contains(view) )
 			m_repusleTargets.Remove( view );
+
+		yield break;
 	}
 	
 

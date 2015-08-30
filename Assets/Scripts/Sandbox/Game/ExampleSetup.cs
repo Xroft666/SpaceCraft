@@ -40,7 +40,7 @@ public class ExampleSetup : MonoBehaviour {
 	//		pos.y = (float) GaussRandom();
 
 
-			WorldManager.GenerateAsteroid( pos, Random.Range(0f,360f), Random.Range(0.1f, 2.4f));
+	//		WorldManager.GenerateAsteroid( pos, Random.Range(0f,360f), Random.Range(0.1f, 2.4f));
 		}
 	}
 
@@ -77,8 +77,9 @@ public class ExampleSetup : MonoBehaviour {
 		missile.IntegratedDevice.IntegrateDevice( heatSeeker );
 		missile.IntegratedDevice.IntegrateDevice( activeTimer );
 
-		timeBomb.DeactivateDevice( null );
-		heatSeeker.DeactivateDevice( null );
+		Job.make( timeBomb.DeactivateDevice( null ), true);
+    	Job.make( heatSeeker.DeactivateDevice( null), true );
+
 
 		BSEntry onTimer = missile.IntegratedDevice.Blueprint.CreateEntry( "OnTimerComplete", activeTimer );
 		BSAction toActivateWarhead = missile.IntegratedDevice.Blueprint.CreateAction( "ActivateDevice", timeBomb );
@@ -124,14 +125,6 @@ public class ExampleSetup : MonoBehaviour {
 	private static Ship GeneratePatrolShip()
 	{
 		Ship ship = new Ship(){ EntityName = "patrolship"};
-		
-		DEngine engine = new DEngine(){ EntityName = "engine", m_lookDirection = Vector3.up, m_space = Space.Self };
-		DSteerModule steerer = new DSteerModule(){ EntityName = "steerer"};
-		DPatrolModule patrol = new DPatrolModule(){ EntityName = "patrol"};
-
-		DLauncher launcher = new DLauncher(){ EntityName = "launcher", m_projectileName = "Missile" };
-
-		Device enemyDetector = GenerateEnemyDetector( 5f );
 
 		GameObject[] markers = new GameObject[]
 		{
@@ -146,11 +139,21 @@ public class ExampleSetup : MonoBehaviour {
 		markers[2].transform.position = Vector3.up * 3f;
 		markers[3].transform.position = Vector3.down * 3f;
 
-		patrol.SetPatrolPoints( new PositionsListArgs() { positions = new Vector3[] {
-								markers[0].transform.position,
-		                       	markers[1].transform.position,
-		                       	markers[2].transform.position,
-								markers[3].transform.position }});
+		
+		DEngine engine = new DEngine(){ EntityName = "engine", m_lookDirection = Vector3.up, m_space = Space.Self };
+		DSteerModule steerer = new DSteerModule(){ EntityName = "steerer"};
+		DPatrolModule patrol = new DPatrolModule(){ EntityName = "patrol", 
+				m_patrolPoints = new Vector3[] {
+				markers[0].transform.position,
+				markers[1].transform.position,
+				markers[2].transform.position,
+				markers[3].transform.position 
+			}};
+
+		DLauncher launcher = new DLauncher(){ EntityName = "launcher", m_projectileName = "Missile" };
+
+		Device enemyDetector = GenerateEnemyDetector( 5f );
+
 
 		ship.IntegratedDevice.IntegrateDevice( engine );
 		ship.IntegratedDevice.IntegrateDevice( steerer );
@@ -195,10 +198,10 @@ public class ExampleSetup : MonoBehaviour {
 
 		BSBranch movingOrShooting = ship.IntegratedDevice.Blueprint.CreateBranch();
 		movingOrShooting.AddCondition( ship.IntegratedDevice.GetInternalDevice("enemydetector/radar").GetCheck("IsAnyTarget") );
-
+	
 		ship.IntegratedDevice.Blueprint.ConnectElements( onSteerComplete, movingOrShooting );
-
-
+	
+	
 		BSAction toShootMissiles = ship.IntegratedDevice.Blueprint.CreateAction( "Fire", launcher);
 		ship.IntegratedDevice.Blueprint.ConnectElements( movingOrShooting, toShootMissiles );
 

@@ -14,7 +14,7 @@ public class DFriendOrFoeUnit : Device
 
 	#region device's functions
 
-	private void AddTarget( EventArgs args )
+	private IEnumerator AddTarget( EventArgs args )
 	{
 		ContainerArgs cArgs = args as ContainerArgs;
 
@@ -24,25 +24,36 @@ public class DFriendOrFoeUnit : Device
 		{
 		   	m_targets.Add( view );
 
-			view.m_contain.onDestroy += () => { RemoveTarget( new ContainerArgs() { container = view.m_contain } ); };
+			view.m_contain.onDestroy += () => 
+			{
+				Job.make( 
+					RemoveTarget( new ContainerArgs() { container = view.m_contain } )
+				).start();
+			};
 		}
+
+		yield break;
 	}
 
-	private void RemoveTarget( EventArgs args )
+	private IEnumerator RemoveTarget( EventArgs args )
 	{
 		ContainerArgs cArgs = args as ContainerArgs;
 
 		ContainerView view = cArgs.container.View;
 
 		m_targets.Remove( view );
+
+		yield break;
 	}
 
-	private void ResetTarget( EventArgs args )
+	private IEnumerator ResetTarget( EventArgs args )
 	{
 		m_targets.Clear();
+
+		yield break;
 	}
 
-	private void DesignateClosestTarget( EventArgs args )
+	private IEnumerator DesignateClosestTarget( EventArgs args )
 	{
 		ContainerView thisContainer = m_containerAttachedTo.View;
 
@@ -53,6 +64,8 @@ public class DFriendOrFoeUnit : Device
 
 			return distance1.CompareTo( distance2 );
 		});
+
+		yield break;
 	}
 
 	#endregion

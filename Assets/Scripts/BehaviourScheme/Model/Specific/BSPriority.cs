@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace BehaviourScheme
@@ -10,7 +11,7 @@ namespace BehaviourScheme
 			m_scheme.AddScheduledEvent( RescheduledEvent, null );
 		}
 
-		public void RescheduledEvent( EventArgs data )
+		public IEnumerator RescheduledEvent( EventArgs data )
 		{
 			// Traverse the first valid parent data,
 			// considering that the list is prioritized
@@ -24,6 +25,8 @@ namespace BehaviourScheme
 					break;
 				}
 			}
+
+			yield break;
 		}
 	}
 }

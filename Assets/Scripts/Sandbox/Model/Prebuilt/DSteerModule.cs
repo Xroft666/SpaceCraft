@@ -18,13 +18,17 @@ public class DSteerModule : Device
 
 	#region device's functions
 
-	public void SteerTowards( EventArgs args )
+	public IEnumerator SteerTowards( EventArgs args )
 	{
 		PositionArgs pArgs = args as PositionArgs;
 
 		Vector2 worldPos = (Vector2) pArgs.position;
 		m_targetDirection = ( worldPos - m_rigidbody.position).normalized;
+
+
 		RotateTowards();
+
+		yield break;
 	}
 
 

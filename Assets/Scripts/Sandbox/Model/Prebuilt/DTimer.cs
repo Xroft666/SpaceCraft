@@ -17,37 +17,38 @@ public class DTimer : Device
 	private float m_timer = 0f;
 	private bool m_fired = false;
 	private TextMesh m_timeText;
-
-
-	public void SetUpTimer( float time )
-	{
-		m_timerSetUp = time;
-	}
+	
 
 	#region device's functions
 	
-	public void ResetTimer( EventArgs args)
+	public IEnumerator ResetTimer( EventArgs args)
 	{
 		m_timer = 0f;
 		m_fired = false;
+
+		yield break;
 	}
 
 	#endregion
 
 	#region device's interface implementation
 
-	public override void ActivateDevice ( EventArgs args )
+	public override IEnumerator ActivateDevice ( EventArgs args )
 	{
 		m_isActive = true;
 		if( m_timeText != null )
 			m_timeText.gameObject.SetActive(true);
+
+		yield break;
 	} 
 	
-	public override void DeactivateDevice( EventArgs args )
+	public override IEnumerator DeactivateDevice( EventArgs args )
 	{
 		m_isActive = false;
 		if( m_timeText != null )
 			m_timeText.gameObject.SetActive(false);
+
+		yield break;
 	}
 
 	public override void OnDeviceInstalled()

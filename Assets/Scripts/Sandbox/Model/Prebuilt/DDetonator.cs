@@ -14,7 +14,7 @@ public class DDetonator : Device
 
 	#region Functions
 
-	public void DetonateExplosives( EventArgs args)
+	public IEnumerator DetonateExplosives( EventArgs args)
 	{
 		WorldManager.UnspawnContainer( m_containerAttachedTo );
 
@@ -36,6 +36,8 @@ public class DDetonator : Device
 		explosionGizmo.m_radius = explosionRadius;
 
 		GameObject.Destroy( explosion, Time.fixedDeltaTime );
+
+		yield break;
 	}
 
 	#endregion

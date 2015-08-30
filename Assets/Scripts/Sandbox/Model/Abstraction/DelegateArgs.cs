@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 
 namespace SpaceSandbox
 {
-	public delegate void DeviceEvent(EventArgs args);
+	public delegate IEnumerator DeviceEvent(EventArgs args);
 	public delegate bool DeviceCheck();
 
 	public class ContainerArgs : EventArgs

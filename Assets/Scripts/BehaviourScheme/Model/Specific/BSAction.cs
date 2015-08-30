@@ -13,7 +13,8 @@ namespace BehaviourScheme
 		public override void Traverse()
 		{
 			if( job != null )
-				job.Invoke( m_parentNode.m_outputData );
+			//	m_scheme.AddScheduledEvent( job, m_parentNode.m_outputData );
+				Job.make( job( m_parentNode.m_outputData ) );
 
 			if( m_connectNode != null )
 				m_connectNode.Traverse();

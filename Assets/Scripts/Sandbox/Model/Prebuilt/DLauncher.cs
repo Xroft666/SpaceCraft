@@ -18,19 +18,13 @@ public class DLauncher : Device
 
 	private float m_timer = 0f;
 
-	public void SetProjectile( EventArgs args)
-	{
-		StringArgs sArgs = args as StringArgs;
-
-		m_projectileName = sArgs.name;
-	}
 
 	#region device's functions
 
-	public void Fire( EventArgs args )
+	public IEnumerator Fire( EventArgs args )
 	{
 		if( !IsEligableToShoot() )
-			return;
+			yield break;
 
 		m_timer = 0f;
 
@@ -46,10 +40,7 @@ public class DLauncher : Device
 				                            m_containerAttachedTo.View.transform.rotation,
 				                            m_containerAttachedTo.View.m_owner );
 
-//				projectile.gameObject.layer = 10;
-
 				Collider2D collider = projectile.GetComponent<Collider2D>();
-//				collider.isTrigger = true;
 
 				Rigidbody2D rigid = projectile.GetComponent<Rigidbody2D>();
 				rigid.velocity = m_containerAttachedTo.View.GetComponent<Rigidbody2D>().velocity;
@@ -62,6 +53,8 @@ public class DLauncher : Device
 
 		if( projectileEntity != null )
 			m_containerAttachedTo.RemoveFromCargo( projectileEntity );
+
+		yield break;
 	}
 	#endregion
 
