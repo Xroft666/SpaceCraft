@@ -18,6 +18,12 @@ namespace SpaceSandbox
 
 		public MemoryStack Memory { get; private set; }
 
+		public Stack<string> executingCommandList = new Stack<string>();
+		public delegate void OnStackInitialize( IEnumerable<string> commands );
+
+		public OnStackInitialize onInitialize;
+		public Action OnJobComplete;
+
 		public List<DeviceEvent> scheduledEventsList = new List<DeviceEvent>();
 		public List<DeviceQuery> scheduledEventsDataList = new List<DeviceQuery>();
 
@@ -41,14 +47,23 @@ namespace SpaceSandbox
 
 			m_entryPoint.Traverse();
 
+			executingCommandList.Clear();
+
 			for( int i = 0; i < scheduledEventsList.Count; i++ )
 			{
 				EventArgs args = null;
 				if( scheduledEventsDataList[i] != null )
 					args = scheduledEventsDataList[i].Invoke();
 
-				m_runningJobSequence.createAndAddChildJob( scheduledEventsList[i].Invoke( args ));
+				Job thisJob = m_runningJobSequence.createAndAddChildJob( scheduledEventsList[i].Invoke( args ) );
+				thisJob.jobComplete += JobComplete;
+
+				executingCommandList.Push(scheduledEventsList[i].Method.Name);
 			}
+
+
+			if( onInitialize != null )
+				onInitialize( executingCommandList );
 
 			m_runningJobSequence.start();
 
@@ -60,13 +75,21 @@ namespace SpaceSandbox
 			yield break;
 		}
 
+		private void JobComplete( bool complete )
+		{
+
+
+			if( OnJobComplete != null )
+				OnJobComplete();
+			executingCommandList.Pop();
+		}
+
 		public void ClearEventsAndData()
 		{
 			scheduledEventsList.Clear(); 
 			scheduledEventsDataList.Clear();
 
-//			foreach( BSNode node in m_nodes )
-//				node.m_outputData = null;
+//			executingCommandList.Clear();
 		}
 
 		public BSAction CreateAction( string functionName, Device device, DeviceQuery query = null)

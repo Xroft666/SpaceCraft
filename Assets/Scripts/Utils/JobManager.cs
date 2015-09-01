@@ -44,7 +44,8 @@ public class Job
 	private bool _paused;
 	
 	public bool paused { get { return _paused; } }
-	
+
+	private Job _currentJob;
 	private IEnumerator _coroutine;
 	private bool _jobWasKilled;
 	private Stack<Job> _childJobStack;
@@ -59,7 +60,8 @@ public class Job
 	public Job (IEnumerator coroutine, bool shouldStart)
 	{
 		_coroutine = coroutine;
-		
+		_currentJob = this;
+
 		if (shouldStart)
 			start ();
 	}
@@ -93,20 +95,24 @@ public class Job
 				// run the next iteration and stop if we are done
 				if (_coroutine.MoveNext ()) {
 					yield return _coroutine.Current;
+				
 				} else {
+
+					// fire off childr complete event
+					if (_currentJob.jobComplete != null)
+						_currentJob.jobComplete (_currentJob._jobWasKilled);
+
 					// run our child jobs if we have any
 					if (_childJobStack != null && _childJobStack.Count > 0) {
-						Job childJob = _childJobStack.Pop ();
-						_coroutine = childJob._coroutine;
+
+						_currentJob = _childJobStack.Pop ();
+						_coroutine = _currentJob._coroutine;
 					} else
 						_running = false;
 				}
 			}
 		}
-		
-		// fire off a complete event
-		if (jobComplete != null)
-			jobComplete (_jobWasKilled);
+
 	}
 	
 	#region public API

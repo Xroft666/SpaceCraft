@@ -245,8 +245,6 @@ namespace SpaceSandbox
 
 		public virtual IEnumerator ActivateDevice( EventArgs args )
 		{
-			Debug.Log(EntityName + " actiated");
-
 			m_isActive = true;
 
 			foreach( Device device in m_integratedDevices )
@@ -259,8 +257,6 @@ namespace SpaceSandbox
 
 		public virtual IEnumerator DeactivateDevice( EventArgs args )
 		{
-			Debug.Log(EntityName + " disactivated");
-
 			m_isActive = false;
 			
 			foreach( Device device in m_integratedDevices )

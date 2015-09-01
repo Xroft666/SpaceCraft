@@ -18,18 +18,14 @@ public class DPatrolModule : Device
 	
 	#region device's functions
 
-	private IEnumerator WaitUntilReachedTarget( EventArgs args )
+	private IEnumerator ReachTarget( EventArgs args )
 	{
 		PositionArgs pArgs = args as PositionArgs;
-
-		Debug.Log("Patrol move started");
 
 		while( !IsCloseTo(pArgs.position) )
 		{
 			yield return null;
 		}
-
-		Debug.Log("Patrol move ended");
 
 		DeviceEvent reached = GetEvent("TargetReached");
 		if( reached != null )
@@ -38,7 +34,6 @@ public class DPatrolModule : Device
 
 	private IEnumerator SetNextPoint( EventArgs args )
 	{
-		Debug.Log("Patrol next point");
 		NextPoint();
 
 		yield break;
@@ -53,7 +48,7 @@ public class DPatrolModule : Device
 		AddEvent( "TargetPosition", null );
 		AddEvent( "TargetReached", null );
 
-		AddAction( "WaitUntilReachedTarget", WaitUntilReachedTarget );
+		AddAction( "ReachTarget", ReachTarget );
 		AddAction( "SetNextPoint", SetNextPoint );
 
 		AddQuery( "CurrentTarget", CurrentTarget );

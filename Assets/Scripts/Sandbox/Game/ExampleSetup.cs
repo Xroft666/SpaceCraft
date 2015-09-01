@@ -168,7 +168,7 @@ public class ExampleSetup : MonoBehaviour {
 		BSAction disableEngine = ship.IntegratedDevice.Blueprint.CreateAction( "DeactivateDevice", engine );
 		BSAction steerTowardsTarget = ship.IntegratedDevice.Blueprint.CreateAction( "SteerTowards", steerer, patrol.GetQuery("CurrentTarget") );
 		BSAction enableEngine = ship.IntegratedDevice.Blueprint.CreateAction( "ActivateDevice", engine );
-		BSAction waitUntilReach = ship.IntegratedDevice.Blueprint.CreateAction( "WaitUntilReachedTarget", patrol, patrol.GetQuery("CurrentTarget") );
+		BSAction waitUntilReach = ship.IntegratedDevice.Blueprint.CreateAction( "ReachTarget", patrol, patrol.GetQuery("CurrentTarget") );
 		BSAction nextPoint = ship.IntegratedDevice.Blueprint.CreateAction( "SetNextPoint", patrol );
 
 		BSSequence miningSequence = ship.IntegratedDevice.Blueprint.CreateSequence();
@@ -196,8 +196,11 @@ public class ExampleSetup : MonoBehaviour {
 		patrolSequence.AddChild(steerTowardsTarget);
 		patrolSequence.AddChild(disableEngine);
 
-
-
+//		patrolSequence.AddChild(disableEngine);
+//		patrolSequence.AddChild(steerTowardsTarget);
+//		patrolSequence.AddChild(enableEngine);
+//		patrolSequence.AddChild(waitUntilReach);
+//		patrolSequence.AddChild(nextPoint);
 
 		ContainerView shipView = WorldManager.SpawnContainer( ship, Vector3.zero, Quaternion.identity, 2 );
 		

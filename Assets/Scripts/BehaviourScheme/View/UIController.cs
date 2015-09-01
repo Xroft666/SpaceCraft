@@ -7,11 +7,18 @@ using SpaceSandbox;
 public class UIController : MonoBehaviour 
 {
 	public RectTransform m_selectListTransform;
+	public RectTransform m_commandsTransform;
 	public GameObject m_selectionGroupPrefab;
 
 	private Dictionary<ContainerView, GameObject> selections = new Dictionary<ContainerView, GameObject>();
 	private ContainerView selectedContainer = null;
 
+	private CommandsStack commands = new CommandsStack();
+
+	private void Start()
+	{
+		commands.InitializeStack(m_commandsTransform, 5);
+	}
 
 	private void Update()
 	{
@@ -27,6 +34,7 @@ public class UIController : MonoBehaviour
 		{
 			selectedContainer = null;
 			HideAllSelections();
+			commands.CleanCommandsStack();
 
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			RaycastHit2D[] hits = Physics2D.RaycastAll(ray.origin, ray.direction);
@@ -39,7 +47,11 @@ public class UIController : MonoBehaviour
 				if( view != null )
 				{
 					selectedContainer = view;
+
+					commands.InitializeContainerView(selectedContainer);
 					OnContainerSelectedEvent(selectedContainer);
+
+
 					break;
 				}
 			}

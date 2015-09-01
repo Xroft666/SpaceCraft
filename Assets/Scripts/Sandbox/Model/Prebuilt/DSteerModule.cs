@@ -12,7 +12,7 @@ public class DSteerModule : Device
 	private Rigidbody2D m_rigidbody;
 
 	// temporary variable. Should be changed to something more physical realistic
-	private float torqueSpeed = 50f;
+	private float torqueSpeed = 25f;
 
 	#region device's functions
 
@@ -23,8 +23,6 @@ public class DSteerModule : Device
 		DeviceEvent onSteerStart = GetEvent("OnSteerStart");
 		if( onSteerStart != null )
 			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onSteerStart, null );
-
-		Debug.Log("Steering started");
 
 		Vector2 worldPos = (Vector2) pArgs.position;
 
@@ -45,9 +43,7 @@ public class DSteerModule : Device
 			currentAngle = Mathf.DeltaAngle( m_rigidbody.rotation , CurrentAngle(worldPos)) ;
 	
 			yield return null;
-		} 
-		
-		Debug.Log("Steering ended");
+		}
 
 		DeviceEvent onSteerComplete = GetEvent("OnSteerComplete");
 		if( onSteerComplete != null )
