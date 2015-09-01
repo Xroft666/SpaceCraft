@@ -18,22 +18,31 @@ public class DPatrolModule : Device
 	
 	#region device's functions
 
-	public IEnumerator SetPatrolPoints( EventArgs args )
+	private IEnumerator WaitUntilReachedTarget( EventArgs args )
 	{
-		PositionsListArgs plArgs = args as PositionsListArgs;
+		PositionArgs pArgs = args as PositionArgs;
 
-		m_patrolPoints = plArgs.positions;
+		Debug.Log("Patrol move started");
+
+		while( !IsCloseTo(pArgs.position) )
+		{
+			yield return null;
+		}
+
+		Debug.Log("Patrol move ended");
+
+		DeviceEvent reached = GetEvent("TargetReached");
+		if( reached != null )
+			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( reached, null );
+	}
+
+	private IEnumerator SetNextPoint( EventArgs args )
+	{
+		Debug.Log("Patrol next point");
+		NextPoint();
 
 		yield break;
 	}
-
-	public IEnumerator CleanPatrolPoints( EventArgs args )
-	{
-		m_patrolPoints = null;
-
-		yield break;
-	}
-	
 
 	#endregion
 
@@ -42,10 +51,12 @@ public class DPatrolModule : Device
 	public override void OnDeviceInstalled()
 	{
 		AddEvent( "TargetPosition", null );
+		AddEvent( "TargetReached", null );
 
-		AddAction("SetPatrolPoints", SetPatrolPoints );
-		AddAction("CleanPatrolPoints", CleanPatrolPoints);
+		AddAction( "WaitUntilReachedTarget", WaitUntilReachedTarget );
+		AddAction( "SetNextPoint", SetNextPoint );
 
+		AddQuery( "CurrentTarget", CurrentTarget );
 	}
 
 	public override void Initialize()
@@ -55,31 +66,36 @@ public class DPatrolModule : Device
 
 	public override void Update()
 	{
-		if( m_patrolPoints == null || m_patrolPoints.Length == 0 )
-			return;
 
-		if( IsCloseTo( m_patrolPoints[currentTargetIdx] ) )
-			NextPoint();
-
-		FeedPosition();
 	}
 
 	#endregion
+
+	#region Queries
+
+	public PositionArgs CurrentTarget()
+	{
+		return new PositionArgs() { position = m_patrolPoints[currentTargetIdx] };
+	}
+
+	#endregion
+
+	#region Checks
+
+	public bool IsCloseToCurrentTarget()
+	{
+		return IsCloseTo( m_patrolPoints[currentTargetIdx] );
+	}
 
 	private bool IsCloseTo( Vector3 position )
 	{
 		return (position - m_containerAttachedTo.View.transform.position).magnitude <= distanceTreshold;
 	}
 
+	#endregion
+
 	private void NextPoint()
 	{
 		currentTargetIdx = (int) Mathf.Repeat( currentTargetIdx + 1, m_patrolPoints.Length );
-	}
-
-	private void FeedPosition()
-	{
-		DeviceEvent targetPos = GetEvent("TargetPosition");
-		if( targetPos != null )
-			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( targetPos, new PositionArgs() { position = m_patrolPoints[currentTargetIdx]} );
 	}
 }

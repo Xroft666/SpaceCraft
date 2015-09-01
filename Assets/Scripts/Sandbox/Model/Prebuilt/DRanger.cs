@@ -75,7 +75,11 @@ public class DRanger : Device
 				return;
 			}
 
-			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onEnter, new ContainerArgs(){ container = othersView.m_contain } );
+			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onEnter, 
+			() =>
+			{ 
+				return new ContainerArgs() { container = othersView.m_contain };
+			});
 		}
 	}
 
@@ -91,7 +95,11 @@ public class DRanger : Device
 				return;
 			}
 		
-			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onExit, new ContainerArgs(){ container = othersView.m_contain } );
+			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onExit, 
+			() =>
+			{ 
+				return new ContainerArgs() { container = othersView.m_contain };
+			});
 		}
 	}
 

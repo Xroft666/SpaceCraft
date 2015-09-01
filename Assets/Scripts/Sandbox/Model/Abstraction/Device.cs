@@ -18,6 +18,9 @@ namespace SpaceSandbox
 		public Device()
 		{
 			Blueprint = new BlueprintScheme();
+
+			AddEvent("RootEntry", null );
+			Blueprint.m_entryPoint = Blueprint.CreateEntry( "RootEntry", this );
 		}
 
 		protected Ship m_containerAttachedTo = null;
@@ -35,16 +38,11 @@ namespace SpaceSandbox
 		/// </summary>
 		protected List<Device> m_integratedDevices = new List<Device>();
 
-		/// <summary>
-		/// The m_functions. List of functions that are exposed to the logic scheme
-		/// </summary>
-		protected Dictionary<string, DeviceEvent> m_actions = new Dictionary<string, DeviceEvent>();
-		/// <summary>
-		/// The m_events. List of trigger events that are exposed to the logic scheme
-		/// </summary>
-		public Dictionary<string, DeviceEvent> m_events = new Dictionary<string, DeviceEvent>();
 
+		public Dictionary<string, DeviceEvent> m_actions = new Dictionary<string, DeviceEvent>();
+		public Dictionary<string, DeviceEvent> m_events = new Dictionary<string, DeviceEvent>();
 		public Dictionary<string, DeviceCheck> m_checks = new Dictionary<string, DeviceCheck>();
+		public Dictionary<string, DeviceQuery> m_queries = new Dictionary<string, DeviceQuery>();
 
 		public void AssignContainer( Ship container )
 		{
@@ -116,6 +114,25 @@ namespace SpaceSandbox
 		public void RemoveFunction ( string name )
 		{
 			m_actions.Remove( name );
+		}
+
+
+		public void AddQuery ( string name, DeviceQuery query )
+		{
+			m_queries.Add( name, query );
+		}
+		
+		public DeviceQuery GetQuery ( string name )
+		{
+			if( string.IsNullOrEmpty( name ) )
+			   return null;
+
+			return m_queries[name];
+		}
+		
+		public void RemoveQuery ( string name )
+		{
+			m_queries.Remove( name );
 		}
 
 
@@ -204,16 +221,17 @@ namespace SpaceSandbox
 		}
 
 
-		public void ScheduleEvent(DeviceEvent evt, EventArgs data)
+		public void ScheduleEvent(DeviceEvent evt, DeviceQuery data = null)
 		{
 			Blueprint.AddScheduledEvent( evt, data );
 		}
 
 		public void ExecuteLogic()
 		{
-			Job.make( Blueprint.ExecuteSceduledEvents()).startAsCoroutine();
-			foreach( Device device in m_integratedDevices )
-				device.ExecuteLogic();
+//			ScheduleEvent( GetEvent( "RootEntry" ) );
+			Blueprint.ExecuteSceduledEvents();
+//			foreach( Device device in m_integratedDevices )
+//				device.ExecuteLogic();
 		}
 
 		public void CleanScheduledEvents()
@@ -227,6 +245,8 @@ namespace SpaceSandbox
 
 		public virtual IEnumerator ActivateDevice( EventArgs args )
 		{
+			Debug.Log(EntityName + " actiated");
+
 			m_isActive = true;
 
 			foreach( Device device in m_integratedDevices )
@@ -239,6 +259,8 @@ namespace SpaceSandbox
 
 		public virtual IEnumerator DeactivateDevice( EventArgs args )
 		{
+			Debug.Log(EntityName + " disactivated");
+
 			m_isActive = false;
 			
 			foreach( Device device in m_integratedDevices )

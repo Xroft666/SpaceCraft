@@ -10,11 +10,9 @@ using SpaceSandbox;
 public class DSteerModule : Device 
 {
 	private Rigidbody2D m_rigidbody;
-	private Vector3 m_targetDirection = Vector3.up;
 
 	// temporary variable. Should be changed to something more physical realistic
-	private float torqueSpeed = 100f;
-	private float angleTreshold = 5f;
+	private float torqueSpeed = 50f;
 
 	#region device's functions
 
@@ -22,13 +20,38 @@ public class DSteerModule : Device
 	{
 		PositionArgs pArgs = args as PositionArgs;
 
+		DeviceEvent onSteerStart = GetEvent("OnSteerStart");
+		if( onSteerStart != null )
+			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onSteerStart, null );
+
+		Debug.Log("Steering started");
+
 		Vector2 worldPos = (Vector2) pArgs.position;
-		m_targetDirection = ( worldPos - m_rigidbody.position).normalized;
 
+		m_rigidbody.angularVelocity = 0f;
+		m_rigidbody.rotation = Mathf.Repeat( m_rigidbody.rotation, 360f );
 
-		RotateTowards();
+		float prevAngle = 1f;
+		float currentAngle = 0f;
 
-		yield break;
+		while ( Mathf.Abs(currentAngle) < Mathf.Abs(prevAngle) )
+		{
+			prevAngle = Mathf.DeltaAngle( m_rigidbody.rotation , CurrentAngle(worldPos)) ;
+			m_rigidbody.rotation =
+						Mathf.MoveTowardsAngle( m_rigidbody.rotation, 
+			            CurrentAngle(worldPos), 
+			            torqueSpeed * Time.deltaTime );
+
+			currentAngle = Mathf.DeltaAngle( m_rigidbody.rotation , CurrentAngle(worldPos)) ;
+	
+			yield return null;
+		} 
+		
+		Debug.Log("Steering ended");
+
+		DeviceEvent onSteerComplete = GetEvent("OnSteerComplete");
+		if( onSteerComplete != null )
+			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onSteerComplete, null );
 	}
 
 
@@ -38,7 +61,7 @@ public class DSteerModule : Device
 
 	public override void OnDeviceInstalled()
 	{
-		AddEvent("OnSteering", null );
+		AddEvent("OnSteerStart", null );
 		AddEvent("OnSteerComplete", null );
 
 		AddAction("SteerTowards", SteerTowards );
@@ -51,32 +74,15 @@ public class DSteerModule : Device
 
 	public override void Update()
 	{
-		float angle = Mathf.Abs(m_rigidbody.rotation - CurrentAngle());
-		if( Mathf.Repeat( angle, 360f) < angleTreshold )
-		{
-			DeviceEvent onSteerComplete = GetEvent("OnSteerComplete");
-			if( onSteerComplete != null )
-				m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onSteerComplete, null );
 
-		}
-		else
-		{
-			DeviceEvent onSteering = GetEvent("OnSteering");
-			if( onSteering != null )
-				m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onSteering, null );
-		}
 	}
 
 	#endregion
 
-	private void RotateTowards()
-	{
-		m_rigidbody.angularVelocity = 0f;
-		m_rigidbody.rotation = Mathf.MoveTowardsAngle( m_rigidbody.rotation, CurrentAngle(), torqueSpeed * Time.deltaTime );
-	}
 
-	private float CurrentAngle()
+	private float CurrentAngle( Vector3 worldPos )
 	{
-		return Mathf.Atan2(m_targetDirection.y, m_targetDirection.x) * Mathf.Rad2Deg - 90f;
+		Vector3 direction = ( (Vector2) worldPos - m_rigidbody.position).normalized;
+		return Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
 	}
 }

@@ -9,7 +9,7 @@ namespace BehaviourScheme
 		protected BSNode m_parentNode = null;
 		protected BSNode m_connectNode = null;
 
-		public EventArgs m_outputData = null;
+//		public EventArgs m_outputData = null;
 
 		public BSNode GetConnectedNode()
 		{

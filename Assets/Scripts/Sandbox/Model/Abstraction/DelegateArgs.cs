@@ -6,6 +6,7 @@ namespace SpaceSandbox
 {
 	public delegate IEnumerator DeviceEvent(EventArgs args);
 	public delegate bool DeviceCheck();
+	public delegate EventArgs DeviceQuery();
 
 	public class ContainerArgs : EventArgs
 	{

@@ -79,6 +79,15 @@ public class DFriendOrFoeUnit : Device
 
 	#endregion
 
+	#region Queries
+
+	public PositionArgs CurrentTarget()
+	{
+		return new PositionArgs(){ position = m_targets[0].transform.position };
+	}
+
+	#endregion
+
 	#region device's interface implementation
 
 	public override void OnDeviceInstalled()
@@ -92,6 +101,8 @@ public class DFriendOrFoeUnit : Device
 		AddAction("DesignateClosestTarget", DesignateClosestTarget);
 
 		AddCheck("IsAnyTarget", IsAnyTarget );
+
+		AddQuery("CurrentTarget", CurrentTarget);
 	}
 
 	public override void Initialize()
@@ -101,11 +112,11 @@ public class DFriendOrFoeUnit : Device
 
 	public override void Update()
 	{
-		DeviceEvent targetPos = GetEvent("TargetPosition");
-		if( targetPos != null && m_targets.Count > 0 )
-		{
-			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( targetPos, new PositionArgs() { position = m_targets[0].transform.position } );
-		}
+//		DeviceEvent targetPos = GetEvent("TargetPosition");
+//		if( targetPos != null && m_targets.Count > 0 )
+//		{
+//			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( targetPos, CurrentTarget );
+//		}
 	}
 
 	#endregion

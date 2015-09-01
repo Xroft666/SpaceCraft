@@ -3,7 +3,17 @@ using System.Collections.Generic;
 
 using SpaceSandbox;
 
-public class Ship : Container {
+public class Ship : Container 
+{
+	public Ship()
+	{
+		m_cargo = new Cargo();
+
+		m_integratedDevice = new Device();
+		m_integratedDevice.AssignContainer( this );
+
+		m_integratedDevice.AddCheck( "IsCargoFull", m_cargo.IsCargoFull );
+	}
 
 	/// <summary>
 	/// The m_cargo. The inventory of this specific container
@@ -27,8 +37,10 @@ public class Ship : Container {
 		{
 			if( m_integratedDevice == null )
 			{
-				m_integratedDevice = new Device();
-				m_integratedDevice.AssignContainer( this );
+	//			m_integratedDevice = new Device();
+	//			m_integratedDevice.AssignContainer( this );
+
+				Debug.LogError(" Integrated device not initialized ");
 			}
 			
 			return m_integratedDevice;
@@ -115,7 +127,7 @@ public class Ship : Container {
 
 	public override void LateUpdate()
 	{
-		IntegratedDevice.CleanScheduledEvents();
+//		IntegratedDevice.CleanScheduledEvents();
 	}
 
 	public override void OnDrawGizmos(){}

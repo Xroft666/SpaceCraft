@@ -18,9 +18,9 @@ namespace BehaviourScheme
 
 			foreach( BSNode node in m_parents )
 			{
-				if( node.m_outputData != null )
+	//			if( node.m_outputData != null )
 				{
-					m_outputData = node.m_outputData;
+	//				m_outputData = node.m_outputData;
 					m_connectNode.Traverse();
 					break;
 				}

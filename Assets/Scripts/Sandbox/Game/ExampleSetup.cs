@@ -23,7 +23,7 @@ public class ExampleSetup : MonoBehaviour {
 		// Generating missiles
 		for( int i = 0; i < 20; i++ )
 		{
-			patrol.AddToCargo( GenerateMissile() );
+//			patrol.AddToCargo( GenerateMissile() );
 //			ship.AddToCargo( GenerateMissile() );
 		}
 
@@ -162,51 +162,42 @@ public class ExampleSetup : MonoBehaviour {
 		ship.IntegratedDevice.IntegrateDevice( launcher );
 
 
-		BSEntry inRange = ship.IntegratedDevice.Blueprint.CreateEntry( "enemydetector/ranger/OnRangerEntered", ship.IntegratedDevice );
-		BSAction toFollow = ship.IntegratedDevice.Blueprint.CreateAction( "enemydetector/radar/AddTarget", ship.IntegratedDevice );
-		ship.IntegratedDevice.Blueprint.ConnectElements( inRange, toFollow );
-		
-		BSEntry outRange = ship.IntegratedDevice.Blueprint.CreateEntry( "enemydetector/ranger/OnRangerEscaped", ship.IntegratedDevice );
-		BSAction toNullTarget = ship.IntegratedDevice.Blueprint.CreateAction( "enemydetector/radar/RemoveTarget", ship.IntegratedDevice );
-		ship.IntegratedDevice.Blueprint.ConnectElements( outRange, toNullTarget );
+		BSBranch rootDecision = ship.IntegratedDevice.Blueprint.CreateBranch();
+
+		BSSequence patrolSequence = ship.IntegratedDevice.Blueprint.CreateSequence(); 
+		BSAction disableEngine = ship.IntegratedDevice.Blueprint.CreateAction( "DeactivateDevice", engine );
+		BSAction steerTowardsTarget = ship.IntegratedDevice.Blueprint.CreateAction( "SteerTowards", steerer, patrol.GetQuery("CurrentTarget") );
+		BSAction enableEngine = ship.IntegratedDevice.Blueprint.CreateAction( "ActivateDevice", engine );
+		BSAction waitUntilReach = ship.IntegratedDevice.Blueprint.CreateAction( "WaitUntilReachedTarget", patrol, patrol.GetQuery("CurrentTarget") );
+		BSAction nextPoint = ship.IntegratedDevice.Blueprint.CreateAction( "SetNextPoint", patrol );
+
+		BSSequence miningSequence = ship.IntegratedDevice.Blueprint.CreateSequence();
+		BSAction steerTowardsShootingTarget = 
+			ship.IntegratedDevice.Blueprint.CreateAction( "SteerTowards", steerer, 
+			                                              ship.IntegratedDevice.GetInternalDevice("enemydetector/radar").GetQuery("CurrentTarget") );
+		BSAction shootTarget = ship.IntegratedDevice.Blueprint.CreateAction( "Fire", launcher );
 
 
-		// Selecting movement target (player / patrol point )
-		
-		BSEntry onPatrol = ship.IntegratedDevice.Blueprint.CreateEntry( "patrol/TargetPosition", ship.IntegratedDevice);
-		BSEntry onEnemyChasing = ship.IntegratedDevice.Blueprint.CreateEntry( "enemydetector/radar/TargetPosition", ship.IntegratedDevice);
+		ship.IntegratedDevice.Blueprint.m_entryPoint.AddChild(rootDecision);
+
+//		rootDecision.AddCondition( ship.IntegratedDevice.GetCheck( "IsCargoFull") );
+		rootDecision.AddCondition( ship.IntegratedDevice.GetInternalDevice("enemydetector/radar").GetCheck("IsAnyTarget") );
+
+		rootDecision.AddChild(miningSequence);
+		rootDecision.AddChild(patrolSequence);
+
+		miningSequence.AddChild( disableEngine );
+		miningSequence.AddChild( steerTowardsShootingTarget );
+		miningSequence.AddChild( shootTarget );
+
+		patrolSequence.AddChild(nextPoint);
+		patrolSequence.AddChild(waitUntilReach);
+		patrolSequence.AddChild(enableEngine);
+		patrolSequence.AddChild(steerTowardsTarget);
+		patrolSequence.AddChild(disableEngine);
 
 
-		BSPriority patrolPriority = ship.IntegratedDevice.Blueprint.CreatePriority();
-		ship.IntegratedDevice.Blueprint.ConnectElements( onEnemyChasing, patrolPriority );
-		ship.IntegratedDevice.Blueprint.ConnectElements( onPatrol, patrolPriority );
 
-
-		BSAction toSteerToEnemy = ship.IntegratedDevice.Blueprint.CreateAction( "steerer/SteerTowards", ship.IntegratedDevice);
-		ship.IntegratedDevice.Blueprint.ConnectElements( patrolPriority, toSteerToEnemy );
-
-
-
-		// Thrust mechanics 
-
-		BSEntry onSteering = ship.IntegratedDevice.Blueprint.CreateEntry( "OnSteering", steerer);
-		BSAction toDisableEngine = ship.IntegratedDevice.Blueprint.CreateAction( "DeactivateDevice", engine);
-		ship.IntegratedDevice.Blueprint.ConnectElements( onSteering, toDisableEngine );
-
-
-		BSEntry onSteerComplete = ship.IntegratedDevice.Blueprint.CreateEntry( "OnSteerComplete", steerer);
-
-		BSBranch movingOrShooting = ship.IntegratedDevice.Blueprint.CreateBranch();
-		movingOrShooting.AddCondition( ship.IntegratedDevice.GetInternalDevice("enemydetector/radar").GetCheck("IsAnyTarget") );
-	
-		ship.IntegratedDevice.Blueprint.ConnectElements( onSteerComplete, movingOrShooting );
-	
-	
-		BSAction toShootMissiles = ship.IntegratedDevice.Blueprint.CreateAction( "Fire", launcher);
-		ship.IntegratedDevice.Blueprint.ConnectElements( movingOrShooting, toShootMissiles );
-
-		BSAction toEnableEngine = ship.IntegratedDevice.Blueprint.CreateAction( "ActivateDevice", engine);
-		ship.IntegratedDevice.Blueprint.ConnectElements( movingOrShooting, toEnableEngine );
 
 		ContainerView shipView = WorldManager.SpawnContainer( ship, Vector3.zero, Quaternion.identity, 2 );
 		

@@ -19,23 +19,44 @@ namespace SpaceSandbox
 		public MemoryStack Memory { get; private set; }
 
 		public List<DeviceEvent> scheduledEventsList = new List<DeviceEvent>();
-		public List<EventArgs> scheduledEventsDataList = new List<EventArgs>();
+		public List<DeviceQuery> scheduledEventsDataList = new List<DeviceQuery>();
 
 		public List<BSNode> m_nodes = new List<BSNode>();
 
-		public void AddScheduledEvent(DeviceEvent evt, EventArgs data)
+		public BSEntry m_entryPoint;
+		private Job m_runningJobSequence;
+
+		public void AddScheduledEvent(DeviceEvent evt, DeviceQuery data)
 		{
 			scheduledEventsList.Add( evt );
 			scheduledEventsDataList.Add( data );
 		}
 
-		public IEnumerator ExecuteSceduledEvents()
+		public void ExecuteSceduledEvents()
 		{
+			if( m_runningJobSequence != null && m_runningJobSequence.running )
+				return;
+
+			m_runningJobSequence = Job.make( JobsContainer() );
+
+			m_entryPoint.Traverse();
+
 			for( int i = 0; i < scheduledEventsList.Count; i++ )
 			{
-				yield return Job.make( scheduledEventsList[i].Invoke( scheduledEventsDataList[i]) ).startAsCoroutine();
+				EventArgs args = null;
+				if( scheduledEventsDataList[i] != null )
+					args = scheduledEventsDataList[i].Invoke();
+
+				m_runningJobSequence.createAndAddChildJob( scheduledEventsList[i].Invoke( args ));
 			}
 
+			m_runningJobSequence.start();
+
+			ClearEventsAndData();
+		}
+
+		private IEnumerator JobsContainer()
+		{
 			yield break;
 		}
 
@@ -44,38 +65,15 @@ namespace SpaceSandbox
 			scheduledEventsList.Clear(); 
 			scheduledEventsDataList.Clear();
 
-			foreach( BSNode node in m_nodes )
-				node.m_outputData = null;
+//			foreach( BSNode node in m_nodes )
+//				node.m_outputData = null;
 		}
 
-		public BSAction CreateAction( string functionName, Device device)
+		public BSAction CreateAction( string functionName, Device device, DeviceQuery query = null)
 		{
-			bool existenceFlag = false;
-
-			// Search for an integrated inclusive device
-			string[] hierarchy = functionName.Split('/');
-			for( int i = 0; i < hierarchy.Length - 1; i++ )
-			{
-				existenceFlag = false;
-				foreach( Device inclusiveDevice in device.GetDevicesList() )
-				{
-					if( inclusiveDevice.EntityName.Equals( hierarchy[i] ) )
-					{
-						existenceFlag = true;
-						device = inclusiveDevice;
-						break;
-					}
-				}
-			}
-
-			if( !existenceFlag && hierarchy.Length > 1 )
-			{
-				Debug.LogError(hierarchy[hierarchy.Length-2] + " device wasn't installed");
-				return null;
-			}
 
 			BSAction node = new BSAction() { m_scheme = this };
-			node.SetAction( device.GetFunction( hierarchy[hierarchy.Length-1] ) );
+			node.SetAction( device.GetFunction(functionName), query );
 
 			m_nodes.Add(node);
 			return node;
@@ -83,32 +81,8 @@ namespace SpaceSandbox
 		
 		public BSEntry CreateEntry( string eventName, Device device)
 		{
-			bool existenceFlag = false;
-
-			// Search for an integrated inclusive device
-			string[] hierarchy = eventName.Split('/');
-			for( int i = 0; i < hierarchy.Length - 1; i++ )
-			{
-				existenceFlag = false;
-				foreach( Device inclusiveDevice in device.GetDevicesList() )
-				{
-					if( inclusiveDevice.EntityName.Equals( hierarchy[i] ) )
-					{
-						existenceFlag = true;
-						device = inclusiveDevice;
-						break;
-					}
-				}
-			}
-
-			if( !existenceFlag && hierarchy.Length > 1 )
-			{
-				Debug.LogError(hierarchy[hierarchy.Length-2] + " device wasn't installed");
-				return null;
-			}
-
 			BSEntry node = new BSEntry() { m_scheme = this };
-			device.m_events[hierarchy[hierarchy.Length-1]] += node.Initialize ;
+			device.m_events[eventName] += node.Initialize ;
 		
 			m_nodes.Add(node);
 			return node;
@@ -128,6 +102,14 @@ namespace SpaceSandbox
 		{
 			BSBranch node = new BSBranch() { m_scheme = this };
 
+			m_nodes.Add(node);
+			return node;
+		}
+
+		public BSSequence CreateSequence()
+		{
+			BSSequence node = new BSSequence() { m_scheme = this };
+			
 			m_nodes.Add(node);
 			return node;
 		}

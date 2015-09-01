@@ -51,7 +51,8 @@ public class DEngine : Device
 	public override void Update()
 	{
 		if( m_isActive )
-			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( MoveForward, null );
+//			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( MoveForward, null );
+			ApplyForce();
 	}
 
 	public override void Destroy()

@@ -14,28 +14,22 @@ public class DLauncher : Device
 	// which should be somewhat different
 	// Exportable variable
 	public string m_projectileName;
-	public float fireRate = 0.5f;	// projectiles a second
-
-	private float m_timer = 0f;
 
 
 	#region device's functions
 
 	public IEnumerator Fire( EventArgs args )
 	{
-		if( !IsEligableToShoot() )
-			yield break;
-
-		m_timer = 0f;
-
 		Entity projectileEntity = null;
+		ContainerView projectile = null;
+
 		foreach( Entity ent in m_containerAttachedTo.GetCargoList() )
 		{
 			Container cont = ent as Container;
 			if( cont != null && ent.EntityName == m_projectileName )
 			{
 				projectileEntity = ent;
-				ContainerView projectile =  WorldManager.SpawnContainer(cont, 
+				projectile =  WorldManager.SpawnContainer(cont, 
 				                            m_containerAttachedTo.View.transform.position + m_containerAttachedTo.View.transform.up,
 				                            m_containerAttachedTo.View.transform.rotation,
 				                            m_containerAttachedTo.View.m_owner );
@@ -52,9 +46,19 @@ public class DLauncher : Device
 		}
 
 		if( projectileEntity != null )
+		{
+			Debug.Log("Missile launch started");
+
 			m_containerAttachedTo.RemoveFromCargo( projectileEntity );
 
-		yield break;
+			while( !WorldManager.IsContainerDestroyed(projectile) )
+			{
+				yield return null;
+			}
+
+			Debug.Log("Missile launch ended");
+		}
+
 	}
 	#endregion
 
@@ -72,13 +76,8 @@ public class DLauncher : Device
 
 	public override void Update()
 	{
-		m_timer += Time.deltaTime; 
+
 	}
 
 	#endregion
-
-	private bool IsEligableToShoot()
-	{
-		return m_timer > 1f / fireRate;
-	}
 }

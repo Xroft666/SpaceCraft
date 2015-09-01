@@ -44,7 +44,11 @@ public class WorldManager : MonoBehaviour
 
 		astr.View.transform.position = position;
 		astr.View.transform.rotation = Quaternion.Euler( 0f, 0f, rotation);
+	}
 
+	public static bool IsContainerDestroyed( ContainerView view )
+	{
+		return !view.gameObject.activeInHierarchy;
 	}
 	
 	private void Awake()
@@ -52,8 +56,4 @@ public class WorldManager : MonoBehaviour
 		World = this;
 	}
 
-	public bool IsContainerDestroyed( ContainerView view )
-	{
-		return !view.gameObject.activeInHierarchy;
-	}
 }

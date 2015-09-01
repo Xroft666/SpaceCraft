@@ -23,6 +23,8 @@ public class DInputModule : Device
 
 		AddEvent( "OnMouseScreenPosition", null );
 		AddEvent( "OnMouseWorldPosition", null );
+
+		AddQuery( "MouseWorldPosition", MouseWorldPosition );
 	}
 	
 
@@ -33,35 +35,44 @@ public class DInputModule : Device
 		{
 			DeviceEvent onPressed = GetEvent("OnInputPressed");
 			if( onPressed != null )
-				m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onPressed, new KeyCodeArgs() { key = m_keyCode} );
+				m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onPressed );
 		}
 		if( Input.GetKeyUp(m_keyCode) )
 		{
 			DeviceEvent onReleased = GetEvent("OnInputReleased");
 			if( onReleased != null )
-				m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onReleased, new KeyCodeArgs() { key = m_keyCode} );
+				m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onReleased );
 		}
 		if( Input.GetKey(m_keyCode) )
 		{
 			DeviceEvent onHeld = GetEvent("OnInputHeld");
 			if( onHeld != null )
-				m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onHeld, new KeyCodeArgs() { key = m_keyCode} );
+				m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onHeld );
 		}
 
 		// Mouse cursor events
-		DeviceEvent screenPos = GetEvent("OnMouseScreenPosition");
-		if( screenPos != null )
-			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( screenPos, new PositionArgs() { position = Input.mousePosition} );
+//		DeviceEvent screenPos = GetEvent("OnMouseScreenPosition");
+//		if( screenPos != null )
+//			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( screenPos );
+//
+//		DeviceEvent worldScreenPos = GetEvent("OnMouseWorldPosition");
+//		if( worldScreenPos != null )
+//		{                                           
+//			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( worldScreenPos, MouseWorldPosition );
+//		}
+	}
 
-		DeviceEvent worldScreenPos = GetEvent("OnMouseWorldPosition");
-		if( worldScreenPos != null )
-		{
-			Vector3 mousePos = new Vector3( Input.mousePosition.x, 
-			                              	Input.mousePosition.y, 
-			                               -Camera.main.transform.position.z);
-			                                             
-			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( worldScreenPos, new PositionArgs() { position = Camera.main.ScreenToWorldPoint(mousePos)} );
-		}
+	#endregion
+
+	#region Queries
+
+	private PositionArgs MouseWorldPosition()
+	{
+		Vector3 mousePos = new Vector3( Input.mousePosition.x, 
+		                               Input.mousePosition.y, 
+		                               -Camera.main.transform.position.z);
+
+		return new PositionArgs() { position = Camera.main.ScreenToWorldPoint(mousePos)};
 	}
 
 	#endregion

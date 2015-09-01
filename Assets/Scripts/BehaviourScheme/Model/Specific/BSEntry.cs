@@ -7,7 +7,7 @@ namespace BehaviourScheme
 	{
 		public IEnumerator Initialize( EventArgs data )
 		{
-			m_outputData = data;
+	//		m_outputData = data;
 			Traverse();
 
 			yield break;
