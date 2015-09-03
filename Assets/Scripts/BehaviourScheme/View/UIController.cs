@@ -97,16 +97,6 @@ public class UIController : MonoBehaviour
 		
 		Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize + Input.GetAxis( "Mouse ScrollWheel"), 1f, 10f);
 	}
-	
-	public void OnGUI()
-	{
-		GUILayout.Label("WASD to move your ship");
-		GUILayout.Label("Space to fire missiles");
-		GUILayout.Label("Arrows to move your camera");
-		GUILayout.Label("Select any object to have your camera focused on it");
-		GUILayout.Label("Scroll to zoom");
-		GUILayout.Label("R to restart");
-	}
 
 	private void UpdateSelections()
 	{
@@ -160,6 +150,7 @@ public class UIController : MonoBehaviour
 		
 		selections.Add( container, newSelection );
 	}
+	
 
 	private void OnDestroy()
 	{

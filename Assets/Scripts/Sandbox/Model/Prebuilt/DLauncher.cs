@@ -47,16 +47,12 @@ public class DLauncher : Device
 
 		if( projectileEntity != null )
 		{
-			Debug.Log("Missile launch started");
-
 			m_containerAttachedTo.RemoveFromCargo( projectileEntity );
 
 			while( !WorldManager.IsContainerDestroyed(projectile) )
 			{
 				yield return null;
 			}
-
-			Debug.Log("Missile launch ended");
 		}
 
 	}

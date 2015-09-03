@@ -23,8 +23,8 @@ namespace SpaceSandbox
 			Blueprint.m_entryPoint = Blueprint.CreateEntry( "RootEntry", this );
 		}
 
-		protected Ship m_containerAttachedTo = null;
-		protected bool m_isActive = true;
+		public Ship m_containerAttachedTo = null;
+		public bool m_isActive = true;
 
 		/// <summary>
 		/// The m_blueprint. The blueprint logic scheme storage.
@@ -230,8 +230,8 @@ namespace SpaceSandbox
 		{
 //			ScheduleEvent( GetEvent( "RootEntry" ) );
 			Blueprint.ExecuteSceduledEvents();
-//			foreach( Device device in m_integratedDevices )
-//				device.ExecuteLogic();
+			foreach( Device device in m_integratedDevices )
+				device.ExecuteLogic();
 		}
 
 		public void CleanScheduledEvents()

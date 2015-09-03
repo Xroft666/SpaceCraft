@@ -12,12 +12,18 @@ public class DRanger : Device
 	// Exportable variable
 	public float detectionRange = 3f;
 
+	private List<ContainerView> m_targets = new List<ContainerView>();
+
 	private CircleCollider2D m_collider = null;
 
 	public override void OnDeviceInstalled()
 	{
 		AddEvent( "OnRangerEntered", null );
 		AddEvent( "OnRangerEscaped", null );
+
+		AddAction("DesignateClosestTarget", DesignateClosestTarget);	
+		AddCheck("IsAnyTarget", IsAnyTarget );	
+		AddQuery("CurrentTarget", CurrentTarget);
 	}
 
 	public override IEnumerator ActivateDevice ( EventArgs args )
@@ -26,6 +32,7 @@ public class DRanger : Device
 		if( m_collider != null )
 			m_collider.enabled = true;
 
+		m_targets.Clear();
 		yield break;
 	} 
 
@@ -35,8 +42,46 @@ public class DRanger : Device
 		if( m_collider != null )
 			m_collider.enabled = false;
 
+		m_targets.Clear();
+
 		yield break;
 	}
+
+	private IEnumerator DesignateClosestTarget( EventArgs args )
+	{
+		ContainerView thisContainer = m_containerAttachedTo.View;
+		
+		m_targets.Sort( ( ContainerView x, ContainerView y ) =>
+		               {
+			float distance1 = (thisContainer.transform.position - x.transform.position).magnitude;
+			float distance2 = (thisContainer.transform.position - y.transform.position).magnitude;
+			
+			return distance1.CompareTo( distance2 );
+		});
+		
+		yield break;
+	}
+
+	#region Predecates 
+	
+	public bool IsAnyTarget()
+	{
+		return m_targets.Count > 0;
+	}
+	
+	#endregion
+	
+	#region Queries
+	
+	public PositionArgs CurrentTarget()
+	{
+		if( m_targets.Count == 0 )
+			return null;
+		
+		return new PositionArgs(){ position = m_targets[0].transform.position };
+	}
+	
+	#endregion
 
 	public override void Initialize ()
 	{
@@ -65,8 +110,8 @@ public class DRanger : Device
 
 	private void OnColliderEntered( Collider2D other )
 	{
-		DeviceEvent onEnter = GetEvent("OnRangerEntered");
-		if( onEnter != null && !IsColliderMine( other ))
+
+		if( !IsColliderMine( other ))
 		{
 			ContainerView othersView = other.gameObject.GetComponent<ContainerView>();
 			if( othersView == null )
@@ -75,18 +120,25 @@ public class DRanger : Device
 				return;
 			}
 
-			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onEnter, 
-			() =>
-			{ 
-				return new ContainerArgs() { container = othersView.m_contain };
-			});
+			if(  m_containerAttachedTo.View.m_owner == 0 || othersView.m_owner != m_containerAttachedTo.View.m_owner )
+			{
+				DeviceEvent onEnter = GetEvent("OnRangerEntered");
+				if( onEnter != null )
+				/*m_containerAttachedTo.IntegratedDevice.*/ScheduleEvent( onEnter, null);
+
+				m_targets.Add( othersView );
+				
+				othersView.m_contain.onDestroy += () => 
+				{
+					m_targets.Remove( othersView );
+				};
+			}
 		}
 	}
 
 	private void OnColliderEscaped( Collider2D other )
 	{
-		DeviceEvent onExit = GetEvent("OnRangerEscaped");
-		if( onExit != null && !IsColliderMine( other ))
+		if( !IsColliderMine( other ))
 		{
 			ContainerView othersView = other.gameObject.GetComponent<ContainerView>();
 			if( othersView == null )
@@ -94,18 +146,17 @@ public class DRanger : Device
 				Debug.LogWarning("Unexpected interaction with: " + other.gameObject.name);
 				return;
 			}
-		
-			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onExit, 
-			() =>
-			{ 
-				return new ContainerArgs() { container = othersView.m_contain };
-			});
+
+			DeviceEvent onExit = GetEvent("OnRangerEscaped");
+			if( onExit != null )
+			/*m_containerAttachedTo.IntegratedDevice.*/ScheduleEvent( onExit, null);
+			m_targets.Remove( othersView );
 		}
 	}
 
 	private bool IsColliderMine(Collider2D collider)
 	{
 		// check all the colliders on the container
-		return m_containerAttachedTo.View.gameObject == collider.gameObject;
+		return m_containerAttachedTo.View.gameObject == collider.transform.root.gameObject;
 	}
 }

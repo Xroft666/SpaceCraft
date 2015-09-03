@@ -9,7 +9,7 @@ using SpaceSandbox;
 
 public class DFriendOrFoeUnit : Device 
 {
-	private List<ContainerView> m_targets = new List<ContainerView>();
+
 
 
 	#region device's functions
@@ -20,17 +20,7 @@ public class DFriendOrFoeUnit : Device
 
 		ContainerView view = cArgs.container.View;
 
-		if( view.m_owner != m_containerAttachedTo.View.m_owner )
-		{
-		   	m_targets.Add( view );
 
-			view.m_contain.onDestroy += () => 
-			{
-				Job.make( 
-					RemoveTarget( new ContainerArgs() { container = view.m_contain } )
-				).start();
-			};
-		}
 
 		yield break;
 	}
@@ -41,52 +31,23 @@ public class DFriendOrFoeUnit : Device
 
 		ContainerView view = cArgs.container.View;
 
-		m_targets.Remove( view );
+
 
 		yield break;
 	}
 
 	private IEnumerator ResetTarget( EventArgs args )
 	{
-		m_targets.Clear();
+//		m_targets.Clear();
 
 		yield break;
 	}
 
-	private IEnumerator DesignateClosestTarget( EventArgs args )
-	{
-		ContainerView thisContainer = m_containerAttachedTo.View;
 
-		m_targets.Sort( ( ContainerView x, ContainerView y ) =>
-		{
-			float distance1 = (thisContainer.transform.position - x.transform.position).magnitude;
-			float distance2 = (thisContainer.transform.position - y.transform.position).magnitude;
-
-			return distance1.CompareTo( distance2 );
-		});
-
-		yield break;
-	}
 
 	#endregion
 
-	#region Predecates 
 
-	public bool IsAnyTarget()
-	{
-		return m_targets.Count > 0;
-	}
-
-	#endregion
-
-	#region Queries
-
-	public PositionArgs CurrentTarget()
-	{
-		return new PositionArgs(){ position = m_targets[0].transform.position };
-	}
-
-	#endregion
 
 	#region device's interface implementation
 
@@ -98,11 +59,7 @@ public class DFriendOrFoeUnit : Device
 		AddAction("RemoveTarget", RemoveTarget);
 		AddAction("ResetTarget", ResetTarget);
 
-		AddAction("DesignateClosestTarget", DesignateClosestTarget);
 
-		AddCheck("IsAnyTarget", IsAnyTarget );
-
-		AddQuery("CurrentTarget", CurrentTarget);
 	}
 
 	public override void Initialize()

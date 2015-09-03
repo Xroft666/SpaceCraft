@@ -43,10 +43,14 @@ public class CommandsStack
 
 	public void InitializeContainerView( ContainerView view )
 	{
+		Ship ship = view.m_contain as Ship;
+		if( ship == null )
+			return;
+
 		m_view = view;
 
-		(m_view.m_contain as Ship).IntegratedDevice.Blueprint.onInitialize += InitializeCommandList;
-		(m_view.m_contain as Ship).IntegratedDevice.Blueprint.OnJobComplete += UpdateCommandsList;
+		ship.IntegratedDevice.Blueprint.onInitialize += InitializeCommandList;
+		ship.IntegratedDevice.Blueprint.OnJobComplete += UpdateCommandsList;
 
 		InitializeCommandList((m_view.m_contain as Ship).IntegratedDevice.Blueprint.executingCommandList);
 	}

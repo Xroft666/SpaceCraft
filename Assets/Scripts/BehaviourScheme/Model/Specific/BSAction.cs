@@ -24,7 +24,6 @@ namespace BehaviourScheme
 		{
 			if( m_action != null )
 				m_scheme.AddScheduledEvent( m_action, m_query );
-			//	Job.make( job( m_parentNode.m_outputData ) );
 
 			if( m_connectNode != null )
 				m_connectNode.Traverse();
