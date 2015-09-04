@@ -23,7 +23,8 @@ public class DRanger : Device
 
 		AddAction("DesignateClosestTarget", DesignateClosestTarget);	
 		AddCheck("IsAnyTarget", IsAnyTarget );	
-		AddQuery("CurrentTarget", CurrentTarget);
+		AddQuery("CurrentTargetPosition", CurrentTargetPosition);
+		AddQuery("CurrentTargetContainer", CurrentTargetContainer);
 	}
 
 	public override IEnumerator ActivateDevice ( EventArgs args )
@@ -64,7 +65,7 @@ public class DRanger : Device
 
 	#region Predecates 
 	
-	public bool IsAnyTarget()
+	public bool IsAnyTarget( EventArgs args )
 	{
 		return m_targets.Count > 0;
 	}
@@ -73,12 +74,20 @@ public class DRanger : Device
 	
 	#region Queries
 	
-	public PositionArgs CurrentTarget()
+	public PositionArgs CurrentTargetPosition()
 	{
 		if( m_targets.Count == 0 )
 			return null;
 		
 		return new PositionArgs(){ position = m_targets[0].transform.position };
+	}
+
+	public ContainerArgs CurrentTargetContainer()
+	{
+		if( m_targets.Count == 0 )
+			return null;
+
+		return new ContainerArgs(){ container = m_targets[0].m_contain };
 	}
 	
 	#endregion

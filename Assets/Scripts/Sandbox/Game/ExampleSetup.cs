@@ -153,8 +153,9 @@ public class ExampleSetup : MonoBehaviour {
 			}};
 
 		DLauncher launcher = new DLauncher(){ EntityName = "launcher", m_projectileName = "Missile" };
-
 		Device enemyDetector = GenerateEnemyDetector( 5f );
+		DMagnet magnet = new DMagnet();
+
 
 
 		ship.IntegratedDevice.IntegrateDevice( engine );
@@ -162,6 +163,7 @@ public class ExampleSetup : MonoBehaviour {
 		ship.IntegratedDevice.IntegrateDevice( patrol );
 		ship.IntegratedDevice.IntegrateDevice( enemyDetector );
 		ship.IntegratedDevice.IntegrateDevice( launcher );
+		ship.IntegratedDevice.IntegrateDevice( magnet );
 
 
 		BSBranch rootDecision = ship.IntegratedDevice.Blueprint.CreateBranch();
@@ -173,23 +175,41 @@ public class ExampleSetup : MonoBehaviour {
 		BSAction waitUntilReach = ship.IntegratedDevice.Blueprint.CreateAction( "ReachTarget", patrol, patrol.GetQuery("CurrentTarget") );
 		BSAction nextPoint = ship.IntegratedDevice.Blueprint.CreateAction( "SetNextPoint", patrol );
 
-		BSSequence miningSequence = ship.IntegratedDevice.Blueprint.CreateSequence();
+		BSBranch miningDecision = ship.IntegratedDevice.Blueprint.CreateBranch();
+		miningDecision.AddCondition( magnet.GetCheck("IsStorageble"), 
+		                            ship.IntegratedDevice.GetInternalDevice("enemydetector/ranger").GetQuery("CurrentTargetContainer") );
+
+		BSSequence shootingSequence = ship.IntegratedDevice.Blueprint.CreateSequence();
 		BSAction steerTowardsShootingTarget = 
 			ship.IntegratedDevice.Blueprint.CreateAction( "SteerTowards", steerer, 
-			                                              ship.IntegratedDevice.GetInternalDevice("enemydetector/ranger").GetQuery("CurrentTarget") );
+			                                              ship.IntegratedDevice.GetInternalDevice("enemydetector/ranger").GetQuery("CurrentTargetPosition") );
 		BSAction shootTarget = ship.IntegratedDevice.Blueprint.CreateAction( "Fire", launcher );
 
+		BSSequence collectingSequence = ship.IntegratedDevice.Blueprint.CreateSequence();
+		BSAction attractAsteroid = ship.IntegratedDevice.Blueprint.CreateAction("Attract", magnet, 
+		                                                                        ship.IntegratedDevice.GetInternalDevice("enemydetector/ranger").GetQuery("CurrentTargetContainer"));
+		BSAction storageAsteroid = ship.IntegratedDevice.Blueprint.CreateAction("Load", magnet, 
+		                                                                        ship.IntegratedDevice.GetInternalDevice("enemydetector/ranger").GetQuery("CurrentTargetContainer"));
 
 		ship.IntegratedDevice.Blueprint.m_entryPoint.AddChild(rootDecision);
 
 		rootDecision.AddCondition( ship.IntegratedDevice.GetInternalDevice("enemydetector/ranger").GetCheck("IsAnyTarget") );
 
-		rootDecision.AddChild(miningSequence);
+		rootDecision.AddChild(miningDecision);
 		rootDecision.AddChild(patrolSequence);
 
-		miningSequence.AddChild( shootTarget );
-		miningSequence.AddChild( steerTowardsShootingTarget );
-		miningSequence.AddChild( disableEngine );
+		miningDecision.AddChild(collectingSequence);
+		miningDecision.AddChild(shootingSequence);
+
+
+		collectingSequence.AddChild( storageAsteroid );
+		collectingSequence.AddChild( attractAsteroid );
+		collectingSequence.AddChild( disableEngine );
+
+
+		shootingSequence.AddChild( shootTarget );
+		shootingSequence.AddChild( steerTowardsShootingTarget );
+		shootingSequence.AddChild( disableEngine );
 
 		patrolSequence.AddChild(nextPoint);
 		patrolSequence.AddChild(waitUntilReach);
@@ -329,7 +349,7 @@ public class ExampleSetup : MonoBehaviour {
 		BSEntry inRange = heatSeeker.Blueprint.CreateEntry( "OnRangerEntered", ranger );
 
 		// steer towards the target
-		BSAction toSteer = heatSeeker.Blueprint.CreateAction( "SteerTowards", steerer, ranger.GetQuery("CurrentTarget"));
+		BSAction toSteer = heatSeeker.Blueprint.CreateAction( "SteerTowards", steerer, ranger.GetQuery("CurrentTargetPosition"));
 
 		inRange.AddChild( onTargetFound );
 		onTargetFound.AddChild( toSteer );
@@ -350,25 +370,25 @@ public class ExampleSetup : MonoBehaviour {
 		return detector;
 	}
 
-	private static Device GenerateAsteroidGrabber()
-	{
-		Device grabber = new Device(){ EntityName = "grabber"};
-		
-		DManipulator manipulator = new DManipulator(){ EntityName = "manipulator"};
-		DRanger ranger = new DRanger(){ EntityName = "ranger", detectionRange = 1.5f };
-		
-		grabber.IntegrateDevice( manipulator );
-		grabber.IntegrateDevice( ranger );
-		
-
-		BSEntry inRange = grabber.Blueprint.CreateEntry( "grabber/ranger/OnRangerEntered", grabber );
-		BSAction toFollow = grabber.Blueprint.CreateAction( "grabber/manipulator/Load", grabber );
-		grabber.Blueprint.ConnectElements( inRange, toFollow );
-
-
-		return grabber;
-	}
-
+//	private static Device GenerateAsteroidGrabber()
+//	{
+//		Device grabber = new Device(){ EntityName = "grabber"};
+//		
+//		DManipulator manipulator = new DManipulator(){ EntityName = "manipulator"};
+//		DRanger ranger = new DRanger(){ EntityName = "ranger", detectionRange = 1.5f };
+//		
+//		grabber.IntegrateDevice( manipulator );
+//		grabber.IntegrateDevice( ranger );
+//		
+//
+//		BSEntry inRange = grabber.Blueprint.CreateEntry( "grabber/ranger/OnRangerEntered", grabber );
+//		BSAction toFollow = grabber.Blueprint.CreateAction( "grabber/manipulator/Load", grabber );
+//		grabber.Blueprint.ConnectElements( inRange, toFollow );
+//
+//
+//		return grabber;
+//	}
+//
 	private static Device GenerateAsteroidAttractor()
 	{
 		Device attractor = new Device(){ EntityName = "attractor"};

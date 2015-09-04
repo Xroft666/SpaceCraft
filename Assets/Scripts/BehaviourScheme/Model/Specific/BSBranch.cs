@@ -9,10 +9,11 @@ namespace BehaviourScheme
 		{
 			for( int i = 0; i < m_children.Count - 1; i ++ )
 			{
-				// Check condition per connection
-				// if no condition true, then execute the last one
-				// so the number of conditions is (N of connection - 1)
-				if( m_conditions[i].Invoke() )
+				System.EventArgs args = null;
+				if( m_conditionData[i] != null )
+					args = m_conditionData[i].Invoke();
+
+				if( m_conditions[i].Invoke( args ) )
 				{
 					m_children[i].Traverse();
 					return;

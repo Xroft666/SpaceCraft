@@ -11,11 +11,7 @@ public class DMagnet : Device
 {
 	// Exportable variable
 	public float m_magnetPower = 10f;
-
-
-	public List<Rigidbody2D> m_attractTargets = new List<Rigidbody2D>();
-	public List<Rigidbody2D> m_repusleTargets = new List<Rigidbody2D>();
-
+	
 	private Rigidbody2D myRigid;
 
 
@@ -24,7 +20,15 @@ public class DMagnet : Device
 	private IEnumerator Attract( EventArgs args )
 	{
 		ContainerArgs cArgs = args as ContainerArgs;
-		m_attractTargets.Add( cArgs.container.View.GetComponent<Rigidbody2D>() );
+
+		Rigidbody2D rigid = cArgs.container.View.GetComponent<Rigidbody2D>();
+
+		while( (cArgs.container.View.transform.position - m_containerAttachedTo.View.transform.position).magnitude > 1f )
+		{
+			rigid.AddForce( (myRigid.position - rigid.position).normalized * m_magnetPower);
+
+			yield return null;
+		}
 
 		yield break;
 	}
@@ -32,31 +36,52 @@ public class DMagnet : Device
 	private IEnumerator Repulse( EventArgs args )
 	{
 		ContainerArgs cArgs = args as ContainerArgs;
-		m_repusleTargets.Add( cArgs.container.View.GetComponent<Rigidbody2D>() );
+
+		Rigidbody2D rigid = cArgs.container.View.GetComponent<Rigidbody2D>();
+
+		while( (cArgs.container.View.transform.position - m_containerAttachedTo.View.transform.position).magnitude > 1f )
+		{
+			rigid.AddForce( (rigid.position - myRigid.position).normalized * m_magnetPower);
+			               
+			yield return null;
+		}
 
 		yield break;
 	}
 
-	private IEnumerator RemoveTarget( EventArgs args )
+
+	private IEnumerator Load( EventArgs args )
 	{
+		
 		ContainerArgs cArgs = args as ContainerArgs;
-		Rigidbody2D view = cArgs.container.View.GetComponent<Rigidbody2D>();
 
-		if( m_attractTargets.Contains(view) )
-			m_attractTargets.Remove( view );
-
-		if( m_repusleTargets.Contains(view) )
-			m_repusleTargets.Remove( view );
-
+		yield return new WaitForSeconds(2f);
+		
+		StorageObject( cArgs.container ) ;
+		
 		yield break;
 	}
 	
+	private IEnumerator UnloadAll( EventArgs args )
+	{
+
+		yield return new WaitForSeconds(2f);
+
+		RemoveFromStorage();
+		
+		yield break;
+	}
 
 	#endregion
 
 	#region Predecates 
 
+	private bool IsStorageble( EventArgs args )
+	{
+		float volume = ((args as ContainerArgs).container as Asteroid).Containment.Amount;
 
+		return volume <= 0.2f;
+	}
 
 	#endregion
 
@@ -66,7 +91,12 @@ public class DMagnet : Device
 	{
 		AddAction("Attract", Attract );
 		AddAction("Repulse", Repulse);
-		AddAction("RemoveTarget", Repulse);
+//		AddAction("RemoveTarget", Repulse);
+
+		AddAction("Load", Load );
+		AddAction("UnloadAll", UnloadAll );
+		
+		AddCheck("IsStorageble", IsStorageble);
 	}
 
 	public override void Initialize()
@@ -76,14 +106,35 @@ public class DMagnet : Device
 
 	public override void Update()
 	{
-		foreach( Rigidbody2D obj in m_attractTargets )
-			obj.AddForce( (myRigid.position - obj.position).normalized * m_magnetPower );
-		
-		foreach( Rigidbody2D obj in m_repusleTargets )
-			obj.AddForce( (obj.position - myRigid.position).normalized * m_magnetPower );
+
+//		
+//		foreach( Rigidbody2D obj in m_repusleTargets )
+//			obj.AddForce( (obj.position - myRigid.position).normalized * m_magnetPower );
 	}
 
 	#endregion
 
-
+	private void StorageObject( Container container )
+	{
+		// Should extract device/resource from the containe and place it to the storage
+		
+		m_containerAttachedTo.AddToCargo( container );
+		WorldManager.UnspawnContainer( container );
+	}
+	
+	private void RemoveFromStorage()
+	{
+		/// Considering that cargo will hold Devices and Resource entities,
+		/// this should make containers for them and spawn them
+		
+		
+		foreach( Entity ent in m_containerAttachedTo.GetCargoList() )
+		{
+			Container cont = ent as Container;
+			if( cont != null )
+				WorldManager.SpawnContainer( cont, m_containerAttachedTo.View.transform.position, Quaternion.identity );
+			
+			m_containerAttachedTo.RemoveFromCargo( ent );
+		}
+	}
 }

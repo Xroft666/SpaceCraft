@@ -9,7 +9,7 @@ namespace BehaviourScheme
 		{
 			for( int i = 0; i < m_parents.Count; i ++ )
 			{
-				if( m_conditions[i].Invoke() )
+				if( m_conditions[i].Invoke(null) )
 				{
 					m_connectNode.Traverse( );
 					break;

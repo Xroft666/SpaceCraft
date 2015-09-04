@@ -24,7 +24,7 @@ public class Cargo : Entity
 		m_items.Remove( item );
 	}
 
-	public bool IsCargoFull()
+	public bool IsCargoFull( System.EventArgs args )
 	{
 		return SpaceTaken == Capacity;
 	}

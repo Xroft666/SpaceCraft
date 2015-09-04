@@ -5,7 +5,7 @@ using UnityEngine;
 namespace SpaceSandbox
 {
 	public delegate IEnumerator DeviceEvent(EventArgs args);
-	public delegate bool DeviceCheck();
+	public delegate bool DeviceCheck(EventArgs args);
 	public delegate EventArgs DeviceQuery();
 
 	public class ContainerArgs : EventArgs
