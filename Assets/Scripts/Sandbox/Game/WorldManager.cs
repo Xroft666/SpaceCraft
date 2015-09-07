@@ -13,11 +13,16 @@ public class WorldManager : MonoBehaviour
 	// Temporary variable. To be removed with something more sophisticated
 	public Sprite m_visuals;
 
-
+	public static Dictionary<string, Ship> s_containersCache = new Dictionary<string, Ship>();
 	public static WorldManager World { get; private set; }
 
-	public static ContainerView SpawnContainer( Container container, Vector3 position, Quaternion rotation, int owner = 0 )
+	public static ContainerView SpawnContainer( Ship container, Vector3 position, Quaternion rotation, int owner = 0 )
 	{
+		if( s_containersCache.ContainsKey( container.EntityName ) )
+			s_containersCache.Add( container.EntityName, container );
+
+//		container = new Ship( container );
+
 		container.InitializeView();
 
 		container.View.transform.position = position;

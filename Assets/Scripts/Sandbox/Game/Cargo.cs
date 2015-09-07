@@ -6,41 +6,37 @@ public class Cargo : Entity
 {
 	public class CargoSlot
 	{
-		public int maxItemCap = 5;
-		public float maxResVol = 1f;
+		public int curItemCount;
+		public float curVolume;
 
-		public int curItemCount = 0;
-		public float curVolume = 0f;
-
-		public Entity resource;
+//		public Entity resource;
+		public List<Entity> resources = new List<Entity>();
 	}
 
 	private Ship m_containerAttachedTo = null;
 	
-	public int Capacity { get; private set; } 	// amount of slots
-	public int SpaceTaken { get; private set; }
+	public float Capacity { get; private set; } 	// amount of slots
+	public float SpaceTaken { get; private set; }
 
 	public List<CargoSlot> m_items = new List<CargoSlot>();
 
-	public Cargo( int cap, Ship owner )
+	public Cargo( float cap, Ship owner )
 	{
 		Capacity = cap;
 		m_containerAttachedTo = owner;
-//		for( int i = 0; i < cap; i++ )
-//			m_items.Add( new CargoSlot() );
 	}
 
-	public bool AddItem( Entity item, int num = 1 )
+	public bool AddItem( Entity item)
 	{
-		if( SpaceTaken + item.Volume > Capacity )
-			return false;
+//		if( SpaceTaken + item.Volume > Capacity )
+//			return false;
 
 		CargoSlot slot = GetSlot(item.EntityName);
 
 		if( slot == null )
 		{
 			slot = new CargoSlot();
-			SpaceTaken ++;
+//			SpaceTaken ++;
 			m_items.Add(slot);
 		}
 
@@ -48,7 +44,8 @@ public class Cargo : Entity
 		{
 		case Entity.EntityType.Item:
 			
-			slot.curItemCount += num;
+			slot.curItemCount ++;
+			slot.resources.Add(item);
 			
 			break;
 			
@@ -56,41 +53,55 @@ public class Cargo : Entity
 		case Entity.EntityType.Crumby:
 			
 			slot.curVolume += item.Volume;
-			slot.resource.Volume += item.Volume;
+
+			if( slot.resources.Count > 0 )
+			{
+				slot.resources[0].Volume += item.Volume;
+			}
+			else
+			{
+				slot.resources.Add(item);
+			}
 			
 			break;
 		}
-		
-		slot.resource = item;
+
+		SpaceTaken += item.Volume;
 
 		return true;
 	}
 
-	public bool RemoveItem( string name, int num = 1 )
+	public bool RemoveItem( string name)
 	{
 		CargoSlot slot = GetSlot(name);
 		if( slot == null )
 			return false;
 
-		switch( slot.resource.Type )
+		SpaceTaken -= slot.resources[0].Volume;
+
+		switch( slot.resources[0].Type )
 		{
 		case Entity.EntityType.Item:
-			
-			slot.curItemCount -= num;
+
+
+			slot.curItemCount --;
+			slot.resources.RemoveAt(0);
+
 
 			if( slot.curItemCount == 0 )
 			{
-//				m_items.Remove(slot);
-				SpaceTaken --;
+				m_items.Remove(slot);
+//				SpaceTaken --;
 			}
 
 			break;
 			
 		case Entity.EntityType.Liquid:
 		case Entity.EntityType.Crumby:
-			
-//			m_items.Remove(slot);
-			SpaceTaken --;
+
+			slot.resources.RemoveAt(0);
+			m_items.Remove(slot);
+//			SpaceTaken --;
 			
 			break;
 		}
@@ -101,7 +112,7 @@ public class Cargo : Entity
 	public void RemoveCargo()
 	{
 		m_items.Clear();
-		SpaceTaken = 0;
+		SpaceTaken = 0f;
 	}
 
 	public bool IsCargoFull( System.EventArgs args )
@@ -112,7 +123,7 @@ public class Cargo : Entity
 	public CargoSlot GetSlot( string name )
 	{
 		foreach( CargoSlot slot in m_items )
-			if( slot.resource.EntityName.Equals( name ) )
+			if( slot.resources[0].EntityName.Equals( name ) )
 				return slot;
 
 		return null;
@@ -124,7 +135,7 @@ public class Cargo : Entity
 		if( slot == null )
 			return null;
 
-		return slot.resource;
+		return slot.resources[0];
 	}
 
 	public bool HasItem( string name )

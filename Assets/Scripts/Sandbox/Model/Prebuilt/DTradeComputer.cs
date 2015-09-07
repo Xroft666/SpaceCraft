@@ -21,8 +21,11 @@ public class DTradeComputer : Device
 
 		Cargo.CargoSlot slot = clientCargo.GetSlot(tArgs.itemName);
 
-		m_containerAttachedTo.m_cargo.AddItem( slot.resource, slot.curItemCount );
-		clientCargo.RemoveItem(tArgs.itemName, tArgs.itemCount);
+		for( int i = 0; i < slot.resources.Count; i++ )
+		{
+			m_containerAttachedTo.m_cargo.AddItem( slot.resources[i] );
+			clientCargo.RemoveItem(tArgs.itemName);
+		}
 	} 
 	
 	private IEnumerator UnloadItemsTo( EventArgs args )
@@ -34,8 +37,11 @@ public class DTradeComputer : Device
 
 		Cargo.CargoSlot slot = m_containerAttachedTo.m_cargo.GetSlot(tArgs.itemName);
 
-		clientCargo.AddItem( slot.resource, slot.curItemCount );
-		m_containerAttachedTo.m_cargo.RemoveItem(tArgs.itemName, tArgs.itemCount);
+		for( int i = 0; i < slot.resources.Count; i++ )
+		{
+			clientCargo.AddItem( slot.resources[i] );
+			m_containerAttachedTo.m_cargo.RemoveItem(tArgs.itemName);
+		}
 	}
 	
 

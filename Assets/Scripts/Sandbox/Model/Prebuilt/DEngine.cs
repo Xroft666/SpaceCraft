@@ -33,10 +33,6 @@ public class DEngine : Device
 
 	public override void OnDeviceInstalled()
 	{
-		// Pathfinding functionality?
-		// Meta movoement functions?
-		// Steering ability?
-
 		base.OnDeviceInstalled();
 
 		AddAction("MoveForward", MoveForward );
@@ -51,7 +47,6 @@ public class DEngine : Device
 	public override void Update()
 	{
 		if( m_isActive )
-//			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( MoveForward, null );
 			ApplyForce();
 	}
 

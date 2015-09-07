@@ -6,7 +6,7 @@ using SpaceSandbox;
 
 public class Ship : Container 
 {
-	public Ship( int cargoCapacity )
+	public Ship( float cargoCapacity )
 	{
 		m_cargo = new Cargo(cargoCapacity, this);
 
@@ -16,37 +16,20 @@ public class Ship : Container
 		m_integratedDevice.AddCheck( "IsCargoFull", m_cargo.IsCargoFull );
 	}
 
-	/// <summary>
-	/// The m_cargo. The inventory of this specific container
-	/// </summary>
-//	private List<Entity> m_cargo = new List<Entity>();
+	public Ship( Ship otherShip )
+	{
+		m_cargo = new Cargo( otherShip.m_cargo.Capacity, this );
+		m_integratedDevice = otherShip.IntegratedDevice;
+		m_integratedDevice.AssignContainer( this );
+	}
+
+
 	public Cargo m_cargo { get; private set; }
 	
-	/// <summary>
-	/// The m_generated device. Each container represents a compund device,
-	/// with blueprint logic attached.
-	/// </summary>
-	private Device m_integratedDevice = null;
-	
-	/// <summary>
-	/// Gets the integrated device. If never asked, will generate device
-	/// </summary>
-	/// <value>The integrated device.</value>
-	public Device IntegratedDevice
-	{
-		get
-		{
-			if( m_integratedDevice == null )
-			{
-	//			m_integratedDevice = new Device();
-	//			m_integratedDevice.AssignContainer( this );
 
-				Debug.LogError(" Integrated device not initialized ");
-			}
-			
-			return m_integratedDevice;
-		}
-	}
+	private Device m_integratedDevice = null;
+	public Device IntegratedDevice { get { return m_integratedDevice; } }
+
 	
 	public void AddToCargo( Entity entity )
 	{

@@ -69,6 +69,9 @@ public class DTimer : Device
 		m_timeText.text = m_timerSetUp.ToString("0");
 
 		m_timeText.gameObject.SetActive(m_isActive);
+
+//		m_fired = false;
+//		m_timer = 0f;
 	}
 
 	public override void Update()

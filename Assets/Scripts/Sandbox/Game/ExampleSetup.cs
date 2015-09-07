@@ -11,27 +11,13 @@ public class ExampleSetup : MonoBehaviour {
 		WorldManager.SpawnContainer (GenerateMotherBase(), Vector3.one * 5f, Quaternion.identity, 2 );
 
 
-		// Generating random targets
-		for( int i = 0; i < 5; i++ )
-		{
-//			GenerateTarget();
-		}
-		
-		// Generating the ship
-//		Ship ship = GenerateShip();
-//		ship.View.transform.position = Vector3.left * 8f;
-
 		Ship patrol = GeneratePatrolShip();
 
 		// Generating missiles
 		for( int i = 0; i < 40; i++ )
 		{
 			patrol.AddToCargo( GenerateMissile() );
-//			ship.AddToCargo( GenerateMissile() );
 		}
-
-//		WorldManager.SpawnContainer( GenerateMissile(), Vector3.zero, Quaternion.identity );
-
 
 		for( int i = 0; i < 100; i++ )
 		{
@@ -39,35 +25,12 @@ public class ExampleSetup : MonoBehaviour {
 			Vector3 pos = Vector3.zero;
 			pos = UnityEngine.Random.insideUnitCircle * 50f;
 
-	//		pos.x = (float) GaussRandom();
-	//		pos.y = (float) GaussRandom();
-
-
 			WorldManager.GenerateAsteroid( pos, Random.Range(0f,360f), Random.Range(0.1f, 2.4f));
 		}
-
-
-
-	}
-
-
-	private double GaussRandom()
-	{
-		int seed = 6666666;
-		double sum = 0.0;
 	
-		for( int i = 0; i < 3; i++ )
-		{
-			long holdseed = seed;
-			seed ^= seed << 13;
-			seed ^= seed >> 17;
-			seed ^= seed << 5;
-			long r = (System.Int64) (holdseed + seed);
-			sum += (double) r * (1.0 / 0x7fffffffffffffff);
-		}
-
-		return sum;
 	}
+	
+
 	private static Ship GenerateMissile()
 	{
 		Ship missile = new Ship(2){ EntityName = "Missile" };
@@ -101,14 +64,14 @@ public class ExampleSetup : MonoBehaviour {
 	
 	private static void GenerateTarget()
 	{
-		WorldManager.SpawnContainer(new Ship(1){ EntityName = "Target"}, 
+		WorldManager.SpawnContainer(new Ship(1f){ EntityName = "Target"}, 
 		(Random.insideUnitCircle + Vector2.one) * (Camera.main.orthographicSize - 1f), 
 		Quaternion.identity );
 	}
 	
 	private static Ship GenerateShip()
 	{
-		Ship ship = new Ship(5){ EntityName = "ship"};
+		Ship ship = new Ship(5f){ EntityName = "ship"};
 
 		Device cockpit = GeneratePilotCockpit();
 		DLauncher launcher = new DLauncher(){ EntityName = "launcher", m_projectileName = "Missile" };
@@ -132,7 +95,7 @@ public class ExampleSetup : MonoBehaviour {
 
 	private static Ship GeneratePatrolShip()
 	{
-		Ship ship = new Ship(2){ EntityName = "patrolship"};
+		Ship ship = new Ship(0.3f){ EntityName = "patrolship"};
 
 		GameObject[] markers = new GameObject[]
 		{
@@ -215,11 +178,13 @@ public class ExampleSetup : MonoBehaviour {
 			return new PositionArgs(){ position = WorldManager.RequestContainerData("MotherBase").View.transform.position};
 		};
 
+		Device stationTrader = WorldManager.RequestContainerData("MotherBase").IntegratedDevice.GetInternalDevice("trader");
+
 
 		BSSequence goingHomeSequence = ship.IntegratedDevice.Blueprint.CreateSequence();
 		BSAction steerTowardsHome = ship.IntegratedDevice.Blueprint.CreateAction( "SteerTowards", steerer, stationPosition );
 		BSAction waitUntilReachHome = ship.IntegratedDevice.Blueprint.CreateAction( "ReachTarget", patrol, stationPosition );
-		BSAction sellResouces = ship.IntegratedDevice.Blueprint.CreateAction( "UnloadItemsTo", trader, tradeInfo );
+		BSAction sellResouces = ship.IntegratedDevice.Blueprint.CreateAction( "LoadItemsFrom", stationTrader, tradeInfo );
 
 
 		// interupt current commands stack
@@ -406,11 +371,11 @@ public class ExampleSetup : MonoBehaviour {
 
 	private static Ship GenerateMotherBase()
 	{
-		Ship motherBase = new Ship(1000){ EntityName = "MotherBase" };
+		Ship motherBase = new Ship(1000f){ EntityName = "MotherBase" };
 
-		DMagnet magnet = new DMagnet();
+		DMagnet magnet = new DMagnet(){ EntityName = "magnet" };
 		DRanger ranger = new DRanger(){ EntityName = "ranger", detectionRange = 5f };
-		DTradeComputer trader = new DTradeComputer();
+		DTradeComputer trader = new DTradeComputer(){ EntityName = "trader"} ;
 
 
 		motherBase.IntegratedDevice.IntegrateDevice( ranger );
@@ -420,18 +385,6 @@ public class ExampleSetup : MonoBehaviour {
 
 		BSBranch rootDecision = motherBase.IntegratedDevice.Blueprint.CreateBranch();
 		rootDecision.AddCondition( ranger.GetCheck("IsAnyTarget") );
-
-
-//		BSAction attractAsteroid = motherBase.IntegratedDevice.Blueprint.CreateAction("Attract", magnet, 
-//		                                                                              ranger.GetQuery("CurrentTargetContainer"));
-//		BSAction storageAsteroid = motherBase.IntegratedDevice.Blueprint.CreateAction("Load", magnet, 
-//		                                                                              ranger.GetQuery("CurrentTargetContainer"));
-//		BSSequence collectingSequence  = motherBase.IntegratedDevice.Blueprint.CreateSequence();
-//
-//		rootDecision.AddChild( collectingSequence );
-//
-//		collectingSequence.AddChild( storageAsteroid );
-//		collectingSequence.AddChild( attractAsteroid );
 
 		return motherBase;
 	}
