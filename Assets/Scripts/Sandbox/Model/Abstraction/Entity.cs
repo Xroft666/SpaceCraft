@@ -4,6 +4,14 @@ namespace SpaceSandbox
 {
 	public class Entity : Object
 	{
+		public enum EntityType
+		{
+			Item,
+			Crumby,
+			Liquid
+		}
+
+		public EntityType Type { get; set; }
 		public float Volume { get; set; }
 
 		public string EntityName { get; set; }

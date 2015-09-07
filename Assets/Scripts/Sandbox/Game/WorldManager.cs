@@ -12,6 +12,10 @@ public class WorldManager : MonoBehaviour
 {
 	// Temporary variable. To be removed with something more sophisticated
 	public Sprite m_visuals;
+
+	private static List<Container> objectsPool = new List<Container>();
+
+
 	
 	public static WorldManager World { get; private set; }
 
@@ -23,12 +27,17 @@ public class WorldManager : MonoBehaviour
 		container.View.transform.rotation = rotation;
 
 		container.View.m_owner = owner;
-		
+
+
+		objectsPool.Add( container );
+
 		return container.View;
 	}
 
 	public static void UnspawnContainer( Container container )
 	{
+		objectsPool.Remove( container );
+
 		container.Destroy();
 //		container.View.gameObject.SetActive( false );
 	}
@@ -49,6 +58,14 @@ public class WorldManager : MonoBehaviour
 	public static bool IsContainerDestroyed( ContainerView view )
 	{
 		return !view.gameObject.activeInHierarchy;
+	}
+
+	public static Ship RequestContainerData(string name)
+	{
+		foreach( Container cont in objectsPool )
+			if( cont.EntityName.Equals( name ) )
+				return cont as Ship;
+		return null;
 	}
 	
 	private void Awake()

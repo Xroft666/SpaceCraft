@@ -18,19 +18,6 @@ public class BlueprintSchemeView : MonoBehaviour
 		m_device = device;
 	}
 
-	// Loading up and rendering all he containment
-	public void LoadDevicesList( Ship container )
-	{
-		foreach( Entity ent in container.GetCargoList() )
-		{
-			Device device = ent as Device;
-			if( device == null )
-				continue;
-
-			// create a device UI representation
-		}
-	}
-
 	public void UpdateSchemeView()
 	{
 		// Update all the visuals

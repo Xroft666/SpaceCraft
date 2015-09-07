@@ -6,9 +6,13 @@ using SpaceSandbox;
 
 public class UIController : MonoBehaviour 
 {
+	public GameObject m_selectionGroupPrefab;
+
 	public RectTransform m_selectListTransform;
 	public RectTransform m_commandsTransform;
-	public GameObject m_selectionGroupPrefab;
+	public RectTransform m_hpBarTransform;
+
+	
 
 	private Dictionary<ContainerView, GameObject> selections = new Dictionary<ContainerView, GameObject>();
 	private ContainerView selectedContainer = null;
@@ -112,12 +116,25 @@ public class UIController : MonoBehaviour
 				}
 
 				selection.Value.transform.localPosition = Camera.main.WorldToScreenPoint( selection.Key.transform.position );
+
+				Ship ship = selection.Key.m_contain as Ship;
+				Asteroid aster = selection.Key.m_contain as Asteroid;
+				
+				if( ship != null )
+					selection.Value.transform.FindChild("Cargo").GetComponent<Text>().text = "Cargo: " +
+						ship.m_cargo.SpaceTaken.ToString("0.0") + " / " + ship.m_cargo.Capacity.ToString("0.0");
+				
+				if( aster != null )
+					selection.Value.transform.FindChild("Cargo").GetComponent<Text>().text = "Cargo: " +
+						aster.Containment.Amount.ToString("0.0");
 			}
 		}
 	}
 
 	private void OnContainerSelectedEvent( ContainerView container )
 	{
+		m_hpBarTransform.gameObject.SetActive(true);
+
 		if( selections.ContainsKey( container ) )
 		{
 			selections[container].SetActive(true);
@@ -131,6 +148,8 @@ public class UIController : MonoBehaviour
 	{
 		foreach( GameObject selectionGO in selections.Values )
 			selectionGO.SetActive( false );
+
+		m_hpBarTransform.gameObject.SetActive(false);
 	}
 
 	private void GenerateNewSelection( ContainerView container )
@@ -146,7 +165,8 @@ public class UIController : MonoBehaviour
 
 		newSelectTransform.localScale = Vector3.one;
 
-		newSelection.GetComponentInChildren<Text>().text = container.name;
+		newSelection.transform.FindChild("Name").GetComponent<Text>().text = container.name;
+
 		
 		selections.Add( container, newSelection );
 	}

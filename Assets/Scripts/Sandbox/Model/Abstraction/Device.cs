@@ -158,7 +158,10 @@ namespace SpaceSandbox
 
 		public void AddEvent ( string name, DeviceEvent trigger )
 		{
-			m_events.Add(name, trigger);
+			if( m_events.ContainsKey(name) )
+				m_events[name] += trigger ;
+			else
+				m_events.Add(name, trigger);
 		}
 
 		public DeviceEvent GetEvent( string name )
@@ -252,7 +255,7 @@ namespace SpaceSandbox
 				//m_containerAttachedTo.IntegratedDevice.ScheduleEvent( device.ActivateDevice, args );
 				yield return Job.make(device.ActivateDevice( args ) ).startAsCoroutine();
 
-			yield break;
+//			yield break;
 		}
 
 		public virtual IEnumerator DeactivateDevice( EventArgs args )
@@ -264,7 +267,7 @@ namespace SpaceSandbox
 				//m_containerAttachedTo.IntegratedDevice.ScheduleEvent( device.DeactivateDevice, args );
 				yield return Job.make( device.DeactivateDevice( args) ).startAsCoroutine();
 
-			yield break;
+//			yield break;
 		}
 
 		#endregion

@@ -78,7 +78,16 @@ public class DMagnet : Device
 
 	private bool IsStorageble( EventArgs args )
 	{
-		float volume = ((args as ContainerArgs).container as Asteroid).Containment.Amount;
+		ContainerArgs cArgs = args as ContainerArgs;
+		Asteroid aster = cArgs.container as Asteroid;
+
+		if( aster == null )
+		{
+			Debug.LogWarning("Trying to magnet: " + cArgs.container.EntityName );
+			return false;
+		}
+
+		float volume = aster.Containment.Amount;
 
 		return volume <= 0.2f;
 	}
@@ -128,13 +137,34 @@ public class DMagnet : Device
 		/// this should make containers for them and spawn them
 		
 		
-		foreach( Entity ent in m_containerAttachedTo.GetCargoList() )
-		{
-			Container cont = ent as Container;
-			if( cont != null )
-				WorldManager.SpawnContainer( cont, m_containerAttachedTo.View.transform.position, Quaternion.identity );
-			
-			m_containerAttachedTo.RemoveFromCargo( ent );
-		}
+	//	foreach( Entity ent in m_containerAttachedTo.GetCargoList() )
+	//	{
+	//		Container cont = ent as Container;
+	//		if( cont != null )
+	//			WorldManager.SpawnContainer( cont, m_containerAttachedTo.View.transform.position, Quaternion.identity );
+	//		
+	//		m_containerAttachedTo.RemoveFromCargo( ent );
+	//	}
+
+	//	for( int i = 0; i < m_containerAttachedTo.m_cargo.m_items.Count; i++ )
+	//	{
+	//		switch( m_containerAttachedTo.m_cargo.m_items[i].resource.Type )
+	//		{
+	//		case Entity.EntityType.Item:
+	//
+	//			for( int j = 0; j < m_containerAttachedTo.m_cargo.m_items[i].curItemCount; j++ )
+	//			{
+	//				m_containerAttachedTo.m_cargo.RemoveItem( m_containerAttachedTo.m_cargo.m_items[i].resource.EntityName );
+	//				WorldManager.SpawnContainer( m_containerAttachedTo.m_cargo.m_items[i].resource as Container, m_containerAttachedTo.View.transform.position, Quaternion.identity );
+	//			}
+	//			break;
+	//		case Entity.EntityType.Crumby:
+	//		case Entity.EntityType.Liquid:
+	//
+	//
+	//
+	//			break;
+	//		}
+	//	}
 	}
 }

@@ -23,12 +23,12 @@ public class DLauncher : Device
 		Entity projectileEntity = null;
 		ContainerView projectile = null;
 
-		foreach( Entity ent in m_containerAttachedTo.GetCargoList() )
+//		foreach( Entity ent in m_containerAttachedTo.GetCargoList() )
 		{
-			Container cont = ent as Container;
-			if( cont != null && ent.EntityName == m_projectileName )
+			Container cont = m_containerAttachedTo.m_cargo.GetItem(m_projectileName) as Container;
+			if( cont != null )// && ent.EntityName == m_projectileName )
 			{
-				projectileEntity = ent;
+				projectileEntity = cont as Entity;
 				projectile =  WorldManager.SpawnContainer(cont, 
 				                            m_containerAttachedTo.View.transform.position + m_containerAttachedTo.View.transform.up,
 				                            m_containerAttachedTo.View.transform.rotation,
@@ -41,13 +41,13 @@ public class DLauncher : Device
 
 				projectile.transform.FindChild("body").localScale = new Vector3(0.25f, 1f, 1f);
 
-				break;
+//				break;
 			}
 		}
 
 		if( projectileEntity != null )
 		{
-			m_containerAttachedTo.RemoveFromCargo( projectileEntity );
+			m_containerAttachedTo.RemoveFromCargo( projectileEntity.EntityName );
 
 			while( !WorldManager.IsContainerDestroyed(projectile) )
 			{
@@ -57,6 +57,11 @@ public class DLauncher : Device
 
 	}
 	#endregion
+
+	private bool CanFire()
+	{
+		return true;
+	}
 
 	#region device's interface implementation
 

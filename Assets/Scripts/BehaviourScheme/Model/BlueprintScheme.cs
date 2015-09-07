@@ -75,13 +75,26 @@ namespace SpaceSandbox
 			yield break;
 		}
 
-		private void JobComplete( bool complete )
+		private void JobComplete( bool killed )
 		{
+			if( !killed )
+			{
+				if( OnJobComplete != null )
+					OnJobComplete();
 
+				executingCommandList.Pop();
+			}
+		}
 
-			if( OnJobComplete != null )
-				OnJobComplete();
-			executingCommandList.Pop();
+		public IEnumerator InterruptExecution( EventArgs args )
+		{
+			if( m_runningJobSequence != null && m_runningJobSequence.running )
+				m_runningJobSequence.kill();
+
+			m_runningJobSequence = null;
+
+			ClearEventsAndData();
+			yield break;
 		}
 
 		public void ClearEventsAndData()

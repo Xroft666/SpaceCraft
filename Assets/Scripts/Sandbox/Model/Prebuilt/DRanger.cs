@@ -133,7 +133,10 @@ public class DRanger : Device
 			{
 				DeviceEvent onEnter = GetEvent("OnRangerEntered");
 				if( onEnter != null )
-				/*m_containerAttachedTo.IntegratedDevice.*/ScheduleEvent( onEnter, null);
+					//m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onEnter, null)
+					//ScheduleEvent( onEnter, null);
+					//onEnter(null);
+					Job.make( onEnter(null), true);
 
 				m_targets.Add( othersView );
 				
@@ -158,7 +161,11 @@ public class DRanger : Device
 
 			DeviceEvent onExit = GetEvent("OnRangerEscaped");
 			if( onExit != null )
-			/*m_containerAttachedTo.IntegratedDevice.*/ScheduleEvent( onExit, null);
+			//	m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onExit, null);
+			//	ScheduleEvent( onExit, null);
+			//	onExit(null);
+				Job.make( onExit(null), true);
+
 			m_targets.Remove( othersView );
 		}
 	}

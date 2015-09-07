@@ -4,29 +4,136 @@ using SpaceSandbox;
 
 public class Cargo : Entity
 {
-	// free space
-	public float Capacity { get; set; } 
-	public float SpaceTaken { get; private set; }
-
-	public List<Entity> m_items = new List<Entity>();
-
-	public void AddItem(Entity item)
+	public class CargoSlot
 	{
-		// check if such item already there, so combine it in one slot
-		// check if enough storage space in cargo
+		public int maxItemCap = 5;
+		public float maxResVol = 1f;
 
-		m_items.Add( item );
+		public int curItemCount = 0;
+		public float curVolume = 0f;
+
+		public Entity resource;
 	}
 
-	public void RemoveItem( Entity item )
+	
+	public int Capacity { get; private set; } 	// amount of slots
+	public int SpaceTaken { get; private set; }
+
+	public List<CargoSlot> m_items = new List<CargoSlot>();
+
+	public Cargo( int cap )
 	{
-		// if it is combined slot, decreate the amount of items in one slot
-		m_items.Remove( item );
+		Capacity = cap;
+
+//		for( int i = 0; i < cap; i++ )
+//			m_items.Add( new CargoSlot() );
+	}
+
+	public bool AddItem( Entity item )
+	{
+		if( SpaceTaken + item.Volume > Capacity )
+			return false;
+
+		CargoSlot slot = GetSlot(item.EntityName);
+
+		if( slot == null )
+		{
+			slot = new CargoSlot();
+			SpaceTaken ++;
+		}
+
+		switch( item.Type )
+		{
+		case Entity.EntityType.Item:
+			
+			slot.curItemCount++;
+			
+			break;
+			
+		case Entity.EntityType.Liquid:
+		case Entity.EntityType.Crumby:
+			
+			slot.curVolume += item.Volume;
+			slot.resource.Volume += item.Volume;
+			
+			break;
+		}
+		
+		slot.resource = item;
+		m_items.Add(slot);
+
+		return true;
+	}
+
+	public bool RemoveItem( string name )
+	{
+		CargoSlot slot = GetSlot(name);
+		if( slot == null )
+			return false;
+
+		switch( slot.resource.Type )
+		{
+		case Entity.EntityType.Item:
+			
+			slot.curItemCount--;
+
+			if( slot.curItemCount == 0 )
+			{
+//				m_items.Remove(slot);
+				SpaceTaken --;
+			}
+
+			break;
+			
+		case Entity.EntityType.Liquid:
+		case Entity.EntityType.Crumby:
+			
+//			m_items.Remove(slot);
+			SpaceTaken --;
+			
+			break;
+		}
+
+		return true;
+	}
+
+	public void RemoveCargo()
+	{
+			m_items.Clear();
+		SpaceTaken = 0;
 	}
 
 	public bool IsCargoFull( System.EventArgs args )
 	{
-		return SpaceTaken == Capacity;
+		return SpaceTaken > Capacity * 0.80f;
+	}
+
+	public CargoSlot GetSlot( string name )
+	{
+		foreach( CargoSlot slot in m_items )
+			if( slot.resource.EntityName.Equals( name ) )
+				return slot;
+
+		return null;
+	}
+
+	public Entity GetItem( string name )
+	{
+		CargoSlot slot = GetSlot(name);
+		if( slot == null )
+			return null;
+
+		return slot.resource;
+	}
+
+	public bool HasItem( string name )
+	{
+		return !(GetSlot( name ) == null);
+	}
+
+	public bool HasAnyItems()
+	{
+		return SpaceTaken > 0;
 	}
 }
 

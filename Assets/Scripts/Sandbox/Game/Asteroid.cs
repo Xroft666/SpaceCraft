@@ -30,7 +30,7 @@ namespace SpaceSandbox
 			
 
 
-
+			Volume = Containment.Amount;
 			float size = Containment.Amount;
 
 			if( vertices == null )

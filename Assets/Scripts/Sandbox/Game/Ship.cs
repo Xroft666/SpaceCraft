@@ -5,21 +5,22 @@ using SpaceSandbox;
 
 public class Ship : Container 
 {
-	public Ship()
+	public Ship( int cargoCapacity )
 	{
-		m_cargo = new Cargo();
+		m_cargo = new Cargo(cargoCapacity);
 
 		m_integratedDevice = new Device();
 		m_integratedDevice.AssignContainer( this );
 
 		m_integratedDevice.AddCheck( "IsCargoFull", m_cargo.IsCargoFull );
+		m_integratedDevice.AddQuery( "ContainerPosition", ContainerPosition );
 	}
 
 	/// <summary>
 	/// The m_cargo. The inventory of this specific container
 	/// </summary>
 //	private List<Entity> m_cargo = new List<Entity>();
-	private Cargo m_cargo = new Cargo();
+	public Cargo m_cargo { get; private set; }
 	
 	/// <summary>
 	/// The m_generated device. Each container represents a compund device,
@@ -46,20 +47,20 @@ public class Ship : Container
 			return m_integratedDevice;
 		}
 	}
+
+	private PositionArgs ContainerPosition()
+	{
+		return new PositionArgs(){ position = View.transform.position };
+	}
 	
 	public void AddToCargo( Entity entity )
 	{
 		m_cargo.AddItem( entity );
 	}
 	
-	public List<Entity> GetCargoList()
+	public void RemoveFromCargo( string name )
 	{
-		return m_cargo.m_items;
-	}
-	
-	public void RemoveFromCargo( Entity entity )
-	{
-		m_cargo.RemoveItem( entity );
+		m_cargo.RemoveItem( name );
 	}
 	
 	/// <summary>
@@ -73,8 +74,8 @@ public class Ship : Container
 	
 	public override void Destroy()
 	{
-		foreach( Entity entity in m_cargo.m_items )
-			entity.Destroy();
+//		foreach( Entity entity in m_cargo.m_items )
+//			entity.Destroy();
 		
 		m_integratedDevice.Destroy();
 
