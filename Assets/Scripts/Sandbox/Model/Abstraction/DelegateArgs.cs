@@ -33,6 +33,15 @@ namespace SpaceSandbox
 		public KeyCode key;
 	}
 
+	public class TradingArgs : EventArgs
+	{
+		public string itemName;
+		public int itemCount;
+		public float resourceVolume;
+		public float credits;	// not used
+		public Ship requestSender;
+	}
+
 //	public class TypedEventArg<T> : EventArgs
 //	{
 //		private T _Value;

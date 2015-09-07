@@ -13,10 +13,7 @@ public class WorldManager : MonoBehaviour
 	// Temporary variable. To be removed with something more sophisticated
 	public Sprite m_visuals;
 
-	private static List<Container> objectsPool = new List<Container>();
 
-
-	
 	public static WorldManager World { get; private set; }
 
 	public static ContainerView SpawnContainer( Container container, Vector3 position, Quaternion rotation, int owner = 0 )
@@ -29,15 +26,11 @@ public class WorldManager : MonoBehaviour
 		container.View.m_owner = owner;
 
 
-		objectsPool.Add( container );
-
 		return container.View;
 	}
 
 	public static void UnspawnContainer( Container container )
 	{
-		objectsPool.Remove( container );
-
 		container.Destroy();
 //		container.View.gameObject.SetActive( false );
 	}
@@ -45,7 +38,7 @@ public class WorldManager : MonoBehaviour
 
 	public static void GenerateAsteroid( Vector3 position, float rotation, float volume)
 	{
-		Asteroid astr = new Asteroid();
+		Asteroid astr = new Asteroid(){ EntityName = "Asteroid"};
 
 		astr.Containment.Amount = volume;
 
@@ -62,10 +55,16 @@ public class WorldManager : MonoBehaviour
 
 	public static Ship RequestContainerData(string name)
 	{
-		foreach( Container cont in objectsPool )
-			if( cont.EntityName.Equals( name ) )
-				return cont as Ship;
-		return null;
+		GameObject obj = GameObject.Find(name);
+		if( obj == null )
+			return null;
+
+		ContainerView view = obj.GetComponent<ContainerView>();
+		if( view == null )
+			return null;
+
+		Ship ship = view.m_contain as Ship;
+		return ship;
 	}
 	
 	private void Awake()

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 using SpaceSandbox;
@@ -7,13 +8,12 @@ public class Ship : Container
 {
 	public Ship( int cargoCapacity )
 	{
-		m_cargo = new Cargo(cargoCapacity);
+		m_cargo = new Cargo(cargoCapacity, this);
 
 		m_integratedDevice = new Device();
 		m_integratedDevice.AssignContainer( this );
 
 		m_integratedDevice.AddCheck( "IsCargoFull", m_cargo.IsCargoFull );
-		m_integratedDevice.AddQuery( "ContainerPosition", ContainerPosition );
 	}
 
 	/// <summary>
@@ -47,11 +47,6 @@ public class Ship : Container
 			return m_integratedDevice;
 		}
 	}
-
-	private PositionArgs ContainerPosition()
-	{
-		return new PositionArgs(){ position = View.transform.position };
-	}
 	
 	public void AddToCargo( Entity entity )
 	{
@@ -62,7 +57,7 @@ public class Ship : Container
 	{
 		m_cargo.RemoveItem( name );
 	}
-	
+
 	/// <summary>
 	/// Takes the damage. Just an example of the interface usage.
 	/// </summary>

@@ -433,7 +433,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Offset: .00200000009
   ScanlineResolution: 1000
-  ScanlineIntensity: .129999995
+  ScanlineIntensity: .360000014
 --- !u!20 &1285998126
 Camera:
   m_ObjectHideFlags: 0

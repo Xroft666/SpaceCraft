@@ -14,7 +14,7 @@ public class DPatrolModule : Device
 
 
 	private int currentTargetIdx = 0;
-	private float distanceTreshold = 0.25f;
+	private float distanceTreshold = 5.5f;
 	
 	#region device's functions
 

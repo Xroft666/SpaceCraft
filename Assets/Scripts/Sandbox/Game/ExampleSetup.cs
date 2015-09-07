@@ -24,7 +24,7 @@ public class ExampleSetup : MonoBehaviour {
 		Ship patrol = GeneratePatrolShip();
 
 		// Generating missiles
-		for( int i = 0; i < 20; i++ )
+		for( int i = 0; i < 40; i++ )
 		{
 			patrol.AddToCargo( GenerateMissile() );
 //			ship.AddToCargo( GenerateMissile() );
@@ -161,15 +161,18 @@ public class ExampleSetup : MonoBehaviour {
 		DLauncher launcher = new DLauncher(){ EntityName = "launcher", m_projectileName = "Missile" };
 		DRanger enemydetector = new DRanger(){ EntityName = "enemydetector", detectionRange = 5f };
 		DMagnet magnet = new DMagnet();
+		DTradeComputer trader = new DTradeComputer();
+		
+		
 
-
-
+		ship.IntegratedDevice.IntegrateDevice( trader );
 		ship.IntegratedDevice.IntegrateDevice( engine );
 		ship.IntegratedDevice.IntegrateDevice( steerer );
 		ship.IntegratedDevice.IntegrateDevice( patrol );
 		ship.IntegratedDevice.IntegrateDevice( enemydetector );
 		ship.IntegratedDevice.IntegrateDevice( launcher );
 		ship.IntegratedDevice.IntegrateDevice( magnet );
+
 
 
 		BSBranch rootDecision = ship.IntegratedDevice.Blueprint.CreateBranch();
@@ -202,12 +205,24 @@ public class ExampleSetup : MonoBehaviour {
 		                                                                        enemydetector.GetQuery("CurrentTargetContainer"));
 
 
+		DeviceQuery tradeInfo = () =>
+		{
+			return ship.m_cargo.ComposeTradeOffer("Asteroid");
+		};
+
+		DeviceQuery stationPosition = () =>
+		{
+			return new PositionArgs(){ position = WorldManager.RequestContainerData("MotherBase").View.transform.position};
+		};
+
 
 		BSSequence goingHomeSequence = ship.IntegratedDevice.Blueprint.CreateSequence();
-		BSAction steerTowardsHome = ship.IntegratedDevice.Blueprint.CreateAction( "SteerTowards", steerer, WorldManager.RequestContainerData("MotherBase").IntegratedDevice.GetQuery("ContainerPosition") );
-		BSAction waitUntilReachHome = ship.IntegratedDevice.Blueprint.CreateAction( "ReachTarget", patrol, WorldManager.RequestContainerData("MotherBase").IntegratedDevice.GetQuery("ContainerPosition") );
+		BSAction steerTowardsHome = ship.IntegratedDevice.Blueprint.CreateAction( "SteerTowards", steerer, stationPosition );
+		BSAction waitUntilReachHome = ship.IntegratedDevice.Blueprint.CreateAction( "ReachTarget", patrol, stationPosition );
+		BSAction sellResouces = ship.IntegratedDevice.Blueprint.CreateAction( "UnloadItemsTo", trader, tradeInfo );
 
 
+		// interupt current commands stack
 		enemydetector.AddEvent("OnRangerEntered", ship.IntegratedDevice.Blueprint.InterruptExecution);
 
 
@@ -242,6 +257,7 @@ public class ExampleSetup : MonoBehaviour {
 		patrolSequence.AddChild(disableEngine);
 
 
+		goingHomeSequence.AddChild(sellResouces);
 		goingHomeSequence.AddChild(waitUntilReachHome);
 		goingHomeSequence.AddChild(enableEngine);
 		goingHomeSequence.AddChild(steerTowardsHome);
@@ -394,26 +410,28 @@ public class ExampleSetup : MonoBehaviour {
 
 		DMagnet magnet = new DMagnet();
 		DRanger ranger = new DRanger(){ EntityName = "ranger", detectionRange = 5f };
+		DTradeComputer trader = new DTradeComputer();
 
 
 		motherBase.IntegratedDevice.IntegrateDevice( ranger );
 		motherBase.IntegratedDevice.IntegrateDevice( magnet );
+		motherBase.IntegratedDevice.IntegrateDevice( trader );
 
 
 		BSBranch rootDecision = motherBase.IntegratedDevice.Blueprint.CreateBranch();
 		rootDecision.AddCondition( ranger.GetCheck("IsAnyTarget") );
 
 
-		BSAction attractAsteroid = motherBase.IntegratedDevice.Blueprint.CreateAction("Attract", magnet, 
-		                                                                              ranger.GetQuery("CurrentTargetContainer"));
-		BSAction storageAsteroid = motherBase.IntegratedDevice.Blueprint.CreateAction("Load", magnet, 
-		                                                                              ranger.GetQuery("CurrentTargetContainer"));
-		BSSequence collectingSequence  = motherBase.IntegratedDevice.Blueprint.CreateSequence();
-
-		rootDecision.AddChild( collectingSequence );
-
-		collectingSequence.AddChild( storageAsteroid );
-		collectingSequence.AddChild( attractAsteroid );
+//		BSAction attractAsteroid = motherBase.IntegratedDevice.Blueprint.CreateAction("Attract", magnet, 
+//		                                                                              ranger.GetQuery("CurrentTargetContainer"));
+//		BSAction storageAsteroid = motherBase.IntegratedDevice.Blueprint.CreateAction("Load", magnet, 
+//		                                                                              ranger.GetQuery("CurrentTargetContainer"));
+//		BSSequence collectingSequence  = motherBase.IntegratedDevice.Blueprint.CreateSequence();
+//
+//		rootDecision.AddChild( collectingSequence );
+//
+//		collectingSequence.AddChild( storageAsteroid );
+//		collectingSequence.AddChild( attractAsteroid );
 
 		return motherBase;
 	}

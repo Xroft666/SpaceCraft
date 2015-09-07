@@ -10,6 +10,7 @@ Shader "CameraFilterPack/Color_Chromatic_Aberration" {
 		
 		_ScanlineRes ("_ScanlineResolution", Range(1, 1000)) = 800
 		_ScanlineIntens ("_ScanlineIntensity", Range(0, 1)) = 0.24
+		_ScanlineSpeed ("_ScanlineSpeed", Range(0,1)) = 0.005
 	}
 	SubShader 
 	{
@@ -29,6 +30,7 @@ Shader "CameraFilterPack/Color_Chromatic_Aberration" {
 			
 			uniform float _ScanlineRes;
 			uniform float _ScanlineIntens;
+			uniform float _ScanlineSpeed;
 			
 		       struct appdata_t
             {
@@ -65,8 +67,11 @@ Shader "CameraFilterPack/Color_Chromatic_Aberration" {
 				col.r = tex2D(_MainTex, uv+offset.xy).r;
 				col.b = tex2D(_MainTex, uv+offset.yx).b;
 				
-				float scanline = (sin(uv.y * _ScanlineRes) + 1.0) * _ScanlineIntens;
-				col -= scanline;
+//				float scanline = (sin((uv.y + _Time.y * _ScanlineSpeed) * _ScanlineRes) + 1.0) * _ScanlineIntens;
+				float scanline = (sin(uv.y * _ScanlineRes) + 1.0) * 0.5;
+				col -= scanline * _ScanlineIntens;
+				
+//				col = col - step(((uv.y + _Time.x * _ScanlineSpeed) * _ScanlineRes) % 2, 0.5) * _ScanlineIntens;
 				
 			    return col;
 			
