@@ -28,14 +28,18 @@ public class DLauncher : Device
 		{
 			projectileEntity = cont as Entity;
 			projectile =  WorldManager.SpawnContainer(cont, 
-			                            m_containerAttachedTo.View.transform.position + m_containerAttachedTo.View.transform.up,
+			                            m_containerAttachedTo.View.transform.position + m_containerAttachedTo.View.transform.forward,
 			                            m_containerAttachedTo.View.transform.rotation,
 			                            m_containerAttachedTo.View.m_owner );
 
-			Collider2D collider = projectile.GetComponent<Collider2D>();
+//			Collider2D collider = projectile.GetComponent<Collider2D>();
+			Collider collider = projectile.GetComponent<Collider>();
 
-			Rigidbody2D rigid = projectile.GetComponent<Rigidbody2D>();
-			rigid.velocity = m_containerAttachedTo.View.GetComponent<Rigidbody2D>().velocity;
+//			Rigidbody2D rigid = projectile.GetComponent<Rigidbody2D>();
+//			rigid.velocity = m_containerAttachedTo.View.GetComponent<Rigidbody2D>().velocity;
+
+			Rigidbody rigid = projectile.GetComponent<Rigidbody>();
+			rigid.velocity = m_containerAttachedTo.View.GetComponent<Rigidbody>().velocity;
 
 			projectile.transform.FindChild("body").localScale = new Vector3(0.25f, 1f, 1f);
 

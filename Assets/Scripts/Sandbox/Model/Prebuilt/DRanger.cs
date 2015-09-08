@@ -14,7 +14,8 @@ public class DRanger : Device
 
 	private List<ContainerView> m_targets = new List<ContainerView>();
 
-	private CircleCollider2D m_collider = null;
+//	private CircleCollider2D m_collider = null;
+	private SphereCollider m_collider = null;
 
 	public override void OnDeviceInstalled()
 	{
@@ -98,15 +99,18 @@ public class DRanger : Device
 		
 		rangerGO.transform.SetParent( m_containerAttachedTo.View.transform, false );
 
-		Rigidbody2D rigid = rangerGO.AddComponent<Rigidbody2D>();
+//		Rigidbody2D rigid = rangerGO.AddComponent<Rigidbody2D>();
+		Rigidbody rigid = rangerGO.AddComponent<Rigidbody>();
 		rigid.isKinematic = true;
 
-		m_collider = rangerGO.AddComponent<CircleCollider2D>();
+//		m_collider = rangerGO.AddComponent<CircleCollider2D>();
+		m_collider = rangerGO.AddComponent<SphereCollider>();
 		m_collider.isTrigger = true;
 		m_collider.radius = detectionRange;
 		m_collider.enabled = m_isActive;
 		
-		EventTrigger2DHandler trigger = rangerGO.AddComponent<EventTrigger2DHandler>();
+//		EventTrigger2DHandler trigger = rangerGO.AddComponent<EventTrigger2DHandler>();
+		EventTriggerHandler trigger = rangerGO.AddComponent<EventTriggerHandler>();
 		trigger.onTriggerEnter += OnColliderEntered;
 		trigger.onTriggerExit += OnColliderEscaped;
 	}
@@ -117,7 +121,7 @@ public class DRanger : Device
 		GameObject.Destroy( m_collider.gameObject );
 	}
 
-	private void OnColliderEntered( Collider2D other )
+	private void OnColliderEntered( Collider other )//Collider2D other )
 	{
 
 		if( !IsColliderMine( other ))
@@ -148,7 +152,7 @@ public class DRanger : Device
 		}
 	}
 
-	private void OnColliderEscaped( Collider2D other )
+	private void OnColliderEscaped( Collider other )//Collider2D other )
 	{
 		if( !IsColliderMine( other ))
 		{
@@ -170,7 +174,7 @@ public class DRanger : Device
 		}
 	}
 
-	private bool IsColliderMine(Collider2D collider)
+	private bool IsColliderMine( Collider collider )//Collider2D collider)
 	{
 		// check all the colliders on the container
 		return m_containerAttachedTo.View.gameObject == collider.transform.root.gameObject;

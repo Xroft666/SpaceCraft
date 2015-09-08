@@ -9,7 +9,8 @@ using SpaceSandbox;
 
 public class DSteerModule : Device 
 {
-	private Rigidbody2D m_rigidbody;
+//	private Rigidbody2D m_rigidbody;
+	private Rigidbody m_rigidbody;
 
 	// temporary variable. Should be changed to something more physical realistic
 	private float torqueSpeed = 25f;
@@ -24,23 +25,35 @@ public class DSteerModule : Device
 		if( onSteerStart != null )
 			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onSteerStart, null );
 
-		Vector2 worldPos = (Vector2) pArgs.position;
+//		Vector2 worldPos = (Vector2) pArgs.position;
+		Vector3 worldPos = pArgs.position;
 
-		m_rigidbody.angularVelocity = 0f;
-		m_rigidbody.rotation = Mathf.Repeat( m_rigidbody.rotation, 360f );
+//		m_rigidbody.angularVelocity = 0f;
+//		m_rigidbody.rotation = Mathf.Repeat( m_rigidbody.rotation, 360f );
+
+		m_rigidbody.angularVelocity = Vector3.zero;
 
 		float prevAngle = 1f;
 		float currentAngle = 0f;
 
 		while ( Mathf.Abs(currentAngle) < Mathf.Abs(prevAngle) )
 		{
-			prevAngle = Mathf.DeltaAngle( m_rigidbody.rotation , CurrentAngle(worldPos)) ;
-			m_rigidbody.rotation =
-						Mathf.MoveTowardsAngle( m_rigidbody.rotation, 
-			            CurrentAngle(worldPos), 
-			            torqueSpeed * Time.deltaTime );
+			Quaternion targetRotation = Quaternion.LookRotation( ( worldPos - m_rigidbody.position).normalized );
 
-			currentAngle = Mathf.DeltaAngle( m_rigidbody.rotation , CurrentAngle(worldPos)) ;
+//			prevAngle = Mathf.DeltaAngle( m_rigidbody.rotation , CurrentAngle(worldPos)) ;
+			prevAngle = Quaternion.Angle( m_rigidbody.rotation, targetRotation );
+						//Vector3.Angle( m_rigidbody.rotation * Vector3.forward, ( worldPos - m_rigidbody.position).normalized);
+
+//			m_rigidbody.rotation =
+//						Mathf.MoveTowardsAngle( m_rigidbody.rotation, 
+//			            CurrentAngle(worldPos), 
+//			            torqueSpeed * Time.deltaTime );
+
+			m_rigidbody.rotation = Quaternion.RotateTowards(m_rigidbody.rotation, targetRotation, torqueSpeed * Time.deltaTime );
+
+//			currentAngle = Mathf.DeltaAngle( m_rigidbody.rotation , CurrentAngle(worldPos)) ;
+			currentAngle = Quaternion.Angle( m_rigidbody.rotation, targetRotation );
+							//Vector3.Angle( m_rigidbody.rotation * Vector3.forward, ( worldPos - m_rigidbody.position).normalized);
 	
 			yield return null;
 		}
@@ -65,7 +78,8 @@ public class DSteerModule : Device
 
 	public override void Initialize()
 	{
-		m_rigidbody = m_containerAttachedTo.View.GetComponent<Rigidbody2D>();
+//		m_rigidbody = m_containerAttachedTo.View.GetComponent<Rigidbody2D>();
+		m_rigidbody = m_containerAttachedTo.View.GetComponent<Rigidbody>();
 	}
 
 	public override void Update()
@@ -76,9 +90,9 @@ public class DSteerModule : Device
 	#endregion
 
 
-	private float CurrentAngle( Vector3 worldPos )
-	{
-		Vector3 direction = ( (Vector2) worldPos - m_rigidbody.position).normalized;
-		return Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
-	}
+//	private float CurrentAngle( Vector3 worldPos )
+//	{
+//		Vector3 direction = ( (Vector2) worldPos - m_rigidbody.position).normalized;
+//		return Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
+//	}
 }

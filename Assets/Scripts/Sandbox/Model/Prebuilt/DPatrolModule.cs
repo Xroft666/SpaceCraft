@@ -15,12 +15,25 @@ public class DPatrolModule : Device
 
 	private int currentTargetIdx = 0;
 	private float distanceTreshold = 5.5f;
+
+	private NavMeshPath path = new NavMeshPath();
 	
 	#region device's functions
 
 	private IEnumerator ReachTarget( EventArgs args )
 	{
 		PositionArgs pArgs = args as PositionArgs;
+
+		if( NavMesh.CalculatePath( m_containerAttachedTo.View.transform.position, pArgs.position, NavMesh.AllAreas, path ) )
+		{
+			for( int i = 0; i < path.corners.Length - 1; i++ )
+				Debug.DrawLine( path.corners[i], path.corners[i+1], Color.blue, 1f );
+
+		}
+		else
+		{
+			Debug.LogWarning("Path not found");
+		}
 
 		while( !IsCloseTo(pArgs.position) )
 		{

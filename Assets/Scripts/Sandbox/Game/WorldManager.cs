@@ -50,7 +50,11 @@ public class WorldManager : MonoBehaviour
 		astr.InitializeView( );
 
 		astr.View.transform.position = position;
-		astr.View.transform.rotation = Quaternion.Euler( 0f, 0f, rotation);
+		astr.View.transform.rotation = Quaternion.Euler( 0f, rotation, 0f);
+
+		NavMeshObstacle navMeshObstacle = astr.View.gameObject.AddComponent<NavMeshObstacle>();
+		navMeshObstacle.shape = NavMeshObstacleShape.Capsule;
+		navMeshObstacle.carving = true;
 	}
 
 	public static bool IsContainerDestroyed( ContainerView view )

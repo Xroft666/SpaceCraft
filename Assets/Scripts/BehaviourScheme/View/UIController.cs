@@ -41,8 +41,11 @@ public class UIController : MonoBehaviour
 			commands.CleanCommandsStack();
 
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-			RaycastHit2D[] hits = Physics2D.RaycastAll(ray.origin, ray.direction);
-			foreach( RaycastHit2D hit in hits )
+			RaycastHit[] hits = Physics.RaycastAll( ray );
+
+//			RaycastHit2D[] hits = Physics2D.RaycastAll(ray.origin, ray.direction);
+//			foreach( RaycastHit2D hit in hits )
+			foreach( RaycastHit hit in hits )
 			{
 				if( hit.collider == null )
 					continue;
@@ -76,10 +79,10 @@ public class UIController : MonoBehaviour
 		{
 			Vector3 input = Vector3.zero; 
 			if( Input.GetKey(KeyCode.UpArrow) )
-				input += Vector3.up;
+				input += Vector3.forward;
 			
 			if( Input.GetKey(KeyCode.DownArrow) )
-				input += Vector3.down;
+				input += Vector3.back;
 			
 			if( Input.GetKey(KeyCode.LeftArrow) )
 				input += Vector3.left;
@@ -93,8 +96,8 @@ public class UIController : MonoBehaviour
 		{
 			Vector3 position = Vector3.zero;
 			position.x = selectedContainer.transform.position.x;
-			position.y = selectedContainer.transform.position.y;
-			position.z = Camera.main.transform.position.z;
+			position.z = selectedContainer.transform.position.z;
+			position.y = Camera.main.transform.position.y;
 			
 			Camera.main.transform.position = position;
 		}

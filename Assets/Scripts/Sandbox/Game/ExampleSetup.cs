@@ -8,7 +8,7 @@ public class ExampleSetup : MonoBehaviour {
 
 	private void Start()
 	{
-		WorldManager.SpawnContainer (GenerateMotherBase(), Vector3.one * 5f, Quaternion.identity, 2 );
+		WorldManager.SpawnContainer (GenerateMotherBase(), new Vector3(5f, 0f, 5f), Quaternion.identity, 2 );
 
 
 		Ship patrol = GeneratePatrolShip();
@@ -21,11 +21,16 @@ public class ExampleSetup : MonoBehaviour {
 
 		for( int i = 0; i < 100; i++ )
 		{
-
 			Vector3 pos = Vector3.zero;
 			pos = UnityEngine.Random.insideUnitCircle * 50f;
+			pos = new Vector3(pos.x, 0f, pos.y);
 
-			WorldManager.GenerateAsteroid( pos, Random.Range(0f,360f), Random.Range(0.1f, 2.4f));
+			float radius = Random.Range(0.1f, 2.4f);
+
+			if( Physics.CheckSphere(pos, radius) )
+				continue;
+
+			WorldManager.GenerateAsteroid( pos, Random.Range(0f,360f), radius);
 		}
 	
 	}
@@ -35,7 +40,7 @@ public class ExampleSetup : MonoBehaviour {
 	{
 		Ship missile = new Ship(2){ EntityName = "Missile" };
 		
-		DEngine engine = new DEngine(){ EntityName = "engine", m_lookDirection = Vector3.up, m_space = Space.Self };
+		DEngine engine = new DEngine(){ EntityName = "engine", m_lookDirection = Vector3.forward, m_space = Space.Self };
 
 		Device heatSeeker = GenerateHeatSeeker(3f);
 		Device timeBomb = GenerateTimeBomb( 5f );
@@ -107,11 +112,11 @@ public class ExampleSetup : MonoBehaviour {
 
 		markers[0].transform.position = Vector3.right * 15f;
 		markers[1].transform.position = Vector3.left * 15f;
-		markers[2].transform.position = Vector3.up * 15f;
-		markers[3].transform.position = Vector3.down * 15f;
+		markers[2].transform.position = Vector3.forward * 15f;
+		markers[3].transform.position = Vector3.back * 15f;
 
 		
-		DEngine engine = new DEngine(){ EntityName = "engine", m_lookDirection = Vector3.up, m_space = Space.Self };
+		DEngine engine = new DEngine(){ EntityName = "engine", m_lookDirection = Vector3.forward, m_space = Space.Self };
 		DSteerModule steerer = new DSteerModule(){ EntityName = "steerer"};
 		DPatrolModule patrol = new DPatrolModule(){ EntityName = "patrol", 
 				m_patrolPoints = new Vector3[] {
@@ -188,7 +193,7 @@ public class ExampleSetup : MonoBehaviour {
 
 
 		// interupt current commands stack
-		enemydetector.AddEvent("OnRangerEntered", ship.IntegratedDevice.Blueprint.InterruptExecution);
+//		enemydetector.AddEvent("OnRangerEntered", ship.IntegratedDevice.Blueprint.InterruptExecution);
 
 
 		ship.IntegratedDevice.Blueprint.m_entryPoint.AddChild(rootDecision);
@@ -292,8 +297,8 @@ public class ExampleSetup : MonoBehaviour {
 	{
 		List<Device> inputs = new List<Device>() 
 		{
-			new DEngine(){ EntityName = "forward", m_lookDirection = Vector3.up, m_space = Space.World },
-			new DEngine(){ EntityName = "backward", m_lookDirection = Vector3.down, m_space = Space.World },
+			new DEngine(){ EntityName = "forward", m_lookDirection = Vector3.forward, m_space = Space.World },
+			new DEngine(){ EntityName = "backward", m_lookDirection = Vector3.back, m_space = Space.World },
 			new DEngine(){ EntityName = "left", m_lookDirection = Vector3.left, m_space = Space.World },
 			new DEngine(){ EntityName = "right", m_lookDirection = Vector3.right, m_space = Space.World }
 		};

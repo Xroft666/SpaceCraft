@@ -2,7 +2,7 @@
 
 namespace SpaceSandbox
 {
-	public class Entity : Object
+	public class Entity
 	{
 		public enum EntityType
 		{

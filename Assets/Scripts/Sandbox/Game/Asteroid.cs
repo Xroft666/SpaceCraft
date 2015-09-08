@@ -13,16 +13,20 @@ namespace SpaceSandbox
 
 		public List<Vector2> vertices = null;
 
-		private PolygonCollider2D collider;
+//		private PolygonCollider2D collider;
+		private SphereCollider collider;
 	
 		public override void InitializeView( )
 		{
 			GameObject newContainer = new GameObject( "Asteroid" );
 			MeshFilter filter = newContainer.AddComponent<MeshFilter>();
 			MeshRenderer renderer = newContainer.AddComponent<MeshRenderer>();
-			collider = newContainer.AddComponent<PolygonCollider2D>();
-			Rigidbody2D rigid = newContainer.AddComponent<Rigidbody2D>();
+//			collider = newContainer.AddComponent<PolygonCollider2D>();
+			collider = newContainer.AddComponent<SphereCollider>();
+//			Rigidbody2D rigid = newContainer.AddComponent<Rigidbody2D>();
+			Rigidbody rigid = newContainer.AddComponent<Rigidbody>();
 			ContainerView view = newContainer.AddComponent<ContainerView>();
+
 			
 			view.m_contain = this;
 			this.View = view;
@@ -51,7 +55,7 @@ namespace SpaceSandbox
 			for( int j = 0; j < vertices3d.Length; j++ )
 			{
 				vertices3d[j].x = vertices[j].x;
-				vertices3d[j].y = vertices[j].y;
+				vertices3d[j].z = vertices[j].y;
 			}
 			
 			mesh.vertices = vertices3d;
@@ -62,9 +66,15 @@ namespace SpaceSandbox
 			
 			
 			
-			collider.points = vertices.ToArray();
+//			collider.points = vertices.ToArray();
+			collider.radius = size;
 			
 			rigid.mass = size * 100f;
+
+			rigid.constraints = RigidbodyConstraints.FreezePositionY | 
+								RigidbodyConstraints.FreezeRotationX | 
+								RigidbodyConstraints.FreezeRotationZ;
+			rigid.useGravity = false;
 			
 			renderer.sharedMaterial = new UnityEngine.Material(Shader.Find("Diffuse"));
 		}
@@ -101,7 +111,7 @@ namespace SpaceSandbox
 
 
 
-			collider.points = vertices.ToArray();
+//			collider.points = vertices.ToArray();
 		}
 
 		public override void Initialize() 
@@ -127,7 +137,9 @@ namespace SpaceSandbox
 			if( volume > volumeTreshold )
 			{
 				WorldManager.GenerateAsteroid( View.transform.position, View.transform.rotation.eulerAngles.z, volume );
-				WorldManager.GenerateAsteroid( View.transform.position + (Vector3) Random.insideUnitCircle.normalized * volume, View.transform.rotation.eulerAngles.z, volume );
+				Vector3 pos = (Vector3) Random.insideUnitCircle.normalized * volume;
+				pos = new Vector3(pos.x, 0f, pos.y);
+				WorldManager.GenerateAsteroid( View.transform.position + pos, View.transform.rotation.eulerAngles.z, volume );
 			}
 
 			Destroy();
@@ -178,61 +190,61 @@ namespace SpaceSandbox
 			WorldManager.GenerateAsteroid( View.transform.position, 0f, Containment.Amount / 2f );
 		}
 
-		private void SubstructVertices(float radius, UnityEngine.Vector2 center)
-		{
-			List<Vector2> newVerts = new List<Vector2>();
-			int injectionIdx = -1;
-			float minDist = float.MaxValue;
-			
-			float section = 2f * Mathf.PI / (fidelity * radius );
-			for( float arg = 0f; arg > -2f * Mathf.PI; arg -= section )
-			{
-				Vector2 radiusPoint;
-				radiusPoint.x = Mathf.Cos(arg) * radius;
-				radiusPoint.y = Mathf.Sin(arg) * radius;
-				
-				if( collider.OverlapPoint( center + radiusPoint ) )
-					newVerts.Add( View.transform.InverseTransformPoint( center + radiusPoint ));
-			}
-			
-			for( int i = 0; i < vertices.Count; i++ )
-			{
-				Vector2 worldPos = Vector2.zero;
-				worldPos.x = View.transform.position.x + vertices[i].x;
-				worldPos.y = View.transform.position.y + vertices[i].y;
-				
-				float distance = (worldPos - center).magnitude;
-				if( distance < minDist )
-				{
-					minDist = distance;
-					injectionIdx = i;
-				}
-			}
-			
-			
-			
-			if( injectionIdx == -1 )
-			{
-				Debug.LogError("injectionIdx is -1");
-				return;
-			}
-			
-			vertices.InsertRange( injectionIdx, newVerts );
-			
-			for( int i = 0; i < vertices.Count; i++ )
-			{
-				Vector2 worldPos = Vector2.zero;
-				worldPos.x = View.transform.position.x + vertices[i].x;
-				worldPos.y = View.transform.position.y + vertices[i].y;
-				
-				float distance = (worldPos - center).magnitude;
-				
-				if( distance  < radius )
-				{
-					vertices.RemoveAt(i);
-					i--;
-				}
-			}
-		}
+//		private void SubstructVertices(float radius, UnityEngine.Vector2 center)
+//		{
+//			List<Vector2> newVerts = new List<Vector2>();
+//			int injectionIdx = -1;
+//			float minDist = float.MaxValue;
+//			
+//			float section = 2f * Mathf.PI / (fidelity * radius );
+//			for( float arg = 0f; arg > -2f * Mathf.PI; arg -= section )
+//			{
+//				Vector2 radiusPoint;
+//				radiusPoint.x = Mathf.Cos(arg) * radius;
+//				radiusPoint.y = Mathf.Sin(arg) * radius;
+//				
+//				if( collider.OverlapPoint( center + radiusPoint ) )
+//					newVerts.Add( View.transform.InverseTransformPoint( center + radiusPoint ));
+//			}
+//			
+//			for( int i = 0; i < vertices.Count; i++ )
+//			{
+//				Vector2 worldPos = Vector2.zero;
+//				worldPos.x = View.transform.position.x + vertices[i].x;
+//				worldPos.y = View.transform.position.y + vertices[i].y;
+//				
+//				float distance = (worldPos - center).magnitude;
+//				if( distance < minDist )
+//				{
+//					minDist = distance;
+//					injectionIdx = i;
+//				}
+//			}
+//			
+//			
+//			
+//			if( injectionIdx == -1 )
+//			{
+//				Debug.LogError("injectionIdx is -1");
+//				return;
+//			}
+//			
+//			vertices.InsertRange( injectionIdx, newVerts );
+//			
+//			for( int i = 0; i < vertices.Count; i++ )
+//			{
+//				Vector2 worldPos = Vector2.zero;
+//				worldPos.x = View.transform.position.x + vertices[i].x;
+//				worldPos.y = View.transform.position.y + vertices[i].y;
+//				
+//				float distance = (worldPos - center).magnitude;
+//				
+//				if( distance  < radius )
+//				{
+//					vertices.RemoveAt(i);
+//					i--;
+//				}
+//			}
+//		}
 	}
 }

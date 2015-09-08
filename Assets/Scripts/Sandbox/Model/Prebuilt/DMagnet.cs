@@ -12,8 +12,8 @@ public class DMagnet : Device
 	// Exportable variable
 	public float m_magnetPower = 10f;
 	
-	private Rigidbody2D myRigid;
-
+//	private Rigidbody2D myRigid;
+	private Rigidbody myRigid;
 
 	#region device's functions
 
@@ -21,7 +21,8 @@ public class DMagnet : Device
 	{
 		ContainerArgs cArgs = args as ContainerArgs;
 
-		Rigidbody2D rigid = cArgs.container.View.GetComponent<Rigidbody2D>();
+//		Rigidbody2D rigid = cArgs.container.View.GetComponent<Rigidbody2D>();
+		Rigidbody rigid = cArgs.container.View.GetComponent<Rigidbody>();
 
 		while( (cArgs.container.View.transform.position - m_containerAttachedTo.View.transform.position).magnitude > 1f )
 		{
@@ -37,7 +38,8 @@ public class DMagnet : Device
 	{
 		ContainerArgs cArgs = args as ContainerArgs;
 
-		Rigidbody2D rigid = cArgs.container.View.GetComponent<Rigidbody2D>();
+//		Rigidbody2D rigid = cArgs.container.View.GetComponent<Rigidbody2D>();
+		Rigidbody rigid = cArgs.container.View.GetComponent<Rigidbody>();
 
 		while( (cArgs.container.View.transform.position - m_containerAttachedTo.View.transform.position).magnitude > 1f )
 		{
@@ -110,7 +112,8 @@ public class DMagnet : Device
 
 	public override void Initialize()
 	{
-		myRigid = m_containerAttachedTo.View.GetComponent<Rigidbody2D>();
+//		myRigid = m_containerAttachedTo.View.GetComponent<Rigidbody2D>();
+		myRigid = m_containerAttachedTo.View.GetComponent<Rigidbody>();
 	}
 
 	public override void Update()

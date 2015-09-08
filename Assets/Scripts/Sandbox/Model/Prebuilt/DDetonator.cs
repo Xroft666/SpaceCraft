@@ -22,8 +22,10 @@ public class DDetonator : Device
 		GameObject explosion = new GameObject("Explosion Area");
 		explosion.layer = 11;
 
-		CircleCollider2D collider = explosion.AddComponent<CircleCollider2D>();
-		EventTrigger2DHandler handler = explosion.AddComponent<EventTrigger2DHandler>();
+//		CircleCollider2D collider = explosion.AddComponent<CircleCollider2D>();
+		SphereCollider collider = explosion.AddComponent<SphereCollider>();
+//		EventTrigger2DHandler handler = explosion.AddComponent<EventTrigger2DHandler>();
+		EventTriggerHandler handler = explosion.AddComponent<EventTriggerHandler>();
 
 		explosion.transform.position = m_containerAttachedTo.View.transform.position;
 		collider.radius = explosionRadius;
@@ -61,7 +63,7 @@ public class DDetonator : Device
 
 	#endregion
 
-	private void OnObjectInExplosionArea( Collider2D other )
+	private void OnObjectInExplosionArea( Collider other )//Collider2D other )
 	{
 		ContainerView view = other.GetComponent<ContainerView>();
 		if( view == null )
@@ -71,9 +73,10 @@ public class DDetonator : Device
 
 
 		Vector3 outwardsDir = other.transform.position - m_containerAttachedTo.View.transform.position;
-		Rigidbody2D rigid = other.gameObject.GetComponent<Rigidbody2D>();
+//		Rigidbody2D rigid = other.gameObject.GetComponent<Rigidbody2D>();
+		Rigidbody rigid = other.gameObject.GetComponent<Rigidbody>();
 
-		rigid.AddForce( outwardsDir.normalized * detonateForce * outwardsDir.magnitude / explosionRadius, ForceMode2D.Impulse );
+		rigid.AddForce( outwardsDir.normalized * detonateForce * outwardsDir.magnitude / explosionRadius, ForceMode.Impulse);//ForceMode2D.Impulse );
 	}
 
 }

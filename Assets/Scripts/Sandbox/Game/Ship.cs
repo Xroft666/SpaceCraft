@@ -84,13 +84,22 @@ public class Ship : Container
 		sRenderer.sprite = WorldManager.World.m_visuals;
 		
 		body.transform.SetParent( view.transform, false );
+		body.transform.rotation = Quaternion.Euler( 90f, 0f, 0f );
 		
-		Rigidbody2D rigid = newContainer.gameObject.AddComponent<Rigidbody2D>();
-		rigid.gravityScale = 0f;
+//		Rigidbody2D rigid = newContainer.gameObject.AddComponent<Rigidbody2D>();
+//		rigid.gravityScale = 0f;
+
+		Rigidbody rigid = newContainer.gameObject.AddComponent<Rigidbody>();
+		rigid.constraints = RigidbodyConstraints.FreezePositionY | 
+							RigidbodyConstraints.FreezeRotationX | 
+							RigidbodyConstraints.FreezeRotationZ;
+		rigid.useGravity = false;
+
 		rigid.drag = 1.35f;
 		rigid.angularDrag = 0.1f;
 		
-		BoxCollider2D clickZone = newContainer.AddComponent<BoxCollider2D>();
+//		BoxCollider2D clickZone = newContainer.AddComponent<BoxCollider2D>();
+		BoxCollider clickZone = newContainer.AddComponent<BoxCollider>();
 	}
 
 	public override void UpdateView()
