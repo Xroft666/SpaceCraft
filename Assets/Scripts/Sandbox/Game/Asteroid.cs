@@ -26,6 +26,7 @@ namespace SpaceSandbox
 //			Rigidbody2D rigid = newContainer.AddComponent<Rigidbody2D>();
 			Rigidbody rigid = newContainer.AddComponent<Rigidbody>();
 			ContainerView view = newContainer.AddComponent<ContainerView>();
+			NavMeshObstacle navMeshObstacle = newContainer.AddComponent<NavMeshObstacle>();
 
 			
 			view.m_contain = this;
@@ -77,6 +78,12 @@ namespace SpaceSandbox
 			rigid.useGravity = false;
 			
 			renderer.sharedMaterial = new UnityEngine.Material(Shader.Find("Diffuse"));
+
+
+			navMeshObstacle.shape = NavMeshObstacleShape.Capsule;
+			navMeshObstacle.carving = true;
+			navMeshObstacle.carveOnlyStationary = true;
+			navMeshObstacle.radius = size + 0.5f;
 		}
 
 		public override void UpdateView()
@@ -154,14 +161,14 @@ namespace SpaceSandbox
 
 		public override void OnDrawGizmos()
 		{
-			for( int i = 0; i < vertices.Count; i++ )
-			{
-				float indexValue = i / (float) vertices.Count;
-					
-				Gizmos.color = Color.Lerp( Color.red, Color.green, indexValue );
-
-				Gizmos.DrawSphere( View.transform.TransformPoint( vertices[i] ), 0.05f );
-			}
+//			for( int i = 0; i < vertices.Count; i++ )
+//			{
+//				float indexValue = i / (float) vertices.Count;
+//					
+//				Gizmos.color = Color.Lerp( Color.red, Color.green, indexValue );
+//
+//				Gizmos.DrawSphere( View.transform.TransformPoint( vertices[i] ), 0.05f );
+//			}
 		}
 
 		private void SplitVertices( UnityEngine.Vector2 center )

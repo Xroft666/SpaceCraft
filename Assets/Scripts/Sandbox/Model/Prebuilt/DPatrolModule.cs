@@ -14,7 +14,7 @@ public class DPatrolModule : Device
 
 
 	private int currentTargetIdx = 0;
-	private float distanceTreshold = 5.5f;
+	private float distanceTreshold = 1.5f;
 
 	private NavMeshPath path = new NavMeshPath();
 	
