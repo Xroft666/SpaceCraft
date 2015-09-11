@@ -1,4 +1,4 @@
-
+using System;
 using System.Collections.Generic;
 
 namespace BehaviourScheme
@@ -7,6 +7,8 @@ namespace BehaviourScheme
 	{		
 		protected List<SpaceSandbox.DeviceCheck> m_conditions = new List<SpaceSandbox.DeviceCheck>();
 		protected List<SpaceSandbox.DeviceQuery> m_conditionData = new List<SpaceSandbox.DeviceQuery>();
+
+//		protected List<Func<EventArgs>> m_conditionData;
 
 		public void AddCondition( SpaceSandbox.DeviceCheck condition, SpaceSandbox.DeviceQuery data = null )
 		{

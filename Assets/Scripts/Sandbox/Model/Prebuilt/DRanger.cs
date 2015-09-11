@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -140,7 +140,7 @@ public class DRanger : Device
 					//m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onEnter, null)
 					//ScheduleEvent( onEnter, null);
 					//onEnter(null);
-					Job.make( onEnter(null), true);
+					onEnter();
 
 				m_targets.Add( othersView );
 				
@@ -168,7 +168,7 @@ public class DRanger : Device
 			//	m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onExit, null);
 			//	ScheduleEvent( onExit, null);
 			//	onExit(null);
-				Job.make( onExit(null), true);
+				onExit.Invoke();
 
 			m_targets.Remove( othersView );
 		}

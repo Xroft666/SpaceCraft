@@ -8,7 +8,7 @@ namespace BehaviourScheme
 	{		
 		public override void Traverse()
 		{
-			m_scheme.AddScheduledEvent( RescheduledEvent, null );
+			m_scheme.ScheduleEvent( RescheduledEvent, null );
 		}
 
 		public IEnumerator RescheduledEvent( EventArgs data )

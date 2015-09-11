@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -39,10 +39,12 @@ namespace SpaceSandbox
 		protected List<Device> m_integratedDevices = new List<Device>();
 
 
-		public Dictionary<string, DeviceEvent> m_actions = new Dictionary<string, DeviceEvent>();
+		public Dictionary<string, DeviceAction> m_actions = new Dictionary<string, DeviceAction>();
 		public Dictionary<string, DeviceEvent> m_events = new Dictionary<string, DeviceEvent>();
+	//	public Dictionary<string, DeviceQuery> m_exits = new Dictionary<string, DeviceQuery>();
 		public Dictionary<string, DeviceCheck> m_checks = new Dictionary<string, DeviceCheck>();
 		public Dictionary<string, DeviceQuery> m_queries = new Dictionary<string, DeviceQuery>();
+	
 
 		public void AssignContainer( Ship container )
 		{
@@ -56,13 +58,13 @@ namespace SpaceSandbox
 		/// including the current "compound" list if it is not end-point device
 		/// </summary>
 		/// <returns>The functions list.</returns>
-		public Dictionary<string, DeviceEvent> GetCompleteFunctionsList()
+		public Dictionary<string, DeviceAction> GetCompleteFunctionsList()
 		{
-			Dictionary<string, DeviceEvent> functionsList = new Dictionary<string, DeviceEvent>(m_actions);
+			Dictionary<string, DeviceAction> functionsList = new Dictionary<string, DeviceAction>(m_actions);
 
 			foreach( Device device in m_integratedDevices )
 			{
-				foreach(KeyValuePair<string, DeviceEvent> function in device.GetCompleteFunctionsList())
+				foreach(KeyValuePair<string, DeviceAction> function in device.GetCompleteFunctionsList())
 				{
 					functionsList.Add(function.Key, function.Value);
 				}
@@ -100,13 +102,13 @@ namespace SpaceSandbox
 
 
 
-		public void AddAction ( string name, DeviceEvent function )
+		public void AddAction ( string name, DeviceAction function )
 		{
 			m_actions.Add( name, null );
 			m_actions[name] += function;
 		}
 
-		public DeviceEvent GetFunction ( string name )
+		public DeviceAction GetFunction ( string name )
 		{
 			return m_actions[name];
 		}
@@ -135,26 +137,6 @@ namespace SpaceSandbox
 			m_queries.Remove( name );
 		}
 
-
-		/// <summary>
-		/// Gets the complete events list. 
-		/// </summary>
-		/// <returns>The complete events list.</returns>
-
-		public Dictionary<string, DeviceEvent> GetCompleteEventsList()
-		{
-			Dictionary<string, DeviceEvent> eventsList = new Dictionary<string, DeviceEvent>(m_events);
-			
-			foreach( Device device in m_integratedDevices )
-			{
-				foreach(KeyValuePair<string, DeviceEvent> dEvent in device.GetCompleteEventsList())
-				{
-					eventsList.Add(dEvent.Key, dEvent.Value);
-				}
-			}
-			
-			return eventsList;
-		} 
 
 		public void AddEvent ( string name, DeviceEvent trigger )
 		{
@@ -224,25 +206,23 @@ namespace SpaceSandbox
 		}
 
 
-		public void ScheduleEvent(DeviceEvent evt, DeviceQuery data = null)
-		{
-			Blueprint.AddScheduledEvent( evt, data );
-		}
+//		public void ScheduleEvent(DeviceAction evt, DeviceQuery data = null)
+//		{
+//			Blueprint.ScheduleEvent( evt, data );
+//		}
 
 		public void ExecuteLogic()
 		{
-//			ScheduleEvent( GetEvent( "RootEntry" ) );
-			Blueprint.ExecuteSceduledEvents();
-			foreach( Device device in m_integratedDevices )
-				device.ExecuteLogic();
+			if( !Blueprint.IsRunning )
+			{
+				Blueprint.ScheduleTask( GetEvent( "RootEntry" ) );
+				Blueprint.ExecuteCommandsList();
+			}
+
+//			foreach( Device device in m_integratedDevices )
+//				device.ExecuteLogic();
 		}
 
-		public void CleanScheduledEvents()
-		{
-			Blueprint.ClearEventsAndData();
-			foreach( Device device in m_integratedDevices )
-				device.CleanScheduledEvents();
-		}
 
 		#region Common events and function
 

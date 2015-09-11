@@ -1,10 +1,12 @@
-﻿using System;
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SpaceSandbox
 {
-	public delegate IEnumerator DeviceEvent(EventArgs args);
+	public delegate IEnumerator DeviceAction(EventArgs args);
+	public delegate void DeviceEvent();
 	public delegate bool DeviceCheck(EventArgs args);
 	public delegate EventArgs DeviceQuery();
 
@@ -38,23 +40,17 @@ namespace SpaceSandbox
 		public string itemName;
 		public int itemCount;
 		public float resourceVolume;
-		public float credits;	// not used
+		public float credits;	
 		public Ship requestSender;
 	}
 
-//	public class TypedEventArg<T> : EventArgs
-//	{
-//		private T _Value;
-//		
-//		public TypedEventArg(T value)
-//		{
-//			_Value = value;
-//		}
-//		
-//		public T Value
-//		{
-//			get { return _Value; }
-//			set { _Value = value; }
-//		}
-//	}
+	public class ArgsObject : EventArgs
+	{
+		public System.Object obj;
+	}
+
+	public class ArgsList : EventArgs
+	{
+		public List<System.Object> objs;
+	}
 }

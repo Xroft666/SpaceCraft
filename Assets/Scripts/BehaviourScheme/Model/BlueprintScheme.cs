@@ -11,99 +11,57 @@ namespace SpaceSandbox
 {
 	public class BlueprintScheme : Entity 
 	{
-		public BlueprintScheme ()
-		{
-			Memory = new MemoryStack();
-		}
-
-		public MemoryStack Memory { get; private set; }
-
-		public Stack<string> executingCommandList = new Stack<string>();
-		public delegate void OnStackInitialize( IEnumerable<string> commands );
-
-		public OnStackInitialize onInitialize;
-		public Action OnJobComplete;
-
-		public List<DeviceEvent> scheduledEventsList = new List<DeviceEvent>();
-		public List<DeviceQuery> scheduledEventsDataList = new List<DeviceQuery>();
+		public Queue<CommandTask> scheduledTaskList = new Queue<CommandTask>();
+		public CommandTask currentBuiltUpTask = null;
 
 		public List<BSNode> m_nodes = new List<BSNode>();
 
 		public BSEntry m_entryPoint;
-		private Job m_runningJobSequence;
 
-		public void AddScheduledEvent(DeviceEvent evt, DeviceQuery data)
+		public bool IsRunning
 		{
-			scheduledEventsList.Add( evt );
-			scheduledEventsDataList.Add( data );
+			get { return currentBuiltUpTask.IsRunning; }
 		}
 
-		public void ExecuteSceduledEvents()
+		#region Planner 
+
+		public void ScheduleTask( DeviceEvent entry )
 		{
-			if( m_runningJobSequence != null && m_runningJobSequence.running )
-				return;
+			currentBuiltUpTask = new CommandTask();
 
-			m_runningJobSequence = Job.make( JobsContainer() );
+			entry.Invoke();
+			scheduledTaskList.Enqueue( currentBuiltUpTask );
+		}
 
-			m_entryPoint.Traverse();
-
-			executingCommandList.Clear();
-
-			for( int i = 0; i < scheduledEventsList.Count; i++ )
+		public void ScheduleEvent(DeviceAction evt, DeviceQuery data)
+		{
+			if( currentBuiltUpTask != null )
+			{
+				currentBuiltUpTask.RegisterSubTask(evt, data);
+			}
+			else
 			{
 				EventArgs args = null;
-				if( scheduledEventsDataList[i] != null )
-					args = scheduledEventsDataList[i].Invoke();
+				if( data != null )
+					data.Invoke();
 
-				Job thisJob = m_runningJobSequence.createAndAddChildJob( scheduledEventsList[i].Invoke( args ) );
-				thisJob.jobComplete += JobComplete;
-
-				executingCommandList.Push(scheduledEventsList[i].Method.Name);
-			}
-
-
-			if( onInitialize != null )
-				onInitialize( executingCommandList );
-
-			m_runningJobSequence.start();
-
-			ClearEventsAndData();
-		}
-
-		private IEnumerator JobsContainer()
-		{
-			yield break;
-		}
-
-		private void JobComplete( bool killed )
-		{
-			if( !killed )
-			{
-				if( OnJobComplete != null )
-					OnJobComplete();
-
-				executingCommandList.Pop();
+				Job.make( evt.Invoke( args ), true );
 			}
 		}
 
-		public IEnumerator InterruptExecution( EventArgs args )
+		public void ExecuteCommandsList()
 		{
-			if( m_runningJobSequence != null && m_runningJobSequence.running )
-				m_runningJobSequence.kill();
 
-			m_runningJobSequence = null;
+				currentBuiltUpTask = scheduledTaskList.Dequeue();
+				currentBuiltUpTask.ComposeJob();
 
-			ClearEventsAndData();
-			yield break;
+			currentBuiltUpTask = null;
 		}
 
-		public void ClearEventsAndData()
-		{
-			scheduledEventsList.Clear(); 
-			scheduledEventsDataList.Clear();
+		#endregion
 
-//			executingCommandList.Clear();
-		}
+		#region Nodes Creation 
+
 
 		public BSAction CreateAction( string functionName, Device device, DeviceQuery query = null)
 		{
@@ -118,7 +76,7 @@ namespace SpaceSandbox
 		public BSEntry CreateEntry( string eventName, Device device)
 		{
 			BSEntry node = new BSEntry() { m_scheme = this };
-			device.m_events[eventName] += node.Initialize ;
+			device.m_events[eventName] += node.Traverse;
 		
 			m_nodes.Add(node);
 			return node;
@@ -126,9 +84,7 @@ namespace SpaceSandbox
 		
 		public BSExit CreateExit( string eventName, Device device)
 		{
-			BSExit node = new BSExit() { m_scheme = this };
-
-			device.AddEvent(eventName, null);
+			BSExit node = new BSExit() { m_scheme = this, m_entry = device.GetEvent(eventName) };
 
 			m_nodes.Add(node);
 			return node;
@@ -171,5 +127,6 @@ namespace SpaceSandbox
 			left.AddChild( right );
 		}
 
+		#endregion
 	}
 }

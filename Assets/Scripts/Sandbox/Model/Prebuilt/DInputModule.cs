@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -35,31 +35,20 @@ public class DInputModule : Device
 		{
 			DeviceEvent onPressed = GetEvent("OnInputPressed");
 			if( onPressed != null )
-				m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onPressed );
+				onPressed();
 		}
 		if( Input.GetKeyUp(m_keyCode) )
 		{
 			DeviceEvent onReleased = GetEvent("OnInputReleased");
 			if( onReleased != null )
-				m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onReleased );
+				onReleased();
 		}
 		if( Input.GetKey(m_keyCode) )
 		{
 			DeviceEvent onHeld = GetEvent("OnInputHeld");
 			if( onHeld != null )
-				m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onHeld );
+				onHeld();
 		}
-
-		// Mouse cursor events
-//		DeviceEvent screenPos = GetEvent("OnMouseScreenPosition");
-//		if( screenPos != null )
-//			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( screenPos );
-//
-//		DeviceEvent worldScreenPos = GetEvent("OnMouseWorldPosition");
-//		if( worldScreenPos != null )
-//		{                                           
-//			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( worldScreenPos, MouseWorldPosition );
-//		}
 	}
 
 	#endregion

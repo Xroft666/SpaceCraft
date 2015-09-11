@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -42,7 +42,7 @@ public class DPatrolModule : Device
 
 		DeviceEvent reached = GetEvent("TargetReached");
 		if( reached != null )
-			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( reached, null );
+			reached();
 	}
 
 	private IEnumerator SetNextPoint( EventArgs args )

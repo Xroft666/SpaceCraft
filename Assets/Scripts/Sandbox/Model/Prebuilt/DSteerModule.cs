@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -23,7 +23,7 @@ public class DSteerModule : Device
 
 		DeviceEvent onSteerStart = GetEvent("OnSteerStart");
 		if( onSteerStart != null )
-			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onSteerStart, null );
+			onSteerStart();
 
 //		Vector2 worldPos = (Vector2) pArgs.position;
 		Vector3 worldPos = pArgs.position;
@@ -60,7 +60,7 @@ public class DSteerModule : Device
 
 		DeviceEvent onSteerComplete = GetEvent("OnSteerComplete");
 		if( onSteerComplete != null )
-			m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onSteerComplete, null );
+			onSteerComplete();
 	}
 
 

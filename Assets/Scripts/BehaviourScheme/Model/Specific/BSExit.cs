@@ -7,16 +7,13 @@ namespace BehaviourScheme
 {
 	public class BSExit : BSNode 
 	{
-		private SpaceSandbox.DeviceEvent exitEvent;
-		public SpaceSandbox.DeviceEvent ExitEvent
-		{
-			get{ return exitEvent; }
-			set{ exitEvent = value; }
-		}
+		public DeviceEvent m_entry;
 
 		public override void Traverse()
 		{
-			exitEvent.Invoke( null );
+			// send back to scheme, device function signature
+			//m_scheme.ScheduleTask( m_entry );
+			m_entry.Invoke();
 		}
 	}
 }

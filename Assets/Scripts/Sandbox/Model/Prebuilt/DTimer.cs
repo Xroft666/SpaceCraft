@@ -88,7 +88,7 @@ public class DTimer : Device
 
 			DeviceEvent timerEvent = GetEvent("OnTimerComplete");
 			if( timerEvent != null )
-				m_containerAttachedTo.IntegratedDevice.ScheduleEvent( timerEvent, null );
+				timerEvent();
 
 			m_timeText.gameObject.SetActive(false);
 		}

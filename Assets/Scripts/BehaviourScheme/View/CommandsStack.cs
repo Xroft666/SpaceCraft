@@ -49,10 +49,10 @@ public class CommandsStack
 
 		m_view = view;
 
-		ship.IntegratedDevice.Blueprint.onInitialize += InitializeCommandList;
-		ship.IntegratedDevice.Blueprint.OnJobComplete += UpdateCommandsList;
+//		ship.IntegratedDevice.Blueprint.onInitialize += InitializeCommandList;
+//		ship.IntegratedDevice.Blueprint.OnJobComplete += UpdateCommandsList;
 
-		InitializeCommandList((m_view.m_contain as Ship).IntegratedDevice.Blueprint.executingCommandList);
+//		InitializeCommandList((m_view.m_contain as Ship).IntegratedDevice.Blueprint.executingCommandList);
 	}
 
 	public void InitializeCommandList( IEnumerable<string> commands )
@@ -77,11 +77,11 @@ public class CommandsStack
 	
 	public void CleanCommandsStack()
 	{
-		if( m_view != null )
-		{
-			(m_view.m_contain as Ship).IntegratedDevice.Blueprint.onInitialize -= InitializeCommandList;
-			(m_view.m_contain as Ship).IntegratedDevice.Blueprint.OnJobComplete -= UpdateCommandsList;
-		}
+//		if( m_view != null )
+//		{
+//			(m_view.m_contain as Ship).IntegratedDevice.Blueprint.onInitialize -= InitializeCommandList;
+//			(m_view.m_contain as Ship).IntegratedDevice.Blueprint.OnJobComplete -= UpdateCommandsList;
+//		}
 
 		m_view = null;
 		commandsQueue.Clear();
