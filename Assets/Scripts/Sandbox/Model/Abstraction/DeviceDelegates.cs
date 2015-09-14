@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SpaceSandbox
 {
-	public delegate IEnumerator DeviceAction(EventArgs args);
+	public delegate IEnumerator DeviceAction(DeviceQuery qry);
 	public delegate void DeviceEvent();
 	public delegate bool DeviceCheck(EventArgs args);
 	public delegate EventArgs DeviceQuery();
@@ -20,15 +20,15 @@ namespace SpaceSandbox
 		public string name;
 	}
 
-	public class PositionArgs : EventArgs
-	{
-		public Vector3 position;
-	}
-
-	public class PositionsListArgs : EventArgs
-	{
-		public Vector3[] positions;
-	}
+//	public class PositionArgs : EventArgs
+//	{
+//		public Vector3 position;
+//	}
+//
+//	public class PositionsListArgs : EventArgs
+//	{
+//		public Vector3[] positions;
+//	}
 
 	public class KeyCodeArgs : EventArgs
 	{
@@ -51,6 +51,6 @@ namespace SpaceSandbox
 
 	public class ArgsList : EventArgs
 	{
-		public List<System.Object> objs;
+		public System.Object[] objs;
 	}
 }

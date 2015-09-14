@@ -48,7 +48,7 @@ public class Job
 	private Job _currentJob;
 	private IEnumerator _coroutine;
 	private bool _jobWasKilled;
-	private Stack<Job> _childJobStack;
+	private Queue<Job> _childJobStack;
 	
 	
 	#region constructors
@@ -105,7 +105,7 @@ public class Job
 					// run our child jobs if we have any
 					if (_childJobStack != null && _childJobStack.Count > 0) {
 
-						_currentJob = _childJobStack.Pop ();
+						_currentJob = _childJobStack.Dequeue ();
 						_coroutine = _currentJob._coroutine;
 					} else
 						_running = false;
@@ -127,21 +127,21 @@ public class Job
 	public void addChildJob (Job childJob)
 	{
 		if (_childJobStack == null)
-			_childJobStack = new Stack<Job> ();
-		_childJobStack.Push (childJob);
+			_childJobStack = new Queue<Job> ();
+		_childJobStack.Enqueue (childJob);
 	}
 	
 	public void removeChildJob (Job childJob)
 	{
 		if (_childJobStack.Contains (childJob)) {
-			var childStack = new Stack<Job> (_childJobStack.Count - 1);
+			var childStack = new Queue<Job> (_childJobStack.Count - 1);
 			var allCurrentChildren = _childJobStack.ToArray ();
-			System.Array.Reverse (allCurrentChildren);
+//			System.Array.Reverse (allCurrentChildren);
 			
 			for (var i = 0; i < allCurrentChildren.Length; i++) {
 				var j = allCurrentChildren [i];
 				if (j != childJob)
-					childStack.Push (j);
+					childStack.Enqueue (j);
 			}
 			
 			// assign the new stack

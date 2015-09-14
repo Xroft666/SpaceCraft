@@ -11,7 +11,10 @@ public class DPatrolModule : Device
 {
 	// Exportable variables
 	public Vector3[] m_patrolPoints;
+	public Vector3 m_targetPosition;
 
+	public Vector3[] m_navPoint;
+	private int currentNavigationIdx = 0;
 
 	private int currentTargetIdx = 0;
 	private float distanceTreshold = 1.5f;
@@ -20,22 +23,11 @@ public class DPatrolModule : Device
 	
 	#region device's functions
 
-	private IEnumerator ReachTarget( EventArgs args )
+	private IEnumerator ReachTarget( DeviceQuery qry )//EventArgs args )
 	{
-		PositionArgs pArgs = args as PositionArgs;
+		ArgsObject pArgs = qry.Invoke() as ArgsObject;
 
-		if( NavMesh.CalculatePath( m_containerAttachedTo.View.transform.position, pArgs.position, NavMesh.AllAreas, path ) )
-		{
-			for( int i = 0; i < path.corners.Length - 1; i++ )
-				Debug.DrawLine( path.corners[i], path.corners[i+1], Color.blue, 1f );
-
-		}
-		else
-		{
-			Debug.LogWarning("Path not found");
-		}
-
-		while( !IsCloseTo(pArgs.position) )
+		while( !IsCloseTo((Vector3) pArgs.obj) )
 		{
 			yield return null;
 		}
@@ -45,12 +37,43 @@ public class DPatrolModule : Device
 			reached();
 	}
 
-	private IEnumerator SetNextPoint( EventArgs args )
+	private IEnumerator SetNextPoint( DeviceQuery qry )//EventArgs args )
 	{
 		NextPoint();
 
 		yield break;
 	}
+
+	private IEnumerator SetTargetPosition( DeviceQuery qry )//EventArgs args )
+	{
+		ArgsObject pArgs = qry.Invoke() as ArgsObject;
+
+		m_targetPosition = (Vector3) pArgs.obj;
+		
+		yield break;
+	}
+
+	public IEnumerator GetWaypointsList( DeviceQuery qry )//EventArgs args)
+	{
+		ArgsObject pArgs = qry.Invoke() as ArgsObject;
+		NavMesh.CalculatePath( m_containerAttachedTo.View.transform.position, (Vector3) pArgs.obj, NavMesh.AllAreas, path );
+
+		currentNavigationIdx = 0;
+		m_navPoint = path.corners;
+
+		for( int i = 0; i < path.corners.Length - 1; i++ )
+			Debug.DrawLine( path.corners[i], path.corners[i+1], Color.blue, 1f );
+
+		yield break;
+	}
+
+	public IEnumerator SetNextNavigationPoint( DeviceQuery qry )//EventArgs args )
+	{
+		currentNavigationIdx++;
+
+		yield break;
+	}
+
 
 	#endregion
 
@@ -63,8 +86,13 @@ public class DPatrolModule : Device
 
 		AddAction( "ReachTarget", ReachTarget );
 		AddAction( "SetNextPoint", SetNextPoint );
+		AddAction( "GetWaypointsList", GetWaypointsList );
+		AddAction( "SetTargetPosition", SetTargetPosition );
+		AddAction( "SetNextNavigationPoint", SetNextNavigationPoint);
 
 		AddQuery( "CurrentTarget", CurrentTarget );
+		AddQuery( "GetWaypoints", GetWaypoints );
+		AddQuery( "CurrentNavigationPosition", CurrentNavigationPosition );
 	}
 
 	public override void Initialize()
@@ -81,9 +109,31 @@ public class DPatrolModule : Device
 
 	#region Queries
 
-	public PositionArgs CurrentTarget()
+	public ArgsObject CurrentTarget()
 	{
-		return new PositionArgs() { position = m_patrolPoints[currentTargetIdx] };
+		return new ArgsObject() { obj = m_targetPosition };
+	}
+
+	public ArgsList GetWaypoints()
+	{
+		NavMesh.CalculatePath( m_containerAttachedTo.View.transform.position, m_targetPosition, NavMesh.AllAreas, path );	
+		currentNavigationIdx = 0;
+		m_navPoint = path.corners;
+
+		for( int i = 0; i < path.corners.Length - 1; i++ )
+			Debug.DrawLine( path.corners[i], path.corners[i+1], Color.blue, 1f );
+
+		System.Object[] objects = new System.Object[path.corners.Length];
+		for( int i = 0; i < path.corners.Length; i++ )
+			objects[i] = path.corners[i];
+
+		return new ArgsList() { objs = objects };
+	}
+
+	public ArgsObject CurrentNavigationPosition()
+	{	
+		Vector3 curPoint = m_navPoint[currentNavigationIdx];
+		return new ArgsObject()  { obj = curPoint  };
 	}
 
 	#endregion
@@ -92,7 +142,7 @@ public class DPatrolModule : Device
 
 	public bool IsCloseToCurrentTarget()
 	{
-		return IsCloseTo( m_patrolPoints[currentTargetIdx] );
+		return IsCloseTo( m_targetPosition );
 	}
 
 	private bool IsCloseTo( Vector3 position )
@@ -105,5 +155,6 @@ public class DPatrolModule : Device
 	private void NextPoint()
 	{
 		currentTargetIdx = (int) Mathf.Repeat( currentTargetIdx + 1, m_patrolPoints.Length );
+		m_targetPosition = m_patrolPoints[currentTargetIdx];
 	}
 }

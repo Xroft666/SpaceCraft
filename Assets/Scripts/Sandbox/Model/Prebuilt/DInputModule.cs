@@ -55,13 +55,13 @@ public class DInputModule : Device
 
 	#region Queries
 
-	private PositionArgs MouseWorldPosition()
+	private ArgsObject MouseWorldPosition()
 	{
 		Vector3 mousePos = new Vector3( Input.mousePosition.x, 
 		                               Input.mousePosition.y, 
 		                               -Camera.main.transform.position.z);
 
-		return new PositionArgs() { position = Camera.main.ScreenToWorldPoint(mousePos)};
+		return new ArgsObject() { obj = Camera.main.ScreenToWorldPoint(mousePos)};
 	}
 
 	#endregion

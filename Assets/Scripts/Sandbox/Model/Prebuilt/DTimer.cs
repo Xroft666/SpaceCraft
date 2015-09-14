@@ -21,7 +21,7 @@ public class DTimer : Device
 
 	#region device's functions
 	
-	public IEnumerator ResetTimer( EventArgs args)
+	public IEnumerator ResetTimer( DeviceQuery qry )//EventArgs args)
 	{
 		m_timer = 0f;
 		m_fired = false;
@@ -33,7 +33,7 @@ public class DTimer : Device
 
 	#region device's interface implementation
 
-	public override IEnumerator ActivateDevice ( EventArgs args )
+	public override IEnumerator ActivateDevice ( DeviceQuery qry )//EventArgs args )
 	{
 		m_isActive = true;
 		if( m_timeText != null )
@@ -42,7 +42,7 @@ public class DTimer : Device
 		yield break;
 	} 
 	
-	public override IEnumerator DeactivateDevice( EventArgs args )
+	public override IEnumerator DeactivateDevice( DeviceQuery qry )//EventArgs args )
 	{
 		m_isActive = false;
 		if( m_timeText != null )

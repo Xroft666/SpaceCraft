@@ -101,31 +101,8 @@ public class ExampleSetup : MonoBehaviour {
 	private static Ship GeneratePatrolShip()
 	{
 		Ship ship = new Ship(0.3f){ EntityName = "patrolship"};
-
-		GameObject[] markers = new GameObject[]
-		{
-			new GameObject("Marker1", typeof( TransformMarker )),
-			new GameObject("Marker2", typeof( TransformMarker )),
-			new GameObject("Marker3", typeof( TransformMarker )),
-			new GameObject("Marker4", typeof( TransformMarker )),
-		};
-
-		markers[0].transform.position = Vector3.right * 15f;
-		markers[1].transform.position = Vector3.left * 15f;
-		markers[2].transform.position = Vector3.forward * 15f;
-		markers[3].transform.position = Vector3.back * 15f;
-
-		
-		DEngine engine = new DEngine(){ EntityName = "engine", m_lookDirection = Vector3.forward, m_space = Space.Self };
-		DSteerModule steerer = new DSteerModule(){ EntityName = "steerer"};
-		DPatrolModule patrol = new DPatrolModule(){ EntityName = "patrol", 
-				m_patrolPoints = new Vector3[] {
-				markers[0].transform.position,
-				markers[1].transform.position,
-				markers[2].transform.position,
-				markers[3].transform.position 
-			}};
-
+	
+		Device navigator = GenerateNavigator();
 		DLauncher launcher = new DLauncher(){ EntityName = "launcher", m_projectileName = "Missile" };
 		DRanger enemydetector = new DRanger(){ EntityName = "enemydetector", detectionRange = 5f };
 		DMagnet magnet = new DMagnet();
@@ -134,9 +111,7 @@ public class ExampleSetup : MonoBehaviour {
 		
 
 		ship.IntegratedDevice.IntegrateDevice( trader );
-		ship.IntegratedDevice.IntegrateDevice( engine );
-		ship.IntegratedDevice.IntegrateDevice( steerer );
-		ship.IntegratedDevice.IntegrateDevice( patrol );
+		ship.IntegratedDevice.IntegrateDevice( navigator );
 		ship.IntegratedDevice.IntegrateDevice( enemydetector );
 		ship.IntegratedDevice.IntegrateDevice( launcher );
 		ship.IntegratedDevice.IntegrateDevice( magnet );
@@ -145,12 +120,11 @@ public class ExampleSetup : MonoBehaviour {
 
 		BSBranch rootDecision = ship.IntegratedDevice.Blueprint.CreateBranch();
 
+
+
 		BSSequence patrolSequence = ship.IntegratedDevice.Blueprint.CreateSequence(); 
-		BSAction disableEngine = ship.IntegratedDevice.Blueprint.CreateAction( "DeactivateDevice", engine );
-		BSAction steerTowardsTarget = ship.IntegratedDevice.Blueprint.CreateAction( "SteerTowards", steerer, patrol.GetQuery("CurrentTarget") );
-		BSAction enableEngine = ship.IntegratedDevice.Blueprint.CreateAction( "ActivateDevice", engine );
-		BSAction waitUntilReach = ship.IntegratedDevice.Blueprint.CreateAction( "ReachTarget", patrol, patrol.GetQuery("CurrentTarget") );
-		BSAction nextPoint = ship.IntegratedDevice.Blueprint.CreateAction( "SetNextPoint", patrol );
+		BSAction nextPoint = ship.IntegratedDevice.Blueprint.CreateAction( "SetNextPoint", navigator.GetInternalDevice("patrol") );
+		BSExit moveToWaypoint = ship.IntegratedDevice.Blueprint.CreateExit("MoveTo", navigator );
 
 
 		BSBranch miningDecision = ship.IntegratedDevice.Blueprint.CreateBranch();
@@ -162,11 +136,13 @@ public class ExampleSetup : MonoBehaviour {
 
 		BSSequence shootingSequence = ship.IntegratedDevice.Blueprint.CreateSequence();
 		BSAction steerTowardsShootingTarget = 
-			ship.IntegratedDevice.Blueprint.CreateAction( "SteerTowards", steerer, 
+			ship.IntegratedDevice.Blueprint.CreateAction( "SteerTowards", navigator.GetInternalDevice("steerer"), 
 			                                             enemydetector.GetQuery("CurrentTargetPosition") );
 		BSAction shootTarget = ship.IntegratedDevice.Blueprint.CreateAction( "Fire", launcher );
 
+
 		BSSequence collectingSequence = ship.IntegratedDevice.Blueprint.CreateSequence();
+		BSAction disableEngineToCollect = ship.IntegratedDevice.Blueprint.CreateAction("DeactivateDevice", navigator.GetInternalDevice("engine"));
 		BSAction attractAsteroid = ship.IntegratedDevice.Blueprint.CreateAction("Attract", magnet, 
 		                                                                        enemydetector.GetQuery("CurrentTargetContainer"));
 		BSAction storageAsteroid = ship.IntegratedDevice.Blueprint.CreateAction("Load", magnet, 
@@ -180,20 +156,16 @@ public class ExampleSetup : MonoBehaviour {
 
 		DeviceQuery stationPosition = () =>
 		{
-			return new PositionArgs(){ position = WorldManager.RequestContainerData("MotherBase").View.transform.position};
+			return new ArgsObject(){ obj = WorldManager.RequestContainerData("MotherBase").View.transform.position};
 		};
 
 		Device stationTrader = WorldManager.RequestContainerData("MotherBase").IntegratedDevice.GetInternalDevice("trader");
 
 
 		BSSequence goingHomeSequence = ship.IntegratedDevice.Blueprint.CreateSequence();
-		BSAction steerTowardsHome = ship.IntegratedDevice.Blueprint.CreateAction( "SteerTowards", steerer, stationPosition );
-		BSAction waitUntilReachHome = ship.IntegratedDevice.Blueprint.CreateAction( "ReachTarget", patrol, stationPosition );
+		BSAction setTargetStation = ship.IntegratedDevice.Blueprint.CreateAction( "SetTargetPosition", navigator.GetInternalDevice("patrol"), stationPosition );
+		BSExit moveToStation = ship.IntegratedDevice.Blueprint.CreateExit("MoveTo", navigator );
 		BSAction sellResouces = ship.IntegratedDevice.Blueprint.CreateAction( "LoadItemsFrom", stationTrader, tradeInfo );
-
-
-		// interupt current commands stack
-//		enemydetector.AddEvent("OnRangerEntered", ship.IntegratedDevice.Blueprint.InterruptExecution);
 
 
 		ship.IntegratedDevice.Blueprint.m_entryPoint.AddChild(rootDecision);
@@ -211,27 +183,27 @@ public class ExampleSetup : MonoBehaviour {
 		miningDecision.AddChild(shootingSequence);
 
 
-		collectingSequence.AddChild( storageAsteroid );
+		collectingSequence.AddChild( disableEngineToCollect );
 		collectingSequence.AddChild( attractAsteroid );
-		collectingSequence.AddChild( disableEngine );
+		collectingSequence.AddChild( storageAsteroid );
 
 
-		shootingSequence.AddChild( shootTarget );
+		shootingSequence.AddChild( disableEngineToCollect );
 		shootingSequence.AddChild( steerTowardsShootingTarget );
-		shootingSequence.AddChild( disableEngine );
+		shootingSequence.AddChild( shootTarget );
+
 
 		patrolSequence.AddChild(nextPoint);
-		patrolSequence.AddChild(waitUntilReach);
-		patrolSequence.AddChild(enableEngine);
-		patrolSequence.AddChild(steerTowardsTarget);
-		patrolSequence.AddChild(disableEngine);
+		patrolSequence.AddChild(moveToWaypoint);
 
-
+	
+		goingHomeSequence.AddChild(setTargetStation);
+		goingHomeSequence.AddChild(moveToStation);
 		goingHomeSequence.AddChild(sellResouces);
-		goingHomeSequence.AddChild(waitUntilReachHome);
-		goingHomeSequence.AddChild(enableEngine);
-		goingHomeSequence.AddChild(steerTowardsHome);
-		goingHomeSequence.AddChild(disableEngine);
+
+
+
+
 
 		ContainerView shipView = WorldManager.SpawnContainer( ship, Vector3.zero, Quaternion.identity, 2 );
 		
@@ -392,5 +364,76 @@ public class ExampleSetup : MonoBehaviour {
 		rootDecision.AddCondition( ranger.GetCheck("IsAnyTarget") );
 
 		return motherBase;
+	}
+
+	private static Device GenerateNavigator()
+	{
+		Device navigator = new Device() {EntityName = "navigator"};
+
+
+		GameObject[] markers = new GameObject[]
+		{
+			new GameObject("Marker1", typeof( TransformMarker )),
+			new GameObject("Marker2", typeof( TransformMarker )),
+			new GameObject("Marker3", typeof( TransformMarker )),
+			new GameObject("Marker4", typeof( TransformMarker )),
+		};
+		
+		markers[0].transform.position = Vector3.right * 15f;
+		markers[1].transform.position = Vector3.left * 15f;
+		markers[2].transform.position = Vector3.forward * 15f;
+		markers[3].transform.position = Vector3.back * 15f;
+
+
+		DEngine engine = new DEngine(){ EntityName = "engine", m_lookDirection = Vector3.forward, m_space = Space.Self };
+		DSteerModule steerer = new DSteerModule(){ EntityName = "steerer"};
+		DPatrolModule patrol = new DPatrolModule(){ EntityName = "patrol", 
+			m_patrolPoints = new Vector3[] {
+				markers[0].transform.position,
+				markers[1].transform.position,
+				markers[2].transform.position,
+				markers[3].transform.position 
+			}};
+
+		navigator.IntegrateDevice( engine );
+		navigator.IntegrateDevice( steerer );
+		navigator.IntegrateDevice( patrol );
+
+
+		BSEntry entryPoint = navigator.Blueprint.CreateEntry( "MoveTo", navigator );
+		BSSequence waypoints = navigator.Blueprint.CreateSequence();
+
+		BSAction calculateWay = navigator.Blueprint.CreateAction( "GetWaypointsList", patrol, patrol.CurrentTarget );
+		BSForeach foreachPosition = navigator.Blueprint.CreateForeach( patrol.GetWaypoints );
+
+
+
+		BSSequence moveToSequence = navigator.Blueprint.CreateSequence();
+
+
+
+		BSAction disableEngine = navigator.Blueprint.CreateAction( "DeactivateDevice", engine );
+		BSAction steerTowardsTarget = navigator.Blueprint.CreateAction( "SteerTowards", steerer, patrol.GetQuery("CurrentNavigationPosition") );
+		BSAction enableEngine = navigator.Blueprint.CreateAction( "ActivateDevice", engine );
+		BSAction waitUntilReach = navigator.Blueprint.CreateAction( "ReachTarget", patrol, patrol.GetQuery("CurrentNavigationPosition") );
+		BSAction setNextWaypoint = navigator.Blueprint.CreateAction( "SetNextNavigationPoint", patrol );
+
+		entryPoint.AddChild(foreachPosition);
+//		entryPoint.AddChild(waypoints);
+//		waypoints.AddChild(calculateWay);
+//		waypoints.AddChild(foreachPosition);
+
+		foreachPosition.AddChild(moveToSequence);
+
+
+		moveToSequence.AddChild(disableEngine);
+		moveToSequence.AddChild(steerTowardsTarget);
+		moveToSequence.AddChild(enableEngine);
+		moveToSequence.AddChild(waitUntilReach);
+		moveToSequence.AddChild(setNextWaypoint);
+
+
+
+		return navigator;
 	}
 }

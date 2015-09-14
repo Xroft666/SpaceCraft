@@ -17,16 +17,16 @@ public class DSteerModule : Device
 
 	#region device's functions
 
-	public IEnumerator SteerTowards( EventArgs args )
+	public IEnumerator SteerTowards( DeviceQuery qry )//EventArgs args )
 	{
-		PositionArgs pArgs = args as PositionArgs;
+		ArgsObject pArgs = qry.Invoke() as ArgsObject;
 
 		DeviceEvent onSteerStart = GetEvent("OnSteerStart");
 		if( onSteerStart != null )
 			onSteerStart();
 
 //		Vector2 worldPos = (Vector2) pArgs.position;
-		Vector3 worldPos = pArgs.position;
+		Vector3 worldPos = (Vector3) pArgs.obj;
 
 //		m_rigidbody.angularVelocity = 0f;
 //		m_rigidbody.rotation = Mathf.Repeat( m_rigidbody.rotation, 360f );

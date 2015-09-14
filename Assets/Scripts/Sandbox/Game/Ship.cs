@@ -78,13 +78,16 @@ public class Ship : Container
 		View = view;
 		view.m_contain = this;
 		
-		GameObject body = new GameObject("body");
-		
-		SpriteRenderer sRenderer = body.AddComponent<SpriteRenderer>();
-		sRenderer.sprite = WorldManager.World.m_visuals;
+		GameObject body = GameObject.CreatePrimitive(PrimitiveType.Cube);//new GameObject("body");	
+		body.name = "body";
+		Component.Destroy(body.GetComponent<Collider>());
+		body.GetComponent<MeshRenderer>().sharedMaterial = new UnityEngine.Material(Shader.Find("Sprites/Default"));
+
+//		SpriteRenderer sRenderer = body.AddComponent<SpriteRenderer>();
+//		sRenderer.sprite = WorldManager.World.m_visuals;
 		
 		body.transform.SetParent( view.transform, false );
-		body.transform.rotation = Quaternion.Euler( 90f, 0f, 0f );
+//		body.transform.rotation = Quaternion.Euler( 90f, 0f, 0f );
 		
 //		Rigidbody2D rigid = newContainer.gameObject.AddComponent<Rigidbody2D>();
 //		rigid.gravityScale = 0f;

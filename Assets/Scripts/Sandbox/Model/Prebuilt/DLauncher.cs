@@ -18,7 +18,7 @@ public class DLauncher : Device
 
 	#region device's functions
 
-	public IEnumerator Fire( EventArgs args )
+	public IEnumerator Fire( DeviceQuery qry )//EventArgs args )
 	{
 		Entity projectileEntity = null;
 		ContainerView projectile = null;

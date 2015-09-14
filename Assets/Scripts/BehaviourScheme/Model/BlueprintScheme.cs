@@ -11,54 +11,29 @@ namespace SpaceSandbox
 {
 	public class BlueprintScheme : Entity 
 	{
-		public Queue<CommandTask> scheduledTaskList = new Queue<CommandTask>();
-		public CommandTask currentBuiltUpTask = null;
+		public BlueprintScheme( Device device )
+		{
+			m_device = device;
+		}
+
+		private Device m_device;
 
 		public List<BSNode> m_nodes = new List<BSNode>();
 
 		public BSEntry m_entryPoint;
+		public TasksRunner tasksRunner = new TasksRunner();
 
-		public bool IsRunning
+		public void RunLogicTree( DeviceEvent evt )
 		{
-			get { return currentBuiltUpTask.IsRunning; }
+			evt();
 		}
 
-		#region Planner 
-
-		public void ScheduleTask( DeviceEvent entry )
+		public void FireEvent(DeviceAction evt, DeviceQuery data)
 		{
-			currentBuiltUpTask = new CommandTask();
-
-			entry.Invoke();
-			scheduledTaskList.Enqueue( currentBuiltUpTask );
+			TasksRunner containersPlanner = m_device.m_containerAttachedTo.IntegratedDevice.Blueprint.tasksRunner;
+			containersPlanner.ScheduleEvent( evt, data );
 		}
-
-		public void ScheduleEvent(DeviceAction evt, DeviceQuery data)
-		{
-			if( currentBuiltUpTask != null )
-			{
-				currentBuiltUpTask.RegisterSubTask(evt, data);
-			}
-			else
-			{
-				EventArgs args = null;
-				if( data != null )
-					data.Invoke();
-
-				Job.make( evt.Invoke( args ), true );
-			}
-		}
-
-		public void ExecuteCommandsList()
-		{
-
-				currentBuiltUpTask = scheduledTaskList.Dequeue();
-				currentBuiltUpTask.ComposeJob();
-
-			currentBuiltUpTask = null;
-		}
-
-		#endregion
+	
 
 		#region Nodes Creation 
 
@@ -76,8 +51,8 @@ namespace SpaceSandbox
 		public BSEntry CreateEntry( string eventName, Device device)
 		{
 			BSEntry node = new BSEntry() { m_scheme = this };
-			device.m_events[eventName] += node.Traverse;
-		
+			device.AddEvent(eventName, node.Traverse);
+
 			m_nodes.Add(node);
 			return node;
 		}
@@ -106,17 +81,17 @@ namespace SpaceSandbox
 			return node;
 		}
 
-		public BSPriority CreatePriority()
+		public BSEvaluate CreateEvaluate()
 		{
-			BSPriority node = new BSPriority() { m_scheme = this };
+			BSEvaluate node = new BSEvaluate() { m_scheme = this };
 
 			m_nodes.Add(node);
 			return node;
 		}
 
-		public BSEvaluate CreateEvaluate()
+		public BSForeach CreateForeach( DeviceQuery listQuery )
 		{
-			BSEvaluate node = new BSEvaluate() { m_scheme = this };
+			BSForeach node = new BSForeach() { m_scheme = this, m_listQuery = listQuery };
 
 			m_nodes.Add(node);
 			return node;

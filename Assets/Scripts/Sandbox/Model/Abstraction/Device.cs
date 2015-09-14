@@ -17,7 +17,7 @@ namespace SpaceSandbox
 	{
 		public Device()
 		{
-			Blueprint = new BlueprintScheme();
+			Blueprint = new BlueprintScheme( this );
 
 			AddEvent("RootEntry", null );
 			Blueprint.m_entryPoint = Blueprint.CreateEntry( "RootEntry", this );
@@ -213,10 +213,10 @@ namespace SpaceSandbox
 
 		public void ExecuteLogic()
 		{
-			if( !Blueprint.IsRunning )
+			if( !Blueprint.tasksRunner.IsRunning )
 			{
-				Blueprint.ScheduleTask( GetEvent( "RootEntry" ) );
-				Blueprint.ExecuteCommandsList();
+				Blueprint.RunLogicTree( GetEvent( "RootEntry" ) );
+				Blueprint.tasksRunner.ExecuteTasksQeue();
 			}
 
 //			foreach( Device device in m_integratedDevices )
@@ -226,28 +226,20 @@ namespace SpaceSandbox
 
 		#region Common events and function
 
-		public virtual IEnumerator ActivateDevice( EventArgs args )
+		public virtual IEnumerator ActivateDevice( DeviceQuery qry )//EventArgs args )
 		{
 			m_isActive = true;
 
 			foreach( Device device in m_integratedDevices )
-				//device.ActivateDevice( args );
-				//m_containerAttachedTo.IntegratedDevice.ScheduleEvent( device.ActivateDevice, args );
-				yield return Job.make(device.ActivateDevice( args ) ).startAsCoroutine();
-
-//			yield break;
+				yield return Job.make(device.ActivateDevice( qry /*args*/ ) ).startAsCoroutine();
 		}
 
-		public virtual IEnumerator DeactivateDevice( EventArgs args )
+		public virtual IEnumerator DeactivateDevice( DeviceQuery qry )//EventArgs args )
 		{
 			m_isActive = false;
 			
 			foreach( Device device in m_integratedDevices )
-				//device.DeactivateDevice( args );
-				//m_containerAttachedTo.IntegratedDevice.ScheduleEvent( device.DeactivateDevice, args );
-				yield return Job.make( device.DeactivateDevice( args) ).startAsCoroutine();
-
-//			yield break;
+				yield return Job.make( device.DeactivateDevice( qry/*args*/) ).startAsCoroutine();
 		}
 
 		#endregion

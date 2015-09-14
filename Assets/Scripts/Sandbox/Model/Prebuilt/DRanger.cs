@@ -28,7 +28,7 @@ public class DRanger : Device
 		AddQuery("CurrentTargetContainer", CurrentTargetContainer);
 	}
 
-	public override IEnumerator ActivateDevice ( EventArgs args )
+	public override IEnumerator ActivateDevice ( DeviceQuery qry )//EventArgs args )
 	{
 		m_isActive = true;
 		if( m_collider != null )
@@ -38,7 +38,7 @@ public class DRanger : Device
 		yield break;
 	} 
 
-	public override IEnumerator DeactivateDevice( EventArgs args)
+	public override IEnumerator DeactivateDevice( DeviceQuery qry )//EventArgs args)
 	{
 		m_isActive = false;
 		if( m_collider != null )
@@ -49,7 +49,7 @@ public class DRanger : Device
 		yield break;
 	}
 
-	private IEnumerator DesignateClosestTarget( EventArgs args )
+	private IEnumerator DesignateClosestTarget( DeviceQuery qry )//EventArgs args )
 	{
 		ContainerView thisContainer = m_containerAttachedTo.View;
 		
@@ -75,12 +75,12 @@ public class DRanger : Device
 	
 	#region Queries
 	
-	public PositionArgs CurrentTargetPosition()
+	public ArgsObject CurrentTargetPosition()
 	{
 		if( m_targets.Count == 0 )
 			return null;
 		
-		return new PositionArgs(){ position = m_targets[0].transform.position };
+		return new ArgsObject(){ obj = m_targets[0].transform.position };
 	}
 
 	public ContainerArgs CurrentTargetContainer()

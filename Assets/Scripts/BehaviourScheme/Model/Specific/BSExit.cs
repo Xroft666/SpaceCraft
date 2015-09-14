@@ -13,7 +13,7 @@ namespace BehaviourScheme
 		{
 			// send back to scheme, device function signature
 			//m_scheme.ScheduleTask( m_entry );
-			m_entry.Invoke();
+			m_entry();
 		}
 	}
 }

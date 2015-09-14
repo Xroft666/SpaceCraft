@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -23,7 +23,7 @@ namespace BehaviourScheme
 
 		public override void Traverse()
 		{
-			m_scheme.ScheduleEvent( m_action, m_query );
+			m_scheme.FireEvent( m_action, m_query );
 
 			if( m_connectNode != null )
 				m_connectNode.Traverse();

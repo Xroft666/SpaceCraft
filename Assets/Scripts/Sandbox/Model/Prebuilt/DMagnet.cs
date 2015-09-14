@@ -17,9 +17,9 @@ public class DMagnet : Device
 
 	#region device's functions
 
-	private IEnumerator Attract( EventArgs args )
+	private IEnumerator Attract( DeviceQuery qry )//EventArgs args )
 	{
-		ContainerArgs cArgs = args as ContainerArgs;
+		ContainerArgs cArgs = qry.Invoke() as ContainerArgs;
 
 //		Rigidbody2D rigid = cArgs.container.View.GetComponent<Rigidbody2D>();
 		Rigidbody rigid = cArgs.container.View.GetComponent<Rigidbody>();
@@ -34,9 +34,9 @@ public class DMagnet : Device
 		yield break;
 	}
 
-	private IEnumerator Repulse( EventArgs args )
+	private IEnumerator Repulse( DeviceQuery qry )//EventArgs args )
 	{
-		ContainerArgs cArgs = args as ContainerArgs;
+		ContainerArgs cArgs = qry.Invoke() as ContainerArgs;
 
 //		Rigidbody2D rigid = cArgs.container.View.GetComponent<Rigidbody2D>();
 		Rigidbody rigid = cArgs.container.View.GetComponent<Rigidbody>();
@@ -52,10 +52,10 @@ public class DMagnet : Device
 	}
 
 
-	private IEnumerator Load( EventArgs args )
+	private IEnumerator Load( DeviceQuery qry )//EventArgs args )
 	{
 		
-		ContainerArgs cArgs = args as ContainerArgs;
+		ContainerArgs cArgs = qry.Invoke() as ContainerArgs;
 
 		yield return new WaitForSeconds(2f);
 		
@@ -64,7 +64,7 @@ public class DMagnet : Device
 		yield break;
 	}
 	
-	private IEnumerator UnloadAll( EventArgs args )
+	private IEnumerator UnloadAll( DeviceQuery qry )//EventArgs args )
 	{
 
 		yield return new WaitForSeconds(2f);

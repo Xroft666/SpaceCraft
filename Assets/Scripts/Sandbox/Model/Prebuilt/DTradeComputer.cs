@@ -12,9 +12,9 @@ using SpaceSandbox;
 public class DTradeComputer : Device 
 {
 
-	private IEnumerator LoadItemsFrom ( EventArgs args )
+	private IEnumerator LoadItemsFrom ( DeviceQuery qry )//EventArgs args )
 	{
-		TradingArgs tArgs = args as TradingArgs;
+		TradingArgs tArgs = qry.Invoke() as TradingArgs;
 		Cargo clientCargo = tArgs.requestSender.m_cargo;
 
 		yield return new WaitForSeconds(2f);
@@ -28,9 +28,9 @@ public class DTradeComputer : Device
 		}
 	} 
 	
-	private IEnumerator UnloadItemsTo( EventArgs args )
+	private IEnumerator UnloadItemsTo( DeviceQuery qry )//EventArgs args )
 	{
-		TradingArgs tArgs = args as TradingArgs;
+		TradingArgs tArgs = qry.Invoke() as TradingArgs;
 		Cargo clientCargo = tArgs.requestSender.m_cargo;
 
 		yield return new WaitForSeconds(2f);

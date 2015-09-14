@@ -21,7 +21,7 @@ public class DEngine : Device
 	#region device's functions
 
 
-	public IEnumerator MoveForward( EventArgs args )
+	public IEnumerator MoveForward( DeviceQuery qry )//EventArgs args )
 	{
 		ApplyForce();
 
