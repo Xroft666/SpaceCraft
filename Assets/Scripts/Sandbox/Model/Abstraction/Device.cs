@@ -18,9 +18,6 @@ namespace SpaceSandbox
 		public Device()
 		{
 			Blueprint = new BlueprintScheme( this );
-
-			AddEvent("RootEntry", null );
-			Blueprint.m_entryPoint = Blueprint.CreateEntry( "RootEntry", this );
 		}
 
 		public Ship m_containerAttachedTo = null;
@@ -59,7 +56,15 @@ namespace SpaceSandbox
 			hierarchy += "/" + EntityName;
 			
 			foreach( KeyValuePair<string, DeviceAction> function in m_actions )
-				functionsList.Add((hierarchy + "." + function.Key), function.Value);
+			{
+				string key = hierarchy + "." + function.Key;
+				if( functionsList.ContainsKey( key ) )
+				{
+					Debug.LogError("Key already exists: " + key );
+					continue;
+				}
+				functionsList.Add(key, function.Value);
+			}
 			
 			foreach( Device device in m_integratedDevices )
 				device.GetCompleteActionsList(hierarchy, ref functionsList);		
@@ -70,7 +75,16 @@ namespace SpaceSandbox
 			hierarchy += "/" + EntityName;
 
 			foreach( KeyValuePair<string, DeviceEvent> function in m_events )
-				functionsList.Add((hierarchy + "." + function.Key), function.Value);
+			{
+				string key = hierarchy + "." + function.Key;
+				if( functionsList.ContainsKey( key ) )
+				{
+					Debug.LogError("Key already exists: " + key );
+					continue;
+				}
+
+				functionsList.Add( key, function.Value);
+			}
 					
 			foreach( Device device in m_integratedDevices )
 				device.GetCompleteEventsList(hierarchy, ref functionsList);		

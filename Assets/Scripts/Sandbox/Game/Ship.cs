@@ -14,6 +14,9 @@ public class Ship : Container
 		m_integratedDevice.AssignContainer( this );
 
 		m_integratedDevice.AddCheck( "IsCargoFull", m_cargo.IsCargoFull );
+
+		m_integratedDevice.AddEvent("RootEntry", null );
+		m_integratedDevice.Blueprint.m_entryPoint = m_integratedDevice.Blueprint.CreateEntry( "RootEntry", m_integratedDevice );
 	}
 
 	public Ship( Ship otherShip )

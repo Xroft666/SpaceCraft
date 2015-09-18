@@ -5,10 +5,14 @@ using System.Collections.Generic;
 using SpaceSandbox;
 
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class DeveloperInterface : MonoBehaviour 
 {
-	private RectTransform m_actionsContent, m_eventsContent, m_exitsContent, m_controlsContent;
+	private RectTransform 	m_actionsContent, 
+							m_eventsContent, 
+							m_controlsContent, 
+							m_cargoContent;
 
 	private float m_buttonsDistance = 20f;
 
@@ -16,8 +20,8 @@ public class DeveloperInterface : MonoBehaviour
 	{
 		m_actionsContent = transform.FindChild("Actions/Content") as RectTransform;
 		m_eventsContent = transform.FindChild("Events/Content") as RectTransform;
-		m_exitsContent = transform.FindChild("Exits/Content") as RectTransform;
 		m_controlsContent = transform.FindChild("Controls/Content") as RectTransform;
+		m_cargoContent = transform.FindChild("Cargo/Content") as RectTransform;
 	}
 
 	public void InitializeInteface( Ship selectedContainer)
@@ -26,8 +30,9 @@ public class DeveloperInterface : MonoBehaviour
 
 		InitializeActions(upMostDevice);
 		InitializeEvents(upMostDevice);
-		InitializeExits(upMostDevice);
 		InitializeControls(upMostDevice);
+
+		InitializeCargo(selectedContainer);
 	}
 
 	private void InitializeActions(Device device)
@@ -50,16 +55,33 @@ public class DeveloperInterface : MonoBehaviour
 		FillUpContent( new List<string>(events.Keys), m_eventsContent );
 	}
 
-	private void InitializeExits(Device device)
-	{
-		CleanContent(m_exitsContent);
-//		FillUpContent( device.m_events, m_exitsContent );
-	}
-
 	private void InitializeControls(Device device)
 	{
 		CleanContent(m_controlsContent);
-//		FillUpContent( device.m_actions, m_controlsContent );
+
+		m_controlsContent.sizeDelta = new Vector2(m_controlsContent.sizeDelta.x, 5 * m_buttonsDistance);
+
+		CreateButton(m_controlsContent, "Entry", Vector3.up * -40f, () => { Debug.Log("Entry clicked");});
+		CreateButton(m_controlsContent, "Selection", Vector3.up * -20f, () => { Debug.Log("Selection clicked");});
+		CreateButton(m_controlsContent, "Sequence", Vector3.up * 0f, () => { Debug.Log("Sequence clicked");});
+		CreateButton(m_controlsContent, "Evaluation", Vector3.up * 20f, () => { Debug.Log("Evaluation clicked");});
+		CreateButton(m_controlsContent, "Foreach", Vector3.up * 40f, () => { Debug.Log("Foreach clicked");});
+	}
+
+	private void InitializeCargo( Ship ship )
+	{
+		int actionsNum = ship.m_cargo.m_items.Count;
+		int count = -actionsNum / 2;
+		
+		m_cargoContent.sizeDelta = new Vector2(m_cargoContent.sizeDelta.x, actionsNum * m_buttonsDistance);
+
+		foreach( Cargo.CargoSlot slot in ship.m_cargo.m_items )
+		{
+			string name = slot.resources[0].EntityName + " x" + slot.curItemCount;
+			CreateButton(m_cargoContent, name, Vector3.up * count * m_buttonsDistance, () => { Debug.Log( name + " clicked");});
+
+			count++;
+		}
 	}
 
 	private void FillUpContent( List<string> content, RectTransform contentTransform )
@@ -71,32 +93,38 @@ public class DeveloperInterface : MonoBehaviour
 
 		foreach( string item in content )
 		{
-			string itemName = item;
-
-			GameObject newAction = new GameObject(item, typeof(RectTransform));
-			newAction.transform.SetParent( contentTransform, false );
-
-			RectTransform transf = newAction.GetComponent<RectTransform>();
-			transf.sizeDelta = new Vector2(250f, 20f);
-
-			Button button = newAction.AddComponent<Button>();
-
-			button.onClick.AddListener( () =>
-			{
-				// Create Node
-
-				Debug.Log(itemName + " clicked");
-			});
-
-			Text text = newAction.AddComponent<Text>();
-			text.text = item;
-			text.font = Font.CreateDynamicFontFromOSFont("Arial", 14);
-			text.alignment = TextAnchor.MiddleCenter;
-			
-			newAction.transform.localPosition = Vector3.up * count * m_buttonsDistance;
-			
+			string name = item;
+			CreateButton(contentTransform, item, Vector3.up * count * m_buttonsDistance, () => { Debug.Log(name + " clicked"); });
 			count++;
 		}
+	}
+
+	private void CreateButton( RectTransform parent, string itemName, Vector3 position, UnityAction onClick )
+	{
+		GameObject newAction = new GameObject(itemName, typeof(RectTransform));
+		newAction.transform.SetParent( parent, false );
+		
+		RectTransform transf = newAction.GetComponent<RectTransform>();
+		transf.sizeDelta = new Vector2(250f, 20f);
+		
+		Button button = newAction.AddComponent<Button>();
+		
+		button.onClick.AddListener(onClick);
+		
+		Text text = newAction.AddComponent<Text>();
+		text.text = itemName;
+		text.font = Font.CreateDynamicFontFromOSFont("Arial", 14);
+		text.alignment = TextAnchor.MiddleCenter;
+		
+		newAction.transform.localPosition = position;
+	}
+
+	public void CleanAllContent()
+	{
+		CleanContent(m_actionsContent);
+		CleanContent(m_eventsContent);
+		CleanContent(m_controlsContent);
+		CleanContent(m_cargoContent);
 	}
 
 	private void CleanContent( Transform content )

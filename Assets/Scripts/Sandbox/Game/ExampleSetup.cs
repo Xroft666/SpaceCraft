@@ -11,8 +11,8 @@ public class ExampleSetup : MonoBehaviour {
 		WorldManager.SpawnContainer (GenerateMotherBase(), new Vector3(5f, 0f, 5f), Quaternion.identity, 2 );
 
 
-//		Ship ship = GeneratePatrolShip();
-		Ship ship = GenerateShip();
+		Ship ship = GeneratePatrolShip();
+//		Ship ship = GenerateShip();
 
 		// Generating missiles
 		for( int i = 0; i < 40; i++ )

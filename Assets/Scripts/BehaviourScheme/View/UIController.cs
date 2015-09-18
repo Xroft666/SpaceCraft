@@ -46,6 +46,13 @@ public class UIController : MonoBehaviour
 		{
 			Application.LoadLevel( Application.loadedLevel );
 		}
+
+		if( Input.GetKeyUp(KeyCode.Escape) )
+		{
+			devUI.CleanAllContent();
+			m_devInterface.gameObject.SetActive(false);
+			EventSystem.current.SetSelectedGameObject( null );
+		}
 	}
 	
 	private void CameraControls()
@@ -87,6 +94,7 @@ public class UIController : MonoBehaviour
 
 	public void OnContainerDeselected( ContainerView container )
 	{
+	//	m_devInterface.gameObject.SetActive(false);
 		selections[container].SetActive(false);
 		commands.CleanCommandsStack();
 	}
@@ -121,7 +129,10 @@ public class UIController : MonoBehaviour
 	{
 		Ship ship = container.m_contain as Ship;
 		if( ship != null )
+		{
+			m_devInterface.gameObject.SetActive(true);
 			devUI.InitializeInteface(ship);
+		}
 	}
 	
 	private void GenerateNewSelection( ContainerView container )
