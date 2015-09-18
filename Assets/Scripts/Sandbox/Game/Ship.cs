@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 using SpaceSandbox;
 
-public class Ship : Container 
+public class Ship : Container
 {
 	public Ship( float cargoCapacity )
 	{
@@ -103,6 +103,14 @@ public class Ship : Container
 		
 //		BoxCollider2D clickZone = newContainer.AddComponent<BoxCollider2D>();
 		BoxCollider clickZone = newContainer.AddComponent<BoxCollider>();
+
+//		NavMeshObstacle navMeshObstacle = newContainer.AddComponent<NavMeshObstacle>();
+//		navMeshObstacle.shape = NavMeshObstacleShape.Capsule;
+//		navMeshObstacle.carving = true;
+//		navMeshObstacle.carveOnlyStationary = false;
+//		navMeshObstacle.radius = 1.5f;
+
+		newContainer.layer = 12;
 	}
 
 	public override void UpdateView()

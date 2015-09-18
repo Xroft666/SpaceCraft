@@ -82,8 +82,10 @@ namespace SpaceSandbox
 
 			navMeshObstacle.shape = NavMeshObstacleShape.Capsule;
 			navMeshObstacle.carving = true;
-			navMeshObstacle.carveOnlyStationary = true;
+			navMeshObstacle.carveOnlyStationary = false;
 			navMeshObstacle.radius = size + 1f;
+
+			newContainer.layer = 12;
 		}
 
 		public override void UpdateView()

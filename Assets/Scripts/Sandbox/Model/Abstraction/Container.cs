@@ -1,9 +1,10 @@
 ﻿
 using System.Collections.Generic;
 
+
 namespace SpaceSandbox
 {
-	public class Container : Entity 
+	public class Container : Entity
 	{
 		public System.Action onDestroy;
 

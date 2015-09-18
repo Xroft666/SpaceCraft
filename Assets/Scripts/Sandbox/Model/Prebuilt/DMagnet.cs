@@ -31,6 +31,8 @@ public class DMagnet : Device
 			yield return null;
 		}
 
+		rigid.velocity = Vector3.zero;
+
 		yield break;
 	}
 
@@ -41,12 +43,8 @@ public class DMagnet : Device
 //		Rigidbody2D rigid = cArgs.container.View.GetComponent<Rigidbody2D>();
 		Rigidbody rigid = cArgs.container.View.GetComponent<Rigidbody>();
 
-		while( (cArgs.container.View.transform.position - m_containerAttachedTo.View.transform.position).magnitude > 1f )
-		{
-			rigid.AddForce( (rigid.position - myRigid.position).normalized * m_magnetPower);
-			               
-			yield return null;
-		}
+		rigid.AddForce( (rigid.position - myRigid.position).normalized * m_magnetPower * 10f, ForceMode.Impulse);
+
 
 		yield break;
 	}

@@ -11,12 +11,13 @@ public class ExampleSetup : MonoBehaviour {
 		WorldManager.SpawnContainer (GenerateMotherBase(), new Vector3(5f, 0f, 5f), Quaternion.identity, 2 );
 
 
-		Ship patrol = GeneratePatrolShip();
+//		Ship ship = GeneratePatrolShip();
+		Ship ship = GenerateShip();
 
 		// Generating missiles
 		for( int i = 0; i < 40; i++ )
 		{
-			patrol.AddToCargo( GenerateMissile() );
+			ship.AddToCargo( GenerateMissile() );
 		}
 
 		for( int i = 0; i < 100; i++ )
@@ -79,18 +80,26 @@ public class ExampleSetup : MonoBehaviour {
 		Ship ship = new Ship(5f){ EntityName = "ship"};
 
 		Device cockpit = GeneratePilotCockpit();
-		DLauncher launcher = new DLauncher(){ EntityName = "launcher", m_projectileName = "Missile" };
+//		DLauncher launcher = new DLauncher(){ EntityName = "launcher", m_projectileName = "Missile" };
+		DRanger ranger = new DRanger() {EntityName = "ranger", detectionRange = 3f };
+		DMagnet magnet = new DMagnet(){ EntityName = "magnet" };
 		DInputModule mouseInput = new DInputModule() { EntityName = "space", m_keyCode = KeyCode.Space };
 
 
-		ship.IntegratedDevice.IntegrateDevice( launcher );
+//		ship.IntegratedDevice.IntegrateDevice( launcher );
+		ship.IntegratedDevice.IntegrateDevice( ranger );
+		ship.IntegratedDevice.IntegrateDevice( magnet );
 		ship.IntegratedDevice.IntegrateDevice( cockpit );
 		ship.IntegratedDevice.IntegrateDevice( mouseInput );
 
-		
-		BSEntry onMouseUp = ship.IntegratedDevice.Blueprint.CreateEntry( "space/OnInputReleased", ship.IntegratedDevice);
-		BSAction toFire = ship.IntegratedDevice.Blueprint.CreateAction( "launcher/Fire", ship.IntegratedDevice);
-		ship.IntegratedDevice.Blueprint.ConnectElements( onMouseUp, toFire );
+
+		BSEntry onMouseDown = ship.IntegratedDevice.Blueprint.CreateEntry( "OnInputPressed", mouseInput);
+		BSAction toAtract = ship.IntegratedDevice.Blueprint.CreateAction( "Attract", magnet, ranger.GetQuery("CurrentTargetContainer"));
+		ship.IntegratedDevice.Blueprint.ConnectElements( onMouseDown, toAtract );
+
+		BSEntry onMouseUp = ship.IntegratedDevice.Blueprint.CreateEntry( "OnInputReleased", mouseInput);
+		BSAction toRepulse = ship.IntegratedDevice.Blueprint.CreateAction( "Repulse", magnet, ranger.GetQuery("CurrentTargetContainer"));
+		ship.IntegratedDevice.Blueprint.ConnectElements( onMouseUp, toRepulse );
 
 		
 		ContainerView shipView = WorldManager.SpawnContainer( ship, Vector3.zero, Quaternion.identity, 1 );
@@ -223,26 +232,26 @@ public class ExampleSetup : MonoBehaviour {
 
 		// Steering module
 
-		BSEntry onMouseWorld = cockpitDevice.Blueprint.CreateEntry( "input/mousePos/OnMouseWorldPosition", cockpitDevice);
-		BSAction toSteer = cockpitDevice.Blueprint.CreateAction( "steerer/SteerTowards", cockpitDevice);
+		BSEntry onMouseWorld = cockpitDevice.Blueprint.CreateEntry( "OnMouseWorldPosition", cockpitDevice.GetInternalDevice("input/mousePos"));
+		BSAction toSteer = cockpitDevice.Blueprint.CreateAction( "SteerTowards", cockpitDevice.GetInternalDevice("steerer"));
 		cockpitDevice.Blueprint.ConnectElements( onMouseWorld, toSteer );
 
 		// Movement module
 
-		BSEntry onForwardDown = cockpitDevice.Blueprint.CreateEntry( "input/w/OnInputHeld", cockpitDevice);
-		BSAction toGoForward = cockpitDevice.Blueprint.CreateAction( "engines/forward/MoveForward", cockpitDevice);
+		BSEntry onForwardDown = cockpitDevice.Blueprint.CreateEntry( "OnInputHeld", cockpitDevice.GetInternalDevice("input/w"));
+		BSAction toGoForward = cockpitDevice.Blueprint.CreateAction( "MoveForward", cockpitDevice.GetInternalDevice("engines/forward"));
 		cockpitDevice.Blueprint.ConnectElements( onForwardDown, toGoForward );
 		
-		BSEntry onBackwardDown = cockpitDevice.Blueprint.CreateEntry( "input/s/OnInputHeld", cockpitDevice);
-		BSAction toGoBackward = cockpitDevice.Blueprint.CreateAction( "engines/backward/MoveForward", cockpitDevice);
+		BSEntry onBackwardDown = cockpitDevice.Blueprint.CreateEntry( "OnInputHeld", cockpitDevice.GetInternalDevice("input/s"));
+		BSAction toGoBackward = cockpitDevice.Blueprint.CreateAction( "MoveForward", cockpitDevice.GetInternalDevice("engines/backward"));
 		cockpitDevice.Blueprint.ConnectElements( onBackwardDown, toGoBackward );
 		
-		BSEntry onLeftDown = cockpitDevice.Blueprint.CreateEntry( "input/a/OnInputHeld", cockpitDevice);
-		BSAction toGoleft = cockpitDevice.Blueprint.CreateAction( "engines/left/MoveForward", cockpitDevice);
+		BSEntry onLeftDown = cockpitDevice.Blueprint.CreateEntry( "OnInputHeld", cockpitDevice.GetInternalDevice("input/a"));
+		BSAction toGoleft = cockpitDevice.Blueprint.CreateAction( "MoveForward", cockpitDevice.GetInternalDevice("engines/left"));
 		cockpitDevice.Blueprint.ConnectElements( onLeftDown, toGoleft );
 		
-		BSEntry onRightDown = cockpitDevice.Blueprint.CreateEntry( "input/d/OnInputHeld", cockpitDevice);
-		BSAction toGoRight = cockpitDevice.Blueprint.CreateAction( "engines/right/MoveForward", cockpitDevice);
+		BSEntry onRightDown = cockpitDevice.Blueprint.CreateEntry( "OnInputHeld", cockpitDevice.GetInternalDevice("input/d"));
+		BSAction toGoRight = cockpitDevice.Blueprint.CreateAction( "MoveForward", cockpitDevice.GetInternalDevice("engines/right"));
 		cockpitDevice.Blueprint.ConnectElements( onRightDown, toGoRight );
 
 		return cockpitDevice;

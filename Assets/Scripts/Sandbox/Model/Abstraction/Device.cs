@@ -53,24 +53,27 @@ namespace SpaceSandbox
 				device.AssignContainer( container );
 		}
 
-		/// <summary>
-		/// Gets the functions list. Returns the list of all the functions and their names
-		/// including the current "compound" list if it is not end-point device
-		/// </summary>
-		/// <returns>The functions list.</returns>
-		public Dictionary<string, DeviceAction> GetCompleteFunctionsList()
+
+		public void GetCompleteActionsList( string hierarchy, ref Dictionary<string, DeviceAction> functionsList )
 		{
-			Dictionary<string, DeviceAction> functionsList = new Dictionary<string, DeviceAction>(m_actions);
-
+			hierarchy += "/" + EntityName;
+			
+			foreach( KeyValuePair<string, DeviceAction> function in m_actions )
+				functionsList.Add((hierarchy + "." + function.Key), function.Value);
+			
 			foreach( Device device in m_integratedDevices )
-			{
-				foreach(KeyValuePair<string, DeviceAction> function in device.GetCompleteFunctionsList())
-				{
-					functionsList.Add(function.Key, function.Value);
-				}
-			}
+				device.GetCompleteActionsList(hierarchy, ref functionsList);		
+		}
 
-			return functionsList;
+		public void GetCompleteEventsList( string hierarchy, ref Dictionary<string, DeviceEvent> functionsList )
+		{
+			hierarchy += "/" + EntityName;
+
+			foreach( KeyValuePair<string, DeviceEvent> function in m_events )
+				functionsList.Add((hierarchy + "." + function.Key), function.Value);
+					
+			foreach( Device device in m_integratedDevices )
+				device.GetCompleteEventsList(hierarchy, ref functionsList);		
 		}
 
 
