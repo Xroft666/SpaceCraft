@@ -9,7 +9,7 @@ using UnityEngine;
 
 public class TasksRunner
 {
-	public Stack<string> executingCommandList = new Stack<string>();
+	public Queue<string> executingCommandList = new Queue<string>();
 	public delegate void OnStackInitialize( IEnumerable<string> commands );
 	public OnStackInitialize onInitialize;
 	public Action OnJobComplete;
@@ -43,7 +43,7 @@ public class TasksRunner
 			Job job = m_execution.createAndAddChildJob( task.UnpackExecution() );
 			job.jobComplete += JobComplete;
 
-			executingCommandList.Push(task.Name);
+			executingCommandList.Enqueue(task.Name);
 		}
 
 		m_execution.start();
@@ -64,7 +64,7 @@ public class TasksRunner
 			if( OnJobComplete != null )
 				OnJobComplete();
 		
-			executingCommandList.Pop();
+			executingCommandList.Dequeue();
 		}
 	}
 }

@@ -12,9 +12,12 @@ public class DeveloperInterface : MonoBehaviour
 	private RectTransform 	m_actionsContent, 
 							m_eventsContent, 
 							m_controlsContent, 
-							m_cargoContent;
+							m_cargoContent,
+							m_installedDevices;
 
 	private float m_buttonsDistance = 20f;
+
+	private Ship selectedShip;
 
 	private void Awake()
 	{
@@ -22,9 +25,20 @@ public class DeveloperInterface : MonoBehaviour
 		m_eventsContent = transform.FindChild("Events/Content") as RectTransform;
 		m_controlsContent = transform.FindChild("Controls/Content") as RectTransform;
 		m_cargoContent = transform.FindChild("Cargo/Content") as RectTransform;
+		m_installedDevices = transform.FindChild("Installed/Content") as RectTransform;
 	}
 
-	public void InitializeInteface( Ship selectedContainer)
+	public void RunButtonHandler()
+	{
+		Job.make( selectedShip.IntegratedDevice.ActivateDevice(null), true );
+	}
+	
+	public void StopButtonHandler()
+	{
+		Job.make( selectedShip.IntegratedDevice.DeactivateDevice(null), true );
+	}
+
+	public void InitializeInteface( Ship selectedContainer )
 	{
 		Device upMostDevice = selectedContainer.IntegratedDevice;
 
@@ -33,6 +47,9 @@ public class DeveloperInterface : MonoBehaviour
 		InitializeControls(upMostDevice);
 
 		InitializeCargo(selectedContainer);
+		InitializeInstalledDevices(selectedContainer);
+
+		selectedShip = selectedContainer;
 	}
 
 	private void InitializeActions(Device device)
@@ -84,6 +101,22 @@ public class DeveloperInterface : MonoBehaviour
 		}
 	}
 
+	private void InitializeInstalledDevices( Ship ship )
+	{
+		int actionsNum = ship.IntegratedDevice.m_integratedDevices.Count;
+		int count = -actionsNum / 2;
+		
+		m_cargoContent.sizeDelta = new Vector2(m_cargoContent.sizeDelta.x, actionsNum * m_buttonsDistance);
+		
+		foreach( Device device in ship.IntegratedDevice.m_integratedDevices )
+		{
+			string name = device.EntityName;
+			CreateButton(m_installedDevices, name, Vector3.up * count * m_buttonsDistance, () => { Debug.Log( name + " clicked");});
+			
+			count++;
+		}
+	}
+
 	private void FillUpContent( List<string> content, RectTransform contentTransform )
 	{
 		int actionsNum = content.Count;
@@ -121,10 +154,13 @@ public class DeveloperInterface : MonoBehaviour
 
 	public void CleanAllContent()
 	{
+		selectedShip = null;
+
 		CleanContent(m_actionsContent);
 		CleanContent(m_eventsContent);
 		CleanContent(m_controlsContent);
 		CleanContent(m_cargoContent);
+		CleanContent(m_installedDevices);
 	}
 
 	private void CleanContent( Transform content )

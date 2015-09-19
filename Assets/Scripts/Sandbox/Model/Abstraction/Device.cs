@@ -33,12 +33,11 @@ namespace SpaceSandbox
 		/// The m_integrated devices. If the device is compud, this list will
 		/// store all the simplier devices in it
 		/// </summary>
-		protected List<Device> m_integratedDevices = new List<Device>();
+		public List<Device> m_integratedDevices = new List<Device>();
 
 
 		public Dictionary<string, DeviceAction> m_actions = new Dictionary<string, DeviceAction>();
 		public Dictionary<string, DeviceEvent> m_events = new Dictionary<string, DeviceEvent>();
-	//	public Dictionary<string, DeviceQuery> m_exits = new Dictionary<string, DeviceQuery>();
 		public Dictionary<string, DeviceCheck> m_checks = new Dictionary<string, DeviceCheck>();
 		public Dictionary<string, DeviceQuery> m_queries = new Dictionary<string, DeviceQuery>();
 	
@@ -222,22 +221,16 @@ namespace SpaceSandbox
 			return m_integratedDevices;
 		}
 
-
-//		public void ScheduleEvent(DeviceAction evt, DeviceQuery data = null)
-//		{
-//			Blueprint.ScheduleEvent( evt, data );
-//		}
-
 		public void ExecuteLogic()
 		{
+			if( !m_isActive )
+				return;
+
 			if( !Blueprint.tasksRunner.IsRunning )
 			{
 				Blueprint.RunLogicTree( GetEvent( "RootEntry" ) );
 				Blueprint.tasksRunner.ExecuteTasksQeue();
 			}
-
-//			foreach( Device device in m_integratedDevices )
-//				device.ExecuteLogic();
 		}
 
 

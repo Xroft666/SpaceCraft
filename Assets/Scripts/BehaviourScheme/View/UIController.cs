@@ -94,8 +94,8 @@ public class UIController : MonoBehaviour
 
 	public void OnContainerDeselected( ContainerView container )
 	{
-	//	m_devInterface.gameObject.SetActive(false);
 		selections[container].SetActive(false);
+		m_hpBarTransform.gameObject.SetActive(false);
 		commands.CleanCommandsStack();
 	}
 
@@ -130,11 +130,16 @@ public class UIController : MonoBehaviour
 		Ship ship = container.m_contain as Ship;
 		if( ship != null )
 		{
+			selections[container].SetActive(false);
+			m_hpBarTransform.gameObject.SetActive(false);
+			commands.CleanCommandsStack();
+
+
 			m_devInterface.gameObject.SetActive(true);
 			devUI.InitializeInteface(ship);
 		}
 	}
-	
+
 	private void GenerateNewSelection( ContainerView container )
 	{
 		Vector2 selectionScreenPos = Camera.main.WorldToScreenPoint( container.transform.position );
