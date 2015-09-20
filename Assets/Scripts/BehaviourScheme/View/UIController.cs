@@ -37,7 +37,6 @@ public class UIController : MonoBehaviour
 	private void Update()
 	{
 		UtilsKeys();
-		CameraControls();
 	}
 	
 	private void UtilsKeys()
@@ -54,29 +53,7 @@ public class UIController : MonoBehaviour
 			EventSystem.current.SetSelectedGameObject( null );
 		}
 	}
-	
-	private void CameraControls()
-	{
-		if( EventSystem.current.currentSelectedGameObject == null )
-		{
-			Vector3 input = Vector3.zero; 
-			if( Input.GetKey(KeyCode.UpArrow) )
-				input += Vector3.forward;
-			
-			if( Input.GetKey(KeyCode.DownArrow) )
-				input += Vector3.back;
-			
-			if( Input.GetKey(KeyCode.LeftArrow) )
-				input += Vector3.left;
-			
-			if( Input.GetKey(KeyCode.RightArrow) )
-				input = Vector3.right;
-			
-			Camera.main.transform.position += input * Time.deltaTime;
-		}
-		
-		Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize + Input.GetAxis( "Mouse ScrollWheel"), 1f, 10f);
-	}
+
 
 	public void OnContainerSelected( ContainerView container )
 	{

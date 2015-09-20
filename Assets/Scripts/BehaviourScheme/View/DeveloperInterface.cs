@@ -140,9 +140,12 @@ public class DeveloperInterface : MonoBehaviour
 		RectTransform transf = newAction.GetComponent<RectTransform>();
 		transf.sizeDelta = new Vector2(250f, 20f);
 		
-		Button button = newAction.AddComponent<Button>();
-		
-		button.onClick.AddListener(onClick);
+//		Button button = newAction.AddComponent<Button>();
+//		button.onClick.AddListener(onClick);
+
+		Selectable selectable = newAction.AddComponent<Selectable>();
+		CanvasGroup canvas = newAction.AddComponent<CanvasGroup>();
+
 		
 		Text text = newAction.AddComponent<Text>();
 		text.text = itemName;
