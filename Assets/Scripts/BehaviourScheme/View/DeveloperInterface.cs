@@ -15,6 +15,8 @@ public class DeveloperInterface : MonoBehaviour
 							m_cargoContent,
 							m_installedDevices;
 
+	private BlueprintSchemeView m_blueprintView;
+
 	private float m_buttonsDistance = 20f;
 
 	private Ship selectedShip;
@@ -26,6 +28,7 @@ public class DeveloperInterface : MonoBehaviour
 		m_controlsContent = transform.FindChild("Controls/Content") as RectTransform;
 		m_cargoContent = transform.FindChild("Cargo/Content") as RectTransform;
 		m_installedDevices = transform.FindChild("Installed/Content") as RectTransform;
+		m_blueprintView = transform.FindChild("Blueprint").GetComponent<BlueprintSchemeView>();
 	}
 
 	public void RunButtonHandler()
@@ -50,6 +53,9 @@ public class DeveloperInterface : MonoBehaviour
 		InitializeInstalledDevices(selectedContainer);
 
 		selectedShip = selectedContainer;
+
+
+		m_blueprintView.InitializeView(upMostDevice);
 	}
 
 	private void InitializeActions(Device device)
@@ -59,7 +65,7 @@ public class DeveloperInterface : MonoBehaviour
 		Dictionary<string, DeviceAction> actions = new Dictionary<string, DeviceAction>();
 		device.GetCompleteActionsList("", ref actions);
 
-		FillUpContent( new List<string>(actions.Keys), m_actionsContent );
+		FillUpContent( new List<string>(actions.Keys), m_actionsContent, "f" );
 	}
 
 	private void InitializeEvents(Device device)
@@ -69,7 +75,7 @@ public class DeveloperInterface : MonoBehaviour
 		Dictionary<string, DeviceEvent> events = new Dictionary<string, DeviceEvent>();
 		device.GetCompleteEventsList("", ref events);
 
-		FillUpContent( new List<string>(events.Keys), m_eventsContent );
+		FillUpContent( new List<string>(events.Keys), m_eventsContent, "e" );
 	}
 
 	private void InitializeControls(Device device)
@@ -78,11 +84,11 @@ public class DeveloperInterface : MonoBehaviour
 
 		m_controlsContent.sizeDelta = new Vector2(m_controlsContent.sizeDelta.x, 5 * m_buttonsDistance);
 
-		CreateButton(m_controlsContent, "Entry", Vector3.up * -40f, () => { Debug.Log("Entry clicked");});
-		CreateButton(m_controlsContent, "Selection", Vector3.up * -20f, () => { Debug.Log("Selection clicked");});
-		CreateButton(m_controlsContent, "Sequence", Vector3.up * 0f, () => { Debug.Log("Sequence clicked");});
-		CreateButton(m_controlsContent, "Evaluation", Vector3.up * 20f, () => { Debug.Log("Evaluation clicked");});
-		CreateButton(m_controlsContent, "Foreach", Vector3.up * 40f, () => { Debug.Log("Foreach clicked");});
+		CreateButton(m_controlsContent, "Entry", Vector3.up * -40f);
+		CreateButton(m_controlsContent, "Selection", Vector3.up * -20f);
+		CreateButton(m_controlsContent, "Sequence", Vector3.up * 0f);
+		CreateButton(m_controlsContent, "Evaluation", Vector3.up * 20f);
+		CreateButton(m_controlsContent, "Foreach", Vector3.up * 40f);
 	}
 
 	private void InitializeCargo( Ship ship )
@@ -95,7 +101,9 @@ public class DeveloperInterface : MonoBehaviour
 		foreach( Cargo.CargoSlot slot in ship.m_cargo.m_items )
 		{
 			string name = slot.resources[0].EntityName + " x" + slot.curItemCount;
-			CreateButton(m_cargoContent, name, Vector3.up * count * m_buttonsDistance, () => { Debug.Log( name + " clicked");});
+			DeviceItem item = CreateButton(m_cargoContent, name, Vector3.up * count * m_buttonsDistance);
+
+			item.InitializeItem( slot.resources[0] );
 
 			count++;
 		}
@@ -111,13 +119,13 @@ public class DeveloperInterface : MonoBehaviour
 		foreach( Device device in ship.IntegratedDevice.m_integratedDevices )
 		{
 			string name = device.EntityName;
-			CreateButton(m_installedDevices, name, Vector3.up * count * m_buttonsDistance, () => { Debug.Log( name + " clicked");});
+			CreateButton(m_installedDevices, name, Vector3.up * count * m_buttonsDistance);
 			
 			count++;
 		}
 	}
 
-	private void FillUpContent( List<string> content, RectTransform contentTransform )
+	private void FillUpContent( List<string> content, RectTransform contentTransform, string iconName )
 	{
 		int actionsNum = content.Count;
 		int count = -actionsNum / 2;
@@ -126,33 +134,60 @@ public class DeveloperInterface : MonoBehaviour
 
 		foreach( string item in content )
 		{
-			string name = item;
-			CreateButton(contentTransform, item, Vector3.up * count * m_buttonsDistance, () => { Debug.Log(name + " clicked"); });
+			string name = iconName;
+			string path = item;
+			string description = "";
+
+			CreateButton(contentTransform, path, Vector3.up * count * m_buttonsDistance);
 			count++;
 		}
 	}
 
-	private void CreateButton( RectTransform parent, string itemName, Vector3 position, UnityAction onClick )
+	private DeviceItem CreateButton( RectTransform parent, string itemName, Vector3 position )
 	{
+		Vector2 iconSize = new Vector2(100f, 20f);
+
 		GameObject newAction = new GameObject(itemName, typeof(RectTransform));
 		newAction.transform.SetParent( parent, false );
 		
 		RectTransform transf = newAction.GetComponent<RectTransform>();
-		transf.sizeDelta = new Vector2(250f, 20f);
+		transf.sizeDelta = iconSize;
 		
 //		Button button = newAction.AddComponent<Button>();
 //		button.onClick.AddListener(onClick);
 
-		Selectable selectable = newAction.AddComponent<Selectable>();
-		CanvasGroup canvas = newAction.AddComponent<CanvasGroup>();
 
-		
-		Text text = newAction.AddComponent<Text>();
+
+		GameObject background = new GameObject("background", typeof(RectTransform));
+		RectTransform backTransf = background.GetComponent<RectTransform>();
+		backTransf.sizeDelta = iconSize;
+		backTransf.SetParent(transf, false);
+
+		Image backImg = background.AddComponent<Image>();
+
+
+		GameObject textGO = new GameObject("text", typeof(RectTransform));
+		RectTransform textTransf = textGO.GetComponent<RectTransform>();
+		textTransf.sizeDelta = iconSize;
+		textTransf.SetParent(transf, false);
+
+
+		Text text = textGO.AddComponent<Text>();
 		text.text = itemName;
 		text.font = Font.CreateDynamicFontFromOSFont("Arial", 14);
 		text.alignment = TextAnchor.MiddleCenter;
-		
+		text.color = Color.black;
+
+
+
+		Selectable selectable = newAction.AddComponent<Selectable>();
+		CanvasGroup canvas = newAction.AddComponent<CanvasGroup>();
+		DeviceItem item = newAction.AddComponent<DeviceItem>();
+
+
 		newAction.transform.localPosition = position;
+
+		return item;
 	}
 
 	public void CleanAllContent()

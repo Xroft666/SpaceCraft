@@ -3,12 +3,21 @@ using System.Collections;
 
 using BehaviourScheme;
 
+using UnityEngine.EventSystems;
+
 // the visual representation of a node
 // it s a monobehaviour, so it contains all the callbacks, visuals and references 
-public class NodeView : MonoBehaviour 
+public class NodeView : MonoBehaviour, IPointerClickHandler, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
 	public BSNode Node { get; private set; }
 	public BlueprintSchemeView SchemeView { get; private set; }
+
+	private Camera m_uiCamera;
+
+	private void Awake()
+	{
+		m_uiCamera = transform.root.GetComponent<Camera>();
+	}
 
 	public void InitializeNode( BSNode node, BlueprintSchemeView schemeView )
 	{
@@ -38,28 +47,40 @@ public class NodeView : MonoBehaviour
 			// Initialize as Select
 		}
 	}
+	
+	#region IDragHandler implementation
+	public void OnDrag (PointerEventData eventData)
+	{
+		Vector2 localPos;
 
-	#region callbacks
+		RectTransformUtility.ScreenPointToLocalPointInRectangle( 
+			transform.parent as RectTransform, eventData.position, m_uiCamera, out localPos );
 
-	// Attach unity's interaction components to provide those callbacks
-	// provide data back to BlueprintSchemeView
+		transform.localPosition = localPos;
+	}
+	#endregion
 
-	public void OnNodeClicked()
+	#region IPointerClickHandler implementation
+
+	public void OnPointerClick (PointerEventData eventData)
 	{
 
 	}
 
-	public void OnNodeDragged()
+	#endregion
+
+	#region IBeginDragHandler implementation
+
+	public void OnBeginDrag (PointerEventData eventData)
 	{
 
 	}
 
-	public void OnNodePressed()
-	{
+	#endregion
 
-	}
+	#region IEndDragHandler implementation
 
-	public void OnNodeReleased()
+	public void OnEndDrag (PointerEventData eventData)
 	{
 
 	}
