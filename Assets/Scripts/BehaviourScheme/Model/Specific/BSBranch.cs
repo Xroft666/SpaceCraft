@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BehaviourScheme
 {
-	public class BSBranch : BSMultiChildNode 
+	public class BSBranch : BSNode 
 	{
 		public override void Traverse()
 		{

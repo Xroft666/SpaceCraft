@@ -16,8 +16,12 @@ namespace BehaviourScheme
 		{
 			m_objectsList = ((ArgsList) m_listQuery.Invoke()).objs;
 
+			// loop first
 			for( int i = 0; i < m_objectsList.Length; i++ )
-				m_connectNode.Traverse();
+				m_children[0].Traverse();
+
+			// go fallback
+			//m_children[1].Traverse();
 		}
 	}
 }

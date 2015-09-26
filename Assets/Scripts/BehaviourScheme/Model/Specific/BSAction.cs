@@ -25,8 +25,8 @@ namespace BehaviourScheme
 		{
 			m_scheme.FireEvent( m_action, m_query );
 
-			if( m_connectNode != null )
-				m_connectNode.Traverse();
+			foreach( BSNode child in m_children )
+				child.Traverse();
 		}
 	}
 }

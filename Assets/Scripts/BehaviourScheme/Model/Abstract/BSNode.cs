@@ -1,41 +1,60 @@
 ﻿using System;
+using SpaceSandbox;
+
+using System.Collections.Generic;
 
 namespace BehaviourScheme
 {
 	public class BSNode 
 	{
-		public SpaceSandbox.BlueprintScheme m_scheme;
+		public BlueprintScheme m_scheme;
+		public NodeView m_view;
 
-		protected BSNode m_parentNode = null;
-		protected BSNode m_connectNode = null;
+		public string m_type;
+		public string m_name;
 
-//		public EventArgs m_outputData = null;
+		public List<BSNode> m_parents = new List<BSNode>();
+		public List<BSNode> m_children = new List<BSNode>();
 
-		public BSNode GetConnectedNode()
+		protected List<SpaceSandbox.DeviceCheck> m_conditions = new List<SpaceSandbox.DeviceCheck>();
+		protected List<SpaceSandbox.DeviceQuery> m_conditionData = new List<SpaceSandbox.DeviceQuery>();
+		
+		public void AddCondition( SpaceSandbox.DeviceCheck condition, SpaceSandbox.DeviceQuery data = null )
 		{
-			return m_connectNode;
+			if( !m_conditions.Contains( condition ) )
+			{
+				m_conditions.Add( condition );
+				m_conditionData.Add( data );
+			}
 		}
-
-		public virtual void AddChild( BSNode node )
+		
+		public void RemoveCondition( SpaceSandbox.DeviceCheck condition )
 		{
-			m_connectNode = node;
+			m_conditions.Remove( condition );
+			m_conditionData.RemoveAt( m_conditions.IndexOf( condition ) );
+		}
+		
+		public void AddChild( BSNode node )
+		{
+			m_children.Add( node );
 			node.SetParent( this );
 		}
-
-		public virtual void RemoveChild( BSNode node )
+		
+		public void RemoveChild( BSNode node )
 		{
-			m_connectNode.RemoveParent( this );
-			m_connectNode = null;
+			m_children.Remove(node);
+			node.RemoveParent( this );
 		}
 
-		public virtual void SetParent( BSNode node )
+		public void SetParent( BSNode node )
 		{
-			m_parentNode = node;
+			if( !m_parents.Contains( node ) )
+				m_parents.Add( node );
 		}
-
-		public virtual void RemoveParent( BSNode node )
+		
+		public void RemoveParent( BSNode node )
 		{
-			m_parentNode = null;
+			m_parents.Remove( node  );
 		}
 
 		public virtual void Traverse(){}

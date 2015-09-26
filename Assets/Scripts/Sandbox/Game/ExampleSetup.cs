@@ -127,30 +127,30 @@ public class ExampleSetup : MonoBehaviour {
 
 
 
-		BSBranch rootDecision = ship.IntegratedDevice.Blueprint.CreateBranch();
+		BSBranch rootDecision = ship.IntegratedDevice.Blueprint.CreateBranch("Root");
 
 
 
-		BSSequence patrolSequence = ship.IntegratedDevice.Blueprint.CreateSequence(); 
+		BSSequence patrolSequence = ship.IntegratedDevice.Blueprint.CreateSequence("Patrol"); 
 		BSAction nextPoint = ship.IntegratedDevice.Blueprint.CreateAction( "SetNextPoint", navigator.GetInternalDevice("patrol") );
 		BSExit moveToWaypoint = ship.IntegratedDevice.Blueprint.CreateExit("MoveTo", navigator );
 
 
-		BSBranch miningDecision = ship.IntegratedDevice.Blueprint.CreateBranch();
+		BSBranch miningDecision = ship.IntegratedDevice.Blueprint.CreateBranch("MiningDec");
 		miningDecision.AddCondition( magnet.GetCheck("IsStorageble"), 
 		                            enemydetector.GetQuery("CurrentTargetContainer") );
 
 
 
 
-		BSSequence shootingSequence = ship.IntegratedDevice.Blueprint.CreateSequence();
+		BSSequence shootingSequence = ship.IntegratedDevice.Blueprint.CreateSequence("Shooting");
 		BSAction steerTowardsShootingTarget = 
 			ship.IntegratedDevice.Blueprint.CreateAction( "SteerTowards", navigator.GetInternalDevice("steerer"), 
 			                                             enemydetector.GetQuery("CurrentTargetPosition") );
 		BSAction shootTarget = ship.IntegratedDevice.Blueprint.CreateAction( "Fire", launcher );
 
 
-		BSSequence collectingSequence = ship.IntegratedDevice.Blueprint.CreateSequence();
+		BSSequence collectingSequence = ship.IntegratedDevice.Blueprint.CreateSequence("Collecting");
 		BSAction disableEngineToCollect = ship.IntegratedDevice.Blueprint.CreateAction("DeactivateDevice", navigator.GetInternalDevice("engine"));
 		BSAction attractAsteroid = ship.IntegratedDevice.Blueprint.CreateAction("Attract", magnet, 
 		                                                                        enemydetector.GetQuery("CurrentTargetContainer"));
@@ -171,7 +171,7 @@ public class ExampleSetup : MonoBehaviour {
 		Device stationTrader = WorldManager.RequestContainerData("MotherBase").IntegratedDevice.GetInternalDevice("trader");
 
 
-		BSSequence goingHomeSequence = ship.IntegratedDevice.Blueprint.CreateSequence();
+		BSSequence goingHomeSequence = ship.IntegratedDevice.Blueprint.CreateSequence("Home");
 		BSAction setTargetStation = ship.IntegratedDevice.Blueprint.CreateAction( "SetTargetPosition", navigator.GetInternalDevice("patrol"), stationPosition );
 		BSExit moveToStation = ship.IntegratedDevice.Blueprint.CreateExit("MoveTo", navigator );
 		BSAction sellResouces = ship.IntegratedDevice.Blueprint.CreateAction( "LoadItemsFrom", stationTrader, tradeInfo );

@@ -10,6 +10,9 @@ public class UIController : MonoBehaviour
 {
 	static public UIController Instance { get; private set; }
 
+	public static Camera s_UICamera;
+	public static Canvas s_Canvas;
+
 	public GameObject m_selectionGroupPrefab;
 
 	public RectTransform m_selectListTransform;
@@ -27,6 +30,9 @@ public class UIController : MonoBehaviour
 	{
 		Instance = this;
 		devUI = m_devInterface.GetComponent<DeveloperInterface>();
+
+		s_UICamera = transform.GetComponentInParent<Camera>();
+		s_Canvas = transform.GetComponentInParent<Canvas>();
 	}
 
 	private void Start()

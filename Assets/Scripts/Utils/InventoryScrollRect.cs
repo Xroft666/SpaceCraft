@@ -8,18 +8,11 @@ public class InventoryScrollRect : ScrollRect, IDropHandler
 {
 	private static GameObject s_draggableObject = null;
 
-	private Transform rootTransform;
-
-	public void Awake()
-	{
-		rootTransform = GetComponentInParent<Canvas>().transform;
-	}
-
 	public override void OnBeginDrag (PointerEventData data) 
 	{
 		s_draggableObject = data.selectedObject;
 
-		s_draggableObject.transform.parent = rootTransform;
+		s_draggableObject.transform.parent = UIController.s_Canvas.transform;
 
 		CanvasGroup canvasGr = s_draggableObject.GetComponent<CanvasGroup>();
 		canvasGr.blocksRaycasts = false;

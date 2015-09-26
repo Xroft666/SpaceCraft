@@ -84,7 +84,7 @@ public class Ship : Container
 		GameObject body = GameObject.CreatePrimitive(PrimitiveType.Cube);//new GameObject("body");	
 		body.name = "body";
 		Component.Destroy(body.GetComponent<Collider>());
-		body.GetComponent<MeshRenderer>().sharedMaterial = new UnityEngine.Material(Shader.Find("Sprites/Default"));
+		body.GetComponent<MeshRenderer>().sharedMaterial = new UnityEngine.Material(Shader.Find("Sprites/Diffuse"));
 
 //		SpriteRenderer sRenderer = body.AddComponent<SpriteRenderer>();
 //		sRenderer.sprite = WorldManager.World.m_visuals;
