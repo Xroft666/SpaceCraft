@@ -89,6 +89,46 @@ namespace SpaceSandbox
 				device.GetCompleteEventsList(hierarchy, ref functionsList);		
 		}
 
+		public void GetCompleteQueriesList( string hierarchy, ref Dictionary<string, DeviceQuery> functionsList )
+		{
+			hierarchy += "/" + EntityName;
+			
+			foreach( KeyValuePair<string, DeviceQuery> function in m_queries )
+			{
+				string key = hierarchy + "." + function.Key;
+				if( functionsList.ContainsKey( key ) )
+				{
+					Debug.LogError("Key already exists: " + key );
+					continue;
+				}
+				
+				functionsList.Add( key, function.Value);
+			}
+			
+			foreach( Device device in m_integratedDevices )
+				device.GetCompleteQueriesList(hierarchy, ref functionsList);		
+		}
+
+		public void GetCompleteChecksList( string hierarchy, ref Dictionary<string, DeviceCheck> functionsList )
+		{
+			hierarchy += "/" + EntityName;
+			
+			foreach( KeyValuePair<string, DeviceCheck> function in m_checks )
+			{
+				string key = hierarchy + "." + function.Key;
+				if( functionsList.ContainsKey( key ) )
+				{
+					Debug.LogError("Key already exists: " + key );
+					continue;
+				}
+				
+				functionsList.Add( key, function.Value);
+			}
+			
+			foreach( Device device in m_integratedDevices )
+				device.GetCompleteChecksList(hierarchy, ref functionsList);		
+		}
+
 
 		public Device GetInternalDevice(string path)
 		{

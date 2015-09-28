@@ -4,8 +4,13 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class InventoryScrollRect : ScrollRect, IDropHandler
+public delegate void OnScrollViewHandler(PointerEventData data, DraggableItemsScrollRect scrollView);
+
+public class DraggableItemsScrollRect : ScrollRect, IDropHandler
 {
+	public OnScrollViewHandler m_onDrop;
+
+
 	private static GameObject s_draggableObject = null;
 
 	public override void OnBeginDrag (PointerEventData data) 
@@ -16,6 +21,8 @@ public class InventoryScrollRect : ScrollRect, IDropHandler
 
 		CanvasGroup canvasGr = s_draggableObject.GetComponent<CanvasGroup>();
 		canvasGr.blocksRaycasts = false;
+
+		SortItems();
 	}
 
 	public override void OnDrag (PointerEventData data) 
@@ -48,6 +55,9 @@ public class InventoryScrollRect : ScrollRect, IDropHandler
 		s_draggableObject = null;
 
 		SortItems();
+
+		if( m_onDrop != null )
+			m_onDrop(eventData, this);
 	}
 
 	#endregion

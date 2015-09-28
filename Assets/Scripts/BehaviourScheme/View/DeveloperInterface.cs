@@ -13,7 +13,8 @@ public class DeveloperInterface : MonoBehaviour
 							m_eventsContent, 
 							m_controlsContent, 
 							m_cargoContent,
-							m_installedDevices;
+							m_installedDevices,
+							m_queriesContent;
 
 	private BlueprintSchemeView m_blueprintView;
 
@@ -28,6 +29,8 @@ public class DeveloperInterface : MonoBehaviour
 		m_controlsContent = transform.FindChild("Controls/Content") as RectTransform;
 		m_cargoContent = transform.FindChild("Cargo/Content") as RectTransform;
 		m_installedDevices = transform.FindChild("Installed/Content") as RectTransform;
+		m_queriesContent = transform.FindChild("Queries/Content") as RectTransform;
+
 		m_blueprintView = transform.FindChild("Blueprint").GetComponent<BlueprintSchemeView>();
 	}
 
@@ -51,6 +54,7 @@ public class DeveloperInterface : MonoBehaviour
 
 		InitializeCargo(selectedContainer);
 		InitializeInstalledDevices(selectedContainer);
+		InitializeQueries(selectedContainer);
 
 		selectedShip = selectedContainer;
 
@@ -123,6 +127,23 @@ public class DeveloperInterface : MonoBehaviour
 			
 			count++;
 		}
+	}
+
+	private void InitializeQueries( Ship ship )
+	{
+		CleanContent( m_queriesContent );
+
+		Dictionary<string, DeviceQuery> queries = new Dictionary<string, DeviceQuery>();
+		ship.IntegratedDevice.GetCompleteQueriesList("", ref queries);
+
+		Dictionary<string, DeviceCheck> checks = new Dictionary<string, DeviceCheck>();
+		ship.IntegratedDevice.GetCompleteChecksList("", ref checks);
+
+		List<string> queryNames = new List<string>();
+		queryNames.AddRange(new List<string>(queries.Keys));
+		queryNames.AddRange(new List<string>(checks.Keys));
+
+		FillUpContent( queryNames, m_queriesContent, "q" );
 	}
 
 	private void FillUpContent( List<string> content, RectTransform contentTransform, string iconName )

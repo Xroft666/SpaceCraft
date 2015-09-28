@@ -20,7 +20,8 @@ namespace BehaviourScheme
 				}
 			}
 
-			// Fallback connection
+			// Fallback [else] connection
+			if( m_children.Count > 0 )
 			m_children[m_children.Count - 1].Traverse();
 		}
 	}
