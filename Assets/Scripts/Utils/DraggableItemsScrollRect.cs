@@ -17,6 +17,7 @@ public class DraggableItemsScrollRect : ScrollRect, IDropHandler
 	{
 		s_draggableObject = data.selectedObject;
 
+
 		s_draggableObject.transform.parent = UIController.s_Canvas.transform;
 
 		CanvasGroup canvasGr = s_draggableObject.GetComponent<CanvasGroup>();
@@ -27,6 +28,9 @@ public class DraggableItemsScrollRect : ScrollRect, IDropHandler
 
 	public override void OnDrag (PointerEventData data) 
 	{
+		if( s_draggableObject == null )
+			return;
+
 		s_draggableObject.transform.localPosition = (data.position - new Vector2(Screen.width, Screen.height) * 0.5f);
 	}
 
@@ -47,20 +51,25 @@ public class DraggableItemsScrollRect : ScrollRect, IDropHandler
 
 	public void OnDrop (PointerEventData eventData)
 	{
-		s_draggableObject.transform.SetParent( content );
+		Debug.Log("scroll: " + eventData.selectedObject.name);
+		if( m_onDrop != null )
+			m_onDrop(eventData, this);
+	}
 
+	#endregion
+
+
+	public void AssignObject( GameObject droppedObject )
+	{
+		s_draggableObject.transform.SetParent( content );
+		
 		CanvasGroup canvasGr = s_draggableObject.GetComponent<CanvasGroup>();
 		canvasGr.blocksRaycasts = true;
 
 		s_draggableObject = null;
 
 		SortItems();
-
-		if( m_onDrop != null )
-			m_onDrop(eventData, this);
 	}
-
-	#endregion
 
 	private void SortItems()
 	{

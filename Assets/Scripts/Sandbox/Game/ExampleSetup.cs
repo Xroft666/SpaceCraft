@@ -94,11 +94,14 @@ public class ExampleSetup : MonoBehaviour {
 
 
 		BSEntry onMouseDown = ship.IntegratedDevice.Blueprint.CreateEntry( "OnInputPressed", mouseInput);
-		BSAction toAtract = ship.IntegratedDevice.Blueprint.CreateAction( "Attract", magnet, ranger.GetQuery("CurrentTargetContainer"));
+		BSAction toAtract = ship.IntegratedDevice.Blueprint.CreateAction( "Attract", magnet);
+		BSQuery currentTargetContainer = ship.IntegratedDevice.Blueprint.CreateQuery("CurrentTargetContainer", ranger);
+		toAtract.ConnectToQuery( currentTargetContainer );
 		ship.IntegratedDevice.Blueprint.ConnectElements( onMouseDown, toAtract );
 
 		BSEntry onMouseUp = ship.IntegratedDevice.Blueprint.CreateEntry( "OnInputReleased", mouseInput);
-		BSAction toRepulse = ship.IntegratedDevice.Blueprint.CreateAction( "Repulse", magnet, ranger.GetQuery("CurrentTargetContainer"));
+		BSAction toRepulse = ship.IntegratedDevice.Blueprint.CreateAction( "Repulse", magnet);
+		toAtract.ConnectToQuery( currentTargetContainer );
 		ship.IntegratedDevice.Blueprint.ConnectElements( onMouseUp, toRepulse );
 
 		
@@ -145,37 +148,43 @@ public class ExampleSetup : MonoBehaviour {
 
 		BSSequence shootingSequence = ship.IntegratedDevice.Blueprint.CreateSequence("Shooting");
 		BSAction steerTowardsShootingTarget = 
-			ship.IntegratedDevice.Blueprint.CreateAction( "SteerTowards", navigator.GetInternalDevice("steerer"), 
-			                                             enemydetector.GetQuery("CurrentTargetPosition") );
+			ship.IntegratedDevice.Blueprint.CreateAction( "SteerTowards", navigator.GetInternalDevice("steerer") );
+		BSQuery currentTargetPosition = ship.IntegratedDevice.Blueprint.CreateQuery("CurrentTargetPosition", enemydetector);
+		steerTowardsShootingTarget.ConnectToQuery( currentTargetPosition );
 		BSAction shootTarget = ship.IntegratedDevice.Blueprint.CreateAction( "Fire", launcher );
 
 
 		BSSequence collectingSequence = ship.IntegratedDevice.Blueprint.CreateSequence("Collecting");
+		BSQuery currentTargetContainer = ship.IntegratedDevice.Blueprint.CreateQuery("CurrentTargetContainer", enemydetector);
+
+
 		BSAction disableEngineToCollect = ship.IntegratedDevice.Blueprint.CreateAction("DeactivateDevice", navigator.GetInternalDevice("engine"));
-		BSAction attractAsteroid = ship.IntegratedDevice.Blueprint.CreateAction("Attract", magnet, 
-		                                                                        enemydetector.GetQuery("CurrentTargetContainer"));
-		BSAction storageAsteroid = ship.IntegratedDevice.Blueprint.CreateAction("Load", magnet, 
-		                                                                        enemydetector.GetQuery("CurrentTargetContainer"));
+		BSAction attractAsteroid = ship.IntegratedDevice.Blueprint.CreateAction("Attract", magnet);
+		BSAction storageAsteroid = ship.IntegratedDevice.Blueprint.CreateAction("Load", magnet);
+
+		attractAsteroid.ConnectToQuery( currentTargetContainer );
+		storageAsteroid.ConnectToQuery( currentTargetContainer );
 
 
-		DeviceQuery tradeInfo = () =>
+		BSQuery tradeAsteroid = ship.IntegratedDevice.Blueprint.CreateQuery("TradeAsteroid", () =>
 		{
 			return ship.m_cargo.ComposeTradeOffer("Asteroid");
-		};
+		});
 
-		DeviceQuery stationPosition = () =>
+		BSQuery motherBasePosition = ship.IntegratedDevice.Blueprint.CreateQuery("BasePosition", () =>
 		{
 			return new ArgsObject(){ obj = WorldManager.RequestContainerData("MotherBase").View.transform.position};
-		};
+		});
 
 		Device stationTrader = WorldManager.RequestContainerData("MotherBase").IntegratedDevice.GetInternalDevice("trader");
 
 
 		BSSequence goingHomeSequence = ship.IntegratedDevice.Blueprint.CreateSequence("Home");
-		BSAction setTargetStation = ship.IntegratedDevice.Blueprint.CreateAction( "SetTargetPosition", navigator.GetInternalDevice("patrol"), stationPosition );
+		BSAction setTargetStation = ship.IntegratedDevice.Blueprint.CreateAction( "SetTargetPosition", navigator.GetInternalDevice("patrol") );
+		setTargetStation.ConnectToQuery(motherBasePosition);
 		BSExit moveToStation = ship.IntegratedDevice.Blueprint.CreateExit("MoveTo", navigator );
-		BSAction sellResouces = ship.IntegratedDevice.Blueprint.CreateAction( "LoadItemsFrom", stationTrader, tradeInfo );
-
+		BSAction sellResouces = ship.IntegratedDevice.Blueprint.CreateAction( "LoadItemsFrom", stationTrader );
+		sellResouces.ConnectToQuery( tradeAsteroid );
 
 		ship.IntegratedDevice.Blueprint.m_entryPoint.AddChild(rootDecision);
 
@@ -346,7 +355,9 @@ public class ExampleSetup : MonoBehaviour {
 		BSEntry inRange = heatSeeker.Blueprint.CreateEntry( "OnRangerEntered", ranger );
 
 		// steer towards the target
-		BSAction toSteer = heatSeeker.Blueprint.CreateAction( "SteerTowards", steerer, ranger.GetQuery("CurrentTargetPosition"));
+		BSQuery targetPosition = heatSeeker.Blueprint.CreateQuery( "CurrentTargetPosition", ranger );
+		BSAction toSteer = heatSeeker.Blueprint.CreateAction( "SteerTowards", steerer);
+		toSteer.ConnectToQuery( targetPosition );
 
 		inRange.AddChild( onTargetFound );
 		onTargetFound.AddChild( toSteer );
@@ -412,7 +423,9 @@ public class ExampleSetup : MonoBehaviour {
 		BSEntry entryPoint = navigator.Blueprint.CreateEntry( "MoveTo", navigator );
 		BSSequence waypoints = navigator.Blueprint.CreateSequence();
 
-		BSAction calculateWay = navigator.Blueprint.CreateAction( "GetWaypointsList", patrol, patrol.CurrentTarget );
+		BSQuery currentTarget = navigator.Blueprint.CreateQuery( "CurrentTarget", patrol );
+		BSAction calculateWay = navigator.Blueprint.CreateAction( "GetWaypointsList", patrol);//, patrol.CurrentTarget );
+		calculateWay.ConnectToQuery( currentTarget );
 		BSForeach foreachPosition = navigator.Blueprint.CreateForeach( patrol.GetWaypoints );
 
 
@@ -422,9 +435,13 @@ public class ExampleSetup : MonoBehaviour {
 
 
 		BSAction disableEngine = navigator.Blueprint.CreateAction( "DeactivateDevice", engine );
-		BSAction steerTowardsTarget = navigator.Blueprint.CreateAction( "SteerTowards", steerer, patrol.GetQuery("CurrentNavigationPosition") );
+		BSQuery navPosition = navigator.Blueprint.CreateQuery( "CurrentNavigationPosition", patrol );
+		BSAction steerTowardsTarget = navigator.Blueprint.CreateAction( "SteerTowards", steerer );
+		steerTowardsTarget.ConnectToQuery( navPosition );
 		BSAction enableEngine = navigator.Blueprint.CreateAction( "ActivateDevice", engine );
-		BSAction waitUntilReach = navigator.Blueprint.CreateAction( "ReachTarget", patrol, patrol.GetQuery("CurrentNavigationPosition") );
+
+		BSAction waitUntilReach = navigator.Blueprint.CreateAction( "ReachTarget", patrol);
+		waitUntilReach.ConnectToQuery( navPosition );
 		BSAction setNextWaypoint = navigator.Blueprint.CreateAction( "SetNextNavigationPoint", patrol );
 
 		entryPoint.AddChild(foreachPosition);

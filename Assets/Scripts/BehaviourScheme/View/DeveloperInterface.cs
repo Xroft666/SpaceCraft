@@ -6,8 +6,9 @@ using SpaceSandbox;
 
 using UnityEngine.UI;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
-public class DeveloperInterface : MonoBehaviour 
+public class DeveloperInterface : MonoBehaviour
 {
 	private RectTransform 	m_actionsContent, 
 							m_eventsContent, 
@@ -30,6 +31,15 @@ public class DeveloperInterface : MonoBehaviour
 		m_cargoContent = transform.FindChild("Cargo/Content") as RectTransform;
 		m_installedDevices = transform.FindChild("Installed/Content") as RectTransform;
 		m_queriesContent = transform.FindChild("Queries/Content") as RectTransform;
+
+
+		m_actionsContent.parent.GetComponent<DraggableItemsScrollRect>().m_onDrop = OnActionsScrollViewDropped;
+		m_eventsContent.parent.GetComponent<DraggableItemsScrollRect>().m_onDrop = OnEventsScrollViewDropped;
+		m_controlsContent.parent.GetComponent<DraggableItemsScrollRect>().m_onDrop = OnControlsScrollViewDropped;
+		m_cargoContent.parent.GetComponent<DraggableItemsScrollRect>().m_onDrop = OnCargoScrollViewDropped;
+		m_installedDevices.parent.GetComponent<DraggableItemsScrollRect>().m_onDrop = OnDevicesScrollViewDropped;
+		m_queriesContent.parent.GetComponent<DraggableItemsScrollRect>().m_onDrop = OnQueriesScrollViewDropped;
+
 
 		m_blueprintView = transform.FindChild("Blueprint").GetComponent<BlueprintSchemeView>();
 	}
@@ -227,4 +237,45 @@ public class DeveloperInterface : MonoBehaviour
 		foreach( Transform child in content )
 			GameObject.Destroy( child.gameObject );
 	}
+
+	
+
+
+	public void OnActionsScrollViewDropped( PointerEventData eventData, DraggableItemsScrollRect scrollView )
+	{
+	
+		scrollView.AssignObject(eventData.selectedObject);
+	}
+
+	public void OnEventsScrollViewDropped( PointerEventData eventData, DraggableItemsScrollRect scrollView )
+	{
+	
+		scrollView.AssignObject(eventData.selectedObject);
+	}
+
+	public void OnControlsScrollViewDropped(PointerEventData eventData, DraggableItemsScrollRect scrollView)
+	{
+	
+		scrollView.AssignObject(eventData.selectedObject);
+	}
+
+	public void OnQueriesScrollViewDropped(PointerEventData eventData, DraggableItemsScrollRect scrollView)
+	{
+
+		scrollView.AssignObject(eventData.selectedObject);
+	}
+
+	public void OnCargoScrollViewDropped(PointerEventData eventData, DraggableItemsScrollRect scrollView)
+	{
+	
+		scrollView.AssignObject(eventData.selectedObject);
+	}
+
+	public void OnDevicesScrollViewDropped(PointerEventData eventData, DraggableItemsScrollRect scrollView)
+	{
+
+		scrollView.AssignObject(eventData.selectedObject);
+	}
+
+
 }

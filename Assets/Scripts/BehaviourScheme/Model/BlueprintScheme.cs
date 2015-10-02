@@ -38,11 +38,35 @@ namespace SpaceSandbox
 		#region Nodes Creation 
 
 
-		public BSAction CreateAction( string functionName, Device device, DeviceQuery query = null)
+		public BSAction CreateAction( string functionName, Device device)
 		{
-			BSAction node = new BSAction() { m_scheme = this, m_name = "Action", m_type = functionName };
-			node.SetAction( device.GetFunction(functionName), query );
+			DeviceAction action = device.GetFunction(functionName);
 
+			BSAction node = new BSAction() { m_scheme = this, m_name = "Action", m_type = functionName, m_action = action };
+
+			m_nodes.Add(node);
+			return node;
+		}
+
+		public BSQuery CreateQuery( string queryName, Device device )
+		{
+			DeviceQuery query = device.GetQuery(queryName);
+
+			return CreateQuery(queryName, query);
+		}
+
+		public BSQuery CreateQuery( string queryName, DeviceQuery query )
+		{
+			BSQuery node = new BSQuery() { m_scheme = this, m_name = "Query", m_type = queryName, m_query = query };
+			m_nodes.Add(node);
+			return node;
+		}
+
+		public BSCheck CreatePredecate( string checkName, Device device )
+		{
+			DeviceCheck check = device.GetCheck(checkName);
+			
+			BSCheck node = new BSCheck() { m_scheme = this, m_name = "Predecate", m_type = checkName, m_check = check };
 			m_nodes.Add(node);
 			return node;
 		}

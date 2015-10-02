@@ -10,8 +10,10 @@ using UnityEngine.EventSystems;
 public class NodeView : MonoBehaviour, IPointerClickHandler, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
 	// blueprint position
-	public float x;
-	public float y;
+//	public float x;
+//	public float y;
+//	[HideInInspector]
+	public Vector2 globalOffset;
 
 	public BSNode Node { get; set; }
 	public BlueprintSchemeView SchemeView { get; private set; }

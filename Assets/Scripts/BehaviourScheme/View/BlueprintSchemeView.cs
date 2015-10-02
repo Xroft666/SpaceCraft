@@ -30,29 +30,64 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 	{
 		m_device = device;
 
-		GenerateNodes(device.Blueprint.m_entryPoint, 0, 0, device.Blueprint.m_entryPoint.m_children.Count);
-		ConflictsTraverse(device.Blueprint.m_entryPoint);
+		foreach( BSNode node in m_device.Blueprint.m_nodes )
+			GenerateNode( node );
+		
+		foreach( BSNode node in m_device.Blueprint.m_nodes )
+			PositionNode( node );
+
+
+//		ConflictsTraverse(device.Blueprint.m_entryPoint);
 		GenerateConnections(device.Blueprint.m_entryPoint);
+
 
 
 		Rect box = new Rect();
 		GetBoundingBox(device.Blueprint.m_entryPoint, ref box); 
 
-		blueprintRect.sizeDelta = new Vector3(box.width * horizDistance, -box.height * vertDistance);
+		blueprintRect.sizeDelta = new Vector3(box.width * horizDistance * 1.5f, -box.height * vertDistance * 5f + box.height * vertDistance * 2.5f);
+	
 	}
 
-	private void GenerateNodes( BSNode current, int lvl, int subling, int sublingsCount )
+	private void GenerateNode( BSNode current )
 	{
 		string name = string.IsNullOrEmpty(current.m_name) ? "" : ": " + current.m_name;
-		NodeView view = CreateNode (current.m_type + name, current );
+		CreateNode (current.m_type + name, current );
+	}
 
-		view.y = lvl ;
-		view.x = sublingsCount == 1 ? subling : ((subling / (float)(sublingsCount - 1)) - 0.5f) ;
+	public void PositionNode( BSNode current )
+	{
+		Vector2 globalOffset = -Vector2.up * 2.5f;
+		int subling = 0;
+		int sublingsCount = 1;
 
-		view.transform.localPosition = new Vector3(view.x * horizDistance , view.y * vertDistance);
+		if( current.m_parents.Count > 0 )
+		{
+			BSNode parentNode = current.m_parents[0];
+
+			globalOffset = parentNode.m_view.globalOffset;
+			subling = parentNode.m_children.IndexOf( current );
+			sublingsCount = parentNode.m_children.Count;
+		}
+
+		NodeView view = current.m_view;
+
+		Vector2 localOffset = new Vector2( sublingsCount == 1 ? 0f : ((subling / (float)(sublingsCount - 1)) - 0.5f), 1f );
+
+		BSQuery query = current as BSQuery;
+		if( query != null && query.connectedActionNode != null)
+		{
+			globalOffset = query.connectedActionNode.m_view.globalOffset;
+			localOffset = Vector2.right * -2.0f;
+		}
+		
+
+		current.m_view.globalOffset = globalOffset + localOffset;
+		current.m_view.transform.localPosition = new Vector3(current.m_view.globalOffset.x * horizDistance , current.m_view.globalOffset.y * vertDistance);
+
 
 		for( int i = 0; i < current.m_children.Count; i++ )
-			GenerateNodes( current.m_children[i], lvl + 1, subling + i, current.m_children.Count);
+			PositionNode( current.m_children[i] );
 	}
 
 	private void GenerateConnections(BSNode current)
@@ -97,28 +132,28 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 		GetBoundingBox( right, ref rightRect );
 
 		if( leftRect.Overlaps(rightRect) )
-			ShiftSubtreePosition( right, (rightRect.center - leftRect.center).x );
+			ShiftSubtreePosition( right, new Vector2((rightRect.center - leftRect.center).x, 0f) );
 	}
 
 	private void GetBoundingBox( BSNode current, ref Rect box )
 	{
-		box.xMin = Mathf.Min( current.m_view.x, box.xMin);
-		box.xMax = Mathf.Max( current.m_view.x, box.xMax);
+		box.xMin = Mathf.Min( current.m_view.globalOffset.x, box.xMin);
+		box.xMax = Mathf.Max( current.m_view.globalOffset.x, box.xMax);
 
-		box.yMin = Mathf.Min( current.m_view.y, box.yMin);
-		box.yMax = Mathf.Max( current.m_view.y, box.yMax);
+		box.yMin = Mathf.Min( current.m_view.globalOffset.y, box.yMin);
+		box.yMax = Mathf.Max( current.m_view.globalOffset.y, box.yMax);
 
 		foreach( BSNode child in current.m_children )
 			GetBoundingBox( child, ref box );
 	}
 
-	private void ShiftSubtreePosition( BSNode current, float distance )
+	private void ShiftSubtreePosition( BSNode current, Vector2 offset )
 	{
-		current.m_view.x += distance;
-		current.m_view.transform.localPosition = new Vector3(current.m_view.x * horizDistance , current.m_view.y * vertDistance);
+		current.m_view.globalOffset += offset;
+		current.m_view.transform.localPosition = new Vector3(current.m_view.globalOffset.x * horizDistance , current.m_view.globalOffset.y * vertDistance);
 
 		foreach( BSNode child in current.m_children )
-			ShiftSubtreePosition( child, distance );
+			ShiftSubtreePosition( child, offset );
 	}
 
 
@@ -132,7 +167,6 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 	#region IDropHandler implementation
 	public void OnDrop (PointerEventData eventData)
 	{
-	//	Debug.Log("Dropped: " + eventData.selectedObject.name);
 		if( eventData.selectedObject == null )
 			return;
 
@@ -141,9 +175,6 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 		if( item == null )
 			return;
 
-		// Accept only: Events, Actions, Controls
-
-		// Add stuff to the blueprint
 
 	
 	}
