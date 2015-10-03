@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -8,14 +8,20 @@ public delegate void OnScrollViewHandler(PointerEventData data, DraggableItemsSc
 
 public class DraggableItemsScrollRect : ScrollRect, IDropHandler
 {
-	public OnScrollViewHandler m_onDrop;
+	public Dictionary<DraggableItemsScrollRect, OnScrollViewHandler> m_onDropHandlers = new Dictionary<DraggableItemsScrollRect, OnScrollViewHandler>();
 
 
-	private static GameObject s_draggableObject = null;
+	public static GameObject s_draggableObject = null;
+	public static DraggableItemsScrollRect s_ViewDraggedFrom = null;
+
 
 	public override void OnBeginDrag (PointerEventData data) 
 	{
+		if( data.selectedObject == null )
+			return;
+
 		s_draggableObject = data.selectedObject;
+		s_ViewDraggedFrom = this;
 
 
 		s_draggableObject.transform.parent = UIController.s_Canvas.transform;
@@ -36,6 +42,8 @@ public class DraggableItemsScrollRect : ScrollRect, IDropHandler
 
 	public override void OnEndDrag (PointerEventData data) 
 	{
+		s_ViewDraggedFrom = null;
+
 		if( s_draggableObject == null )
 			return;
 
@@ -51,9 +59,15 @@ public class DraggableItemsScrollRect : ScrollRect, IDropHandler
 
 	public void OnDrop (PointerEventData eventData)
 	{
-		Debug.Log("scroll: " + eventData.selectedObject.name);
-		if( m_onDrop != null )
-			m_onDrop(eventData, this);
+		if( eventData.selectedObject == null )
+			return;
+		if( !m_onDropHandlers.ContainsKey( s_ViewDraggedFrom ) )
+			return;
+
+		OnScrollViewHandler onDrop = m_onDropHandlers[s_ViewDraggedFrom];
+
+		if( onDrop != null )
+			onDrop(eventData, this);
 	}
 
 	#endregion

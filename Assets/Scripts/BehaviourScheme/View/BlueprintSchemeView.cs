@@ -7,8 +7,12 @@ using UnityEngine.UI;
 
 using UnityEngine.EventSystems;
 
+public delegate void OnBlueprintHandler(PointerEventData data);
+
 public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 {
+	public Dictionary<DraggableItemsScrollRect, OnBlueprintHandler> m_onDropHandlers = new Dictionary<DraggableItemsScrollRect, OnBlueprintHandler>();
+
 	#region data references
 
 	private Device m_device;
@@ -170,13 +174,13 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 		if( eventData.selectedObject == null )
 			return;
 
-		// Draggable object
-		DeviceItem item = eventData.selectedObject.GetComponent<DeviceItem>();
-		if( item == null )
+		if( !m_onDropHandlers.ContainsKey( DraggableItemsScrollRect.s_ViewDraggedFrom ) )
 			return;
-
-
-	
+		
+		OnBlueprintHandler onDrop = m_onDropHandlers[DraggableItemsScrollRect.s_ViewDraggedFrom];
+		
+		if( onDrop != null )
+			onDrop(eventData);
 	}
 	#endregion
 
@@ -218,48 +222,50 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 
 	#region Elements section butttons callback
 
-	public void CreateFunction()
+	//public NodeView CreateAction()
+	//{
+	//	BSNode newNode = m_device.Blueprint.CreateAction
+
+	//}
+	
+	public NodeView CreateEntry()
 	{
-		BSNode newNode = null;// = m_blueprint.CreateFunction(
-		AddNodeToCurrentFunction( newNode );
+		BSNode newNode = null;//m_device.Blueprint.CreateEntry(
+		return CreateNode("Entry", newNode );
 	}
 	
-	public void CreateAction()
+	//public NodeView CreateExit()
+	//{
+	//	BSNode newNode = m_blueprint.CreateExit(
+
+	//}
+	
+	public NodeView CreateSelect()
 	{
-		BSNode newNode = null;// = m_blueprint.CreateAction(
-		AddNodeToCurrentFunction( newNode );
+		BSNode newNode = m_device.Blueprint.CreateBranch();
+		return CreateNode("Select", newNode );
+	}
+
+	public NodeView CreateSequence()
+	{
+		BSNode newNode = m_device.Blueprint.CreateSequence();
+		return CreateNode("Sequence", newNode );
 	}
 	
-	public void CreateEntry()
+	public NodeView CreateEvaluate()
 	{
-		BSNode newNode = null;// = m_blueprint.CreateEntry(
-		AddNodeToCurrentFunction( newNode );
+		BSNode newNode = m_device.Blueprint.CreateEvaluate();
+		return CreateNode("Evaluate", newNode );
 	}
-	
-	public void CreateExit()
+
+	public NodeView CreateForeach()
 	{
-		BSNode newNode = null;// = m_blueprint.CreateExit(
-		AddNodeToCurrentFunction( newNode );
-	}
-	
-	public void CreateSelect()
-	{
-		BSNode newNode = null;// = m_blueprint.CreateSelect(
-		AddNodeToCurrentFunction( newNode );
-	}
-	
-	public void CreateEvaluate()
-	{
-		BSNode newNode = null;// = m_blueprint.CreateEvaluate(
-		AddNodeToCurrentFunction( newNode );
+		BSNode newNode = m_device.Blueprint.CreateForeach(null);
+		return CreateNode("Foreach", newNode );
 	}
 
 	#endregion
 
-	public void AddNodeToCurrentFunction( BSNode node )
-	{
-
-	}
 
 	private NodeView CreateNode( string itemName, BSNode node )
 	{
@@ -297,7 +303,7 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 		
 		Selectable selectable = newAction.AddComponent<Selectable>();
 		CanvasGroup canvas = newAction.AddComponent<CanvasGroup>();
-		DeviceItem item = newAction.AddComponent<DeviceItem>();
+		DraggableItem item = newAction.AddComponent<DraggableItem>();
 
 		NodeView nodeView = newAction.AddComponent<NodeView>();
 		nodeView.Node = node;
