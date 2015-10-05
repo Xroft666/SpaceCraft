@@ -13,10 +13,10 @@ namespace SpaceSandbox
 	{
 		public BlueprintScheme( Device device )
 		{
-			m_device = device;
+			m_blueprintDevice = device;
 		}
 
-		private Device m_device;
+		private Device m_blueprintDevice;
 
 		public List<BSNode> m_nodes = new List<BSNode>();
 
@@ -28,9 +28,17 @@ namespace SpaceSandbox
 			evt();
 		}
 
-		public void FireEvent(DeviceAction evt, DeviceQuery data)
+		public void FireEvent( Device actionDevice, string actionName, Device queryDevice, string queryName )
+			//DeviceAction evt, DeviceQuery data)
 		{
-			TasksRunner containersPlanner = m_device.m_containerAttachedTo.IntegratedDevice.Blueprint.tasksRunner;
+			TasksRunner containersPlanner = m_blueprintDevice.m_containerAttachedTo.IntegratedDevice.Blueprint.tasksRunner;
+
+			DeviceAction evt = actionDevice.GetFunction( actionName );
+
+			DeviceQuery data = null;
+			if( queryDevice != null )
+				data = queryDevice.GetQuery( queryName );
+
 			containersPlanner.ScheduleEvent( evt, data );
 		}
 	
@@ -42,7 +50,7 @@ namespace SpaceSandbox
 		{
 			DeviceAction action = device.GetFunction(functionName);
 
-			BSAction node = new BSAction() { m_scheme = this, m_name = "Action", m_type = functionName, m_action = action };
+			BSAction node = new BSAction() { m_scheme = this, m_name = "Action", m_type = functionName, m_device = device, m_actionName = functionName };
 
 			m_nodes.Add(node);
 			return node;
@@ -50,14 +58,7 @@ namespace SpaceSandbox
 
 		public BSQuery CreateQuery( string queryName, Device device )
 		{
-			DeviceQuery query = device.GetQuery(queryName);
-
-			return CreateQuery(queryName, query);
-		}
-
-		public BSQuery CreateQuery( string queryName, DeviceQuery query )
-		{
-			BSQuery node = new BSQuery() { m_scheme = this, m_name = "Query", m_type = queryName, m_query = query };
+			BSQuery node = new BSQuery() { m_scheme = this, m_name = "Query", m_type = queryName, m_device = device, m_queryName = queryName };
 			m_nodes.Add(node);
 			return node;
 		}

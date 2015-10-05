@@ -28,6 +28,17 @@ public class DRanger : Device
 		AddQuery("CurrentTargetContainer", CurrentTargetContainer);
 	}
 
+	public override void OnDeviceUninstalled()
+	{
+		RemoveEvent( "OnRangerEntered" );
+		RemoveEvent( "OnRangerEscaped" );
+		
+		RemoveAction("DesignateClosestTarget");	
+		RemoveCheck("IsAnyTarget" );	
+		RemoveQuery("CurrentTargetPosition");
+		RemoveQuery("CurrentTargetContainer");
+	}
+
 	public override IEnumerator ActivateDevice ( DeviceQuery qry )//EventArgs args )
 	{
 		m_isActive = true;

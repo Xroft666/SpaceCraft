@@ -26,7 +26,18 @@ public class DInputModule : Device
 
 		AddQuery( "MouseWorldPosition", MouseWorldPosition );
 	}
-	
+
+	public override void OnDeviceUninstalled()
+	{
+		RemoveEvent( "OnInputPressed" );
+		RemoveEvent( "OnInputReleased" );
+		RemoveEvent( "OnInputHeld" );
+		
+		RemoveEvent( "OnMouseScreenPosition");
+		RemoveEvent( "OnMouseWorldPosition" );
+		
+		RemoveQuery( "MouseWorldPosition" );
+	}
 
 	public override void Update()
 	{

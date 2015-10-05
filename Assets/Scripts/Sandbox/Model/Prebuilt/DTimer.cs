@@ -54,8 +54,13 @@ public class DTimer : Device
 	public override void OnDeviceInstalled()
 	{
 		AddEvent( "OnTimerComplete", null );
-	
 		AddAction("ResetTimer", ResetTimer );
+	}
+
+	public override void OnDeviceUninstalled()
+	{
+		RemoveEvent("OnTimerComplete");
+		RemoveAction("ResetTimer");
 	}
 
 	public override void Initialize()
@@ -69,9 +74,6 @@ public class DTimer : Device
 		m_timeText.text = m_timerSetUp.ToString("0");
 
 		m_timeText.gameObject.SetActive(m_isActive);
-
-//		m_fired = false;
-//		m_timer = 0f;
 	}
 
 	public override void Update()

@@ -34,8 +34,8 @@ public class DeveloperInterface : MonoBehaviour
 
 
 
-		m_cargoScrollView.m_onDropHandlers[m_installedScrollView] = OnCargoToInstalledDropped;
-		m_installedScrollView.m_onDropHandlers[m_cargoScrollView] = OnDevicesToCargoDropped;
+		m_cargoScrollView.m_onDropHandlers[m_installedScrollView] = OnDevicesToCargoDropped;
+		m_installedScrollView.m_onDropHandlers[m_cargoScrollView] = OnCargoToInstalledDropped;
 
 
 
@@ -102,27 +102,12 @@ public class DeveloperInterface : MonoBehaviour
 
 		m_controlsScrollView.content.sizeDelta = new Vector2(m_controlsScrollView.content.sizeDelta.x, 5 * m_buttonsDistance);
 
-		DraggableItem item;
-
-		item = CreateButton(m_controlsScrollView.content, "Entry", Vector3.up * -40f);
-		item.IsControlNode = true;
-		item.controlType = DraggableItem.ControlType.Entry;
-
-		item = CreateButton(m_controlsScrollView.content, "Selection", Vector3.up * -20f);
-		item.IsControlNode = true;
-		item.controlType = DraggableItem.ControlType.Selection;
-
-		item = CreateButton(m_controlsScrollView.content, "Sequence", Vector3.up * 0f);
-		item.IsControlNode = true;
-		item.controlType = DraggableItem.ControlType.Sequence;
-
-		item = CreateButton(m_controlsScrollView.content, "Evaluation", Vector3.up * 20f);
-		item.IsControlNode = true;
-		item.controlType = DraggableItem.ControlType.Evaluation;
-
-		item = CreateButton(m_controlsScrollView.content, "Foreach", Vector3.up * 40f);
-		item.IsControlNode = true;
-		item.controlType = DraggableItem.ControlType.Foreach;
+		for( int i = 0; i < 5; i++ )
+		{
+			DraggableItem item = CreateButton(m_controlsScrollView.content, ((DraggableItem.ControlType) i).ToString(), Vector3.up * ( -40f + 20f * i ));
+			item.IsControlNode = true;
+			item.controlType = (DraggableItem.ControlType) i;
+		}
 	}
 
 	private void InitializeCargo( Ship ship )
@@ -138,6 +123,19 @@ public class DeveloperInterface : MonoBehaviour
 
 			DraggableItem item = CreateButton(m_cargoScrollView.content, name, Vector3.up * count * m_buttonsDistance);
 
+			Container container = slot.resources[0] as Container;
+			Device device = slot.resources[0] as Device;
+			
+			if( container != null )
+			{
+				item.EntityContainment = container;
+			}
+
+			if( device != null )
+			{
+				item.DeviceContainment = device;
+			}
+
 			count++;
 		}
 	}
@@ -152,8 +150,9 @@ public class DeveloperInterface : MonoBehaviour
 		foreach( Device device in ship.IntegratedDevice.m_integratedDevices )
 		{
 			string name = device.EntityName;
-			CreateButton(m_installedScrollView.content, name, Vector3.up * count * m_buttonsDistance);
-			
+			DraggableItem item = CreateButton(m_installedScrollView.content, name, Vector3.up * count * m_buttonsDistance);
+			item.DeviceContainment = device;
+
 			count++;
 		}
 	}
@@ -238,6 +237,7 @@ public class DeveloperInterface : MonoBehaviour
 	{
 		selectedShip = null;
 
+		m_blueprintView.CleanBlueprint();
 		CleanContent(m_actionsScrollView.content);
 		CleanContent(m_eventsScrollView.content);
 		CleanContent(m_controlsScrollView.content);
@@ -304,12 +304,41 @@ public class DeveloperInterface : MonoBehaviour
 
 	public void OnCargoToInstalledDropped(PointerEventData eventData, DraggableItemsScrollRect scrollView)
 	{
-		scrollView.AssignObject(eventData.selectedObject);
+		DraggableItem draggableItem = eventData.selectedObject.GetComponent<DraggableItem>();
+
+		if( draggableItem.DeviceContainment != null )
+		{
+			selectedShip.m_cargo.RemoveItem(draggableItem.DeviceContainment.EntityName);
+			selectedShip.IntegratedDevice.InstallDevice( draggableItem.DeviceContainment );
+
+			CleanContent(m_actionsScrollView.content);
+			CleanContent(m_eventsScrollView.content);
+			CleanContent(m_queriesScrollView.content);
+
+			InitializeActions(selectedShip.IntegratedDevice);
+			InitializeEvents(selectedShip.IntegratedDevice);
+			InitializeQueries(selectedShip);
+
+			scrollView.AssignObject(eventData.selectedObject);
+			
+			m_blueprintView.CleanBlueprint();
+			m_blueprintView.InitializeView(selectedShip.IntegratedDevice);
+		}
 	}
 
 	public void OnDevicesToCargoDropped(PointerEventData eventData, DraggableItemsScrollRect scrollView)
 	{
-		scrollView.AssignObject(eventData.selectedObject);
+		DraggableItem draggableItem = eventData.selectedObject.GetComponent<DraggableItem>();
+		if( draggableItem.DeviceContainment != null )
+		{
+			selectedShip.IntegratedDevice.UninstallDevice( draggableItem.DeviceContainment );
+			selectedShip.m_cargo.AddItem( draggableItem.DeviceContainment );
+
+			scrollView.AssignObject(eventData.selectedObject);
+
+			m_blueprintView.CleanBlueprint();
+			m_blueprintView.InitializeView(selectedShip.IntegratedDevice);
+		}
 	}
 
 

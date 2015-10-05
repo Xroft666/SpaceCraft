@@ -53,6 +53,14 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 	
 	}
 
+	public void CleanBlueprint()
+	{
+		foreach( BSNode node in m_device.Blueprint.m_nodes )
+			GameObject.Destroy( node.m_view.gameObject );
+	//	foreach( Transform child in blueprintRect )
+	//		GameObject.Destroy( child.gameObject );
+	}
+
 	private void GenerateNode( BSNode current )
 	{
 		string name = string.IsNullOrEmpty(current.m_name) ? "" : ": " + current.m_name;
@@ -269,6 +277,9 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 
 	private NodeView CreateNode( string itemName, BSNode node )
 	{
+		BSAction actionNode = node as BSAction;
+
+
 		Vector2 iconSize = new Vector2(100f, 20f);
 		
 		GameObject newAction = new GameObject(itemName, typeof(RectTransform));
@@ -285,7 +296,11 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 		backTransf.SetParent(transf, false);
 		
 		Image backImg = background.AddComponent<Image>();
-		
+		if( actionNode != null )
+		{
+			if( actionNode.m_device.GetFunction( actionNode.m_actionName ) == null )
+				backImg.color = Color.red;
+		}
 		
 		GameObject textGO = new GameObject("text", typeof(RectTransform));
 		RectTransform textTransf = textGO.GetComponent<RectTransform>();
@@ -312,4 +327,6 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 
 		return nodeView;
 	}
+
+
 }

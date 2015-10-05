@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 
 using SpaceSandbox;
@@ -47,10 +47,10 @@ public class ExampleSetup : MonoBehaviour {
 		Device timeBomb = GenerateTimeBomb( 5f );
 		DTimer activeTimer = new DTimer(){ EntityName = "activationtimer", m_timerSetUp = 2f };
 
-		missile.IntegratedDevice.IntegrateDevice( engine );
-		missile.IntegratedDevice.IntegrateDevice( timeBomb );
-		missile.IntegratedDevice.IntegrateDevice( heatSeeker );
-		missile.IntegratedDevice.IntegrateDevice( activeTimer );
+		missile.IntegratedDevice.InstallDevice( engine );
+		missile.IntegratedDevice.InstallDevice( timeBomb );
+		missile.IntegratedDevice.InstallDevice( heatSeeker );
+		missile.IntegratedDevice.InstallDevice( activeTimer );
 
 		timeBomb.GetInternalDevice("warhead/ranger").m_isActive = false;
 		heatSeeker.GetInternalDevice("ranger").m_isActive = false;
@@ -87,10 +87,10 @@ public class ExampleSetup : MonoBehaviour {
 
 
 //		ship.IntegratedDevice.IntegrateDevice( launcher );
-		ship.IntegratedDevice.IntegrateDevice( ranger );
-		ship.IntegratedDevice.IntegrateDevice( magnet );
-		ship.IntegratedDevice.IntegrateDevice( cockpit );
-		ship.IntegratedDevice.IntegrateDevice( mouseInput );
+		ship.IntegratedDevice.InstallDevice( ranger );
+		ship.IntegratedDevice.InstallDevice( magnet );
+		ship.IntegratedDevice.InstallDevice( cockpit );
+		ship.IntegratedDevice.InstallDevice( mouseInput );
 
 
 		BSEntry onMouseDown = ship.IntegratedDevice.Blueprint.CreateEntry( "OnInputPressed", mouseInput);
@@ -122,11 +122,11 @@ public class ExampleSetup : MonoBehaviour {
 		
 		
 
-		ship.IntegratedDevice.IntegrateDevice( trader );
-		ship.IntegratedDevice.IntegrateDevice( navigator );
-		ship.IntegratedDevice.IntegrateDevice( enemydetector );
-		ship.IntegratedDevice.IntegrateDevice( launcher );
-		ship.IntegratedDevice.IntegrateDevice( magnet );
+		ship.IntegratedDevice.InstallDevice( trader );
+		ship.IntegratedDevice.InstallDevice( navigator );
+		ship.IntegratedDevice.InstallDevice( enemydetector );
+		ship.IntegratedDevice.InstallDevice( launcher );
+		ship.IntegratedDevice.InstallDevice( magnet );
 
 
 
@@ -165,16 +165,18 @@ public class ExampleSetup : MonoBehaviour {
 		attractAsteroid.ConnectToQuery( currentTargetContainer );
 		storageAsteroid.ConnectToQuery( currentTargetContainer );
 
-
-		BSQuery tradeAsteroid = ship.IntegratedDevice.Blueprint.CreateQuery("TradeAsteroid", () =>
+		ship.IntegratedDevice.AddQuery("TradeAsteroid", () =>
 		{
 			return ship.m_cargo.ComposeTradeOffer("Asteroid");
 		});
 
-		BSQuery motherBasePosition = ship.IntegratedDevice.Blueprint.CreateQuery("BasePosition", () =>
+		ship.IntegratedDevice.AddQuery("BasePosition", () =>
 		{
 			return new ArgsObject(){ obj = WorldManager.RequestContainerData("MotherBase").View.transform.position};
 		});
+
+		BSQuery tradeAsteroid = ship.IntegratedDevice.Blueprint.CreateQuery( "TradeAsteroid", ship.IntegratedDevice );
+		BSQuery motherBasePosition = ship.IntegratedDevice.Blueprint.CreateQuery("BasePosition", ship.IntegratedDevice );
 
 		Device stationTrader = WorldManager.RequestContainerData("MotherBase").IntegratedDevice.GetInternalDevice("trader");
 
@@ -235,9 +237,9 @@ public class ExampleSetup : MonoBehaviour {
 		DSteerModule steerer = new DSteerModule(){ EntityName = "steerer" };
 
 		Device cockpitDevice = new Device(){ EntityName = "cockpit"};
-		cockpitDevice.IntegrateDevice( input );
-		cockpitDevice.IntegrateDevice( engines );
-		cockpitDevice.IntegrateDevice( steerer );
+		cockpitDevice.InstallDevice( input );
+		cockpitDevice.InstallDevice( engines );
+		cockpitDevice.InstallDevice( steerer );
 
 		// Steering module
 
@@ -278,7 +280,7 @@ public class ExampleSetup : MonoBehaviour {
 		};
 		
 		Device inclusiveDevice = new Device(){ EntityName = "input"};
-		inclusiveDevice.IntegrateDevices( inputs );
+		inclusiveDevice.InstallDevices( inputs );
 		
 		return inclusiveDevice;
 	}
@@ -294,7 +296,7 @@ public class ExampleSetup : MonoBehaviour {
 		};
 		
 		Device inclusiveDevice = new Device(){ EntityName = "engines"};
-		inclusiveDevice.IntegrateDevices( inputs );
+		inclusiveDevice.InstallDevices( inputs );
 		
 		return inclusiveDevice;
 	}
@@ -307,8 +309,8 @@ public class ExampleSetup : MonoBehaviour {
 		DDetonator detonator = new DDetonator(){ EntityName = "detonator"};
 		DRanger ranger = new DRanger(){ EntityName = "ranger", detectionRange = detectionRange };
 
-		warheadDevice.IntegrateDevice( detonator );
-		warheadDevice.IntegrateDevice( ranger );
+		warheadDevice.InstallDevice( detonator );
+		warheadDevice.InstallDevice( ranger );
 
 		BSEntry onClose = warheadDevice.Blueprint.CreateEntry( "OnRangerEntered", ranger );
 		BSAction toDetonate = warheadDevice.Blueprint.CreateAction( "Detonate", detonator );
@@ -325,8 +327,8 @@ public class ExampleSetup : MonoBehaviour {
 		Device warhead = GenerateWarhead( 1f );
 		DTimer timer = new DTimer() { EntityName = "timer", m_timerSetUp = time };
 
-		timeBomb.IntegrateDevice( warhead );
-		timeBomb.IntegrateDevice( timer );
+		timeBomb.InstallDevice( warhead );
+		timeBomb.InstallDevice( timer );
 
 		// Generating warhead
 		BSEntry onTimer = timeBomb.Blueprint.CreateEntry( "OnTimerComplete", timer );
@@ -345,8 +347,8 @@ public class ExampleSetup : MonoBehaviour {
 		DSteerModule steerer = new DSteerModule() { EntityName = "steerer" };
 		
 
-		heatSeeker.IntegrateDevice( ranger );
-		heatSeeker.IntegrateDevice( steerer );
+		heatSeeker.InstallDevice( ranger );
+		heatSeeker.InstallDevice( steerer );
 
 
 		BSSequence onTargetFound = heatSeeker.Blueprint.CreateSequence();
@@ -375,9 +377,9 @@ public class ExampleSetup : MonoBehaviour {
 		DTradeComputer trader = new DTradeComputer(){ EntityName = "trader"} ;
 
 
-		motherBase.IntegratedDevice.IntegrateDevice( ranger );
-		motherBase.IntegratedDevice.IntegrateDevice( magnet );
-		motherBase.IntegratedDevice.IntegrateDevice( trader );
+		motherBase.IntegratedDevice.InstallDevice( ranger );
+		motherBase.IntegratedDevice.InstallDevice( magnet );
+		motherBase.IntegratedDevice.InstallDevice( trader );
 
 
 		BSBranch rootDecision = motherBase.IntegratedDevice.Blueprint.CreateBranch();
@@ -415,9 +417,9 @@ public class ExampleSetup : MonoBehaviour {
 				markers[3].transform.position 
 			}};
 
-		navigator.IntegrateDevice( engine );
-		navigator.IntegrateDevice( steerer );
-		navigator.IntegrateDevice( patrol );
+		navigator.InstallDevice( engine );
+		navigator.InstallDevice( steerer );
+		navigator.InstallDevice( patrol );
 
 
 		BSEntry entryPoint = navigator.Blueprint.CreateEntry( "MoveTo", navigator );

@@ -95,6 +95,22 @@ public class DPatrolModule : Device
 		AddQuery( "CurrentNavigationPosition", CurrentNavigationPosition );
 	}
 
+	public override void OnDeviceUninstalled()
+	{
+		RemoveEvent( "TargetPosition" );
+		RemoveEvent( "TargetReached" );
+		
+		RemoveAction( "ReachTarget" );
+		RemoveAction( "SetNextPoint" );
+		RemoveAction( "GetWaypointsList" );
+		RemoveAction( "SetTargetPosition" );
+		RemoveAction( "SetNextNavigationPoint");
+		
+		RemoveQuery( "CurrentTarget" );
+		RemoveQuery( "GetWaypoints" );
+		RemoveQuery( "CurrentNavigationPosition" );
+	}
+
 	public override void Initialize()
 	{
 

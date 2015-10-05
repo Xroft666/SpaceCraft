@@ -28,7 +28,7 @@ public class Task
 		taskAction = evt;
 		taskData = qry;
 
-		Name = evt.Method.Name;
+		Name = evt == null ? "missing" : evt.Method.Name;
 	}
 
 	public void ExecuteImmediately()
@@ -38,11 +38,16 @@ public class Task
 
 	public IEnumerator UnpackExecution()
 	{
-	//	EventArgs args = null;
-	//	if( taskData != null )
-	//		args = taskData.Invoke();
-		
-		return taskAction.Invoke( taskData);//args );
+		if( taskAction == null )
+			return DummyExecution();
+
+		return taskAction.Invoke( taskData);
+	}
+
+	public IEnumerator DummyExecution()
+	{
+		Debug.Log("Device function is missing!");
+		yield return null;
 	}
 }
 

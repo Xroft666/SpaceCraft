@@ -39,6 +39,14 @@ public class DEngine : Device
 		AddAction("MoveForward", MoveForward );
 	}
 
+	public override void OnDeviceUninstalled()
+	{
+		base.OnDeviceUninstalled();
+		
+		RemoveAction("MoveForward" );
+	}
+
+
 	public override void Initialize()
 	{
 //		m_rigidbody = m_containerAttachedTo.View.gameObject.GetComponent<Rigidbody2D>();

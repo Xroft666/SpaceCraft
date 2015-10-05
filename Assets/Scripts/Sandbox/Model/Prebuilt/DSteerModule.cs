@@ -17,7 +17,7 @@ public class DSteerModule : Device
 
 	#region device's functions
 
-	public IEnumerator SteerTowards( DeviceQuery qry )//EventArgs args )
+	public IEnumerator SteerTowards( DeviceQuery qry )
 	{
 		ArgsObject pArgs = qry.Invoke() as ArgsObject;
 
@@ -74,6 +74,14 @@ public class DSteerModule : Device
 		AddEvent("OnSteerComplete", null );
 
 		AddAction("SteerTowards", SteerTowards );
+	}
+
+	public override void OnDeviceUninstalled()
+	{
+		RemoveEvent("OnSteerStart" );
+		RemoveEvent("OnSteerComplete" );
+		
+		RemoveAction("SteerTowards" );
 	}
 
 	public override void Initialize()

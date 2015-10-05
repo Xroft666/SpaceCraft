@@ -100,12 +100,22 @@ public class DMagnet : Device
 	{
 		AddAction("Attract", Attract );
 		AddAction("Repulse", Repulse);
-//		AddAction("RemoveTarget", Repulse);
 
 		AddAction("Load", Load );
 		AddAction("UnloadAll", UnloadAll );
 		
 		AddCheck("IsStorageble", IsStorageble);
+	}
+
+	public override void OnDeviceUninstalled()
+	{
+		RemoveAction("Attract" );
+		RemoveAction("Repulse");
+		
+		RemoveAction("Load" );
+		RemoveAction("UnloadAll" );
+		
+		RemoveCheck("IsStorageble");
 	}
 
 	public override void Initialize()

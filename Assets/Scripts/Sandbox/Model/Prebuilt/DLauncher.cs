@@ -70,6 +70,11 @@ public class DLauncher : Device
 		AddAction("Fire", Fire );
 	}
 
+	public override void OnDeviceUninstalled()
+	{
+		RemoveAction("Fire" );
+	}
+
 	public override void Initialize()
 	{
 

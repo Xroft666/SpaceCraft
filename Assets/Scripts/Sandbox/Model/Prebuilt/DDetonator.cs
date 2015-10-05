@@ -49,7 +49,12 @@ public class DDetonator : Device
 	public override void OnDeviceInstalled()
 	{
 		AddAction("Detonate", DetonateExplosives );
-	}	
+	}
+
+	public override void OnDeviceUninstalled()
+	{
+		RemoveAction("Detonate");
+	}
 
 	public override void Initialize()
 	{

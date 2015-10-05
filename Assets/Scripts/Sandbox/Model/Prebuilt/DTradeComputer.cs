@@ -51,6 +51,12 @@ public class DTradeComputer : Device
 		AddAction("UnloadItemsTo", UnloadItemsTo);
 	}
 
+	public override void OnDeviceUninstalled()
+	{
+		RemoveAction("LoadItemsFrom");
+		RemoveAction("UnloadItemsTo");
+	}
+
 	public override void Initialize()
 	{
 

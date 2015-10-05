@@ -49,6 +49,12 @@ namespace SpaceSandbox
 				device.AssignContainer( container );
 		}
 
+		public void UnassignContainer( )
+		{
+			m_containerAttachedTo = null;
+			foreach( Device device in m_integratedDevices )
+				device.UnassignContainer( );
+		}
 
 		public void GetCompleteActionsList( string hierarchy, ref Dictionary<string, DeviceAction> functionsList )
 		{
@@ -166,10 +172,13 @@ namespace SpaceSandbox
 
 		public DeviceAction GetFunction ( string name )
 		{
+			if( !m_actions.ContainsKey(name) )
+				return null;
+
 			return m_actions[name];
 		}
 
-		public void RemoveFunction ( string name )
+		public void RemoveAction ( string name )
 		{
 			m_actions.Remove( name );
 		}
@@ -182,8 +191,8 @@ namespace SpaceSandbox
 		
 		public DeviceQuery GetQuery ( string name )
 		{
-			if( string.IsNullOrEmpty( name ) )
-			   return null;
+			if( !m_queries.ContainsKey(name) )
+				return null;
 
 			return m_queries[name];
 		}
@@ -204,6 +213,9 @@ namespace SpaceSandbox
 
 		public DeviceEvent GetEvent( string name )
 		{
+			if( !m_events.ContainsKey(name) )
+				return null;
+
 			return m_events[name];
 		}
 		
@@ -221,6 +233,9 @@ namespace SpaceSandbox
 
 		public DeviceCheck GetCheck( string name )
 		{
+			if( !m_checks.ContainsKey(name) )
+				return null;
+
 			return m_checks[name];
 		}
 		
@@ -230,12 +245,7 @@ namespace SpaceSandbox
 		}
 
 
-		/// <summary>
-		/// Installs the equipment. Sets up a list of devices at one go.
-		/// And then initializes them
-		/// </summary>
-		/// <param name="devices">Devices. List of devices</param>
-		public void IntegrateDevices( List<Device> devices )
+		public void InstallDevices( List<Device> devices )
 		{
 			m_integratedDevices.AddRange( devices );
 			foreach( Device device in devices )
@@ -245,15 +255,18 @@ namespace SpaceSandbox
 			}
 		}
 
-		/// <summary>
-		/// Installs the device. Installs a single device and initializes it
-		/// </summary>
-		/// <param name="device">Device.</param>
-		public void IntegrateDevice( Device device )
+		public void InstallDevice( Device device )
 		{
 			device.AssignContainer( m_containerAttachedTo );
 			m_integratedDevices.Add( device );
 			device.OnDeviceInstalled();
+		}
+
+		public void UninstallDevice( Device device )
+		{
+			device.UnassignContainer( );
+			m_integratedDevices.Remove( device );
+			device.OnDeviceUninstalled();
 		}
 
 		public List<Device> GetDevicesList()
@@ -305,6 +318,12 @@ namespace SpaceSandbox
 		{
 			AddAction("ActivateDevice", ActivateDevice );
 			AddAction("DeactivateDevice", DeactivateDevice );
+		}
+
+		public virtual void OnDeviceUninstalled()
+		{
+			RemoveAction("ActivateDevice" );
+			RemoveAction("DeactivateDevice" );
 		}
 
 		public virtual void Initialize() 
