@@ -8,11 +8,10 @@ namespace BehaviourScheme
 {
 	public class BSQuery : BSNode 
 	{
-		//public SpaceSandbox.DeviceQuery m_query;
 		public Device m_device;
 		public string m_queryName;
 
-		public BSAction connectedActionNode;
+		public BSNode connectedNode;
 
 	}
 }

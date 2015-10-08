@@ -17,6 +17,8 @@ public class Ship : Container
 
 		m_integratedDevice.AddEvent("RootEntry", null );
 		m_integratedDevice.Blueprint.m_entryPoint = m_integratedDevice.Blueprint.CreateEntry( "RootEntry", m_integratedDevice );
+
+		m_integratedDevice.m_isActive = false;
 	}
 
 	public Ship( Ship otherShip )

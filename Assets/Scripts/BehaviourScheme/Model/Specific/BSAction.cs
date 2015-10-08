@@ -17,12 +17,12 @@ namespace BehaviourScheme
 		public void ConnectToQuery( BSQuery query )
 		{
 			m_queryNode = query;
-			query.connectedActionNode = this;
+			query.connectedNode = this;
 		}
 
 		public void DisconnectFromQuery()
 		{
-			m_queryNode.connectedActionNode = null;
+			m_queryNode.connectedNode = null;
 			m_queryNode = null;
 		}
 

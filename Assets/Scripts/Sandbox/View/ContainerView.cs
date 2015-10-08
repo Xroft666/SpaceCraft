@@ -19,7 +19,7 @@ public class ContainerView : MonoBehaviour, IPointerClickHandler, ISelectHandler
 
 	private void Start()
 	{
-		m_contain.Initialize();
+	//	m_contain.Initialize();
 
 #if !UNITY_EDITOR
 		GameObject marker = GameObject.CreatePrimitive( PrimitiveType.Cube );

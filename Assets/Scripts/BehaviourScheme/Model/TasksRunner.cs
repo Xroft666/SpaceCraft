@@ -67,5 +67,17 @@ public class TasksRunner
 			executingCommandList.Dequeue();
 		}
 	}
+
+	public void KillTasks()
+	{
+		if( m_execution != null )
+			m_execution.kill();
+
+		if( onInitialize != null )
+			onInitialize.Invoke(new List<string>());
+
+		executingCommandList.Clear();
+		scheduledTaskList.Clear();
+	}
 }
 

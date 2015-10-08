@@ -43,6 +43,12 @@ public class DLauncher : Device
 
 			projectile.transform.FindChild("body").localScale = new Vector3(0.25f, 1f, 1f);
 
+			Ship containerController = projectile.m_contain as Ship;
+			if(containerController != null )
+			{
+				containerController.IntegratedDevice.m_isActive = true;
+				containerController.IntegratedDevice.Initialize();
+			}
 		}
 
 		if( projectileEntity != null )

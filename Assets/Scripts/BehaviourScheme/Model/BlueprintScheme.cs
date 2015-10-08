@@ -67,7 +67,7 @@ namespace SpaceSandbox
 		{
 			DeviceCheck check = device.GetCheck(checkName);
 			
-			BSCheck node = new BSCheck() { m_scheme = this, m_name = "Predecate", m_type = checkName, m_check = check };
+			BSCheck node = new BSCheck() { m_scheme = this, m_name = "Predecate", m_type = checkName, m_device = device, m_checkName = checkName };
 			m_nodes.Add(node);
 			return node;
 		}
@@ -89,9 +89,9 @@ namespace SpaceSandbox
 			return node;
 		}
 
-		public BSBranch CreateBranch( string name = "")
+		public BSSelect CreateBranch( string name = "")
 		{
-			BSBranch node = new BSBranch() { m_scheme = this, m_type = "Selection", m_name = name };
+			BSSelect node = new BSSelect() { m_scheme = this, m_type = "Selection", m_name = name };
 
 			m_nodes.Add(node);
 			return node;

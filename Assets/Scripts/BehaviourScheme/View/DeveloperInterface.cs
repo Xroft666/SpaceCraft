@@ -50,27 +50,39 @@ public class DeveloperInterface : MonoBehaviour
 
 	public void RunButtonHandler()
 	{
-		Job.make( selectedShip.IntegratedDevice.ActivateDevice(null), true );
+		//Job.make( selectedShip.IntegratedDevice.ActivateDevice(null), true );
+
+		selectedShip.IntegratedDevice.m_isActive = true;
+		selectedShip.IntegratedDevice.Initialize();
 	}
 	
 	public void StopButtonHandler()
 	{
-		Job.make( selectedShip.IntegratedDevice.DeactivateDevice(null), true );
+		//Job.make( selectedShip.IntegratedDevice.DeactivateDevice(null), true );
+
+		selectedShip.IntegratedDevice.m_isActive = false;
+		selectedShip.IntegratedDevice.Blueprint.tasksRunner.KillTasks();
+
+		selectedShip.IntegratedDevice.Destroy();
 	}
 
 	public void InitializeInteface( Ship selectedContainer )
 	{
+		selectedShip = selectedContainer;
+
 		Device upMostDevice = selectedContainer.IntegratedDevice;
 
 		InitializeActions(upMostDevice);
 		InitializeEvents(upMostDevice);
+		InitializeQueries(upMostDevice);
+
 		InitializeControls(upMostDevice);
 
 		InitializeCargo(selectedContainer);
 		InitializeInstalledDevices(selectedContainer);
-		InitializeQueries(selectedContainer);
 
-		selectedShip = selectedContainer;
+
+
 
 
 		m_blueprintView.InitializeView(upMostDevice);
@@ -83,7 +95,8 @@ public class DeveloperInterface : MonoBehaviour
 		Dictionary<string, DeviceAction> actions = new Dictionary<string, DeviceAction>();
 		device.GetCompleteActionsList("", ref actions);
 
-		FillUpContent( new List<string>(actions.Keys), m_actionsScrollView.content, "f" );
+		FillUpContent( new List<string>(actions.Keys), m_actionsScrollView.content, device);
+
 	}
 
 	private void InitializeEvents(Device device)
@@ -93,7 +106,63 @@ public class DeveloperInterface : MonoBehaviour
 		Dictionary<string, DeviceEvent> events = new Dictionary<string, DeviceEvent>();
 		device.GetCompleteEventsList("", ref events);
 
-		FillUpContent( new List<string>(events.Keys), m_eventsScrollView.content, "e" );
+		FillUpContent( new List<string>(events.Keys), m_eventsScrollView.content, device );
+	}
+
+	private void InitializeQueries( Device device )
+	{
+		CleanContent( m_queriesScrollView.content );
+		
+		Dictionary<string, DeviceQuery> queries = new Dictionary<string, DeviceQuery>();
+		device.GetCompleteQueriesList("", ref queries);
+		
+		Dictionary<string, DeviceCheck> checks = new Dictionary<string, DeviceCheck>();
+		device.GetCompleteChecksList("", ref checks);
+		
+	//	List<string> queryNames = new List<string>();
+	//	queryNames.AddRange(new List<string>(queries.Keys));
+	//	queryNames.AddRange(new List<string>(checks.Keys));
+		
+//		FillUpContent( queryNames, m_queriesScrollView.content, device);
+
+		int actionsNum = queries.Keys.Count + checks.Keys.Count;
+		int count = -actionsNum / 2;
+		
+		m_queriesScrollView.content.sizeDelta = new Vector2(m_queriesScrollView.content.sizeDelta.x, actionsNum * 20f);
+		
+		foreach( string item in queries.Keys )
+		{
+			string[] descriptor = item.Split('.');
+			
+			string name = descriptor[1];
+			string path = descriptor[0];
+			string description = "";
+			
+			DraggableItem draggableItem = CreateButton(m_queriesScrollView.content, name, Vector3.up * count * m_buttonsDistance);
+			
+			draggableItem.DeviceContainment = device.GetInternalDevice(path);
+			draggableItem.MethodName = name;
+			draggableItem.queryType = DraggableItem.QueryType.Query;
+			
+			count++;
+		}
+
+		foreach( string item in checks.Keys )
+		{
+			string[] descriptor = item.Split('.');
+			
+			string name = descriptor[1];
+			string path = descriptor[0];
+			string description = "";
+			
+			DraggableItem draggableItem = CreateButton(m_queriesScrollView.content, name, Vector3.up * count * m_buttonsDistance);
+			
+			draggableItem.DeviceContainment = device.GetInternalDevice(path);
+			draggableItem.MethodName = name;
+			draggableItem.queryType = DraggableItem.QueryType.Check;
+
+			count++;
+		}
 	}
 
 	private void InitializeControls(Device device)
@@ -102,10 +171,10 @@ public class DeveloperInterface : MonoBehaviour
 
 		m_controlsScrollView.content.sizeDelta = new Vector2(m_controlsScrollView.content.sizeDelta.x, 5 * m_buttonsDistance);
 
-		for( int i = 0; i < 5; i++ )
+		for( int i = 0; i < 4; i++ )
 		{
 			DraggableItem item = CreateButton(m_controlsScrollView.content, ((DraggableItem.ControlType) i).ToString(), Vector3.up * ( -40f + 20f * i ));
-			item.IsControlNode = true;
+
 			item.controlType = (DraggableItem.ControlType) i;
 		}
 	}
@@ -157,37 +226,26 @@ public class DeveloperInterface : MonoBehaviour
 		}
 	}
 
-	private void InitializeQueries( Ship ship )
-	{
-		CleanContent( m_queriesScrollView.content );
-
-		Dictionary<string, DeviceQuery> queries = new Dictionary<string, DeviceQuery>();
-		ship.IntegratedDevice.GetCompleteQueriesList("", ref queries);
-
-		Dictionary<string, DeviceCheck> checks = new Dictionary<string, DeviceCheck>();
-		ship.IntegratedDevice.GetCompleteChecksList("", ref checks);
-
-		List<string> queryNames = new List<string>();
-		queryNames.AddRange(new List<string>(queries.Keys));
-		queryNames.AddRange(new List<string>(checks.Keys));
-
-		FillUpContent( queryNames, m_queriesScrollView.content, "q" );
-	}
-
-	private void FillUpContent( List<string> content, RectTransform contentTransform, string iconName )
+	private void FillUpContent( List<string> content, RectTransform contentTransform, Device device )
 	{
 		int actionsNum = content.Count;
 		int count = -actionsNum / 2;
-
+		
 		contentTransform.sizeDelta = new Vector2(contentTransform.sizeDelta.x, actionsNum * 20f);
-
+		
 		foreach( string item in content )
 		{
-			string name = iconName;
-			string path = item;
+			string[] descriptor = item.Split('.');
+			
+			string name = descriptor[1];
+			string path = descriptor[0];
 			string description = "";
-
-			CreateButton(contentTransform, path, Vector3.up * count * m_buttonsDistance);
+			
+			DraggableItem draggableItem = CreateButton(contentTransform, name, Vector3.up * count * m_buttonsDistance);
+			
+			draggableItem.DeviceContainment = device.GetInternalDevice(path);
+			draggableItem.MethodName = name;
+			
 			count++;
 		}
 	}
@@ -256,13 +314,44 @@ public class DeveloperInterface : MonoBehaviour
 
 	public void OnActionsToBlueprintDropped( PointerEventData eventData)
 	{
-
+		DraggableItem draggableItem = eventData.selectedObject.GetComponent<DraggableItem>();
+		
+		NodeView node = m_blueprintView.CreateAction( draggableItem.DeviceContainment, draggableItem.MethodName );
+		
+		Vector2 locPos;
+		RectTransformUtility.ScreenPointToLocalPointInRectangle( m_blueprintView.transform as RectTransform, eventData.position, UIController.s_UICamera, out locPos);
+		
+		node.transform.localPosition = locPos;
 	}
 
 	public void OnEventsToBlueprintDropped( PointerEventData eventData)
 	{
-	
+		DraggableItem draggableItem = eventData.selectedObject.GetComponent<DraggableItem>();
 
+		NodeView node = m_blueprintView.CreateEntry( draggableItem.DeviceContainment, draggableItem.MethodName );
+
+		Vector2 locPos;
+		RectTransformUtility.ScreenPointToLocalPointInRectangle( m_blueprintView.transform as RectTransform, eventData.position, UIController.s_UICamera, out locPos);
+		
+		node.transform.localPosition = locPos;
+	}
+
+	public void OnQueriesToBlueprintDropped(PointerEventData eventData)
+	{
+		DraggableItem draggableItem = eventData.selectedObject.GetComponent<DraggableItem>();
+		
+		NodeView node = null;
+
+		if( draggableItem.queryType == DraggableItem.QueryType.Query )
+			node = m_blueprintView.CreateQuery( draggableItem.DeviceContainment, draggableItem.MethodName );
+		else
+			node = m_blueprintView.CreateCheck( draggableItem.DeviceContainment, draggableItem.MethodName );
+
+		Vector2 locPos;
+		RectTransformUtility.ScreenPointToLocalPointInRectangle( m_blueprintView.transform as RectTransform, eventData.position, UIController.s_UICamera, out locPos);
+		
+		node.transform.localPosition = locPos;
+		
 	}
 
 	public void OnControlsToBlueprintDropped(PointerEventData eventData)
@@ -273,9 +362,6 @@ public class DeveloperInterface : MonoBehaviour
 
 		switch(draggableItem.controlType)
 		{
-		case DraggableItem.ControlType.Entry:
-			node = m_blueprintView.CreateEntry();
-			break;
 		case DraggableItem.ControlType.Evaluation:
 			node = m_blueprintView.CreateEvaluate();
 			break;
@@ -296,11 +382,6 @@ public class DeveloperInterface : MonoBehaviour
 		node.transform.localPosition = locPos;
 	}
 
-	public void OnQueriesToBlueprintDropped(PointerEventData eventData)
-	{
-	
-
-	}
 
 	public void OnCargoToInstalledDropped(PointerEventData eventData, DraggableItemsScrollRect scrollView)
 	{
@@ -317,7 +398,7 @@ public class DeveloperInterface : MonoBehaviour
 
 			InitializeActions(selectedShip.IntegratedDevice);
 			InitializeEvents(selectedShip.IntegratedDevice);
-			InitializeQueries(selectedShip);
+			InitializeQueries(selectedShip.IntegratedDevice);
 
 			scrollView.AssignObject(eventData.selectedObject);
 			
@@ -333,6 +414,14 @@ public class DeveloperInterface : MonoBehaviour
 		{
 			selectedShip.IntegratedDevice.UninstallDevice( draggableItem.DeviceContainment );
 			selectedShip.m_cargo.AddItem( draggableItem.DeviceContainment );
+
+			CleanContent(m_actionsScrollView.content);
+			CleanContent(m_eventsScrollView.content);
+			CleanContent(m_queriesScrollView.content);
+			
+			InitializeActions(selectedShip.IntegratedDevice);
+			InitializeEvents(selectedShip.IntegratedDevice);
+			InitializeQueries(selectedShip.IntegratedDevice);
 
 			scrollView.AssignObject(eventData.selectedObject);
 

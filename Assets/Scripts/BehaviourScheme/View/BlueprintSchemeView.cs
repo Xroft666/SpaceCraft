@@ -87,9 +87,9 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 		Vector2 localOffset = new Vector2( sublingsCount == 1 ? 0f : ((subling / (float)(sublingsCount - 1)) - 0.5f), 1f );
 
 		BSQuery query = current as BSQuery;
-		if( query != null && query.connectedActionNode != null)
+		if( query != null && query.connectedNode != null)
 		{
-			globalOffset = query.connectedActionNode.m_view.globalOffset;
+			globalOffset = query.connectedNode.m_view.globalOffset;
 			localOffset = Vector2.right * -2.0f;
 		}
 		
@@ -182,6 +182,9 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 		if( eventData.selectedObject == null )
 			return;
 
+		if( DraggableItemsScrollRect.s_ViewDraggedFrom == null )
+			return;
+
 		if( !m_onDropHandlers.ContainsKey( DraggableItemsScrollRect.s_ViewDraggedFrom ) )
 			return;
 		
@@ -230,16 +233,28 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 
 	#region Elements section butttons callback
 
-	//public NodeView CreateAction()
-	//{
-	//	BSNode newNode = m_device.Blueprint.CreateAction
-
-	//}
-	
-	public NodeView CreateEntry()
+	public NodeView CreateAction(Device device, string name)
 	{
-		BSNode newNode = null;//m_device.Blueprint.CreateEntry(
-		return CreateNode("Entry", newNode );
+		BSNode newNode = m_device.Blueprint.CreateAction( name, device );
+		return CreateNode(name, newNode );
+	}
+	
+	public NodeView CreateEntry( Device device, string name )
+	{
+		BSNode newNode = m_device.Blueprint.CreateEntry( name, device );
+		return CreateNode(name, newNode );
+	}
+
+	public NodeView CreateQuery( Device device, string name )
+	{
+		BSNode newNode = m_device.Blueprint.CreateQuery( name, device );
+		return CreateNode(name, newNode );
+	}
+
+	public NodeView CreateCheck( Device device, string name )
+	{
+		BSNode newNode = m_device.Blueprint.CreatePredecate( name, device );
+		return CreateNode(name, newNode );
 	}
 	
 	//public NodeView CreateExit()
@@ -321,7 +336,7 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 		DraggableItem item = newAction.AddComponent<DraggableItem>();
 
 		NodeView nodeView = newAction.AddComponent<NodeView>();
-		nodeView.Node = node;
+		nodeView.InitializeNode( node );
 		node.m_view = nodeView;
 
 

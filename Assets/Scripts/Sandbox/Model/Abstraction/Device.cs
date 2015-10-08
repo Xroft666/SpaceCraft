@@ -141,7 +141,8 @@ namespace SpaceSandbox
 			Device device = this;
 			bool existenceFlag = true;
 
-			string[] hierarchy = path.Split('/');
+			string[] hierarchy = path.Split(new char[]{'/'}, StringSplitOptions.RemoveEmptyEntries);
+
 			for( int i = 0; i < hierarchy.Length; i++ )
 			{
 				existenceFlag = false;
@@ -289,20 +290,20 @@ namespace SpaceSandbox
 
 		#region Common events and function
 
-		public virtual IEnumerator ActivateDevice( DeviceQuery qry )//EventArgs args )
+		public virtual IEnumerator ActivateDevice( DeviceQuery qry )
 		{
 			m_isActive = true;
 
 			foreach( Device device in m_integratedDevices )
-				yield return Job.make(device.ActivateDevice( qry /*args*/ ) ).startAsCoroutine();
+				yield return Job.make(device.ActivateDevice( qry ) ).startAsCoroutine();
 		}
 
-		public virtual IEnumerator DeactivateDevice( DeviceQuery qry )//EventArgs args )
+		public virtual IEnumerator DeactivateDevice( DeviceQuery qry )
 		{
 			m_isActive = false;
 			
 			foreach( Device device in m_integratedDevices )
-				yield return Job.make( device.DeactivateDevice( qry/*args*/) ).startAsCoroutine();
+				yield return Job.make( device.DeactivateDevice( qry) ).startAsCoroutine();
 		}
 
 		#endregion

@@ -2,15 +2,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+using SpaceSandbox;
+
 namespace BehaviourScheme
 {
 	public class BSCheck : BSNode 
 	{
-		public SpaceSandbox.DeviceCheck m_check;
+		public Device m_device;
+		public string m_checkName;
 
-		public override void Traverse()
-		{
+		public BSNode connectedNode;
 
-		}
 	}
 }
