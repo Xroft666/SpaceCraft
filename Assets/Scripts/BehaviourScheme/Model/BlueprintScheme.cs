@@ -23,9 +23,10 @@ namespace SpaceSandbox
 		public BSEntry m_entryPoint;
 		public TasksRunner tasksRunner = new TasksRunner();
 
-		public void RunLogicTree( DeviceEvent evt )
+		public void RunLogicTree( DeviceTrigger evt )
 		{
-			evt();
+			if( evt != null )
+				evt();
 		}
 
 		public void FireEvent( Device actionDevice, string actionName, Device queryDevice, string queryName )
@@ -75,15 +76,25 @@ namespace SpaceSandbox
 		public BSEntry CreateEntry( string eventName, Device device)
 		{
 			BSEntry node = new BSEntry() { m_scheme = this, m_name = "Entry", m_type = eventName };
-			device.AddEvent(eventName, node.Traverse);
+			device.AddEntry( eventName, node.Traverse );
 
+			m_nodes.Add(node);
+			return node;
+		}
+
+		public BSEntry CreateTrigger(string eventName, Device device)
+		{
+			BSEntry node = new BSEntry() { m_scheme = this, m_name = "Entry", m_type = eventName };
+			device.AddTrigger( eventName, node.Traverse );
+			
 			m_nodes.Add(node);
 			return node;
 		}
 		
 		public BSExit CreateExit( string eventName, Device device)
 		{
-			BSExit node = new BSExit() { m_scheme = this, m_entry = device.GetEvent(eventName), m_name = "Function", m_type = eventName };
+			DeviceTrigger entry = device.GetEntry(eventName);
+			BSExit node = new BSExit() { m_scheme = this, m_entry = entry, m_name = "Exit", m_type = eventName };
 
 			m_nodes.Add(node);
 			return node;

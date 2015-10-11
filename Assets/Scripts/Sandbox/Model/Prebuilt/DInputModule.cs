@@ -17,24 +17,24 @@ public class DInputModule : Device
 
 	public override void OnDeviceInstalled()
 	{
-		AddEvent( "OnInputPressed", null );
-		AddEvent( "OnInputReleased", null );
-		AddEvent( "OnInputHeld", null );
+		AddTrigger( "OnInputPressed", null );
+		AddTrigger( "OnInputReleased", null );
+		AddTrigger( "OnInputHeld", null );
 
-		AddEvent( "OnMouseScreenPosition", null );
-		AddEvent( "OnMouseWorldPosition", null );
+		AddTrigger( "OnMouseScreenPosition", null );
+		AddTrigger( "OnMouseWorldPosition", null );
 
 		AddQuery( "MouseWorldPosition", MouseWorldPosition );
 	}
 
 	public override void OnDeviceUninstalled()
 	{
-		RemoveEvent( "OnInputPressed" );
-		RemoveEvent( "OnInputReleased" );
-		RemoveEvent( "OnInputHeld" );
+		RemoveTrigger( "OnInputPressed" );
+		RemoveTrigger( "OnInputReleased" );
+		RemoveTrigger( "OnInputHeld" );
 		
-		RemoveEvent( "OnMouseScreenPosition");
-		RemoveEvent( "OnMouseWorldPosition" );
+		RemoveTrigger( "OnMouseScreenPosition");
+		RemoveTrigger( "OnMouseWorldPosition" );
 		
 		RemoveQuery( "MouseWorldPosition" );
 	}
@@ -44,19 +44,19 @@ public class DInputModule : Device
 		// Keyboard / mouse keys events
 		if( Input.GetKeyDown(m_keyCode) )
 		{
-			DeviceEvent onPressed = GetEvent("OnInputPressed");
+			DeviceTrigger onPressed = GetTrigger("OnInputPressed");
 			if( onPressed != null )
 				onPressed();
 		}
 		if( Input.GetKeyUp(m_keyCode) )
 		{
-			DeviceEvent onReleased = GetEvent("OnInputReleased");
+			DeviceTrigger onReleased = GetTrigger("OnInputReleased");
 			if( onReleased != null )
 				onReleased();
 		}
 		if( Input.GetKey(m_keyCode) )
 		{
-			DeviceEvent onHeld = GetEvent("OnInputHeld");
+			DeviceTrigger onHeld = GetTrigger("OnInputHeld");
 			if( onHeld != null )
 				onHeld();
 		}

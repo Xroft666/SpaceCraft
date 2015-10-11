@@ -19,8 +19,8 @@ public class DRanger : Device
 
 	public override void OnDeviceInstalled()
 	{
-		AddEvent( "OnRangerEntered", null );
-		AddEvent( "OnRangerEscaped", null );
+		AddTrigger( "OnRangerEntered", null );
+		AddTrigger( "OnRangerEscaped", null );
 
 		AddAction("DesignateClosestTarget", DesignateClosestTarget);	
 		AddCheck("IsAnyTarget", IsAnyTarget );	
@@ -30,8 +30,8 @@ public class DRanger : Device
 
 	public override void OnDeviceUninstalled()
 	{
-		RemoveEvent( "OnRangerEntered" );
-		RemoveEvent( "OnRangerEscaped" );
+		RemoveTrigger( "OnRangerEntered" );
+		RemoveTrigger( "OnRangerEscaped" );
 		
 		RemoveAction("DesignateClosestTarget");	
 		RemoveCheck("IsAnyTarget" );	
@@ -146,7 +146,7 @@ public class DRanger : Device
 
 			if(  m_containerAttachedTo.View.m_owner == 0 || othersView.m_owner != m_containerAttachedTo.View.m_owner )
 			{
-				DeviceEvent onEnter = GetEvent("OnRangerEntered");
+				DeviceTrigger onEnter = GetTrigger("OnRangerEntered");
 				if( onEnter != null )
 					//m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onEnter, null)
 					//ScheduleEvent( onEnter, null);
@@ -174,7 +174,7 @@ public class DRanger : Device
 				return;
 			}
 
-			DeviceEvent onExit = GetEvent("OnRangerEscaped");
+			DeviceTrigger onExit = GetTrigger("OnRangerEscaped");
 			if( onExit != null )
 			//	m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onExit, null);
 			//	ScheduleEvent( onExit, null);

@@ -15,7 +15,7 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 
 	#region data references
 
-	private Device m_device;
+	public Device m_device;
 	private NodeView m_selectedNode;
 
 	private RectTransform blueprintRect;
@@ -42,14 +42,10 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 
 
 //		ConflictsTraverse(device.Blueprint.m_entryPoint);
-		GenerateConnections(device.Blueprint.m_entryPoint);
-
-
-
-		Rect box = new Rect();
-		GetBoundingBox(device.Blueprint.m_entryPoint, ref box); 
-
-		blueprintRect.sizeDelta = new Vector3(box.width * horizDistance * 1.5f, -box.height * vertDistance * 5f + box.height * vertDistance * 2.5f);
+//		GenerateConnections(device.Blueprint.m_entryPoint);
+//		Rect box = new Rect();
+//		GetBoundingBox(device.Blueprint.m_entryPoint, ref box); 
+//		blueprintRect.sizeDelta = new Vector3(box.width * horizDistance * 1.5f, -box.height * vertDistance * 5f + box.height * vertDistance * 2.5f);
 	
 	}
 
@@ -238,10 +234,22 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 		BSNode newNode = m_device.Blueprint.CreateAction( name, device );
 		return CreateNode(name, newNode );
 	}
+
+	public NodeView CreateTrigger( Device device, string name )
+	{
+		BSNode newNode = m_device.Blueprint.CreateTrigger( name, device );
+		return CreateNode(name, newNode );
+	}
 	
 	public NodeView CreateEntry( Device device, string name )
 	{
 		BSNode newNode = m_device.Blueprint.CreateEntry( name, device );
+		return CreateNode(name, newNode );
+	}
+
+	public NodeView CreateExit( Device device, string name )
+	{
+		BSNode newNode = m_device.Blueprint.CreateExit( name, device );
 		return CreateNode(name, newNode );
 	}
 

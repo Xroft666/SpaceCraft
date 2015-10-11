@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -15,8 +15,8 @@ public class Ship : Container
 
 		m_integratedDevice.AddCheck( "IsCargoFull", m_cargo.IsCargoFull );
 
-		m_integratedDevice.AddEvent("RootEntry", null );
-		m_integratedDevice.Blueprint.m_entryPoint = m_integratedDevice.Blueprint.CreateEntry( "RootEntry", m_integratedDevice );
+		m_integratedDevice.AddTrigger("RootEntry", null );
+		//m_integratedDevice.Blueprint.m_entryPoint = m_integratedDevice.Blueprint.CreateEntry( "RootEntry", m_integratedDevice );
 
 		m_integratedDevice.m_isActive = false;
 	}

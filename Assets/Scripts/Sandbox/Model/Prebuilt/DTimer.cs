@@ -53,13 +53,13 @@ public class DTimer : Device
 
 	public override void OnDeviceInstalled()
 	{
-		AddEvent( "OnTimerComplete", null );
+		AddTrigger( "OnTimerComplete", null );
 		AddAction("ResetTimer", ResetTimer );
 	}
 
 	public override void OnDeviceUninstalled()
 	{
-		RemoveEvent("OnTimerComplete");
+		RemoveTrigger("OnTimerComplete");
 		RemoveAction("ResetTimer");
 	}
 
@@ -88,7 +88,7 @@ public class DTimer : Device
 		{
 			m_fired = true;
 
-			DeviceEvent timerEvent = GetEvent("OnTimerComplete");
+			DeviceTrigger timerEvent = GetTrigger("OnTimerComplete");
 			if( timerEvent != null )
 				timerEvent();
 

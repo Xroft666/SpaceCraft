@@ -21,7 +21,7 @@ public class DSteerModule : Device
 	{
 		ArgsObject pArgs = qry.Invoke() as ArgsObject;
 
-		DeviceEvent onSteerStart = GetEvent("OnSteerStart");
+		DeviceTrigger onSteerStart = GetTrigger("OnSteerStart");
 		if( onSteerStart != null )
 			onSteerStart();
 
@@ -58,7 +58,7 @@ public class DSteerModule : Device
 			yield return null;
 		}
 
-		DeviceEvent onSteerComplete = GetEvent("OnSteerComplete");
+		DeviceTrigger onSteerComplete = GetTrigger("OnSteerComplete");
 		if( onSteerComplete != null )
 			onSteerComplete();
 	}
@@ -70,16 +70,16 @@ public class DSteerModule : Device
 
 	public override void OnDeviceInstalled()
 	{
-		AddEvent("OnSteerStart", null );
-		AddEvent("OnSteerComplete", null );
+		AddTrigger("OnSteerStart", null );
+		AddTrigger("OnSteerComplete", null );
 
 		AddAction("SteerTowards", SteerTowards );
 	}
 
 	public override void OnDeviceUninstalled()
 	{
-		RemoveEvent("OnSteerStart" );
-		RemoveEvent("OnSteerComplete" );
+		RemoveTrigger("OnSteerStart" );
+		RemoveTrigger("OnSteerComplete" );
 		
 		RemoveAction("SteerTowards" );
 	}

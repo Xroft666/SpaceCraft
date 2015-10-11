@@ -32,7 +32,7 @@ public class DPatrolModule : Device
 			yield return null;
 		}
 
-		DeviceEvent reached = GetEvent("TargetReached");
+		DeviceTrigger reached = GetTrigger("TargetReached");
 		if( reached != null )
 			reached();
 	}
@@ -81,8 +81,8 @@ public class DPatrolModule : Device
 
 	public override void OnDeviceInstalled()
 	{
-		AddEvent( "TargetPosition", null );
-		AddEvent( "TargetReached", null );
+		AddTrigger( "TargetPosition", null );
+		AddTrigger( "TargetReached", null );
 
 		AddAction( "ReachTarget", ReachTarget );
 		AddAction( "SetNextPoint", SetNextPoint );
@@ -97,8 +97,8 @@ public class DPatrolModule : Device
 
 	public override void OnDeviceUninstalled()
 	{
-		RemoveEvent( "TargetPosition" );
-		RemoveEvent( "TargetReached" );
+		RemoveTrigger( "TargetPosition" );
+		RemoveTrigger( "TargetReached" );
 		
 		RemoveAction( "ReachTarget" );
 		RemoveAction( "SetNextPoint" );

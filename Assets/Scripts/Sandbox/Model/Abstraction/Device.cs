@@ -37,7 +37,8 @@ namespace SpaceSandbox
 
 
 		public Dictionary<string, DeviceAction> m_actions = new Dictionary<string, DeviceAction>();
-		public Dictionary<string, DeviceEvent> m_events = new Dictionary<string, DeviceEvent>();
+		public Dictionary<string, DeviceTrigger> m_triggers = new Dictionary<string, DeviceTrigger>();
+		public Dictionary<string, DeviceTrigger> m_entries = new Dictionary<string, DeviceTrigger>();
 		public Dictionary<string, DeviceCheck> m_checks = new Dictionary<string, DeviceCheck>();
 		public Dictionary<string, DeviceQuery> m_queries = new Dictionary<string, DeviceQuery>();
 	
@@ -75,11 +76,11 @@ namespace SpaceSandbox
 				device.GetCompleteActionsList(hierarchy, ref functionsList);		
 		}
 
-		public void GetCompleteEventsList( string hierarchy, ref Dictionary<string, DeviceEvent> functionsList )
+		public void GetCompleteTriggersList( string hierarchy, ref Dictionary<string, DeviceTrigger> functionsList )
 		{
 			hierarchy += "/" + EntityName;
 
-			foreach( KeyValuePair<string, DeviceEvent> function in m_events )
+			foreach( KeyValuePair<string, DeviceTrigger> function in m_triggers )
 			{
 				string key = hierarchy + "." + function.Key;
 				if( functionsList.ContainsKey( key ) )
@@ -92,7 +93,7 @@ namespace SpaceSandbox
 			}
 					
 			foreach( Device device in m_integratedDevices )
-				device.GetCompleteEventsList(hierarchy, ref functionsList);		
+				device.GetCompleteTriggersList(hierarchy, ref functionsList);		
 		}
 
 		public void GetCompleteQueriesList( string hierarchy, ref Dictionary<string, DeviceQuery> functionsList )
@@ -133,6 +134,26 @@ namespace SpaceSandbox
 			
 			foreach( Device device in m_integratedDevices )
 				device.GetCompleteChecksList(hierarchy, ref functionsList);		
+		}
+
+		public void GetCompleteExitsList( string hierarchy, ref Dictionary<string, DeviceTrigger> functionsList )
+		{
+			hierarchy += "/" + EntityName;
+			
+			foreach( KeyValuePair<string, DeviceTrigger> function in m_entries )
+			{
+				string key = hierarchy + "." + function.Key;
+				if( functionsList.ContainsKey( key ) )
+				{
+					Debug.LogError("Key already exists: " + key );
+					continue;
+				}
+				
+				functionsList.Add( key, function.Value);
+			}
+			
+			foreach( Device device in m_integratedDevices )
+				device.GetCompleteExitsList(hierarchy, ref functionsList);		
 		}
 
 
@@ -204,25 +225,46 @@ namespace SpaceSandbox
 		}
 
 
-		public void AddEvent ( string name, DeviceEvent trigger )
+		public void AddTrigger ( string name, DeviceTrigger trigger )
 		{
-			if( m_events.ContainsKey(name) )
-				m_events[name] += trigger ;
+			if( m_triggers.ContainsKey(name) )
+				m_triggers[name] += trigger ;
 			else
-				m_events.Add(name, trigger);
+				m_triggers.Add(name, trigger);
 		}
 
-		public DeviceEvent GetEvent( string name )
+		public DeviceTrigger GetTrigger( string name )
 		{
-			if( !m_events.ContainsKey(name) )
+			if( !m_triggers.ContainsKey(name) )
 				return null;
 
-			return m_events[name];
+			return m_triggers[name];
 		}
 		
-		public void RemoveEvent ( string name )
+		public void RemoveTrigger ( string name )
 		{
-			m_events.Remove( name );
+			m_triggers.Remove( name );
+		}
+
+		public void AddEntry ( string name, DeviceTrigger trigger )
+		{
+			if( m_entries.ContainsKey(name) )
+				m_entries[name] += trigger ;
+			else
+				m_entries.Add(name, trigger);
+		}
+
+		public DeviceTrigger GetEntry( string name )
+		{
+			if( !m_entries.ContainsKey(name) )
+				return null;
+			
+			return m_entries[name];
+		}
+		
+		public void RemoveEntry ( string name )
+		{
+			m_entries.Remove( name );
 		}
 
 		// Predecates
@@ -282,7 +324,7 @@ namespace SpaceSandbox
 
 			if( !Blueprint.tasksRunner.IsRunning )
 			{
-				Blueprint.RunLogicTree( GetEvent( "RootEntry" ) );
+				Blueprint.RunLogicTree( GetTrigger( "RootEntry" ) );
 				Blueprint.tasksRunner.ExecuteTasksQeue();
 			}
 		}
