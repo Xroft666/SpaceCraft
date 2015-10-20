@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+using BehaviourScheme;
+
 namespace SpaceSandbox
 {
 	/// <summary>
@@ -38,7 +40,7 @@ namespace SpaceSandbox
 
 		public Dictionary<string, DeviceAction> m_actions = new Dictionary<string, DeviceAction>();
 		public Dictionary<string, DeviceTrigger> m_triggers = new Dictionary<string, DeviceTrigger>();
-		public Dictionary<string, DeviceTrigger> m_entries = new Dictionary<string, DeviceTrigger>();
+		public Dictionary<string, BSEntry> m_entries = new Dictionary<string, BSEntry>();
 		public Dictionary<string, DeviceCheck> m_checks = new Dictionary<string, DeviceCheck>();
 		public Dictionary<string, DeviceQuery> m_queries = new Dictionary<string, DeviceQuery>();
 	
@@ -136,11 +138,11 @@ namespace SpaceSandbox
 				device.GetCompleteChecksList(hierarchy, ref functionsList);		
 		}
 
-		public void GetCompleteExitsList( string hierarchy, ref Dictionary<string, DeviceTrigger> functionsList )
+		public void GetCompleteExitsList( string hierarchy, ref Dictionary<string, BSEntry> functionsList )
 		{
 			hierarchy += "/" + EntityName;
 			
-			foreach( KeyValuePair<string, DeviceTrigger> function in m_entries )
+			foreach( KeyValuePair<string, BSEntry> function in m_entries )
 			{
 				string key = hierarchy + "." + function.Key;
 				if( functionsList.ContainsKey( key ) )
@@ -246,15 +248,15 @@ namespace SpaceSandbox
 			m_triggers.Remove( name );
 		}
 
-		public void AddEntry ( string name, DeviceTrigger trigger )
+		public void AddEntry ( string name, BSEntry trigger )
 		{
-			if( m_entries.ContainsKey(name) )
-				m_entries[name] += trigger ;
-			else
+			//if( m_entries.ContainsKey(name) )
+			//	m_entries[name] += trigger ;
+			//else
 				m_entries.Add(name, trigger);
 		}
 
-		public DeviceTrigger GetEntry( string name )
+		public BSEntry GetEntry( string name )
 		{
 			if( !m_entries.ContainsKey(name) )
 				return null;
@@ -324,7 +326,8 @@ namespace SpaceSandbox
 
 			if( !Blueprint.tasksRunner.IsRunning )
 			{
-				Blueprint.RunLogicTree( GetTrigger( "RootEntry" ) );
+				//Blueprint.RunLogicTree( GetTrigger( "RootEntry" ) );
+				Blueprint.RunLogicTree( GetEntry("RootEntry").Traverse );
 				Blueprint.tasksRunner.ExecuteTasksQeue();
 			}
 		}

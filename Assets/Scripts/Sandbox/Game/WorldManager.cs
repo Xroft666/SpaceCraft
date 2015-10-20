@@ -18,7 +18,7 @@ public class WorldManager : MonoBehaviour
 
 	public static ContainerView SpawnContainer( Ship container, Vector3 position, Quaternion rotation, int owner = 0 )
 	{
-		if( s_containersCache.ContainsKey( container.EntityName ) )
+		if( !s_containersCache.ContainsKey( container.EntityName ) )
 			s_containersCache.Add( container.EntityName, container );
 
 //		container = new Ship( container );

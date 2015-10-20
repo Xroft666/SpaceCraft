@@ -7,11 +7,13 @@ namespace BehaviourScheme
 {
 	public class BSExit : BSNode 
 	{
-		public DeviceTrigger m_entry;
+		public Device m_device;
+		public string m_entryName;
 
 		public override void Traverse()
 		{
-			m_entry();
+			BSEntry m_entry = m_device.GetEntry( m_entryName );
+			m_entry.Traverse();
 		}
 	}
 }

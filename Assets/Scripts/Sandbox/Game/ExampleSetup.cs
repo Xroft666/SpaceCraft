@@ -8,16 +8,16 @@ public class ExampleSetup : MonoBehaviour {
 
 	private void Start()
 	{
-		WorldManager.SpawnContainer (GenerateMotherBase(), new Vector3(5f, 0f, 5f), Quaternion.identity, 2 );
+//		WorldManager.SpawnContainer (GenerateMotherBase(), new Vector3(5f, 0f, 5f), Quaternion.identity, 2 );
 
 
-		Ship ship = GeneratePatrolShip();
-//		Ship ship = GenerateShip();
+		Ship enemyShip = GeneratePatrolShip();
+		Ship myShip = GenerateMyShip();
 
 		// Generating missiles
-		for( int i = 0; i < 40; i++ )
+		for( int i = 0; i < 50; i++ )
 		{
-			ship.AddToCargo( GenerateMissile() );
+			enemyShip.AddToCargo( GenerateMissile() );
 		}
 
 		for( int i = 0; i < 100; i++ )
@@ -58,7 +58,7 @@ public class ExampleSetup : MonoBehaviour {
     	Job.make( heatSeeker.DeactivateDevice( null), true );
 
 
-		BSEntry onTimer = missile.IntegratedDevice.Blueprint.CreateEntry( "OnTimerComplete", activeTimer );
+		BSEntry onTimer = missile.IntegratedDevice.Blueprint.CreateTrigger( "OnTimerComplete", activeTimer );
 		BSAction toActivateWarhead = missile.IntegratedDevice.Blueprint.CreateAction( "ActivateDevice", timeBomb );
 		BSAction toActivateSeeker = missile.IntegratedDevice.Blueprint.CreateAction( "ActivateDevice", heatSeeker );
 
@@ -74,109 +74,128 @@ public class ExampleSetup : MonoBehaviour {
 		(Random.insideUnitCircle + Vector2.one) * (Camera.main.orthographicSize - 1f), 
 		Quaternion.identity );
 	}
-	
-	private static Ship GenerateShip()
+
+	private static Ship GenerateMyShip()
 	{
-		Ship ship = new Ship(5f){ EntityName = "ship"};
-
-		Device cockpit = GeneratePilotCockpit();
-//		DLauncher launcher = new DLauncher(){ EntityName = "launcher", m_projectileName = "Missile" };
-		DRanger ranger = new DRanger() {EntityName = "ranger", detectionRange = 3f };
-		DMagnet magnet = new DMagnet(){ EntityName = "magnet" };
-		DInputModule mouseInput = new DInputModule() { EntityName = "space", m_keyCode = KeyCode.Space };
-
-
-//		ship.IntegratedDevice.IntegrateDevice( launcher );
-		ship.IntegratedDevice.InstallDevice( ranger );
-		ship.IntegratedDevice.InstallDevice( magnet );
-		ship.IntegratedDevice.InstallDevice( cockpit );
-		ship.IntegratedDevice.InstallDevice( mouseInput );
-
-
-		BSEntry onMouseDown = ship.IntegratedDevice.Blueprint.CreateEntry( "OnInputPressed", mouseInput);
-		BSAction toAtract = ship.IntegratedDevice.Blueprint.CreateAction( "Attract", magnet);
-		BSQuery currentTargetContainer = ship.IntegratedDevice.Blueprint.CreateQuery("CurrentTargetContainer", ranger);
-		toAtract.ConnectToQuery( currentTargetContainer );
-		ship.IntegratedDevice.Blueprint.ConnectElements( onMouseDown, toAtract );
-
-		BSEntry onMouseUp = ship.IntegratedDevice.Blueprint.CreateEntry( "OnInputReleased", mouseInput);
-		BSAction toRepulse = ship.IntegratedDevice.Blueprint.CreateAction( "Repulse", magnet);
-		toAtract.ConnectToQuery( currentTargetContainer );
-		ship.IntegratedDevice.Blueprint.ConnectElements( onMouseUp, toRepulse );
-
+		Ship ship = new Ship(0.3f){ EntityName = "MyShip"};
 		
-		ContainerView shipView = WorldManager.SpawnContainer( ship, Vector3.zero, Quaternion.identity, 1 );
+		Device navigator = GenerateNavigator();
+		DLauncher launcher = new DLauncher(){ EntityName = "launcher", m_projectileName = "Missile" };
+		DRanger enemydetector = new DRanger(){ EntityName = "enemydetector", detectionRange = 5f };
+		DMagnet magnet = new DMagnet(){EntityName = "Magnet"};
+		DTradeComputer trader = new DTradeComputer(){EntityName = "TradeComputer"};
+		
+		ship.m_cargo.AddItem(navigator);
+		ship.m_cargo.AddItem(launcher);
+		ship.m_cargo.AddItem(enemydetector);
+		ship.m_cargo.AddItem(magnet);
+		ship.m_cargo.AddItem(trader);
+		
+		ContainerView shipView = WorldManager.SpawnContainer( ship, -Vector3.forward * 3f, Quaternion.identity, 2 );
+		shipView.GetComponentInChildren<Renderer>().sharedMaterial.color = Color.green;
 		
 		return ship;
 	}
 
 	private static Ship GeneratePatrolShip()
 	{
-		Ship ship = new Ship(0.3f){ EntityName = "patrolship"};
-	
-
+		Ship ship = new Ship(0.3f){ EntityName = "PatrolShip"};
+		
 		Device navigator = GenerateNavigator();
 		DLauncher launcher = new DLauncher(){ EntityName = "launcher", m_projectileName = "Missile" };
 		DRanger enemydetector = new DRanger(){ EntityName = "enemydetector", detectionRange = 5f };
 		DMagnet magnet = new DMagnet(){EntityName = "Magnet"};
 		DTradeComputer trader = new DTradeComputer(){EntityName = "TradeComputer"};
-
-		ship.m_cargo.AddItem(navigator);
-		ship.m_cargo.AddItem(launcher);
-		ship.m_cargo.AddItem(enemydetector);
-		ship.m_cargo.AddItem(magnet);
-		ship.m_cargo.AddItem(trader);
-
-		//ship.IntegratedDevice.InstallDevice( trader );
-		//ship.IntegratedDevice.InstallDevice( navigator );
-		//ship.IntegratedDevice.InstallDevice( enemydetector );
-		//ship.IntegratedDevice.InstallDevice( launcher );
-		//ship.IntegratedDevice.InstallDevice( magnet );
-
-		//SetupPatrolBlueprint(ship.IntegratedDevice);
-
-
-
-		ContainerView shipView = WorldManager.SpawnContainer( ship, Vector3.zero, Quaternion.identity, 2 );
 		
+		ship.IntegratedDevice.InstallDevice(navigator);
+		ship.IntegratedDevice.InstallDevice(launcher);
+		ship.IntegratedDevice.InstallDevice(enemydetector);
+		ship.IntegratedDevice.InstallDevice(magnet);
+		ship.IntegratedDevice.InstallDevice(trader);
+
+		SetUpFightingBlueprint(ship.IntegratedDevice);
+		
+		ContainerView shipView = WorldManager.SpawnContainer( ship, Vector3.forward * 3f, Quaternion.identity, 2 );
+		shipView.GetComponentInChildren<Renderer>().sharedMaterial.color = Color.red;
+
 		return ship;
 	}
 
-	private void SetupPatrolBlueprint( Device device )
+	private static void SetUpFightingBlueprint( Device device )
 	{
-		BlueprintScheme blueprint = device.Blueprint;
+		BSEntry rootEntry = 
+			device.GetEntry("RootEntry");
 
+		BSSelect rootDecision = device.Blueprint.CreateBranch("Root");
+		
+		
+		BSSequence patrolSequence = device.Blueprint.CreateSequence("Patrol"); 
+		BSAction nextPoint = device.Blueprint.CreateAction( "SetNextPoint", device.GetInternalDevice("navigator/patrol") );
+		BSExit moveToWaypoint = device.Blueprint.CreateExit("MoveTo", device.GetInternalDevice("navigator") );
+		
+
+		
+		BSSequence shootingSequence = device.Blueprint.CreateSequence("Shooting");
+
+		BSAction steerTowardsShootingTarget = 
+			device.Blueprint.CreateAction( "SteerTowards", device.GetInternalDevice("navigator/steerer") );
+		BSQuery currentTargetPosition = device.Blueprint.CreateQuery("CurrentTargetPosition", device.GetInternalDevice("enemydetector"));
+		steerTowardsShootingTarget.ConnectToQuery( currentTargetPosition );
+		BSAction shootTarget = device.Blueprint.CreateAction( "Fire", device.GetInternalDevice("launcher") );
+		BSAction disableEngineToCollect = device.Blueprint.CreateAction("DeactivateDevice", device.GetInternalDevice("navigator/engine"));
+
+//		device.Blueprint.m_entryPoint.AddChild(rootDecision);
+		rootEntry.AddChild( rootDecision );
+		
+		rootDecision.AddCondition( device.GetInternalDevice("enemydetector"), "IsAnyTarget" );
 				
-		BSSelect rootDecision = blueprint.CreateBranch("Root");
+
+		rootDecision.AddChild(patrolSequence);
+		rootDecision.AddChild(shootingSequence);
+
+		
+		shootingSequence.AddChild( disableEngineToCollect );
+		shootingSequence.AddChild( steerTowardsShootingTarget );
+		shootingSequence.AddChild( shootTarget );
+		
+		
+		patrolSequence.AddChild(nextPoint);
+		patrolSequence.AddChild(moveToWaypoint);
+
+	}
+	
+	private static void SetupMiningBlueprint( Device device )
+	{
+		BSSelect rootDecision = device.Blueprint.CreateBranch("Root");
 				
 		
-		BSSequence patrolSequence = blueprint.CreateSequence("Patrol"); 
-		BSAction nextPoint = blueprint.CreateAction( "SetNextPoint", device.GetInternalDevice("navigator/patrol") );
-		BSExit moveToWaypoint = blueprint.CreateExit("MoveTo", device.GetInternalDevice("navigator") );
+		BSSequence patrolSequence = device.Blueprint.CreateSequence("Patrol"); 
+		BSAction nextPoint = device.Blueprint.CreateAction( "SetNextPoint", device.GetInternalDevice("navigator/patrol") );
+		BSExit moveToWaypoint = device.Blueprint.CreateExit("MoveTo", device.GetInternalDevice("navigator") );
 		
 		
-		BSSelect miningDecision = blueprint.CreateBranch("MiningDecision");
+		BSSelect miningDecision = device.Blueprint.CreateBranch("MiningDecision");
 		miningDecision.AddCondition( device.GetInternalDevice("magnet"), "IsStorageble", device.GetInternalDevice("enemydetector"), "CurrentTargetContainer");
 		
 		
 		
 		
 		
-		BSSequence shootingSequence = blueprint.CreateSequence("Shooting");
+		BSSequence shootingSequence = device.Blueprint.CreateSequence("Shooting");
 		BSAction steerTowardsShootingTarget = 
-			blueprint.CreateAction( "SteerTowards", device.GetInternalDevice("navigator/steerer") );
-		BSQuery currentTargetPosition = blueprint.CreateQuery("CurrentTargetPosition", device.GetInternalDevice("enemydetector"));
+			device.Blueprint.CreateAction( "SteerTowards", device.GetInternalDevice("navigator/steerer") );
+		BSQuery currentTargetPosition = device.Blueprint.CreateQuery("CurrentTargetPosition", device.GetInternalDevice("enemydetector"));
 		steerTowardsShootingTarget.ConnectToQuery( currentTargetPosition );
-		BSAction shootTarget = blueprint.CreateAction( "Fire", device.GetInternalDevice("launcher") );
+		BSAction shootTarget = device.Blueprint.CreateAction( "Fire", device.GetInternalDevice("launcher") );
 		
 		
-		BSSequence collectingSequence = blueprint.CreateSequence("Collecting");
-		BSQuery currentTargetContainer = blueprint.CreateQuery("CurrentTargetContainer", device.GetInternalDevice("enemydetector"));
+		BSSequence collectingSequence = device.Blueprint.CreateSequence("Collecting");
+		BSQuery currentTargetContainer = device.Blueprint.CreateQuery("CurrentTargetContainer", device.GetInternalDevice("enemydetector"));
 		
 		
-		BSAction disableEngineToCollect = blueprint.CreateAction("DeactivateDevice", device.GetInternalDevice("navigator/engine"));
-		BSAction attractAsteroid = blueprint.CreateAction("Attract", device.GetInternalDevice("magnet"));
-		BSAction storageAsteroid = blueprint.CreateAction("Load", device.GetInternalDevice("magnet"));
+		BSAction disableEngineToCollect = device.Blueprint.CreateAction("DeactivateDevice", device.GetInternalDevice("navigator/engine"));
+		BSAction attractAsteroid = device.Blueprint.CreateAction("Attract", device.GetInternalDevice("magnet"));
+		BSAction storageAsteroid = device.Blueprint.CreateAction("Load", device.GetInternalDevice("magnet"));
 		
 		attractAsteroid.ConnectToQuery( currentTargetContainer );
 		storageAsteroid.ConnectToQuery( currentTargetContainer );
@@ -191,20 +210,20 @@ public class ExampleSetup : MonoBehaviour {
 			return new ArgsObject(){ obj = WorldManager.RequestContainerData("MotherBase").View.transform.position};
 		});
 		
-		BSQuery tradeAsteroid = blueprint.CreateQuery( "TradeAsteroid", device );
-		BSQuery motherBasePosition = blueprint.CreateQuery("BasePosition", device );
+		BSQuery tradeAsteroid = device.Blueprint.CreateQuery( "TradeAsteroid", device );
+		BSQuery motherBasePosition = device.Blueprint.CreateQuery("BasePosition", device );
 		
 		Device stationTrader = WorldManager.RequestContainerData("MotherBase").IntegratedDevice.GetInternalDevice("trader");
 		
 		
-		BSSequence goingHomeSequence = blueprint.CreateSequence("Home");
-		BSAction setTargetStation = blueprint.CreateAction( "SetTargetPosition", device.GetInternalDevice("navigator/patrol") );
+		BSSequence goingHomeSequence = device.Blueprint.CreateSequence("Home");
+		BSAction setTargetStation = device.Blueprint.CreateAction( "SetTargetPosition", device.GetInternalDevice("navigator/patrol") );
 		setTargetStation.ConnectToQuery(motherBasePosition);
-		BSExit moveToStation = blueprint.CreateExit("MoveTo", device.GetInternalDevice("navigator") );
-		BSAction sellResouces = blueprint.CreateAction( "LoadItemsFrom", stationTrader );
+		BSExit moveToStation = device.Blueprint.CreateExit("MoveTo", device.GetInternalDevice("navigator") );
+		BSAction sellResouces = device.Blueprint.CreateAction( "LoadItemsFrom", stationTrader );
 		sellResouces.ConnectToQuery( tradeAsteroid );
 		
-		blueprint.m_entryPoint.AddChild(rootDecision);
+		device.Blueprint.m_entryPoint.AddChild(rootDecision);
 		
 		rootDecision.AddCondition( device.GetInternalDevice("enemydetector"), "IsAnyTarget" );
 		
@@ -253,25 +272,25 @@ public class ExampleSetup : MonoBehaviour {
 
 		// Steering module
 
-		BSEntry onMouseWorld = cockpitDevice.Blueprint.CreateEntry( "OnMouseWorldPosition", cockpitDevice.GetInternalDevice("input/mousePos"));
+		BSEntry onMouseWorld = cockpitDevice.Blueprint.CreateTrigger( "OnMouseWorldPosition", cockpitDevice.GetInternalDevice("input/mousePos"));
 		BSAction toSteer = cockpitDevice.Blueprint.CreateAction( "SteerTowards", cockpitDevice.GetInternalDevice("steerer"));
 		cockpitDevice.Blueprint.ConnectElements( onMouseWorld, toSteer );
 
 		// Movement module
 
-		BSEntry onForwardDown = cockpitDevice.Blueprint.CreateEntry( "OnInputHeld", cockpitDevice.GetInternalDevice("input/w"));
+		BSEntry onForwardDown = cockpitDevice.Blueprint.CreateTrigger( "OnInputHeld", cockpitDevice.GetInternalDevice("input/w"));
 		BSAction toGoForward = cockpitDevice.Blueprint.CreateAction( "MoveForward", cockpitDevice.GetInternalDevice("engines/forward"));
 		cockpitDevice.Blueprint.ConnectElements( onForwardDown, toGoForward );
 		
-		BSEntry onBackwardDown = cockpitDevice.Blueprint.CreateEntry( "OnInputHeld", cockpitDevice.GetInternalDevice("input/s"));
+		BSEntry onBackwardDown = cockpitDevice.Blueprint.CreateTrigger( "OnInputHeld", cockpitDevice.GetInternalDevice("input/s"));
 		BSAction toGoBackward = cockpitDevice.Blueprint.CreateAction( "MoveForward", cockpitDevice.GetInternalDevice("engines/backward"));
 		cockpitDevice.Blueprint.ConnectElements( onBackwardDown, toGoBackward );
 		
-		BSEntry onLeftDown = cockpitDevice.Blueprint.CreateEntry( "OnInputHeld", cockpitDevice.GetInternalDevice("input/a"));
+		BSEntry onLeftDown = cockpitDevice.Blueprint.CreateTrigger( "OnInputHeld", cockpitDevice.GetInternalDevice("input/a"));
 		BSAction toGoleft = cockpitDevice.Blueprint.CreateAction( "MoveForward", cockpitDevice.GetInternalDevice("engines/left"));
 		cockpitDevice.Blueprint.ConnectElements( onLeftDown, toGoleft );
 		
-		BSEntry onRightDown = cockpitDevice.Blueprint.CreateEntry( "OnInputHeld", cockpitDevice.GetInternalDevice("input/d"));
+		BSEntry onRightDown = cockpitDevice.Blueprint.CreateTrigger( "OnInputHeld", cockpitDevice.GetInternalDevice("input/d"));
 		BSAction toGoRight = cockpitDevice.Blueprint.CreateAction( "MoveForward", cockpitDevice.GetInternalDevice("engines/right"));
 		cockpitDevice.Blueprint.ConnectElements( onRightDown, toGoRight );
 
@@ -322,7 +341,7 @@ public class ExampleSetup : MonoBehaviour {
 		warheadDevice.InstallDevice( detonator );
 		warheadDevice.InstallDevice( ranger );
 
-		BSEntry onClose = warheadDevice.Blueprint.CreateEntry( "OnRangerEntered", ranger );
+		BSEntry onClose = warheadDevice.Blueprint.CreateTrigger( "OnRangerEntered", ranger );
 		BSAction toDetonate = warheadDevice.Blueprint.CreateAction( "Detonate", detonator );
 		warheadDevice.Blueprint.ConnectElements( onClose, toDetonate );
 		
@@ -341,7 +360,7 @@ public class ExampleSetup : MonoBehaviour {
 		timeBomb.InstallDevice( timer );
 
 		// Generating warhead
-		BSEntry onTimer = timeBomb.Blueprint.CreateEntry( "OnTimerComplete", timer );
+		BSEntry onTimer = timeBomb.Blueprint.CreateTrigger( "OnTimerComplete", timer );
 		BSAction toDetonate = timeBomb.Blueprint.CreateAction( "Detonate", timeBomb.GetInternalDevice("warhead/detonator") );
 		timeBomb.Blueprint.ConnectElements( onTimer, toDetonate );
 
@@ -364,7 +383,7 @@ public class ExampleSetup : MonoBehaviour {
 		BSSequence onTargetFound = heatSeeker.Blueprint.CreateSequence();
 
 		// add target signature
-		BSEntry inRange = heatSeeker.Blueprint.CreateEntry( "OnRangerEntered", ranger );
+		BSEntry inRange = heatSeeker.Blueprint.CreateTrigger( "OnRangerEntered", ranger );
 
 		// steer towards the target
 		BSQuery targetPosition = heatSeeker.Blueprint.CreateQuery( "CurrentTargetPosition", ranger );
@@ -394,7 +413,6 @@ public class ExampleSetup : MonoBehaviour {
 
 		BSSelect rootDecision = motherBase.IntegratedDevice.Blueprint.CreateBranch();
 		rootDecision.AddCondition( ranger, "IsAnyTarget");
-		                          //ranger.GetCheck("IsAnyTarget") );
 
 		return motherBase;
 	}

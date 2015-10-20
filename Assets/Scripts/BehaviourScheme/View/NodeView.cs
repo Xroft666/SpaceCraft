@@ -2,8 +2,12 @@ using UnityEngine;
 using System.Collections.Generic;
 
 using BehaviourScheme;
+using SpaceSandbox;
 
 using UnityEngine.EventSystems;
+
+
+public delegate void NodeViewClick( NodeView view );
 
 // the visual representation of a node
 // it s a monobehaviour, so it contains all the callbacks, visuals and references 
@@ -24,6 +28,7 @@ public class NodeView : MonoBehaviour, IPointerClickHandler, IDragHandler, IBegi
 	public List<NodeViewDock> m_queries = new List<NodeViewDock>();
 	public List<NodeViewDock> m_predecates = new List<NodeViewDock>();
 
+	public NodeViewClick onNodeDoubleClick;
 
 	public void InitializeNode( BSNode node )
 	{
@@ -269,7 +274,11 @@ public class NodeView : MonoBehaviour, IPointerClickHandler, IDragHandler, IBegi
 
 	public void OnPointerClick (PointerEventData eventData)
 	{
-
+		if( eventData.clickCount == 2 )
+		{
+			if( onNodeDoubleClick != null )
+				onNodeDoubleClick( this );
+		}
 	}
 
 	#endregion

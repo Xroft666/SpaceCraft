@@ -49,8 +49,6 @@ namespace SpaceSandbox
 
 		public BSAction CreateAction( string functionName, Device device)
 		{
-			DeviceAction action = device.GetFunction(functionName);
-
 			BSAction node = new BSAction() { m_scheme = this, m_name = "Action", m_type = functionName, m_device = device, m_actionName = functionName };
 
 			m_nodes.Add(node);
@@ -76,7 +74,8 @@ namespace SpaceSandbox
 		public BSEntry CreateEntry( string eventName, Device device)
 		{
 			BSEntry node = new BSEntry() { m_scheme = this, m_name = "Entry", m_type = eventName };
-			device.AddEntry( eventName, node.Traverse );
+			//device.AddEntry( eventName, node.Traverse );
+			device.AddEntry( eventName, node );
 
 			m_nodes.Add(node);
 			return node;
@@ -93,8 +92,8 @@ namespace SpaceSandbox
 		
 		public BSExit CreateExit( string eventName, Device device)
 		{
-			DeviceTrigger entry = device.GetEntry(eventName);
-			BSExit node = new BSExit() { m_scheme = this, m_entry = entry, m_name = "Exit", m_type = eventName };
+			//DeviceTrigger entry = device.GetEntry(eventName);
+			BSExit node = new BSExit() { m_scheme = this, m_entryName = eventName, m_device = device, m_name = "Exit", m_type = eventName };
 
 			m_nodes.Add(node);
 			return node;

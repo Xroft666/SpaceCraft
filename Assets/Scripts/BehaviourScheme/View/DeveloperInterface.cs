@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 
 using SpaceSandbox;
+using BehaviourScheme;
 
 using UnityEngine.UI;
 using UnityEngine.Events;
@@ -20,11 +21,19 @@ public class DeveloperInterface : MonoBehaviour
 	private BlueprintSchemeView m_blueprintView;
 
 	private float m_buttonsDistance = 20f;
+	private Text m_pathText;
 
 	private Ship selectedShip;
+	private Device selectedDevice;
 
 	private void Awake()
 	{
+		m_pathText = transform.FindChild("Names/path").GetComponent<Text>();
+		m_pathText.raycastTarget = true;
+		Button pathBtn = m_pathText.gameObject.AddComponent<Button>();
+		pathBtn.onClick.AddListener(() => { OnPathButtonHandler(); });
+
+
 		m_actionsScrollView = transform.FindChild("Actions").GetComponent<DraggableItemsScrollRect>();
 		m_eventsScrollView = transform.FindChild("Events").GetComponent<DraggableItemsScrollRect>();
 		m_controlsScrollView = transform.FindChild("Controls").GetComponent<DraggableItemsScrollRect>();
@@ -50,40 +59,53 @@ public class DeveloperInterface : MonoBehaviour
 
 	public void RunButtonHandler()
 	{
-		//Job.make( selectedShip.IntegratedDevice.ActivateDevice(null), true );
-
-		selectedShip.IntegratedDevice.m_isActive = true;
-		selectedShip.IntegratedDevice.Initialize();
+		foreach( KeyValuePair<string, Ship> ship in WorldManager.s_containersCache )
+		{
+			ship.Value.IntegratedDevice.m_isActive = true;
+			ship.Value.IntegratedDevice.Initialize();
+		}
 	}
 	
 	public void StopButtonHandler()
 	{
-		//Job.make( selectedShip.IntegratedDevice.DeactivateDevice(null), true );
+		foreach( KeyValuePair<string, Ship> ship in WorldManager.s_containersCache )
+		{
+			ship.Value.IntegratedDevice.m_isActive = false;
+			ship.Value.IntegratedDevice.Blueprint.tasksRunner.KillTasks();
 
-		selectedShip.IntegratedDevice.m_isActive = false;
-		selectedShip.IntegratedDevice.Blueprint.tasksRunner.KillTasks();
+			ship.Value.IntegratedDevice.Destroy();
+		}
+	}
 
-		selectedShip.IntegratedDevice.Destroy();
+	public void RestartButtonHandler()
+	{
+		Application.LoadLevel( Application.loadedLevel );
+	}
+
+	public void CloseButtonHandler()
+	{
+		CleanAllContent();
+		gameObject.SetActive(false);
+		EventSystem.current.SetSelectedGameObject( null );
 	}
 
 	public void InitializeInteface( Ship selectedContainer )
 	{
 		selectedShip = selectedContainer;
+		selectedDevice = selectedContainer.IntegratedDevice;
 
-		Device upMostDevice = selectedContainer.IntegratedDevice;
 
-		InitializeActions(upMostDevice);
-		InitializeEvents(upMostDevice);
-		InitializeQueries(upMostDevice);
-
-		InitializeControls(upMostDevice);
+		InitializeActions(selectedDevice);
+		InitializeEvents(selectedDevice);
+		InitializeQueries(selectedDevice);
+		InitializeControls(selectedDevice);
 
 		InitializeCargo(selectedContainer);
 		InitializeInstalledDevices(selectedContainer);
 
+		m_blueprintView.InitializeView(selectedDevice, this);
 
-
-		m_blueprintView.InitializeView(upMostDevice);
+		m_pathText.text = selectedContainer.EntityName + ": " + selectedDevice.EntityName;
 	}
 
 	private void InitializeActions(Device device)
@@ -93,7 +115,7 @@ public class DeveloperInterface : MonoBehaviour
 		Dictionary<string, DeviceAction> actions = new Dictionary<string, DeviceAction>();
 		device.GetCompleteActionsList("", ref actions);
 
-		Dictionary<string, DeviceTrigger> exits = new Dictionary<string, DeviceTrigger>();
+		Dictionary<string, BSEntry> exits = new Dictionary<string, BSEntry>();
 		device.GetCompleteExitsList("", ref exits);
 
 //		FillUpContent( new List<string>(actions.Keys), m_actionsScrollView.content, device);
@@ -145,12 +167,7 @@ public class DeveloperInterface : MonoBehaviour
 		Dictionary<string, DeviceTrigger> events = new Dictionary<string, DeviceTrigger>();
 		device.GetCompleteTriggersList("", ref events);
 
-	//	Dictionary<string, DeviceTrigger> exits = new Dictionary<string, DeviceTrigger>();
-	//	device.GetCompleteExitsList("", ref exits);
-
 		FillUpContent( new List<string>(events.Keys), m_eventsScrollView.content, device );
-
-
 	}
 
 	private void InitializeQueries( Device device )
@@ -450,7 +467,7 @@ public class DeveloperInterface : MonoBehaviour
 			scrollView.AssignObject(eventData.selectedObject);
 			
 			m_blueprintView.CleanBlueprint();
-			m_blueprintView.InitializeView(selectedShip.IntegratedDevice);
+			m_blueprintView.InitializeView(selectedShip.IntegratedDevice, this);
 		}
 	}
 
@@ -473,9 +490,39 @@ public class DeveloperInterface : MonoBehaviour
 			scrollView.AssignObject(eventData.selectedObject);
 
 			m_blueprintView.CleanBlueprint();
-			m_blueprintView.InitializeView(selectedShip.IntegratedDevice);
+			m_blueprintView.InitializeView(selectedShip.IntegratedDevice, this);
 		}
 	}
 
+	public void NodeViewOpenInternal( NodeView view )
+	{
+		BSExit exit = view.Node as BSExit;
+		if( exit == null )
+			return;
 
+
+		selectedDevice = exit.m_device;
+
+		m_blueprintView.CleanBlueprint();
+		//	m_blueprintView.InitializeView(selectedDevice, this);
+
+		BSEntry entry = selectedDevice.GetEntry( exit.m_entryName );
+
+		m_blueprintView.GenerateTree( entry );
+		m_blueprintView.PositionNode( entry );
+		m_blueprintView.GenerateConnections( entry );
+	}
+
+	public void OnPathButtonHandler()
+	{
+		selectedDevice = selectedShip.IntegratedDevice;
+
+		//m_blueprintView.CleanBlueprint();
+		//
+		//BSEntry entry = selectedDevice.GetEntry( "RootEntry" );
+		//
+		//m_blueprintView.GenerateTree( entry );
+		//m_blueprintView.PositionNode( entry );
+		//m_blueprintView.GenerateConnections( entry );
+	}
 }

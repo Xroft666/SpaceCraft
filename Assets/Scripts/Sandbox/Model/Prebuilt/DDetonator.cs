@@ -74,7 +74,7 @@ public class DDetonator : Device
 		if( view == null )
 			return;
 
-		view.m_contain.TakeDamage(detonateForce, explosionRadius, m_containerAttachedTo.View.transform.position);
+		view.m_contain.TakeDamage(detonateForce * 2f, explosionRadius, m_containerAttachedTo.View.transform.position);
 
 
 		Vector3 outwardsDir = other.transform.position - m_containerAttachedTo.View.transform.position;

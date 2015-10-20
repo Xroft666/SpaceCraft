@@ -16,6 +16,8 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 	#region data references
 
 	public Device m_device;
+	public DeveloperInterface m_interface;
+
 	private NodeView m_selectedNode;
 
 	private RectTransform blueprintRect;
@@ -30,9 +32,10 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 		blueprintRect = transform.FindChild("BlueprintView/Content") as RectTransform;
 	}
 
-	public void InitializeView( Device device )
+	public void InitializeView( Device device, DeveloperInterface devInterface )
 	{
 		m_device = device;
+		m_interface = devInterface;
 
 		foreach( BSNode node in m_device.Blueprint.m_nodes )
 			GenerateNode( node );
@@ -40,27 +43,34 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 		foreach( BSNode node in m_device.Blueprint.m_nodes )
 			PositionNode( node );
 
-
 //		ConflictsTraverse(device.Blueprint.m_entryPoint);
 //		GenerateConnections(device.Blueprint.m_entryPoint);
+
 //		Rect box = new Rect();
 //		GetBoundingBox(device.Blueprint.m_entryPoint, ref box); 
 //		blueprintRect.sizeDelta = new Vector3(box.width * horizDistance * 1.5f, -box.height * vertDistance * 5f + box.height * vertDistance * 2.5f);
-	
 	}
+
 
 	public void CleanBlueprint()
 	{
 		foreach( BSNode node in m_device.Blueprint.m_nodes )
 			GameObject.Destroy( node.m_view.gameObject );
-	//	foreach( Transform child in blueprintRect )
-	//		GameObject.Destroy( child.gameObject );
 	}
 
-	private void GenerateNode( BSNode current )
+	public void GenerateNode( BSNode current )
 	{
 		string name = string.IsNullOrEmpty(current.m_name) ? "" : ": " + current.m_name;
 		CreateNode (current.m_type + name, current );
+	}
+
+	public void GenerateTree( BSNode current )
+	{
+		string name = string.IsNullOrEmpty(current.m_name) ? "" : ": " + current.m_name;
+		CreateNode (current.m_type + name, current );
+
+		for( int i = 0; i < current.m_children.Count; i++ )
+			GenerateTree( current.m_children[i] );
 	}
 
 	public void PositionNode( BSNode current )
@@ -98,7 +108,7 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 			PositionNode( current.m_children[i] );
 	}
 
-	private void GenerateConnections(BSNode current)
+	public void GenerateConnections(BSNode current)
 	{
 		for( int i = 0; i < current.m_children.Count; i++ )
 		{
@@ -250,7 +260,10 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 	public NodeView CreateExit( Device device, string name )
 	{
 		BSNode newNode = m_device.Blueprint.CreateExit( name, device );
-		return CreateNode(name, newNode );
+		NodeView view = CreateNode(name, newNode );
+		view.onNodeDoubleClick = m_interface.NodeViewOpenInternal;
+
+		return view;
 	}
 
 	public NodeView CreateQuery( Device device, string name )

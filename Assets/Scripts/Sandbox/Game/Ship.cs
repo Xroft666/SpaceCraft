@@ -6,27 +6,7 @@ using SpaceSandbox;
 
 public class Ship : Container
 {
-	public Ship( float cargoCapacity )
-	{
-		m_cargo = new Cargo(cargoCapacity, this);
-
-		m_integratedDevice = new Device();
-		m_integratedDevice.AssignContainer( this );
-
-		m_integratedDevice.AddCheck( "IsCargoFull", m_cargo.IsCargoFull );
-
-		m_integratedDevice.AddTrigger("RootEntry", null );
-		//m_integratedDevice.Blueprint.m_entryPoint = m_integratedDevice.Blueprint.CreateEntry( "RootEntry", m_integratedDevice );
-
-		m_integratedDevice.m_isActive = false;
-	}
-
-	public Ship( Ship otherShip )
-	{
-		m_cargo = new Cargo( otherShip.m_cargo.Capacity, this );
-		m_integratedDevice = otherShip.IntegratedDevice;
-		m_integratedDevice.AssignContainer( this );
-	}
+	public float m_health = 100f;
 
 
 	public Cargo m_cargo { get; private set; }
@@ -34,6 +14,28 @@ public class Ship : Container
 
 	private Device m_integratedDevice = null;
 	public Device IntegratedDevice { get { return m_integratedDevice; } }
+
+	public Ship( float cargoCapacity )
+	{
+		m_cargo = new Cargo(cargoCapacity, this);
+		
+		m_integratedDevice = new Device();
+		m_integratedDevice.AssignContainer( this );
+		
+		m_integratedDevice.AddCheck( "IsCargoFull", m_cargo.IsCargoFull );
+		
+		//m_integratedDevice.AddTrigger("RootEntry", null);
+		m_integratedDevice.Blueprint.m_entryPoint = m_integratedDevice.Blueprint.CreateEntry("RootEntry", m_integratedDevice);
+
+		m_integratedDevice.m_isActive = false;
+	}
+	
+	public Ship( Ship otherShip )
+	{
+		m_cargo = new Cargo( otherShip.m_cargo.Capacity, this );
+		m_integratedDevice = otherShip.IntegratedDevice;
+		m_integratedDevice.AssignContainer( this );
+	}
 
 	
 	public void AddToCargo( Entity entity )
@@ -53,13 +55,16 @@ public class Ship : Container
 	{
 		// calculate what happens on taking damage
 		// if too high, destroy, drop items etc
+
+		m_health = Mathf.Clamp(m_health - damage, 0f, 100f);
 	}
 	
 	public override void Destroy()
 	{
 //		foreach( Entity entity in m_cargo.m_items )
 //			entity.Destroy();
-		
+		m_health = 0f;
+
 		m_integratedDevice.Destroy();
 
 		base.Destroy();

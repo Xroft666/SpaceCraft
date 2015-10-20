@@ -64,6 +64,15 @@ public class UIController : MonoBehaviour
 	public void OnContainerSelected( ContainerView container )
 	{
 		m_hpBarTransform.gameObject.SetActive(true);
+		RectTransform hpBar = m_hpBarTransform.GetChild(0) as RectTransform;
+
+		hpBar.sizeDelta = new Vector2(100f, 7.5f);
+
+		Ship ship = container.m_contain as Ship;
+		if( ship != null )
+			(m_hpBarTransform.GetChild(0) as RectTransform).sizeDelta = new Vector2( ship.m_health, 7.5f );
+
+
 		commands.InitializeContainerView(container);
 
 		if( selections.ContainsKey( container ) )
