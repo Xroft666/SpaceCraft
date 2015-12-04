@@ -37,7 +37,18 @@ public class DraggableItemsScrollRect : ScrollRect, IDropHandler
 		if( s_draggableObject == null )
 			return;
 
-		s_draggableObject.transform.localPosition = (data.position - new Vector2(Screen.width, Screen.height) * 0.5f);
+		Vector2 scaleFactor = new Vector2(
+									UIController.s_CanvasScaler.referenceResolution.x / Screen.width,
+									UIController.s_CanvasScaler.referenceResolution.y / Screen.height
+			);
+
+		Vector3 objPos = new Vector2(
+									(data.position.x - Screen.width * 0.5f) * scaleFactor.x,
+									(data.position.y - Screen.height * 0.5f) * scaleFactor.y
+			);
+		
+		s_draggableObject.transform.localPosition = objPos;
+
 	}
 
 	public override void OnEndDrag (PointerEventData data) 

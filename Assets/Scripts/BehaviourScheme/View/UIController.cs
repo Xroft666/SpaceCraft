@@ -12,6 +12,7 @@ public class UIController : MonoBehaviour
 
 	public static Camera s_UICamera;
 	public static Canvas s_Canvas;
+	public static CanvasScaler s_CanvasScaler;
 
 	public GameObject m_selectionGroupPrefab;
 
@@ -33,6 +34,7 @@ public class UIController : MonoBehaviour
 
 		s_UICamera = transform.GetComponentInParent<Camera>();
 		s_Canvas = transform.GetComponentInParent<Canvas>();
+		s_CanvasScaler = transform.GetComponentInParent<CanvasScaler>();
 	}
 
 	private void Start()
@@ -93,8 +95,12 @@ public class UIController : MonoBehaviour
 
 	public void OnContainerUpdated( ContainerView container )
 	{
-		selections[container].transform.localPosition = Camera.main.WorldToScreenPoint( container.transform.position );
-		
+
+		Vector3 screenPos = Camera.main.WorldToScreenPoint( container.transform.position ); 
+
+		selections[container].transform.localPosition = new Vector3( screenPos.x * s_CanvasScaler.referenceResolution.x / Screen.width,
+		                                                            screenPos.y * s_CanvasScaler.referenceResolution.y / Screen.height);
+
 		Ship ship = container.m_contain as Ship;
 		Asteroid aster = container.m_contain as Asteroid;
 		
@@ -135,6 +141,7 @@ public class UIController : MonoBehaviour
 	private void GenerateNewSelection( ContainerView container )
 	{
 		Vector2 selectionScreenPos = Camera.main.WorldToScreenPoint( container.transform.position );
+	//	selectionScreenPos = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
 
 		GameObject newSelection = Instantiate(m_selectionGroupPrefab);
 		newSelection.transform.parent = m_selectListTransform;
@@ -142,6 +149,9 @@ public class UIController : MonoBehaviour
 		RectTransform newSelectTransform = newSelection.GetComponent<RectTransform>();
 		newSelectTransform.localPosition = selectionScreenPos;
 		newSelectTransform.localRotation = Quaternion.identity;
+
+		newSelectTransform.anchorMin = Vector2.zero;
+		newSelectTransform.anchorMax = Vector2.zero;
 
 		newSelectTransform.localScale = Vector3.one;
 
