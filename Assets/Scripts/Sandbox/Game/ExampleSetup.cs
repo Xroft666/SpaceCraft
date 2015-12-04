@@ -18,7 +18,26 @@ public class ExampleSetup : MonoBehaviour {
 		for( int i = 0; i < 50; i++ )
 		{
 			enemyShip.AddToCargo( GenerateMissile() );
+			myShip.AddToCargo( GenerateMissile() );
 		}
+
+		myShip.AddToCargo( GenerateHeatSeeker(1f) );
+		myShip.AddToCargo( GenerateInclusiveEngineModule() );
+		myShip.AddToCargo( GenerateInclusiveInputModule() );
+		myShip.AddToCargo( GenerateNavigator() );
+		myShip.AddToCargo( GenerateTimeBomb(1f) );
+		myShip.AddToCargo( GenerateWarhead(1f) );
+
+		myShip.AddToCargo( new DDetonator(){EntityName = "Detonator"} );
+		myShip.AddToCargo( new DEngine(){EntityName = "Engine"} );
+		myShip.AddToCargo( new DInputModule(){EntityName = "InputModule"} );
+		myShip.AddToCargo( new DLauncher(){EntityName = "Launcher"} );
+		myShip.AddToCargo( new DMagnet(){EntityName = "Magnet"} );
+		myShip.AddToCargo( new DPatrolModule(){EntityName = "PatrolModule"} );
+		myShip.AddToCargo( new DRanger(){EntityName = "Ranger"} );
+		myShip.AddToCargo( new DSteerModule(){EntityName = "SteerModule"} );
+		myShip.AddToCargo( new DTimer(){EntityName = "Timer"} );
+		myShip.AddToCargo( new DTradeComputer(){EntityName = "TradeComputer"} );
 
 		for( int i = 0; i < 100; i++ )
 		{
@@ -114,6 +133,7 @@ public class ExampleSetup : MonoBehaviour {
 		ship.IntegratedDevice.InstallDevice(trader);
 
 		SetUpFightingBlueprint(ship.IntegratedDevice);
+		//SetupMiningBlueprint( ship.IntegratedDevice );
 		
 		ContainerView shipView = WorldManager.SpawnContainer( ship, Vector3.forward * 3f, Quaternion.identity, 2 );
 		shipView.GetComponentInChildren<Renderer>().sharedMaterial.color = Color.red;

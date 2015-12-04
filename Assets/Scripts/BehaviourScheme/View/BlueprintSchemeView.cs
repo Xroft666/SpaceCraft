@@ -44,11 +44,11 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 			PositionNode( node );
 
 //		ConflictsTraverse(device.Blueprint.m_entryPoint);
-//		GenerateConnections(device.Blueprint.m_entryPoint);
+		GenerateConnections(device.Blueprint.m_entryPoint);
 
-//		Rect box = new Rect();
-//		GetBoundingBox(device.Blueprint.m_entryPoint, ref box); 
-//		blueprintRect.sizeDelta = new Vector3(box.width * horizDistance * 1.5f, -box.height * vertDistance * 5f + box.height * vertDistance * 2.5f);
+		Rect box = new Rect();
+		GetBoundingBox(device.Blueprint.m_entryPoint, ref box); 
+		blueprintRect.sizeDelta = new Vector3(box.width * horizDistance * 1.5f, -box.height * vertDistance * 5f + box.height * vertDistance * 2.5f);
 	}
 
 
