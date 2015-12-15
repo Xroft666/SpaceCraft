@@ -15,6 +15,7 @@ public class UIController : MonoBehaviour
 	public static CanvasScaler s_CanvasScaler;
 
 	public GameObject m_selectionGroupPrefab;
+	public Sprite m_spriteTexture;
 
 	public RectTransform m_selectListTransform;
 	public RectTransform m_commandsTransform;
@@ -51,6 +52,9 @@ public class UIController : MonoBehaviour
 	{
 		if( Input.GetKeyUp(KeyCode.R) )
 		{
+			WorldManager.Cleanup();
+			Random.seed++;
+			Debug.Log(Random.seed);
 			Application.LoadLevel( Application.loadedLevel );
 		}
 

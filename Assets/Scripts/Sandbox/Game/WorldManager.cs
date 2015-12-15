@@ -39,7 +39,12 @@ public class WorldManager : MonoBehaviour
 		container.Destroy();
 //		container.View.gameObject.SetActive( false );
 	}
-	
+
+	public static void Cleanup()
+	{
+		World = null;
+		s_containersCache.Clear();
+	}
 
 	public static void GenerateAsteroid( Vector3 position, float rotation, float volume)
 	{

@@ -28,6 +28,7 @@ public class NodeViewDock : MonoBehaviour, IDropHandler, IBeginDragHandler, IDra
 	private void Awake()
 	{
 		m_image = gameObject.AddComponent<Image>();
+		m_image.sprite = UIController.Instance.m_spriteTexture;
 	}
 
 	private void Update()
@@ -67,6 +68,7 @@ public class NodeViewDock : MonoBehaviour, IDropHandler, IBeginDragHandler, IDra
 		m_draggablekTr.sizeDelta = Vector2.one * 10;
 		
 		Image dragImg = s_currentlyDragged.AddComponent<Image>();
+		dragImg.sprite = UIController.Instance.m_spriteTexture;
 		dragImg.raycastTarget = false;
 	}
 
@@ -80,6 +82,7 @@ public class NodeViewDock : MonoBehaviour, IDropHandler, IBeginDragHandler, IDra
 		m_lineRect.pivot = Vector2.up * 0.5f;
 		
 		Image lineimg = m_line.AddComponent<Image>();
+		lineimg.sprite = UIController.Instance.m_spriteTexture;
 		lineimg.raycastTarget = false;
 	}
 

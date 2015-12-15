@@ -332,6 +332,8 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 		backTransf.SetParent(transf, false);
 		
 		Image backImg = background.AddComponent<Image>();
+		backImg.sprite = UIController.Instance.m_spriteTexture;
+
 		if( actionNode != null )
 		{
 			if( actionNode.m_device.GetFunction( actionNode.m_actionName ) == null )

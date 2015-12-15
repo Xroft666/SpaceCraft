@@ -8,7 +8,7 @@ public class ExampleSetup : MonoBehaviour {
 
 	private void Start()
 	{
-//		WorldManager.SpawnContainer (GenerateMotherBase(), new Vector3(5f, 0f, 5f), Quaternion.identity, 2 );
+		WorldManager.SpawnContainer (GenerateMotherBase(), new Vector3(5f, 0f, 5f), Quaternion.identity, 2 );
 
 
 		Ship enemyShip = GeneratePatrolShip();
@@ -39,6 +39,8 @@ public class ExampleSetup : MonoBehaviour {
 		myShip.AddToCargo( new DTimer(){EntityName = "Timer"} );
 		myShip.AddToCargo( new DTradeComputer(){EntityName = "TradeComputer"} );
 
+
+		//Random.seed = 7;
 		for( int i = 0; i < 100; i++ )
 		{
 			Vector3 pos = Vector3.zero;
@@ -132,8 +134,8 @@ public class ExampleSetup : MonoBehaviour {
 		ship.IntegratedDevice.InstallDevice(magnet);
 		ship.IntegratedDevice.InstallDevice(trader);
 
-		SetUpFightingBlueprint(ship.IntegratedDevice);
-		//SetupMiningBlueprint( ship.IntegratedDevice );
+		//SetUpFightingBlueprint(ship.IntegratedDevice);
+		SetupMiningBlueprint( ship.IntegratedDevice );
 		
 		ContainerView shipView = WorldManager.SpawnContainer( ship, Vector3.forward * 3f, Quaternion.identity, 2 );
 		shipView.GetComponentInChildren<Renderer>().sharedMaterial.color = Color.red;
@@ -186,6 +188,9 @@ public class ExampleSetup : MonoBehaviour {
 	
 	private static void SetupMiningBlueprint( Device device )
 	{
+		BSEntry rootEntry = 
+			device.GetEntry("RootEntry");
+
 		BSSelect rootDecision = device.Blueprint.CreateBranch("Root");
 				
 		
@@ -243,7 +248,8 @@ public class ExampleSetup : MonoBehaviour {
 		BSAction sellResouces = device.Blueprint.CreateAction( "LoadItemsFrom", stationTrader );
 		sellResouces.ConnectToQuery( tradeAsteroid );
 		
-		device.Blueprint.m_entryPoint.AddChild(rootDecision);
+		//device.Blueprint.m_entryPoint.AddChild(rootDecision);
+		rootEntry.AddChild( rootDecision );
 		
 		rootDecision.AddCondition( device.GetInternalDevice("enemydetector"), "IsAnyTarget" );
 		

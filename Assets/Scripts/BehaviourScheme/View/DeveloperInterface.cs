@@ -322,7 +322,7 @@ public class DeveloperInterface : MonoBehaviour
 		backTransf.SetParent(transf, false);
 
 		Image backImg = background.AddComponent<Image>();
-
+		backImg.sprite = UIController.Instance.m_spriteTexture;
 
 		GameObject textGO = new GameObject("text", typeof(RectTransform));
 		RectTransform textTransf = textGO.GetComponent<RectTransform>();

@@ -2271,7 +2271,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: e297ba000b7ede34faf05a7c66bd843b, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3032,6 +3032,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_selectionGroupPrefab: {fileID: 188834, guid: bc012b2ac1ed2f24cb74d09e5ba80383,
     type: 2}
+  m_spriteTexture: {fileID: 21300000, guid: e297ba000b7ede34faf05a7c66bd843b, type: 3}
   m_selectListTransform: {fileID: 378983516}
   m_commandsTransform: {fileID: 1638227021}
   m_hpBarTransform: {fileID: 1182127005}

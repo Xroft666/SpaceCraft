@@ -171,7 +171,7 @@ namespace SpaceSandbox
 				existenceFlag = false;
 				foreach( Device inclusiveDevice in device.m_integratedDevices )
 				{
-					if( inclusiveDevice.EntityName.Equals( hierarchy[i] ) )
+					if( inclusiveDevice.EntityName.ToLower().Equals( hierarchy[i].ToLower() ) )
 					{
 						existenceFlag = true;
 						device = inclusiveDevice;
