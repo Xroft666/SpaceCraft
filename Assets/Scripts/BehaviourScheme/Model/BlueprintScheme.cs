@@ -11,17 +11,19 @@ namespace SpaceSandbox
 {
 	public class BlueprintScheme : Entity 
 	{
+		private Device m_blueprintDevice;
+
+		public List<BSNode> m_nodes;
+
+		public BSEntry m_entryPoint;
+		public TasksRunner tasksRunner;
+
 		public BlueprintScheme( Device device )
 		{
 			m_blueprintDevice = device;
+			tasksRunner = new TasksRunner ();
+			m_nodes = new List<BSNode> ();
 		}
-
-		private Device m_blueprintDevice;
-
-		public List<BSNode> m_nodes = new List<BSNode>();
-
-		public BSEntry m_entryPoint;
-		public TasksRunner tasksRunner = new TasksRunner();
 
 		public void RunLogicTree( DeviceTrigger evt )
 		{
@@ -73,7 +75,6 @@ namespace SpaceSandbox
 		public BSEntry CreateEntry( string eventName, Device device)
 		{
 			BSEntry node = new BSEntry() { m_scheme = this, m_name = "Entry", m_type = eventName };
-			//device.AddEntry( eventName, node.Traverse );
 			device.AddEntry( eventName, node );
 
 			m_nodes.Add(node);
@@ -91,7 +92,6 @@ namespace SpaceSandbox
 		
 		public BSExit CreateExit( string eventName, Device device)
 		{
-			//DeviceTrigger entry = device.GetEntry(eventName);
 			BSExit node = new BSExit() { m_scheme = this, m_entryName = eventName, m_device = device, m_name = "Exit", m_type = eventName };
 
 			m_nodes.Add(node);
@@ -129,10 +129,6 @@ namespace SpaceSandbox
 			m_nodes.Add(node);
 			return node;
 		}
-
-		// public BSWhile CreateWhile(){}
-
-
 
 		public void ConnectElements( BSNode left, BSNode right )
 		{

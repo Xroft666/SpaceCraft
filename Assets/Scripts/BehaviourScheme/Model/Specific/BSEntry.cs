@@ -5,14 +5,10 @@ namespace BehaviourScheme
 {
 	public class BSEntry : BSNode
 	{
-
 		public override void Traverse()
 		{
 			foreach( BSNode node in m_children )
 				node.Traverse();
-
-//			if( m_connectNode != null )
-//				m_connectNode.Traverse();
 		}
 	}
 }

@@ -13,8 +13,14 @@ namespace BehaviourScheme
 		public string m_type;
 		public string m_name;
 
-		public List<BSNode> m_parents = new List<BSNode>();
-		public List<BSNode> m_children = new List<BSNode>();
+		public List<BSNode> m_parents;
+		public List<BSNode> m_children;
+
+		public BSNode()
+		{
+			m_parents = new List<BSNode>();
+        	m_children = new List<BSNode>();
+		}
 		
 		public void AddChild( BSNode node )
 		{

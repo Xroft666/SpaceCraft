@@ -250,10 +250,7 @@ namespace SpaceSandbox
 
 		public void AddEntry ( string name, BSEntry trigger )
 		{
-			//if( m_entries.ContainsKey(name) )
-			//	m_entries[name] += trigger ;
-			//else
-				m_entries.Add(name, trigger);
+			m_entries.Add(name, trigger);
 		}
 
 		public BSEntry GetEntry( string name )

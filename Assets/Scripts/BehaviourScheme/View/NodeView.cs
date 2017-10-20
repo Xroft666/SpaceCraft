@@ -13,9 +13,6 @@ public delegate void NodeViewClick( NodeView view );
 // it s a monobehaviour, so it contains all the callbacks, visuals and references 
 public class NodeView : MonoBehaviour, IPointerClickHandler, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
-	// blueprint position
-//	public float x;
-//	public float y;
 //	[HideInInspector]
 	public Vector2 globalOffset;
 
