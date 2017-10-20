@@ -12,7 +12,7 @@ public class UIController : MonoBehaviour
 
 	public static Camera s_UICamera;
 	public static Canvas s_Canvas;
-	public static CanvasScaler s_CanvasScaler;
+	//public static CanvasScaler s_CanvasScaler;
 
 	public GameObject m_selectionGroupPrefab;
 	public Sprite m_spriteTexture;
@@ -23,19 +23,22 @@ public class UIController : MonoBehaviour
 	public RectTransform m_devInterface;
 	
 
-	private Dictionary<ContainerView, GameObject> selections = new Dictionary<ContainerView, GameObject>();
+	private Dictionary<ContainerView, GameObject> selections;
 
-	private CommandsStack commands = new CommandsStack();
+	private CommandsStack commands;
 	private DeveloperInterface devUI;
 
 	private void Awake()
 	{
 		Instance = this;
-		devUI = m_devInterface.GetComponent<DeveloperInterface>();
 
-		s_UICamera = transform.GetComponentInParent<Camera>();
-		s_Canvas = transform.GetComponentInParent<Canvas>();
-		s_CanvasScaler = transform.GetComponentInParent<CanvasScaler>();
+		selections = new Dictionary<ContainerView, GameObject>();
+		commands = new CommandsStack();
+
+		devUI = m_devInterface.GetComponent<DeveloperInterface>();
+		s_UICamera = transform.GetComponentInChildren<Camera>();
+		s_Canvas = transform.GetComponentInChildren<Canvas>();
+		//s_CanvasScaler = transform.GetComponentInParent<CanvasScaler>();
 	}
 
 	private void Start()
@@ -99,32 +102,27 @@ public class UIController : MonoBehaviour
 
 	public void OnContainerUpdated( ContainerView container )
 	{
+		var position = Vector3.zero;
+		position.x = container.transform.position.x;
+		position.z = container.transform.position.z;
+		position.y = 25f;
 
-		Vector3 screenPos = Camera.main.WorldToScreenPoint( container.transform.position ); 
+		Camera.main.transform.position = position;
 
-		selections[container].transform.localPosition = new Vector3( screenPos.x * s_CanvasScaler.referenceResolution.x / Screen.width,
-		                                                            screenPos.y * s_CanvasScaler.referenceResolution.y / Screen.height);
 
-		Ship ship = container.m_contain as Ship;
-		Asteroid aster = container.m_contain as Asteroid;
+		var screenPos = Camera.main.WorldToScreenPoint( container.transform.position ); 
+		selections [container].transform.localPosition = screenPos;
+
+		var ship = container.m_contain as Ship;
+		var aster = container.m_contain as Asteroid;
 		
 		if( ship != null )
-			selections[container].transform.FindChild("Cargo").GetComponent<Text>().text = "Cargo: " +
+			selections[container].transform.Find("Cargo").GetComponent<Text>().text = "Cargo: " +
 				ship.m_cargo.SpaceTaken.ToString("0.0") + " / " + ship.m_cargo.Capacity.ToString("0.0");
 		
 		if( aster != null )
-			selections[container].transform.FindChild("Cargo").GetComponent<Text>().text = "Cargo: " +
+			selections[container].transform.Find("Cargo").GetComponent<Text>().text = "Cargo: " +
 				aster.Containment.Amount.ToString("0.0");
-
-
-
-		Vector3 position = Vector3.zero;
-		position.x = container.transform.position.x;
-		position.z = container.transform.position.z;
-		position.y = Camera.main.transform.position.y;
-
-
-		Camera.main.transform.position = position;
 	}
 
 	public void OnContainerDeveloperConsole( ContainerView container )
@@ -159,7 +157,7 @@ public class UIController : MonoBehaviour
 
 		newSelectTransform.localScale = Vector3.one;
 
-		newSelection.transform.FindChild("Name").GetComponent<Text>().text = container.name;
+		newSelection.transform.Find("Name").GetComponent<Text>().text = container.name;
 
 		
 		selections.Add( container, newSelection );

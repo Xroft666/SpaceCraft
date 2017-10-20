@@ -75,8 +75,9 @@ public class ExampleSetup : MonoBehaviour {
 
 		timeBomb.GetInternalDevice("warhead/ranger").m_isActive = false;
 		heatSeeker.GetInternalDevice("ranger").m_isActive = false;
-		Job.make( timeBomb.DeactivateDevice( null ), true);
-    	Job.make( heatSeeker.DeactivateDevice( null), true );
+
+		timeBomb.DeactivateDevice();
+    	heatSeeker.DeactivateDevice();
 
 
 		BSEntry onTimer = missile.IntegratedDevice.Blueprint.CreateTrigger( "OnTimerComplete", activeTimer );
@@ -166,7 +167,6 @@ public class ExampleSetup : MonoBehaviour {
 		BSAction shootTarget = device.Blueprint.CreateAction( "Fire", device.GetInternalDevice("launcher") );
 		BSAction disableEngineToCollect = device.Blueprint.CreateAction("DeactivateDevice", device.GetInternalDevice("navigator/engine"));
 
-//		device.Blueprint.m_entryPoint.AddChild(rootDecision);
 		rootEntry.AddChild( rootDecision );
 		
 		rootDecision.AddCondition( device.GetInternalDevice("enemydetector"), "IsAnyTarget" );

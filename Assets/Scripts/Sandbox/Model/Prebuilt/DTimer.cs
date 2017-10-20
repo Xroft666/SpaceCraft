@@ -33,22 +33,20 @@ public class DTimer : Device
 
 	#region device's interface implementation
 
-	public override IEnumerator ActivateDevice ( DeviceQuery qry )//EventArgs args )
+	public override void ActivateDevice ()
 	{
-		m_isActive = true;
+		base.ActivateDevice ();
+
 		if( m_timeText != null )
 			m_timeText.gameObject.SetActive(true);
-
-		yield break;
 	} 
 	
-	public override IEnumerator DeactivateDevice( DeviceQuery qry )//EventArgs args )
+	public override void DeactivateDevice()
 	{
-		m_isActive = false;
+		base.DeactivateDevice ();
+
 		if( m_timeText != null )
 			m_timeText.gameObject.SetActive(false);
-
-		yield break;
 	}
 
 	public override void OnDeviceInstalled()

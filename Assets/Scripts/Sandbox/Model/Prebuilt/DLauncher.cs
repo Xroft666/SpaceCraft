@@ -41,7 +41,7 @@ public class DLauncher : Device
 			Rigidbody rigid = projectile.GetComponent<Rigidbody>();
 			rigid.velocity = m_containerAttachedTo.View.GetComponent<Rigidbody>().velocity;
 
-			projectile.transform.FindChild("body").localScale = new Vector3(0.25f, 1f, 1f);
+			projectile.transform.Find("body").localScale = new Vector3(0.25f, 1f, 1f);
 
 			Ship containerController = projectile.m_contain as Ship;
 			if(containerController != null )

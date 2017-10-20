@@ -19,7 +19,7 @@ public class DPatrolModule : Device
 	private int currentTargetIdx = 0;
 	private float distanceTreshold = 1.5f;
 
-	private NavMeshPath path = new NavMeshPath();
+	private UnityEngine.AI.NavMeshPath path = new UnityEngine.AI.NavMeshPath();
 	
 	#region device's functions
 
@@ -56,7 +56,7 @@ public class DPatrolModule : Device
 	public IEnumerator GetWaypointsList( DeviceQuery qry )//EventArgs args)
 	{
 		ArgsObject pArgs = qry.Invoke() as ArgsObject;
-		NavMesh.CalculatePath( m_containerAttachedTo.View.transform.position, (Vector3) pArgs.obj, NavMesh.AllAreas, path );
+		UnityEngine.AI.NavMesh.CalculatePath( m_containerAttachedTo.View.transform.position, (Vector3) pArgs.obj, UnityEngine.AI.NavMesh.AllAreas, path );
 
 		currentNavigationIdx = 0;
 		m_navPoint = path.corners;
@@ -132,7 +132,7 @@ public class DPatrolModule : Device
 
 	public ArgsList GetWaypoints()
 	{
-		NavMesh.CalculatePath( m_containerAttachedTo.View.transform.position, m_targetPosition, NavMesh.AllAreas, path );	
+		UnityEngine.AI.NavMesh.CalculatePath( m_containerAttachedTo.View.transform.position, m_targetPosition, UnityEngine.AI.NavMesh.AllAreas, path );	
 		currentNavigationIdx = 0;
 		m_navPoint = path.corners;
 

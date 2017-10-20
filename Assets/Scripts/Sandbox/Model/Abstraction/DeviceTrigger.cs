@@ -20,16 +20,6 @@ namespace SpaceSandbox
 		public string name;
 	}
 
-//	public class PositionArgs : EventArgs
-//	{
-//		public Vector3 position;
-//	}
-//
-//	public class PositionsListArgs : EventArgs
-//	{
-//		public Vector3[] positions;
-//	}
-
 	public class KeyCodeArgs : EventArgs
 	{
 		public KeyCode key;

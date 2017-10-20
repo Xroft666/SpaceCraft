@@ -8,12 +8,16 @@ public delegate void OnScrollViewHandler(PointerEventData data, DraggableItemsSc
 
 public class DraggableItemsScrollRect : ScrollRect, IDropHandler
 {
-	public Dictionary<DraggableItemsScrollRect, OnScrollViewHandler> m_onDropHandlers = new Dictionary<DraggableItemsScrollRect, OnScrollViewHandler>();
+	public Dictionary<DraggableItemsScrollRect, OnScrollViewHandler> m_onDropHandlers;
 
 
 	public static GameObject s_draggableObject = null;
 	public static DraggableItemsScrollRect s_ViewDraggedFrom = null;
 
+	private void Awake()
+	{
+		m_onDropHandlers = new Dictionary<DraggableItemsScrollRect, OnScrollViewHandler>();
+	}
 
 	public override void OnBeginDrag (PointerEventData data) 
 	{
@@ -37,16 +41,17 @@ public class DraggableItemsScrollRect : ScrollRect, IDropHandler
 		if( s_draggableObject == null )
 			return;
 
-		Vector2 scaleFactor = new Vector2(
-									UIController.s_CanvasScaler.referenceResolution.x / Screen.width,
-									UIController.s_CanvasScaler.referenceResolution.y / Screen.height
-			);
+		//Vector2 scaleFactor = new Vector2(
+		//							UIController.s_CanvasScaler.referenceResolution.x / Screen.width,
+		//							UIController.s_CanvasScaler.referenceResolution.y / Screen.height
+		//	);
 
-		Vector3 objPos = new Vector2(
-									(data.position.x - Screen.width * 0.5f) * scaleFactor.x,
-									(data.position.y - Screen.height * 0.5f) * scaleFactor.y
-			);
-		
+		//Vector3 objPos = new Vector2(
+		//							(data.position.x - Screen.width * 0.5f) * scaleFactor.x,
+		//							(data.position.y - Screen.height * 0.5f) * scaleFactor.y
+		//	);
+
+		Vector3 objPos = new Vector2 (data.position.x - Screen.width * 0.5f, data.position.y - Screen.height * 0.5f);
 		s_draggableObject.transform.localPosition = objPos;
 
 	}

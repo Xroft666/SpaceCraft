@@ -1,0 +1,19 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+RWStructuredBuffer<float3> _origPos;
+RWStructuredBuffer<float3> _pos;
+
+float _Time;
+//float4 _Time;
+
+[numthreads(1, 1, 1)]
+void CSMain( uint3 Gid : SV_GroupID, uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint GI : SV_GroupIndex )
+{
+	int i = DTid.x * 100 * 100 + DTid.y * 100 + DTid.z;
+	float t = _Time;
+
+	_pos[i].x = _origPos[i].x + sin ((t + i) * 1.17f);
+	_pos[i].y = _origPos[i].y + sin ((t - i) * 1.0f);
+	_pos[i].z = _origPos[i].z + cos ((t + i) * 1.87f);
+}

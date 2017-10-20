@@ -30,7 +30,6 @@ namespace SpaceSandbox
 		}
 
 		public void FireEvent( Device actionDevice, string actionName, Device queryDevice, string queryName )
-			//DeviceAction evt, DeviceQuery data)
 		{
 			TasksRunner containersPlanner = m_blueprintDevice.m_containerAttachedTo.IntegratedDevice.Blueprint.tasksRunner;
 

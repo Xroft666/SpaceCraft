@@ -26,7 +26,7 @@ namespace SpaceSandbox
 //			Rigidbody2D rigid = newContainer.AddComponent<Rigidbody2D>();
 			Rigidbody rigid = newContainer.AddComponent<Rigidbody>();
 			ContainerView view = newContainer.AddComponent<ContainerView>();
-			NavMeshObstacle navMeshObstacle = newContainer.AddComponent<NavMeshObstacle>();
+			UnityEngine.AI.NavMeshObstacle navMeshObstacle = newContainer.AddComponent<UnityEngine.AI.NavMeshObstacle>();
 
 			
 			view.m_contain = this;
@@ -80,7 +80,7 @@ namespace SpaceSandbox
 			renderer.sharedMaterial = new UnityEngine.Material(Shader.Find("Diffuse"));
 
 
-			navMeshObstacle.shape = NavMeshObstacleShape.Capsule;
+			navMeshObstacle.shape = UnityEngine.AI.NavMeshObstacleShape.Capsule;
 			navMeshObstacle.carving = true;
 			navMeshObstacle.carveOnlyStationary = false;
 			navMeshObstacle.radius = size + 1f;

@@ -29,7 +29,7 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 
 	private void Awake()
 	{
-		blueprintRect = transform.FindChild("BlueprintView/Content") as RectTransform;
+		blueprintRect = transform.Find("BlueprintView/Content") as RectTransform;
 	}
 
 	public void InitializeView( Device device, DeveloperInterface devInterface )

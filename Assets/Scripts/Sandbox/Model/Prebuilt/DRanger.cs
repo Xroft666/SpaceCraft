@@ -14,7 +14,6 @@ public class DRanger : Device
 
 	private List<ContainerView> m_targets = new List<ContainerView>();
 
-//	private CircleCollider2D m_collider = null;
 	private SphereCollider m_collider = null;
 
 	public override void OnDeviceInstalled()
@@ -39,28 +38,26 @@ public class DRanger : Device
 		RemoveQuery("CurrentTargetContainer");
 	}
 
-	public override IEnumerator ActivateDevice ( DeviceQuery qry )//EventArgs args )
+	public override void ActivateDevice ( )
 	{
-		m_isActive = true;
+		base.ActivateDevice ();
+
 		if( m_collider != null )
 			m_collider.enabled = true;
 
 		m_targets.Clear();
-		yield break;
 	} 
 
-	public override IEnumerator DeactivateDevice( DeviceQuery qry )//EventArgs args)
+	public override void DeactivateDevice( )
 	{
-		m_isActive = false;
+		base.DeactivateDevice ();
 		if( m_collider != null )
 			m_collider.enabled = false;
 
 		m_targets.Clear();
-
-		yield break;
 	}
 
-	private IEnumerator DesignateClosestTarget( DeviceQuery qry )//EventArgs args )
+	private IEnumerator DesignateClosestTarget( DeviceQuery qry )
 	{
 		ContainerView thisContainer = m_containerAttachedTo.View;
 		
@@ -110,17 +107,14 @@ public class DRanger : Device
 		
 		rangerGO.transform.SetParent( m_containerAttachedTo.View.transform, false );
 
-//		Rigidbody2D rigid = rangerGO.AddComponent<Rigidbody2D>();
 		Rigidbody rigid = rangerGO.AddComponent<Rigidbody>();
 		rigid.isKinematic = true;
 
-//		m_collider = rangerGO.AddComponent<CircleCollider2D>();
 		m_collider = rangerGO.AddComponent<SphereCollider>();
 		m_collider.isTrigger = true;
 		m_collider.radius = detectionRange;
 		m_collider.enabled = m_isActive;
-		
-//		EventTrigger2DHandler trigger = rangerGO.AddComponent<EventTrigger2DHandler>();
+
 		EventTriggerHandler trigger = rangerGO.AddComponent<EventTriggerHandler>();
 		trigger.onTriggerEnter += OnColliderEntered;
 		trigger.onTriggerExit += OnColliderEscaped;
@@ -128,11 +122,10 @@ public class DRanger : Device
 
 	public override void Destroy()
 	{
-//		Component.Destroy(m_collider);
 		GameObject.Destroy( m_collider.gameObject );
 	}
 
-	private void OnColliderEntered( Collider other )//Collider2D other )
+	private void OnColliderEntered( Collider other )
 	{
 
 		if( !IsColliderMine( other ))
@@ -148,9 +141,6 @@ public class DRanger : Device
 			{
 				DeviceTrigger onEnter = GetTrigger("OnRangerEntered");
 				if( onEnter != null )
-					//m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onEnter, null)
-					//ScheduleEvent( onEnter, null);
-					//onEnter(null);
 					onEnter();
 
 				m_targets.Add( othersView );
@@ -163,7 +153,7 @@ public class DRanger : Device
 		}
 	}
 
-	private void OnColliderEscaped( Collider other )//Collider2D other )
+	private void OnColliderEscaped( Collider other )
 	{
 		if( !IsColliderMine( other ))
 		{
@@ -176,16 +166,13 @@ public class DRanger : Device
 
 			DeviceTrigger onExit = GetTrigger("OnRangerEscaped");
 			if( onExit != null )
-			//	m_containerAttachedTo.IntegratedDevice.ScheduleEvent( onExit, null);
-			//	ScheduleEvent( onExit, null);
-			//	onExit(null);
 				onExit.Invoke();
 
 			m_targets.Remove( othersView );
 		}
 	}
 
-	private bool IsColliderMine( Collider collider )//Collider2D collider)
+	private bool IsColliderMine( Collider collider )
 	{
 		// check all the colliders on the container
 		return m_containerAttachedTo.View.gameObject == collider.transform.root.gameObject;

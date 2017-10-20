@@ -11,6 +11,7 @@ using UnityEngine.EventSystems;
 
 public class DeveloperInterface : MonoBehaviour
 {
+	[SerializeField]
 	private DraggableItemsScrollRect	m_actionsScrollView,
 										m_eventsScrollView,
 										m_controlsScrollView,
@@ -18,9 +19,12 @@ public class DeveloperInterface : MonoBehaviour
 										m_installedScrollView,
 										m_queriesScrollView;
 
+	[SerializeField]
 	private BlueprintSchemeView m_blueprintView;
 
 	private float m_buttonsDistance = 20f;
+
+	[SerializeField]
 	private Text m_pathText;
 
 	private Ship selectedShip;
@@ -28,18 +32,18 @@ public class DeveloperInterface : MonoBehaviour
 
 	private void Awake()
 	{
-		m_pathText = transform.FindChild("Names/path").GetComponent<Text>();
+		//m_pathText = transform.Find("Names/path").GetComponent<Text>();
 		m_pathText.raycastTarget = true;
 		Button pathBtn = m_pathText.gameObject.AddComponent<Button>();
 		pathBtn.onClick.AddListener(() => { OnPathButtonHandler(); });
 
 
-		m_actionsScrollView = transform.FindChild("Actions").GetComponent<DraggableItemsScrollRect>();
-		m_eventsScrollView = transform.FindChild("Events").GetComponent<DraggableItemsScrollRect>();
-		m_controlsScrollView = transform.FindChild("Controls").GetComponent<DraggableItemsScrollRect>();
-		m_cargoScrollView = transform.FindChild("Cargo").GetComponent<DraggableItemsScrollRect>();
-		m_installedScrollView = transform.FindChild("Installed").GetComponent<DraggableItemsScrollRect>();
-		m_queriesScrollView = transform.FindChild("Queries").GetComponent<DraggableItemsScrollRect>();
+		//m_actionsScrollView = transform.Find("Actions").GetComponent<DraggableItemsScrollRect>();
+		//m_eventsScrollView = transform.Find("Events").GetComponent<DraggableItemsScrollRect>();
+		//m_controlsScrollView = transform.Find("Controls").GetComponent<DraggableItemsScrollRect>();
+		//m_cargoScrollView = transform.Find("Cargo").GetComponent<DraggableItemsScrollRect>();
+		//m_installedScrollView = transform.Find("Installed").GetComponent<DraggableItemsScrollRect>();
+		//m_queriesScrollView = transform.Find("Queries").GetComponent<DraggableItemsScrollRect>();
 
 
 
@@ -48,7 +52,7 @@ public class DeveloperInterface : MonoBehaviour
 
 
 
-		m_blueprintView = transform.FindChild("Blueprint").GetComponent<BlueprintSchemeView>();
+		//m_blueprintView = transform.Find("Blueprint").GetComponent<BlueprintSchemeView>();
 
 
 		m_blueprintView.m_onDropHandlers[m_actionsScrollView] = OnActionsToBlueprintDropped;

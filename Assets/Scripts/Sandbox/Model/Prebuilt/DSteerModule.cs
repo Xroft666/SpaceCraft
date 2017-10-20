@@ -25,11 +25,7 @@ public class DSteerModule : Device
 		if( onSteerStart != null )
 			onSteerStart();
 
-//		Vector2 worldPos = (Vector2) pArgs.position;
 		Vector3 worldPos = (Vector3) pArgs.obj;
-
-//		m_rigidbody.angularVelocity = 0f;
-//		m_rigidbody.rotation = Mathf.Repeat( m_rigidbody.rotation, 360f );
 
 		m_rigidbody.angularVelocity = Vector3.zero;
 
@@ -40,20 +36,10 @@ public class DSteerModule : Device
 		{
 			Quaternion targetRotation = Quaternion.LookRotation( ( worldPos - m_rigidbody.position).normalized );
 
-//			prevAngle = Mathf.DeltaAngle( m_rigidbody.rotation , CurrentAngle(worldPos)) ;
 			prevAngle = Quaternion.Angle( m_rigidbody.rotation, targetRotation );
-						//Vector3.Angle( m_rigidbody.rotation * Vector3.forward, ( worldPos - m_rigidbody.position).normalized);
-
-//			m_rigidbody.rotation =
-//						Mathf.MoveTowardsAngle( m_rigidbody.rotation, 
-//			            CurrentAngle(worldPos), 
-//			            torqueSpeed * Time.deltaTime );
-
 			m_rigidbody.rotation = Quaternion.RotateTowards(m_rigidbody.rotation, targetRotation, torqueSpeed * Time.deltaTime );
 
-//			currentAngle = Mathf.DeltaAngle( m_rigidbody.rotation , CurrentAngle(worldPos)) ;
 			currentAngle = Quaternion.Angle( m_rigidbody.rotation, targetRotation );
-							//Vector3.Angle( m_rigidbody.rotation * Vector3.forward, ( worldPos - m_rigidbody.position).normalized);
 	
 			yield return null;
 		}
@@ -86,7 +72,6 @@ public class DSteerModule : Device
 
 	public override void Initialize()
 	{
-//		m_rigidbody = m_containerAttachedTo.View.GetComponent<Rigidbody2D>();
 		m_rigidbody = m_containerAttachedTo.View.GetComponent<Rigidbody>();
 	}
 
@@ -96,11 +81,4 @@ public class DSteerModule : Device
 	}
 
 	#endregion
-
-
-//	private float CurrentAngle( Vector3 worldPos )
-//	{
-//		Vector3 direction = ( (Vector2) worldPos - m_rigidbody.position).normalized;
-//		return Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
-//	}
 }

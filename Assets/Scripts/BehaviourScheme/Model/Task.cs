@@ -46,7 +46,8 @@ public class Task
 
 	public IEnumerator DummyExecution()
 	{
-		Debug.Log("Device function is missing!");
+		//Debug.Log("Device function is missing!");
+		throw new Exception("Device function is missing!");
 		yield return null;
 	}
 }

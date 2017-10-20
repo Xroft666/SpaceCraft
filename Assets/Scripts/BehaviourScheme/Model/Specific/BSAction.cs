@@ -8,7 +8,6 @@ namespace BehaviourScheme
 {
 	public class BSAction : BSNode 
 	{
-		//public SpaceSandbox.DeviceAction m_action;
 		public Device m_device;
 		public string m_actionName;
 
@@ -28,20 +27,14 @@ namespace BehaviourScheme
 
 		public override void Traverse()
 		{
-			//DeviceQuery query = null;
 			Device queryDevice = null;
 			string queryName = null;
 
 			if( m_queryNode != null )
 			{
-			//	query = m_queryNode.m_query;
 				queryDevice = m_queryNode.m_device;
 				queryName = m_queryNode.m_queryName;
 			}
-
-		//	m_scheme.FireEvent( m_action, query );
-
-			
 
 			m_scheme.FireEvent( m_device, m_actionName, queryDevice, queryName );
 

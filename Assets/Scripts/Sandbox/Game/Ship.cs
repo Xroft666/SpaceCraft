@@ -8,9 +8,7 @@ public class Ship : Container
 {
 	public float m_health = 100f;
 
-
-	public Cargo m_cargo { get; private set; }
-	
+	public Cargo m_cargo { get; private set; }	
 
 	private Device m_integratedDevice = null;
 	public Device IntegratedDevice { get { return m_integratedDevice; } }
@@ -23,8 +21,7 @@ public class Ship : Container
 		m_integratedDevice.AssignContainer( this );
 		
 		m_integratedDevice.AddCheck( "IsCargoFull", m_cargo.IsCargoFull );
-		
-		//m_integratedDevice.AddTrigger("RootEntry", null);
+
 		m_integratedDevice.Blueprint.m_entryPoint = m_integratedDevice.Blueprint.CreateEntry("RootEntry", m_integratedDevice);
 
 		m_integratedDevice.m_isActive = false;
@@ -53,16 +50,11 @@ public class Ship : Container
 	/// </summary>
 	public override void TakeDamage( float damage, float radius, UnityEngine.Vector2 point )
 	{
-		// calculate what happens on taking damage
-		// if too high, destroy, drop items etc
-
 		m_health = Mathf.Clamp(m_health - damage, 0f, 100f);
 	}
 	
 	public override void Destroy()
 	{
-//		foreach( Entity entity in m_cargo.m_items )
-//			entity.Destroy();
 		m_health = 0f;
 
 		m_integratedDevice.Destroy();
@@ -82,25 +74,17 @@ public class Ship : Container
 	public override void InitializeView()
 	{
 		GameObject newContainer = new GameObject( EntityName );
-
-		
+				
 		ContainerView view = newContainer.AddComponent<ContainerView>();
 		View = view;
 		view.m_contain = this;
 		
-		GameObject body = GameObject.CreatePrimitive(PrimitiveType.Cube);//new GameObject("body");	
+		GameObject body = GameObject.CreatePrimitive(PrimitiveType.Cube);
 		body.name = "body";
 		Component.Destroy(body.GetComponent<Collider>());
 		body.GetComponent<MeshRenderer>().sharedMaterial = new UnityEngine.Material(Shader.Find("Sprites/Diffuse"));
 
-//		SpriteRenderer sRenderer = body.AddComponent<SpriteRenderer>();
-//		sRenderer.sprite = WorldManager.World.m_visuals;
-		
 		body.transform.SetParent( view.transform, false );
-//		body.transform.rotation = Quaternion.Euler( 90f, 0f, 0f );
-		
-//		Rigidbody2D rigid = newContainer.gameObject.AddComponent<Rigidbody2D>();
-//		rigid.gravityScale = 0f;
 
 		Rigidbody rigid = newContainer.gameObject.AddComponent<Rigidbody>();
 		rigid.constraints = RigidbodyConstraints.FreezePositionY | 
@@ -110,15 +94,8 @@ public class Ship : Container
 
 		rigid.drag = 1.35f;
 		rigid.angularDrag = 0.1f;
-		
-//		BoxCollider2D clickZone = newContainer.AddComponent<BoxCollider2D>();
-		BoxCollider clickZone = newContainer.AddComponent<BoxCollider>();
 
-//		NavMeshObstacle navMeshObstacle = newContainer.AddComponent<NavMeshObstacle>();
-//		navMeshObstacle.shape = NavMeshObstacleShape.Capsule;
-//		navMeshObstacle.carving = true;
-//		navMeshObstacle.carveOnlyStationary = false;
-//		navMeshObstacle.radius = 1.5f;
+		BoxCollider clickZone = newContainer.AddComponent<BoxCollider>();
 
 		newContainer.layer = 12;
 	}
@@ -136,7 +113,7 @@ public class Ship : Container
 
 	public override void LateUpdate()
 	{
-//		IntegratedDevice.CleanScheduledEvents();
+
 	}
 
 	public override void OnDrawGizmos(){}

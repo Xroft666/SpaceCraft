@@ -335,20 +335,32 @@ namespace SpaceSandbox
 
 		#region Common events and function
 
-		public virtual IEnumerator ActivateDevice( DeviceQuery qry )
+		public IEnumerator ActivateDevice(DeviceQuery qry)
+		{
+			ActivateDevice ();
+			yield return null;
+		}
+
+		public IEnumerator DeactivateDevice(DeviceQuery qry)
+		{
+			DeactivateDevice ();
+			yield return null;
+		}
+
+		public virtual void ActivateDevice()
 		{
 			m_isActive = true;
 
-			foreach( Device device in m_integratedDevices )
-				yield return Job.make(device.ActivateDevice( qry ) ).startAsCoroutine();
+			foreach (var device in m_integratedDevices)
+				device.ActivateDevice ();
 		}
 
-		public virtual IEnumerator DeactivateDevice( DeviceQuery qry )
+		public virtual void DeactivateDevice()
 		{
 			m_isActive = false;
-			
-			foreach( Device device in m_integratedDevices )
-				yield return Job.make( device.DeactivateDevice( qry) ).startAsCoroutine();
+
+			foreach (var device in m_integratedDevices)
+				device.DeactivateDevice ();
 		}
 
 		#endregion
@@ -362,14 +374,14 @@ namespace SpaceSandbox
 		/// </summary>
 		public virtual void OnDeviceInstalled() 
 		{
-			AddAction("ActivateDevice", ActivateDevice );
-			AddAction("DeactivateDevice", DeactivateDevice );
+			AddAction ("ActivateDevice", ActivateDevice);
+			AddAction ("DeactivateDevice", DeactivateDevice);
 		}
 
 		public virtual void OnDeviceUninstalled()
 		{
-			RemoveAction("ActivateDevice" );
-			RemoveAction("DeactivateDevice" );
+			RemoveAction ("ActivateDevice");
+			RemoveAction ("DeactivateDevice");
 		}
 
 		public virtual void Initialize() 
