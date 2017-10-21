@@ -49,10 +49,10 @@ public class CommandsStack
 
 		m_view = view;
 
-		ship.IntegratedDevice.Blueprint.tasksRunner.onInitialize += InitializeCommandList;
-		ship.IntegratedDevice.Blueprint.tasksRunner.OnJobComplete += UpdateCommandsList;
+		ship.IntegratedDevice.TasksRunner.onInitialize += InitializeCommandList;
+		ship.IntegratedDevice.TasksRunner.OnJobComplete += UpdateCommandsList;
 
-		InitializeCommandList((m_view.m_contain as Ship).IntegratedDevice.Blueprint.tasksRunner.executingCommandList);
+		InitializeCommandList((m_view.m_contain as Ship).IntegratedDevice.TasksRunner.executingCommandList);
 	}
 
 	public void InitializeCommandList( IEnumerable<string> commands )
@@ -79,8 +79,8 @@ public class CommandsStack
 	{
 		if( m_view != null )
 		{
-			(m_view.m_contain as Ship).IntegratedDevice.Blueprint.tasksRunner.onInitialize -= InitializeCommandList;
-			(m_view.m_contain as Ship).IntegratedDevice.Blueprint.tasksRunner.OnJobComplete -= UpdateCommandsList;
+			(m_view.m_contain as Ship).IntegratedDevice.TasksRunner.onInitialize -= InitializeCommandList;
+			(m_view.m_contain as Ship).IntegratedDevice.TasksRunner.OnJobComplete -= UpdateCommandsList;
 		}
 
 		m_view = null;

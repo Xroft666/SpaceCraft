@@ -143,10 +143,9 @@ public class UIController : MonoBehaviour
 	private void GenerateNewSelection( ContainerView container )
 	{
 		Vector2 selectionScreenPos = Camera.main.WorldToScreenPoint( container.transform.position );
-	//	selectionScreenPos = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
 
 		GameObject newSelection = Instantiate(m_selectionGroupPrefab);
-		newSelection.transform.parent = m_selectListTransform;
+		newSelection.transform.SetParent (m_selectListTransform, false);
 		
 		RectTransform newSelectTransform = newSelection.GetComponent<RectTransform>();
 		newSelectTransform.localPosition = selectionScreenPos;

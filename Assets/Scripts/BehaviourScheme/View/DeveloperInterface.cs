@@ -11,21 +11,18 @@ using UnityEngine.EventSystems;
 
 public class DeveloperInterface : MonoBehaviour
 {
-	[SerializeField]
-	private DraggableItemsScrollRect	m_actionsScrollView,
+	public DraggableItemsScrollRect	m_actionsScrollView,
 										m_eventsScrollView,
 										m_controlsScrollView,
 										m_cargoScrollView,
 										m_installedScrollView,
 										m_queriesScrollView;
 
-	[SerializeField]
-	private BlueprintSchemeView m_blueprintView;
+	public BlueprintSchemeView m_blueprintView;
 
 	private float m_buttonsDistance = 20f;
 
-	[SerializeField]
-	private Text m_pathText;
+	public Text m_pathText;
 
 	private Ship selectedShip;
 	private Device selectedDevice;
@@ -75,7 +72,7 @@ public class DeveloperInterface : MonoBehaviour
 		foreach( KeyValuePair<string, Ship> ship in WorldManager.s_containersCache )
 		{
 			ship.Value.IntegratedDevice.m_isActive = false;
-			ship.Value.IntegratedDevice.Blueprint.tasksRunner.KillTasks();
+			ship.Value.IntegratedDevice.TasksRunner.KillTasks();
 
 			ship.Value.IntegratedDevice.Destroy();
 		}

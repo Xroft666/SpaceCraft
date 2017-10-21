@@ -127,13 +127,12 @@ public class DRanger : Device
 
 	private void OnColliderEntered( Collider other )
 	{
-
 		if( !IsColliderMine( other ))
 		{
-			ContainerView othersView = other.gameObject.GetComponent<ContainerView>();
+			ContainerView othersView = other.gameObject.GetComponentInParent<ContainerView>();
 			if( othersView == null )
 			{
-				Debug.LogWarning("Unexpected interaction with: " + other.gameObject.name);
+				Debug.LogWarning("Unexpected interaction with: " + other.gameObject.name, other.gameObject);
 				return;
 			}
 
@@ -157,7 +156,7 @@ public class DRanger : Device
 	{
 		if( !IsColliderMine( other ))
 		{
-			ContainerView othersView = other.gameObject.GetComponent<ContainerView>();
+			ContainerView othersView = other.gameObject.GetComponentInParent<ContainerView>();
 			if( othersView == null )
 			{
 				Debug.LogWarning("Unexpected interaction with: " + other.gameObject.name);

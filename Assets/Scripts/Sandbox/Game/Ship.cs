@@ -10,28 +10,27 @@ public class Ship : Container
 
 	public Cargo m_cargo { get; private set; }	
 
-	private Device m_integratedDevice = null;
-	public Device IntegratedDevice { get { return m_integratedDevice; } }
+	public Device IntegratedDevice { get; private set; }
 
 	public Ship( float cargoCapacity )
 	{
 		m_cargo = new Cargo(cargoCapacity, this);
 		
-		m_integratedDevice = new Device();
-		m_integratedDevice.AssignContainer( this );
+		IntegratedDevice = new Device();
+		IntegratedDevice.AssignContainer( this );
 		
-		m_integratedDevice.AddCheck( "IsCargoFull", m_cargo.IsCargoFull );
+		IntegratedDevice.AddCheck( "IsCargoFull", m_cargo.IsCargoFull );
 
-		m_integratedDevice.Blueprint.m_entryPoint = m_integratedDevice.Blueprint.CreateEntry("RootEntry", m_integratedDevice);
+		IntegratedDevice.Blueprint.m_entryPoint = IntegratedDevice.Blueprint.CreateEntry("RootEntry", IntegratedDevice);
 
-		m_integratedDevice.m_isActive = false;
+		IntegratedDevice.m_isActive = false;
 	}
 	
 	public Ship( Ship otherShip )
 	{
 		m_cargo = new Cargo( otherShip.m_cargo.Capacity, this );
-		m_integratedDevice = otherShip.IntegratedDevice;
-		m_integratedDevice.AssignContainer( this );
+		IntegratedDevice = otherShip.IntegratedDevice;
+		IntegratedDevice.AssignContainer( this );
 	}
 
 	
@@ -57,7 +56,7 @@ public class Ship : Container
 	{
 		m_health = 0f;
 
-		m_integratedDevice.Destroy();
+		IntegratedDevice.Destroy();
 
 		base.Destroy();
 	}

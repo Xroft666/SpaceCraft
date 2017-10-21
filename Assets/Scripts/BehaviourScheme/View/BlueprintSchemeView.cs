@@ -333,12 +333,6 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 		
 		Image backImg = background.AddComponent<Image>();
 		backImg.sprite = UIController.Instance.m_spriteTexture;
-
-		if( actionNode != null )
-		{
-			if( actionNode.m_device.GetFunction( actionNode.m_actionName ) == null )
-				backImg.color = Color.red;
-		}
 		
 		GameObject textGO = new GameObject("text", typeof(RectTransform));
 		RectTransform textTransf = textGO.GetComponent<RectTransform>();

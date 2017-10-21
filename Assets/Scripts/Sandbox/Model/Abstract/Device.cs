@@ -17,33 +17,41 @@ namespace SpaceSandbox
 
 	public class Device : Entity
 	{
-		public Device()
-		{
-			Blueprint = new BlueprintScheme( this );
-		}
-
 		public Ship m_containerAttachedTo = null;
 		public bool m_isActive = true;
 
 		/// <summary>
 		/// The m_blueprint. The blueprint logic scheme storage.
 		/// </summary>
-		public BlueprintScheme Blueprint { get;  private set; }
-
+		public BlueprintScheme Blueprint { get; private set; }
+		public TasksRunner TasksRunner { get; private set; }
 
 		/// <summary>
 		/// The m_integrated devices. If the device is compud, this list will
 		/// store all the simplier devices in it
 		/// </summary>
-		public List<Device> m_integratedDevices = new List<Device>();
+		public List<Device> m_integratedDevices;
 
-
-		public Dictionary<string, DeviceAction> m_actions = new Dictionary<string, DeviceAction>();
-		public Dictionary<string, DeviceTrigger> m_triggers = new Dictionary<string, DeviceTrigger>();
-		public Dictionary<string, BSEntry> m_entries = new Dictionary<string, BSEntry>();
-		public Dictionary<string, DeviceCheck> m_checks = new Dictionary<string, DeviceCheck>();
-		public Dictionary<string, DeviceQuery> m_queries = new Dictionary<string, DeviceQuery>();
+		public Dictionary<string, DeviceAction> m_actions;
+		public Dictionary<string, DeviceTrigger> m_triggers;
+		public Dictionary<string, BSEntry> m_entries;
+		public Dictionary<string, DeviceCheck> m_checks;
+		public Dictionary<string, DeviceQuery> m_queries;
 	
+
+		public Device()
+		{
+			Blueprint = new BlueprintScheme();
+			TasksRunner = new TasksRunner ();
+
+			m_integratedDevices = new List<Device>();
+
+			m_actions = new Dictionary<string, DeviceAction>();
+          	m_triggers = new Dictionary<string, DeviceTrigger>();
+			m_entries = new Dictionary<string, BSEntry>();
+			m_checks = new Dictionary<string, DeviceCheck>();
+          	m_queries = new Dictionary<string, DeviceQuery>();
+		}
 
 		public void AssignContainer( Ship container )
 		{
@@ -321,14 +329,20 @@ namespace SpaceSandbox
 			if( !m_isActive )
 				return;
 
-			if( !Blueprint.tasksRunner.IsRunning )
+			if( !TasksRunner.IsRunning )
 			{
-				//Blueprint.RunLogicTree( GetTrigger( "RootEntry" ) );
-				Blueprint.RunLogicTree( GetEntry("RootEntry").Traverse );
-				Blueprint.tasksRunner.ExecuteTasksQeue();
+				var entry = GetEntry ("RootEntry");
+				entry.Traverse();
+
+				TasksRunner.ExecuteTasksQeue();
 			}
 		}
 
+		public void FireEvent( string actionName, DeviceQuery query )
+		{
+			DeviceAction evt = GetFunction( actionName );
+			TasksRunner.ScheduleEvent( evt, query );
+		}
 
 		#region Common events and function
 

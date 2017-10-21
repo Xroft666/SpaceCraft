@@ -8,9 +8,9 @@ namespace BehaviourScheme
 {
 	public class BSAction : BSNode 
 	{
-		public Device m_device;
-		public string m_actionName;
+		public event Action<string, DeviceQuery> onEventFired;
 
+		public string m_actionName;
 		public BSQuery m_queryNode;
 
 		public void ConnectToQuery( BSQuery query )
@@ -29,14 +29,17 @@ namespace BehaviourScheme
 		{
 			Device queryDevice = null;
 			string queryName = null;
+			DeviceQuery queryData = null;
 
 			if( m_queryNode != null )
 			{
 				queryDevice = m_queryNode.m_device;
 				queryName = m_queryNode.m_queryName;
+				queryData = queryDevice.GetQuery (queryName);
 			}
 
-			m_scheme.FireEvent( m_device, m_actionName, queryDevice, queryName );
+			if (onEventFired != null)
+				onEventFired (m_actionName, queryData);
 
 			foreach( BSNode child in m_children )
 				child.Traverse();

@@ -4,7 +4,10 @@ using System.Collections.Generic;
 using SpaceSandbox;
 using BehaviourScheme;
 
-public class ExampleSetup : MonoBehaviour {
+public class ExampleSetup : MonoBehaviour 
+{
+
+
 
 	private void Start()
 	{

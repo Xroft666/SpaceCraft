@@ -9,7 +9,6 @@ public class Cargo : Entity
 		public int curItemCount;
 		public float curVolume;
 
-//		public Entity resource;
 		public List<Entity> resources = new List<Entity>();
 	}
 
@@ -28,15 +27,11 @@ public class Cargo : Entity
 
 	public bool AddItem( Entity item)
 	{
-//		if( SpaceTaken + item.Volume > Capacity )
-//			return false;
-
 		CargoSlot slot = GetSlot(item.EntityName);
 
 		if( slot == null )
 		{
 			slot = new CargoSlot();
-//			SpaceTaken ++;
 			m_items.Add(slot);
 		}
 
@@ -91,7 +86,6 @@ public class Cargo : Entity
 			if( slot.curItemCount == 0 )
 			{
 				m_items.Remove(slot);
-//				SpaceTaken --;
 			}
 
 			break;
@@ -101,7 +95,6 @@ public class Cargo : Entity
 
 			slot.resources.RemoveAt(0);
 			m_items.Remove(slot);
-//			SpaceTaken --;
 			
 			break;
 		}

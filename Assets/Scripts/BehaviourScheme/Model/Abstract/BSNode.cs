@@ -7,7 +7,6 @@ namespace BehaviourScheme
 {
 	public class BSNode 
 	{
-		public BlueprintScheme m_scheme;
 		public NodeView m_view;
 
 		public string m_type;

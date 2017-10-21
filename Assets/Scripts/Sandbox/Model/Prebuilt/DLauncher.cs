@@ -32,11 +32,7 @@ public class DLauncher : Device
 			                            m_containerAttachedTo.View.transform.rotation,
 			                            m_containerAttachedTo.View.m_owner );
 
-//			Collider2D collider = projectile.GetComponent<Collider2D>();
 			Collider collider = projectile.GetComponent<Collider>();
-
-//			Rigidbody2D rigid = projectile.GetComponent<Rigidbody2D>();
-//			rigid.velocity = m_containerAttachedTo.View.GetComponent<Rigidbody2D>().velocity;
 
 			Rigidbody rigid = projectile.GetComponent<Rigidbody>();
 			rigid.velocity = m_containerAttachedTo.View.GetComponent<Rigidbody>().velocity;

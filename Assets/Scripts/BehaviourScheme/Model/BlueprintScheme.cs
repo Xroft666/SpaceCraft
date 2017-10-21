@@ -11,46 +11,21 @@ namespace SpaceSandbox
 {
 	public class BlueprintScheme : Entity 
 	{
-		private Device m_blueprintDevice;
-
 		public List<BSNode> m_nodes;
-
 		public BSEntry m_entryPoint;
-		public TasksRunner tasksRunner;
-
-		public BlueprintScheme( Device device )
+	
+		public BlueprintScheme()
 		{
-			m_blueprintDevice = device;
-			tasksRunner = new TasksRunner ();
 			m_nodes = new List<BSNode> ();
 		}
-
-		public void RunLogicTree( DeviceTrigger evt )
-		{
-			if( evt != null )
-				evt();
-		}
-
-		public void FireEvent( Device actionDevice, string actionName, Device queryDevice, string queryName )
-		{
-			TasksRunner containersPlanner = m_blueprintDevice.m_containerAttachedTo.IntegratedDevice.Blueprint.tasksRunner;
-
-			DeviceAction evt = actionDevice.GetFunction( actionName );
-
-			DeviceQuery data = null;
-			if( queryDevice != null )
-				data = queryDevice.GetQuery( queryName );
-
-			containersPlanner.ScheduleEvent( evt, data );
-		}
-	
-
+			
 		#region Nodes Creation 
 
 
 		public BSAction CreateAction( string functionName, Device device)
 		{
-			BSAction node = new BSAction() { m_scheme = this, m_name = "Action", m_type = functionName, m_device = device, m_actionName = functionName };
+			BSAction node = new BSAction() { m_name = "Action", m_type = functionName, m_actionName = functionName };
+			node.onEventFired += device.FireEvent;
 
 			m_nodes.Add(node);
 			return node;
@@ -58,7 +33,7 @@ namespace SpaceSandbox
 
 		public BSQuery CreateQuery( string queryName, Device device )
 		{
-			BSQuery node = new BSQuery() { m_scheme = this, m_name = "Query", m_type = queryName, m_device = device, m_queryName = queryName };
+			BSQuery node = new BSQuery() { m_name = "Query", m_type = queryName, m_device = device, m_queryName = queryName };
 			m_nodes.Add(node);
 			return node;
 		}
@@ -67,14 +42,14 @@ namespace SpaceSandbox
 		{
 			DeviceCheck check = device.GetCheck(checkName);
 			
-			BSCheck node = new BSCheck() { m_scheme = this, m_name = "Predecate", m_type = checkName, m_device = device, m_checkName = checkName };
+			BSCheck node = new BSCheck() { m_name = "Predecate", m_type = checkName, m_device = device, m_checkName = checkName };
 			m_nodes.Add(node);
 			return node;
 		}
 		
 		public BSEntry CreateEntry( string eventName, Device device)
 		{
-			BSEntry node = new BSEntry() { m_scheme = this, m_name = "Entry", m_type = eventName };
+			BSEntry node = new BSEntry() { m_name = "Entry", m_type = eventName };
 			device.AddEntry( eventName, node );
 
 			m_nodes.Add(node);
@@ -83,7 +58,7 @@ namespace SpaceSandbox
 
 		public BSEntry CreateTrigger(string eventName, Device device)
 		{
-			BSEntry node = new BSEntry() { m_scheme = this, m_name = "Entry", m_type = eventName };
+			BSEntry node = new BSEntry() { m_name = "Entry", m_type = eventName };
 			device.AddTrigger( eventName, node.Traverse );
 			
 			m_nodes.Add(node);
@@ -92,7 +67,7 @@ namespace SpaceSandbox
 		
 		public BSExit CreateExit( string eventName, Device device)
 		{
-			BSExit node = new BSExit() { m_scheme = this, m_entryName = eventName, m_device = device, m_name = "Exit", m_type = eventName };
+			BSExit node = new BSExit() { m_entryName = eventName, m_device = device, m_name = "Exit", m_type = eventName };
 
 			m_nodes.Add(node);
 			return node;
@@ -100,7 +75,7 @@ namespace SpaceSandbox
 
 		public BSSelect CreateBranch( string name = "")
 		{
-			BSSelect node = new BSSelect() { m_scheme = this, m_type = "Selection", m_name = name };
+			BSSelect node = new BSSelect() { m_type = "Selection", m_name = name };
 
 			m_nodes.Add(node);
 			return node;
@@ -108,7 +83,7 @@ namespace SpaceSandbox
 
 		public BSSequence CreateSequence(string name = "")
 		{
-			BSSequence node = new BSSequence() { m_scheme = this, m_type = "Sequence", m_name = name };
+			BSSequence node = new BSSequence() { m_type = "Sequence", m_name = name };
 			
 			m_nodes.Add(node);
 			return node;
@@ -116,7 +91,7 @@ namespace SpaceSandbox
 
 		public BSEvaluate CreateEvaluate(string name = "")
 		{
-			BSEvaluate node = new BSEvaluate() { m_scheme = this, m_type = "Evaluation", m_name = name };
+			BSEvaluate node = new BSEvaluate() { m_type = "Evaluation", m_name = name };
 
 			m_nodes.Add(node);
 			return node;
@@ -124,7 +99,7 @@ namespace SpaceSandbox
 
 		public BSForeach CreateForeach( DeviceQuery listQuery )
 		{
-			BSForeach node = new BSForeach() { m_scheme = this, m_listQuery = listQuery, m_type = "Foreach" };
+			BSForeach node = new BSForeach() { m_listQuery = listQuery, m_type = "Foreach" };
 
 			m_nodes.Add(node);
 			return node;
