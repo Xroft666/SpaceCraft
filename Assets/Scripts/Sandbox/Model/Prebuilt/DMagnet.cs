@@ -24,7 +24,7 @@ public class DMagnet : Device
 //		Rigidbody2D rigid = cArgs.container.View.GetComponent<Rigidbody2D>();
 		Rigidbody rigid = cArgs.container.View.GetComponent<Rigidbody>();
 
-		while( (cArgs.container.View.transform.position - m_containerAttachedTo.View.transform.position).magnitude > 1f )
+		while( (cArgs.container.View.transform.position - m_container.View.transform.position).magnitude > 1f )
 		{
 			rigid.AddForce( (myRigid.position - rigid.position).normalized * m_magnetPower);
 
@@ -98,30 +98,30 @@ public class DMagnet : Device
 
 	public override void OnDeviceInstalled()
 	{
-		AddAction("Attract", Attract );
-		AddAction("Repulse", Repulse);
+		m_blueprint.AddAction("Attract", Attract );
+		m_blueprint.AddAction("Repulse", Repulse);
 
-		AddAction("Load", Load );
-		AddAction("UnloadAll", UnloadAll );
+		m_blueprint.AddAction("Load", Load );
+		m_blueprint.AddAction("UnloadAll", UnloadAll );
 		
-		AddCheck("IsStorageble", IsStorageble);
+		m_blueprint.AddCheck("IsStorageble", IsStorageble);
 	}
 
 	public override void OnDeviceUninstalled()
 	{
-		RemoveAction("Attract" );
-		RemoveAction("Repulse");
+		m_blueprint.RemoveAction("Attract" );
+		m_blueprint.RemoveAction("Repulse");
 		
-		RemoveAction("Load" );
-		RemoveAction("UnloadAll" );
+		m_blueprint.RemoveAction("Load" );
+		m_blueprint.RemoveAction("UnloadAll" );
 		
-		RemoveCheck("IsStorageble");
+		m_blueprint.RemoveCheck("IsStorageble");
 	}
 
 	public override void Initialize()
 	{
 //		myRigid = m_containerAttachedTo.View.GetComponent<Rigidbody2D>();
-		myRigid = m_containerAttachedTo.View.GetComponent<Rigidbody>();
+		myRigid = m_container.View.GetComponent<Rigidbody>();
 	}
 
 	public override void Update()
@@ -138,7 +138,7 @@ public class DMagnet : Device
 	{
 		// Should extract device/resource from the containe and place it to the storage
 		
-		m_containerAttachedTo.AddToCargo( container );
+		m_container.AddToCargo( container );
 		WorldManager.UnspawnContainer( container );
 	}
 	

@@ -4,19 +4,15 @@ using System.Collections.Generic;
 
 namespace SpaceSandbox
 {
-	public class Container : Entity
+	public class Container : Entity, IDestroyable
 	{
 		public System.Action onDestroy;
 
 		public ContainerView View { get; set; }
 
-		public virtual void InitializeView() {}
-		public virtual void UpdateView() {}
-		public virtual void LateUpdate() {}
-
 		public virtual void OnDrawGizmos(){}
 
-		public override void Destroy()
+		public virtual void Destroy()
 		{
 			View.gameObject.SetActive(false);
 

@@ -19,7 +19,7 @@ public class ContainerView : MonoBehaviour, IPointerClickHandler, ISelectHandler
 
 	private void Start()
 	{
-	//	m_contain.Initialize();
+		(m_contain as IUpdatable).Initialize();
 
 #if !UNITY_EDITOR
 		GameObject marker = GameObject.CreatePrimitive( PrimitiveType.Cube );
@@ -33,12 +33,7 @@ public class ContainerView : MonoBehaviour, IPointerClickHandler, ISelectHandler
 
 	private void Update()
 	{
-		m_contain.Update();
-	}
-
-	void LateUpdate()
-	{
-		m_contain.LateUpdate();
+		(m_contain as IUpdatable).Update();
 	}
 
 	void OnDrawGizmos()

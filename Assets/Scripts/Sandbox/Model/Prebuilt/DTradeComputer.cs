@@ -23,7 +23,7 @@ public class DTradeComputer : Device
 
 		for( int i = 0; i < slot.resources.Count; i++ )
 		{
-			m_containerAttachedTo.m_cargo.AddItem( slot.resources[i] );
+			m_container.m_cargo.AddItem( slot.resources[i] );
 			clientCargo.RemoveItem(tArgs.itemName);
 		}
 	} 
@@ -35,26 +35,26 @@ public class DTradeComputer : Device
 
 		yield return new WaitForSeconds(2f);
 
-		Cargo.CargoSlot slot = m_containerAttachedTo.m_cargo.GetSlot(tArgs.itemName);
+		Cargo.CargoSlot slot = m_container.m_cargo.GetSlot(tArgs.itemName);
 
 		for( int i = 0; i < slot.resources.Count; i++ )
 		{
 			clientCargo.AddItem( slot.resources[i] );
-			m_containerAttachedTo.m_cargo.RemoveItem(tArgs.itemName);
+			m_container.m_cargo.RemoveItem(tArgs.itemName);
 		}
 	}
 	
 
 	public override void OnDeviceInstalled()
 	{
-		AddAction("LoadItemsFrom", LoadItemsFrom);
-		AddAction("UnloadItemsTo", UnloadItemsTo);
+		m_blueprint.AddAction("LoadItemsFrom", LoadItemsFrom);
+		m_blueprint.AddAction("UnloadItemsTo", UnloadItemsTo);
 	}
 
 	public override void OnDeviceUninstalled()
 	{
-		RemoveAction("LoadItemsFrom");
-		RemoveAction("UnloadItemsTo");
+		m_blueprint.RemoveAction("LoadItemsFrom");
+		m_blueprint.RemoveAction("UnloadItemsTo");
 	}
 
 	public override void Initialize()

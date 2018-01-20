@@ -11,6 +11,11 @@ namespace BehaviourScheme
 
 		public List<Device> m_dataDevice = new List<Device>();
 		public List<string> m_dataName = new List<string>();
+
+		public override BSNode GetCopy ()
+		{
+			return new BSSelect ();
+		}
 		
 		public void AddCondition( Device conditionDevice, string conditionName, Device dataDevice = null, string dataName = null )
 		{
@@ -42,7 +47,7 @@ namespace BehaviourScheme
 				DeviceQuery query = null;
 				DeviceCheck check = null;
 
-				check = m_conditionsDevice[i].GetCheck( m_conditionsName[i] );
+				check = m_conditionsDevice[i].m_blueprint.GetCheck( m_conditionsName[i] );
 
 				if( check == null )
 				{
@@ -52,7 +57,7 @@ namespace BehaviourScheme
 
 				if( m_dataDevice[i] != null )
 				{
-					query = m_dataDevice[i].GetQuery( m_dataName[i] );
+					query = m_dataDevice[i].m_blueprint.GetQuery( m_dataName[i] );
 					args = query.Invoke();
 				}
 

@@ -21,7 +21,7 @@ public class DSteerModule : Device
 	{
 		ArgsObject pArgs = qry.Invoke() as ArgsObject;
 
-		DeviceTrigger onSteerStart = GetTrigger("OnSteerStart");
+		DeviceTrigger onSteerStart = m_blueprint.GetTrigger("OnSteerStart");
 		if( onSteerStart != null )
 			onSteerStart();
 
@@ -44,7 +44,7 @@ public class DSteerModule : Device
 			yield return null;
 		}
 
-		DeviceTrigger onSteerComplete = GetTrigger("OnSteerComplete");
+		DeviceTrigger onSteerComplete = m_blueprint.GetTrigger("OnSteerComplete");
 		if( onSteerComplete != null )
 			onSteerComplete();
 	}
@@ -56,23 +56,23 @@ public class DSteerModule : Device
 
 	public override void OnDeviceInstalled()
 	{
-		AddTrigger("OnSteerStart", null );
-		AddTrigger("OnSteerComplete", null );
+		m_blueprint.AddTrigger("OnSteerStart", null );
+		m_blueprint.AddTrigger("OnSteerComplete", null );
 
-		AddAction("SteerTowards", SteerTowards );
+		m_blueprint.AddAction("SteerTowards", SteerTowards );
 	}
 
 	public override void OnDeviceUninstalled()
 	{
-		RemoveTrigger("OnSteerStart" );
-		RemoveTrigger("OnSteerComplete" );
+		m_blueprint.RemoveTrigger("OnSteerStart" );
+		m_blueprint.RemoveTrigger("OnSteerComplete" );
 		
-		RemoveAction("SteerTowards" );
+		m_blueprint.RemoveAction("SteerTowards" );
 	}
 
 	public override void Initialize()
 	{
-		m_rigidbody = m_containerAttachedTo.View.GetComponent<Rigidbody>();
+		m_rigidbody = m_container.View.GetComponent<Rigidbody>();
 	}
 
 	public override void Update()

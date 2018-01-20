@@ -37,24 +37,24 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 		m_device = device;
 		m_interface = devInterface;
 
-		foreach( BSNode node in m_device.Blueprint.m_nodes )
+		foreach( BSNode node in m_device.m_blueprint.m_nodes )
 			GenerateNode( node );
 		
-		foreach( BSNode node in m_device.Blueprint.m_nodes )
+		foreach( BSNode node in m_device.m_blueprint.m_nodes )
 			PositionNode( node );
 
 //		ConflictsTraverse(device.Blueprint.m_entryPoint);
-		GenerateConnections(device.Blueprint.m_entryPoint);
+		GenerateConnections(device.m_blueprint.m_entryPoint);
 
 		Rect box = new Rect();
-		GetBoundingBox(device.Blueprint.m_entryPoint, ref box); 
+		GetBoundingBox(device.m_blueprint.m_entryPoint, ref box); 
 		blueprintRect.sizeDelta = new Vector3(box.width * horizDistance * 1.5f, -box.height * vertDistance * 5f + box.height * vertDistance * 2.5f);
 	}
 
 
 	public void CleanBlueprint()
 	{
-		foreach( BSNode node in m_device.Blueprint.m_nodes )
+		foreach( BSNode node in m_device.m_blueprint.m_nodes )
 			GameObject.Destroy( node.m_view.gameObject );
 	}
 
@@ -241,25 +241,25 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 
 	public NodeView CreateAction(Device device, string name)
 	{
-		BSNode newNode = m_device.Blueprint.CreateAction( name, device );
+		BSNode newNode = m_device.m_blueprint.CreateAction( name, device );
 		return CreateNode(name, newNode );
 	}
 
 	public NodeView CreateTrigger( Device device, string name )
 	{
-		BSNode newNode = m_device.Blueprint.CreateTrigger( name, device );
+		BSNode newNode = m_device.m_blueprint.CreateTrigger( name, device );
 		return CreateNode(name, newNode );
 	}
 	
 	public NodeView CreateEntry( Device device, string name )
 	{
-		BSNode newNode = m_device.Blueprint.CreateEntry( name, device );
+		BSNode newNode = m_device.m_blueprint.CreateEntry( name, device );
 		return CreateNode(name, newNode );
 	}
 
 	public NodeView CreateExit( Device device, string name )
 	{
-		BSNode newNode = m_device.Blueprint.CreateExit( name, device );
+		BSNode newNode = m_device.m_blueprint.CreateExit( name, device );
 		NodeView view = CreateNode(name, newNode );
 		view.onNodeDoubleClick = m_interface.NodeViewOpenInternal;
 
@@ -268,13 +268,13 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 
 	public NodeView CreateQuery( Device device, string name )
 	{
-		BSNode newNode = m_device.Blueprint.CreateQuery( name, device );
+		BSNode newNode = m_device.m_blueprint.CreateQuery( name, device );
 		return CreateNode(name, newNode );
 	}
 
 	public NodeView CreateCheck( Device device, string name )
 	{
-		BSNode newNode = m_device.Blueprint.CreatePredecate( name, device );
+		BSNode newNode = m_device.m_blueprint.CreatePredecate( name, device );
 		return CreateNode(name, newNode );
 	}
 	
@@ -286,25 +286,25 @@ public class BlueprintSchemeView : MonoBehaviour, IDropHandler
 	
 	public NodeView CreateSelect()
 	{
-		BSNode newNode = m_device.Blueprint.CreateBranch();
+		BSNode newNode = m_device.m_blueprint.CreateBranch();
 		return CreateNode("Select", newNode );
 	}
 
 	public NodeView CreateSequence()
 	{
-		BSNode newNode = m_device.Blueprint.CreateSequence();
+		BSNode newNode = m_device.m_blueprint.CreateSequence();
 		return CreateNode("Sequence", newNode );
 	}
 	
 	public NodeView CreateEvaluate()
 	{
-		BSNode newNode = m_device.Blueprint.CreateEvaluate();
+		BSNode newNode = m_device.m_blueprint.CreateEvaluate();
 		return CreateNode("Evaluate", newNode );
 	}
 
 	public NodeView CreateForeach()
 	{
-		BSNode newNode = m_device.Blueprint.CreateForeach(null);
+		BSNode newNode = m_device.m_blueprint.CreateForeach(null);
 		return CreateNode("Foreach", newNode );
 	}
 

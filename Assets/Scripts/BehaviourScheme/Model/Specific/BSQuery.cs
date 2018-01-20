@@ -13,5 +13,9 @@ namespace BehaviourScheme
 
 		public BSNode connectedNode;
 
+		public override BSNode GetCopy ()
+		{
+			return new BSQuery ();
+		}
 	}
 }

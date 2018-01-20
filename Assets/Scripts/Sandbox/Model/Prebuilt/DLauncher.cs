@@ -23,33 +23,33 @@ public class DLauncher : Device
 		Entity projectileEntity = null;
 		ContainerView projectile = null;
 
-		Ship cont = m_containerAttachedTo.m_cargo.GetItem(m_projectileName) as Ship;
+		Ship cont = m_container.m_cargo.GetItem(m_projectileName) as Ship;
 		if( cont != null )
 		{
 			projectileEntity = cont as Entity;
 			projectile =  WorldManager.SpawnContainer(cont, 
-			                            m_containerAttachedTo.View.transform.position + m_containerAttachedTo.View.transform.forward,
-			                            m_containerAttachedTo.View.transform.rotation,
-			                            m_containerAttachedTo.View.m_owner );
+			                            m_container.View.transform.position + m_container.View.transform.forward,
+			                            m_container.View.transform.rotation,
+			                            m_container.View.m_owner );
 
 			Collider collider = projectile.GetComponent<Collider>();
 
 			Rigidbody rigid = projectile.GetComponent<Rigidbody>();
-			rigid.velocity = m_containerAttachedTo.View.GetComponent<Rigidbody>().velocity;
+			rigid.velocity = m_container.View.GetComponent<Rigidbody>().velocity;
 
 			projectile.transform.Find("body").localScale = new Vector3(0.25f, 1f, 1f);
 
 			Ship containerController = projectile.m_contain as Ship;
 			if(containerController != null )
 			{
-				containerController.IntegratedDevice.m_isActive = true;
-				containerController.IntegratedDevice.Initialize();
+				containerController.m_device.m_isActive = true;
+				containerController.m_device.Initialize();
 			}
 		}
 
 		if( projectileEntity != null )
 		{
-			m_containerAttachedTo.RemoveFromCargo( projectileEntity.EntityName );
+			m_container.RemoveFromCargo( projectileEntity.EntityName );
 
 			while( !WorldManager.IsContainerDestroyed(projectile) )
 			{
@@ -69,12 +69,12 @@ public class DLauncher : Device
 
 	public override void OnDeviceInstalled()
 	{
-		AddAction("Fire", Fire );
+		m_blueprint.AddAction("Fire", Fire );
 	}
 
 	public override void OnDeviceUninstalled()
 	{
-		RemoveAction("Fire" );
+		m_blueprint.RemoveAction("Fire" );
 	}
 
 	public override void Initialize()

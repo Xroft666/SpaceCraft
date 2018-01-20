@@ -4,33 +4,41 @@ using System.Collections.Generic;
 
 using SpaceSandbox;
 
-public class Ship : Container
+public class Ship : Container, IUpdatable, IDamagable
 {
 	public float m_health = 100f;
 
 	public Cargo m_cargo { get; private set; }	
+	public Device m_device { get; private set; }
+	public TasksRunner m_tasksRunner { get; private set; }
 
-	public Device IntegratedDevice { get; private set; }
 
 	public Ship( float cargoCapacity )
 	{
 		m_cargo = new Cargo(cargoCapacity, this);
 		
-		IntegratedDevice = new Device();
-		IntegratedDevice.AssignContainer( this );
+		m_device = new Device();
+		m_device.AssignContainer( this );
 		
-		IntegratedDevice.AddCheck( "IsCargoFull", m_cargo.IsCargoFull );
+		m_device.m_blueprint.AddCheck( "IsCargoFull", m_cargo.IsCargoFull );
+		m_device.m_blueprint.m_entryPoint = m_device.m_blueprint.CreateEntry("RootEntry", m_device);
+		m_device.m_isActive = false;
 
-		IntegratedDevice.Blueprint.m_entryPoint = IntegratedDevice.Blueprint.CreateEntry("RootEntry", IntegratedDevice);
-
-		IntegratedDevice.m_isActive = false;
+		m_tasksRunner = new TasksRunner ();
 	}
 	
 	public Ship( Ship otherShip )
 	{
 		m_cargo = new Cargo( otherShip.m_cargo.Capacity, this );
-		IntegratedDevice = otherShip.IntegratedDevice;
-		IntegratedDevice.AssignContainer( this );
+
+		m_device = new Device(otherShip.m_device);
+		m_device.AssignContainer( this );
+
+		m_device.m_blueprint.AddCheck( "IsCargoFull", m_cargo.IsCargoFull );
+		m_device.m_blueprint.m_entryPoint = m_device.m_blueprint.CreateEntry("RootEntry", m_device);
+		m_device.m_isActive = false;
+
+		m_tasksRunner = new TasksRunner ();
 	}
 
 	
@@ -47,7 +55,7 @@ public class Ship : Container
 	/// <summary>
 	/// Takes the damage. Just an example of the interface usage.
 	/// </summary>
-	public override void TakeDamage( float damage, float radius, UnityEngine.Vector2 point )
+	void IDamagable.TakeDamage( float damage, float radius, UnityEngine.Vector2 point )
 	{
 		m_health = Mathf.Clamp(m_health - damage, 0f, 100f);
 	}
@@ -56,7 +64,7 @@ public class Ship : Container
 	{
 		m_health = 0f;
 
-		IntegratedDevice.Destroy();
+		m_device.Destroy();
 
 		base.Destroy();
 	}
@@ -65,12 +73,12 @@ public class Ship : Container
 	/// ContainerRepresentation -> Container -> Device calls execution flow
 	/// </summary>
 	
-	public override void Initialize() 
+	void IUpdatable.Initialize() 
 	{
-		IntegratedDevice.Initialize();
+		m_device.Initialize();
 	}
 
-	public override void InitializeView()
+	public void InitializeView()
 	{
 		GameObject newContainer = new GameObject( EntityName );
 				
@@ -98,22 +106,23 @@ public class Ship : Container
 
 		newContainer.layer = 12;
 	}
+	
+	public virtual void Update() 
+	{
+		(m_device as IUpdatable).Update();
 
-	public override void UpdateView()
+		if (m_device.m_isActive && !m_tasksRunner.IsRunning) 
+		{
+			// go through decision tree and collect all the tasks
+			m_device.m_blueprint.m_entryPoint.Traverse ();	
+
+			// execute collected tasks
+			m_tasksRunner.ExecuteTasksQeue ();
+		}
+	}
+
+	public override void OnDrawGizmos()
 	{
 		
 	}
-	
-	public override void Update() 
-	{
-		IntegratedDevice.Update();
-		IntegratedDevice.ExecuteLogic();
-	}
-
-	public override void LateUpdate()
-	{
-
-	}
-
-	public override void OnDrawGizmos(){}
 }

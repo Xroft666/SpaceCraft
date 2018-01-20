@@ -18,24 +18,24 @@ public class DRanger : Device
 
 	public override void OnDeviceInstalled()
 	{
-		AddTrigger( "OnRangerEntered", null );
-		AddTrigger( "OnRangerEscaped", null );
+		m_blueprint.AddTrigger( "OnRangerEntered", null );
+		m_blueprint.AddTrigger( "OnRangerEscaped", null );
 
-		AddAction("DesignateClosestTarget", DesignateClosestTarget);	
-		AddCheck("IsAnyTarget", IsAnyTarget );	
-		AddQuery("CurrentTargetPosition", CurrentTargetPosition);
-		AddQuery("CurrentTargetContainer", CurrentTargetContainer);
+		m_blueprint.AddAction("DesignateClosestTarget", DesignateClosestTarget);	
+		m_blueprint.AddCheck("IsAnyTarget", IsAnyTarget );	
+		m_blueprint.AddQuery("CurrentTargetPosition", CurrentTargetPosition);
+		m_blueprint.AddQuery("CurrentTargetContainer", CurrentTargetContainer);
 	}
 
 	public override void OnDeviceUninstalled()
 	{
-		RemoveTrigger( "OnRangerEntered" );
-		RemoveTrigger( "OnRangerEscaped" );
+		m_blueprint.RemoveTrigger( "OnRangerEntered" );
+		m_blueprint.RemoveTrigger( "OnRangerEscaped" );
 		
-		RemoveAction("DesignateClosestTarget");	
-		RemoveCheck("IsAnyTarget" );	
-		RemoveQuery("CurrentTargetPosition");
-		RemoveQuery("CurrentTargetContainer");
+		m_blueprint.RemoveAction("DesignateClosestTarget");	
+		m_blueprint.RemoveCheck("IsAnyTarget" );	
+		m_blueprint.RemoveQuery("CurrentTargetPosition");
+		m_blueprint.RemoveQuery("CurrentTargetContainer");
 	}
 
 	public override void ActivateDevice ( )
@@ -59,7 +59,7 @@ public class DRanger : Device
 
 	private IEnumerator DesignateClosestTarget( DeviceQuery qry )
 	{
-		ContainerView thisContainer = m_containerAttachedTo.View;
+		ContainerView thisContainer = m_container.View;
 		
 		m_targets.Sort( ( ContainerView x, ContainerView y ) =>
 		               {
@@ -105,7 +105,7 @@ public class DRanger : Device
 	{
 		GameObject rangerGO = new GameObject(EntityName);
 		
-		rangerGO.transform.SetParent( m_containerAttachedTo.View.transform, false );
+		rangerGO.transform.SetParent( m_container.View.transform, false );
 
 		Rigidbody rigid = rangerGO.AddComponent<Rigidbody>();
 		rigid.isKinematic = true;
@@ -136,9 +136,9 @@ public class DRanger : Device
 				return;
 			}
 
-			if(  m_containerAttachedTo.View.m_owner == 0 || othersView.m_owner != m_containerAttachedTo.View.m_owner )
+			if(  m_container.View.m_owner == 0 || othersView.m_owner != m_container.View.m_owner )
 			{
-				DeviceTrigger onEnter = GetTrigger("OnRangerEntered");
+				DeviceTrigger onEnter = m_blueprint.GetTrigger("OnRangerEntered");
 				if( onEnter != null )
 					onEnter();
 
@@ -163,7 +163,7 @@ public class DRanger : Device
 				return;
 			}
 
-			DeviceTrigger onExit = GetTrigger("OnRangerEscaped");
+			DeviceTrigger onExit = m_blueprint.GetTrigger("OnRangerEscaped");
 			if( onExit != null )
 				onExit.Invoke();
 
@@ -174,6 +174,6 @@ public class DRanger : Device
 	private bool IsColliderMine( Collider collider )
 	{
 		// check all the colliders on the container
-		return m_containerAttachedTo.View.gameObject == collider.transform.root.gameObject;
+		return m_container.View.gameObject == collider.transform.root.gameObject;
 	}
 }

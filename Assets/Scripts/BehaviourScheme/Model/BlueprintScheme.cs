@@ -11,12 +11,122 @@ namespace SpaceSandbox
 {
 	public class BlueprintScheme : Entity 
 	{
-		public List<BSNode> m_nodes;
+		public List<BSNode> m_nodes = new List<BSNode> ();
 		public BSEntry m_entryPoint;
+
+		public Dictionary<string, DeviceAction> m_actions = new Dictionary<string, DeviceAction>();
+		public Dictionary<string, DeviceTrigger> m_triggers = new Dictionary<string, DeviceTrigger>();
+		public Dictionary<string, BSEntry> m_entries = new Dictionary<string, BSEntry>();
+		public Dictionary<string, DeviceCheck> m_checks = new Dictionary<string, DeviceCheck>();
+		public Dictionary<string, DeviceQuery> m_queries = new Dictionary<string, DeviceQuery>();
 	
 		public BlueprintScheme()
 		{
-			m_nodes = new List<BSNode> ();
+			
+		}
+
+		public BlueprintScheme(BlueprintScheme other)
+		{
+			foreach(var node in other.m_nodes)
+				m_nodes.Add(node.GetCopy());
+		}
+
+		public void AddAction ( string name, DeviceAction function )
+		{
+			m_actions.Add( name, null );
+			m_actions[name] += function;
+		}
+
+		public DeviceAction GetFunction ( string name )
+		{
+			if( !m_actions.ContainsKey(name) )
+				return null;
+
+			return m_actions[name];
+		}
+
+		public void RemoveAction ( string name )
+		{
+			m_actions.Remove( name );
+		}
+
+
+		public void AddQuery ( string name, DeviceQuery query )
+		{
+			m_queries.Add( name, query );
+		}
+
+		public DeviceQuery GetQuery ( string name )
+		{
+			if( !m_queries.ContainsKey(name) )
+				return null;
+
+			return m_queries[name];
+		}
+
+		public void RemoveQuery ( string name )
+		{
+			m_queries.Remove( name );
+		}
+
+
+		public void AddTrigger ( string name, DeviceTrigger trigger )
+		{
+			if( m_triggers.ContainsKey(name) )
+				m_triggers[name] += trigger ;
+			else
+				m_triggers.Add(name, trigger);
+		}
+
+		public DeviceTrigger GetTrigger( string name )
+		{
+			if( !m_triggers.ContainsKey(name) )
+				return null;
+
+			return m_triggers[name];
+		}
+
+		public void RemoveTrigger ( string name )
+		{
+			m_triggers.Remove( name );
+		}
+
+		public void AddEntry ( string name, BSEntry trigger )
+		{
+			m_entries.Add(name, trigger);
+		}
+
+		public BSEntry GetEntry( string name )
+		{
+			if( !m_entries.ContainsKey(name) )
+				return null;
+
+			return m_entries[name];
+		}
+
+		public void RemoveEntry ( string name )
+		{
+			m_entries.Remove( name );
+		}
+
+		// Predecates
+
+		public void AddCheck( string name, DeviceCheck check )
+		{
+			m_checks.Add( name, check );
+		}
+
+		public DeviceCheck GetCheck( string name )
+		{
+			if( !m_checks.ContainsKey(name) )
+				return null;
+
+			return m_checks[name];
+		}
+
+		public void RemoveCheck ( string name )
+		{
+			m_checks.Remove( name );
 		}
 			
 		#region Nodes Creation 
@@ -40,7 +150,7 @@ namespace SpaceSandbox
 
 		public BSCheck CreatePredecate( string checkName, Device device )
 		{
-			DeviceCheck check = device.GetCheck(checkName);
+			DeviceCheck check = device.m_blueprint.GetCheck(checkName);
 			
 			BSCheck node = new BSCheck() { m_name = "Predecate", m_type = checkName, m_device = device, m_checkName = checkName };
 			m_nodes.Add(node);
@@ -50,7 +160,7 @@ namespace SpaceSandbox
 		public BSEntry CreateEntry( string eventName, Device device)
 		{
 			BSEntry node = new BSEntry() { m_name = "Entry", m_type = eventName };
-			device.AddEntry( eventName, node );
+			device.m_blueprint.AddEntry( eventName, node );
 
 			m_nodes.Add(node);
 			return node;
@@ -59,7 +169,7 @@ namespace SpaceSandbox
 		public BSEntry CreateTrigger(string eventName, Device device)
 		{
 			BSEntry node = new BSEntry() { m_name = "Entry", m_type = eventName };
-			device.AddTrigger( eventName, node.Traverse );
+			device.m_blueprint.AddTrigger( eventName, node.Traverse );
 			
 			m_nodes.Add(node);
 			return node;

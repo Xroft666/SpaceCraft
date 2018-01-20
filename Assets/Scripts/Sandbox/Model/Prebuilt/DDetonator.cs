@@ -16,7 +16,7 @@ public class DDetonator : Device
 
 	public IEnumerator DetonateExplosives( DeviceQuery qry )
 	{
-		WorldManager.UnspawnContainer( m_containerAttachedTo );
+		WorldManager.UnspawnContainer( m_container );
 
 		// Do big splosion
 		GameObject explosion = new GameObject("Explosion Area");
@@ -25,7 +25,7 @@ public class DDetonator : Device
 		SphereCollider collider = explosion.AddComponent<SphereCollider>();
 		EventTriggerHandler handler = explosion.AddComponent<EventTriggerHandler>();
 
-		explosion.transform.position = m_containerAttachedTo.View.transform.position;
+		explosion.transform.position = m_container.View.transform.position;
 		collider.radius = explosionRadius;
 		collider.isTrigger = true;
 
@@ -46,22 +46,12 @@ public class DDetonator : Device
 
 	public override void OnDeviceInstalled()
 	{
-		AddAction("Detonate", DetonateExplosives );
+		m_blueprint.AddAction("Detonate", DetonateExplosives );
 	}
 
 	public override void OnDeviceUninstalled()
 	{
-		RemoveAction("Detonate");
-	}
-
-	public override void Initialize()
-	{
-
-	}
-
-	public override void Destroy ()
-	{
-
+		m_blueprint.RemoveAction("Detonate");
 	}
 
 	#endregion
@@ -72,10 +62,10 @@ public class DDetonator : Device
 		if( view == null )
 			return;
 
-		view.m_contain.TakeDamage(detonateForce * 2f, explosionRadius, m_containerAttachedTo.View.transform.position);
+		(view.m_contain as IDamagable).TakeDamage(detonateForce * 2f, explosionRadius, m_container.View.transform.position);
 
 
-		Vector3 outwardsDir = other.transform.position - m_containerAttachedTo.View.transform.position;
+		Vector3 outwardsDir = other.transform.position - m_container.View.transform.position;
 		Rigidbody rigid = other.gameObject.GetComponent<Rigidbody>();
 
 		rigid.AddForce( outwardsDir.normalized * detonateForce * outwardsDir.magnitude / explosionRadius, ForceMode.Impulse);

@@ -7,7 +7,11 @@ namespace BehaviourScheme
 	{
 		public delegate float BSEvaluator();
 		protected Dictionary<BSNode,BSEvaluator> m_transitions = null;
-		
+
+		public override BSNode GetCopy ()
+		{
+			return new BSEvaluate ();
+		}
 		
 		public void AddChild( BSNode node, BSEvaluator predecate )
 		{

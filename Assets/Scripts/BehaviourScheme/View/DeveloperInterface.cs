@@ -29,28 +29,12 @@ public class DeveloperInterface : MonoBehaviour
 
 	private void Awake()
 	{
-		//m_pathText = transform.Find("Names/path").GetComponent<Text>();
 		m_pathText.raycastTarget = true;
 		Button pathBtn = m_pathText.gameObject.AddComponent<Button>();
 		pathBtn.onClick.AddListener(() => { OnPathButtonHandler(); });
 
-
-		//m_actionsScrollView = transform.Find("Actions").GetComponent<DraggableItemsScrollRect>();
-		//m_eventsScrollView = transform.Find("Events").GetComponent<DraggableItemsScrollRect>();
-		//m_controlsScrollView = transform.Find("Controls").GetComponent<DraggableItemsScrollRect>();
-		//m_cargoScrollView = transform.Find("Cargo").GetComponent<DraggableItemsScrollRect>();
-		//m_installedScrollView = transform.Find("Installed").GetComponent<DraggableItemsScrollRect>();
-		//m_queriesScrollView = transform.Find("Queries").GetComponent<DraggableItemsScrollRect>();
-
-
-
 		m_cargoScrollView.m_onDropHandlers[m_installedScrollView] = OnDevicesToCargoDropped;
 		m_installedScrollView.m_onDropHandlers[m_cargoScrollView] = OnCargoToInstalledDropped;
-
-
-
-		//m_blueprintView = transform.Find("Blueprint").GetComponent<BlueprintSchemeView>();
-
 
 		m_blueprintView.m_onDropHandlers[m_actionsScrollView] = OnActionsToBlueprintDropped;
 		m_blueprintView.m_onDropHandlers[m_eventsScrollView] = OnEventsToBlueprintDropped;
@@ -62,8 +46,8 @@ public class DeveloperInterface : MonoBehaviour
 	{
 		foreach( KeyValuePair<string, Ship> ship in WorldManager.s_containersCache )
 		{
-			ship.Value.IntegratedDevice.m_isActive = true;
-			ship.Value.IntegratedDevice.Initialize();
+			ship.Value.m_device.m_isActive = true;
+			ship.Value.m_device.Initialize();
 		}
 	}
 	
@@ -71,10 +55,10 @@ public class DeveloperInterface : MonoBehaviour
 	{
 		foreach( KeyValuePair<string, Ship> ship in WorldManager.s_containersCache )
 		{
-			ship.Value.IntegratedDevice.m_isActive = false;
-			ship.Value.IntegratedDevice.TasksRunner.KillTasks();
+			ship.Value.m_device.m_isActive = false;
+			ship.Value.m_tasksRunner.KillTasks();
 
-			ship.Value.IntegratedDevice.Destroy();
+			ship.Value.m_device.Destroy();
 		}
 	}
 
@@ -93,7 +77,7 @@ public class DeveloperInterface : MonoBehaviour
 	public void InitializeInteface( Ship selectedContainer )
 	{
 		selectedShip = selectedContainer;
-		selectedDevice = selectedContainer.IntegratedDevice;
+		selectedDevice = selectedContainer.m_device;
 
 
 		InitializeActions(selectedDevice);
@@ -268,12 +252,12 @@ public class DeveloperInterface : MonoBehaviour
 
 	private void InitializeInstalledDevices( Ship ship )
 	{
-		int actionsNum = ship.IntegratedDevice.m_integratedDevices.Count;
+		int actionsNum = ship.m_device.m_devices.Count;
 		int count = -actionsNum / 2;
 		
 		m_installedScrollView.content.sizeDelta = new Vector2(m_installedScrollView.content.sizeDelta.x, actionsNum * m_buttonsDistance);
 		
-		foreach( Device device in ship.IntegratedDevice.m_integratedDevices )
+		foreach( Device device in ship.m_device.m_devices )
 		{
 			string name = device.EntityName;
 			DraggableItem item = CreateButton(m_installedScrollView.content, name, Vector3.up * count * m_buttonsDistance);
@@ -455,20 +439,20 @@ public class DeveloperInterface : MonoBehaviour
 		if( draggableItem.DeviceContainment != null )
 		{
 			selectedShip.m_cargo.RemoveItem(draggableItem.DeviceContainment.EntityName);
-			selectedShip.IntegratedDevice.InstallDevice( draggableItem.DeviceContainment );
+			selectedShip.m_device.InstallDevice( draggableItem.DeviceContainment );
 
 			CleanContent(m_actionsScrollView.content);
 			CleanContent(m_eventsScrollView.content);
 			CleanContent(m_queriesScrollView.content);
 
-			InitializeActions(selectedShip.IntegratedDevice);
-			InitializeEvents(selectedShip.IntegratedDevice);
-			InitializeQueries(selectedShip.IntegratedDevice);
+			InitializeActions(selectedShip.m_device);
+			InitializeEvents(selectedShip.m_device);
+			InitializeQueries(selectedShip.m_device);
 
 			scrollView.AssignObject(eventData.selectedObject);
 			
 			m_blueprintView.CleanBlueprint();
-			m_blueprintView.InitializeView(selectedShip.IntegratedDevice, this);
+			m_blueprintView.InitializeView(selectedShip.m_device, this);
 		}
 	}
 
@@ -477,21 +461,21 @@ public class DeveloperInterface : MonoBehaviour
 		DraggableItem draggableItem = eventData.selectedObject.GetComponent<DraggableItem>();
 		if( draggableItem.DeviceContainment != null )
 		{
-			selectedShip.IntegratedDevice.UninstallDevice( draggableItem.DeviceContainment );
+			selectedShip.m_device.UninstallDevice( draggableItem.DeviceContainment );
 			selectedShip.m_cargo.AddItem( draggableItem.DeviceContainment );
 
 			CleanContent(m_actionsScrollView.content);
 			CleanContent(m_eventsScrollView.content);
 			CleanContent(m_queriesScrollView.content);
 			
-			InitializeActions(selectedShip.IntegratedDevice);
-			InitializeEvents(selectedShip.IntegratedDevice);
-			InitializeQueries(selectedShip.IntegratedDevice);
+			InitializeActions(selectedShip.m_device);
+			InitializeEvents(selectedShip.m_device);
+			InitializeQueries(selectedShip.m_device);
 
 			scrollView.AssignObject(eventData.selectedObject);
 
 			m_blueprintView.CleanBlueprint();
-			m_blueprintView.InitializeView(selectedShip.IntegratedDevice, this);
+			m_blueprintView.InitializeView(selectedShip.m_device, this);
 		}
 	}
 
@@ -507,7 +491,7 @@ public class DeveloperInterface : MonoBehaviour
 		m_blueprintView.CleanBlueprint();
 		//	m_blueprintView.InitializeView(selectedDevice, this);
 
-		BSEntry entry = selectedDevice.GetEntry( exit.m_entryName );
+		BSEntry entry = selectedDevice.m_blueprint.GetEntry( exit.m_entryName );
 
 		m_blueprintView.GenerateTree( entry );
 		m_blueprintView.PositionNode( entry );
@@ -516,7 +500,7 @@ public class DeveloperInterface : MonoBehaviour
 
 	public void OnPathButtonHandler()
 	{
-		selectedDevice = selectedShip.IntegratedDevice;
+		selectedDevice = selectedShip.m_device;
 
 		//m_blueprintView.CleanBlueprint();
 		//

@@ -12,6 +12,11 @@ namespace BehaviourScheme
 		public SpaceSandbox.DeviceQuery m_listQuery;
 		private System.Object[] m_objectsList;
 
+		public override BSNode GetCopy ()
+		{
+			return new BSForeach ();
+		}
+
 		public override void Traverse()
 		{
 			m_objectsList = ((ArgsList) m_listQuery.Invoke()).objs;

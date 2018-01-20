@@ -3,9 +3,11 @@ using System.Collections.Generic;
 
 namespace SpaceSandbox
 {
-	public class Asteroid : Container 
+	public class Asteroid : Container, IDamagable
 	{
 		public Resource Containment = new Resource();
+
+		public float Volume { get; private set; }
 
 		private float fidelity = 30f;
 		private float volumeTreshold = 0.05f;
@@ -16,7 +18,7 @@ namespace SpaceSandbox
 //		private PolygonCollider2D collider;
 		private SphereCollider collider;
 	
-		public override void InitializeView( )
+		public void InitializeView( )
 		{
 			GameObject newContainer = new GameObject( "Asteroid" );
 			MeshFilter filter = newContainer.AddComponent<MeshFilter>();
@@ -88,7 +90,7 @@ namespace SpaceSandbox
 			newContainer.layer = 12;
 		}
 
-		public override void UpdateView()
+		public void UpdateView()
 		{
 			Triangulator tr = new Triangulator(vertices.ToArray());
 			int[] indices = tr.Triangulate();
@@ -122,18 +124,8 @@ namespace SpaceSandbox
 
 //			collider.points = vertices.ToArray();
 		}
-
-		public override void Initialize() 
-		{
-
-		}
 	
-		public override void Update()
-		{
-
-		}
-	
-		public override void TakeDamage( float damage, float radius, UnityEngine.Vector2 center ) 
+		void IDamagable.TakeDamage( float damage, float radius, UnityEngine.Vector2 center ) 
 		{
 			// Generate smaller asteroids here 
 

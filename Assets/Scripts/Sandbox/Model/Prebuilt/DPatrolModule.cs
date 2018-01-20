@@ -32,7 +32,7 @@ public class DPatrolModule : Device
 			yield return null;
 		}
 
-		DeviceTrigger reached = GetTrigger("TargetReached");
+		DeviceTrigger reached = m_blueprint.GetTrigger("TargetReached");
 		if( reached != null )
 			reached();
 	}
@@ -56,7 +56,7 @@ public class DPatrolModule : Device
 	public IEnumerator GetWaypointsList( DeviceQuery qry )//EventArgs args)
 	{
 		ArgsObject pArgs = qry.Invoke() as ArgsObject;
-		UnityEngine.AI.NavMesh.CalculatePath( m_containerAttachedTo.View.transform.position, (Vector3) pArgs.obj, UnityEngine.AI.NavMesh.AllAreas, path );
+		UnityEngine.AI.NavMesh.CalculatePath( m_container.View.transform.position, (Vector3) pArgs.obj, UnityEngine.AI.NavMesh.AllAreas, path );
 
 		currentNavigationIdx = 0;
 		m_navPoint = path.corners;
@@ -81,34 +81,34 @@ public class DPatrolModule : Device
 
 	public override void OnDeviceInstalled()
 	{
-		AddTrigger( "TargetPosition", null );
-		AddTrigger( "TargetReached", null );
+		m_blueprint.AddTrigger( "TargetPosition", null );
+		m_blueprint.AddTrigger( "TargetReached", null );
 
-		AddAction( "ReachTarget", ReachTarget );
-		AddAction( "SetNextPoint", SetNextPoint );
-		AddAction( "GetWaypointsList", GetWaypointsList );
-		AddAction( "SetTargetPosition", SetTargetPosition );
-		AddAction( "SetNextNavigationPoint", SetNextNavigationPoint);
+		m_blueprint.AddAction( "ReachTarget", ReachTarget );
+		m_blueprint.AddAction( "SetNextPoint", SetNextPoint );
+		m_blueprint.AddAction( "GetWaypointsList", GetWaypointsList );
+		m_blueprint.AddAction( "SetTargetPosition", SetTargetPosition );
+		m_blueprint.AddAction( "SetNextNavigationPoint", SetNextNavigationPoint);
 
-		AddQuery( "CurrentTarget", CurrentTarget );
-		AddQuery( "GetWaypoints", GetWaypoints );
-		AddQuery( "CurrentNavigationPosition", CurrentNavigationPosition );
+		m_blueprint.AddQuery( "CurrentTarget", CurrentTarget );
+		m_blueprint.AddQuery( "GetWaypoints", GetWaypoints );
+		m_blueprint.AddQuery( "CurrentNavigationPosition", CurrentNavigationPosition );
 	}
 
 	public override void OnDeviceUninstalled()
 	{
-		RemoveTrigger( "TargetPosition" );
-		RemoveTrigger( "TargetReached" );
+		m_blueprint.RemoveTrigger( "TargetPosition" );
+		m_blueprint.RemoveTrigger( "TargetReached" );
 		
-		RemoveAction( "ReachTarget" );
-		RemoveAction( "SetNextPoint" );
-		RemoveAction( "GetWaypointsList" );
-		RemoveAction( "SetTargetPosition" );
-		RemoveAction( "SetNextNavigationPoint");
+		m_blueprint.RemoveAction( "ReachTarget" );
+		m_blueprint.RemoveAction( "SetNextPoint" );
+		m_blueprint.RemoveAction( "GetWaypointsList" );
+		m_blueprint.RemoveAction( "SetTargetPosition" );
+		m_blueprint.RemoveAction( "SetNextNavigationPoint");
 		
-		RemoveQuery( "CurrentTarget" );
-		RemoveQuery( "GetWaypoints" );
-		RemoveQuery( "CurrentNavigationPosition" );
+		m_blueprint.RemoveQuery( "CurrentTarget" );
+		m_blueprint.RemoveQuery( "GetWaypoints" );
+		m_blueprint.RemoveQuery( "CurrentNavigationPosition" );
 	}
 
 	public override void Initialize()
@@ -132,7 +132,7 @@ public class DPatrolModule : Device
 
 	public ArgsList GetWaypoints()
 	{
-		UnityEngine.AI.NavMesh.CalculatePath( m_containerAttachedTo.View.transform.position, m_targetPosition, UnityEngine.AI.NavMesh.AllAreas, path );	
+		UnityEngine.AI.NavMesh.CalculatePath( m_container.View.transform.position, m_targetPosition, UnityEngine.AI.NavMesh.AllAreas, path );	
 		currentNavigationIdx = 0;
 		m_navPoint = path.corners;
 
@@ -163,7 +163,7 @@ public class DPatrolModule : Device
 
 	private bool IsCloseTo( Vector3 position )
 	{
-		return (position - m_containerAttachedTo.View.transform.position).magnitude <= distanceTreshold;
+		return (position - m_container.View.transform.position).magnitude <= distanceTreshold;
 	}
 
 	#endregion

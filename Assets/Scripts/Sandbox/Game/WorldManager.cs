@@ -21,23 +21,19 @@ public class WorldManager : MonoBehaviour
 		if( !s_containersCache.ContainsKey( container.EntityName ) )
 			s_containersCache.Add( container.EntityName, container );
 
-//		container = new Ship( container );
-
 		container.InitializeView();
 
 		container.View.transform.position = position;
 		container.View.transform.rotation = rotation;
 
 		container.View.m_owner = owner;
-
-
+	
 		return container.View;
 	}
 
 	public static void UnspawnContainer( Container container )
 	{
 		container.Destroy();
-//		container.View.gameObject.SetActive( false );
 	}
 
 	public static void Cleanup()

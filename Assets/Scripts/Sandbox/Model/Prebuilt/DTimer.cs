@@ -51,20 +51,20 @@ public class DTimer : Device
 
 	public override void OnDeviceInstalled()
 	{
-		AddTrigger( "OnTimerComplete", null );
-		AddAction("ResetTimer", ResetTimer );
+		m_blueprint.AddTrigger( "OnTimerComplete", null );
+		m_blueprint.AddAction("ResetTimer", ResetTimer );
 	}
 
 	public override void OnDeviceUninstalled()
 	{
-		RemoveTrigger("OnTimerComplete");
-		RemoveAction("ResetTimer");
+		m_blueprint.RemoveTrigger("OnTimerComplete");
+		m_blueprint.RemoveAction("ResetTimer");
 	}
 
 	public override void Initialize()
 	{
 		GameObject text = new GameObject(EntityName);
-		text.transform.SetParent( m_containerAttachedTo.View.transform, false );
+		text.transform.SetParent( m_container.View.transform, false );
 		text.transform.localPosition = Vector3.right * 0.5f;
 		text.transform.localScale = Vector3.one * 0.25f;
 
@@ -86,7 +86,7 @@ public class DTimer : Device
 		{
 			m_fired = true;
 
-			DeviceTrigger timerEvent = GetTrigger("OnTimerComplete");
+			DeviceTrigger timerEvent = m_blueprint.GetTrigger("OnTimerComplete");
 			if( timerEvent != null )
 				timerEvent();
 

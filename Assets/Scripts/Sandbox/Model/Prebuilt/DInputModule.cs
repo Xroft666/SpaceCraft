@@ -17,26 +17,26 @@ public class DInputModule : Device
 
 	public override void OnDeviceInstalled()
 	{
-		AddTrigger( "OnInputPressed", null );
-		AddTrigger( "OnInputReleased", null );
-		AddTrigger( "OnInputHeld", null );
+		m_blueprint.AddTrigger( "OnInputPressed", null );
+		m_blueprint.AddTrigger( "OnInputReleased", null );
+		m_blueprint.AddTrigger( "OnInputHeld", null );
 
-		AddTrigger( "OnMouseScreenPosition", null );
-		AddTrigger( "OnMouseWorldPosition", null );
+		m_blueprint.AddTrigger( "OnMouseScreenPosition", null );
+		m_blueprint.AddTrigger( "OnMouseWorldPosition", null );
 
-		AddQuery( "MouseWorldPosition", MouseWorldPosition );
+		m_blueprint.AddQuery( "MouseWorldPosition", MouseWorldPosition );
 	}
 
 	public override void OnDeviceUninstalled()
 	{
-		RemoveTrigger( "OnInputPressed" );
-		RemoveTrigger( "OnInputReleased" );
-		RemoveTrigger( "OnInputHeld" );
+		m_blueprint.RemoveTrigger( "OnInputPressed" );
+		m_blueprint.RemoveTrigger( "OnInputReleased" );
+		m_blueprint.RemoveTrigger( "OnInputHeld" );
 		
-		RemoveTrigger( "OnMouseScreenPosition");
-		RemoveTrigger( "OnMouseWorldPosition" );
+		m_blueprint.RemoveTrigger( "OnMouseScreenPosition");
+		m_blueprint.RemoveTrigger( "OnMouseWorldPosition" );
 		
-		RemoveQuery( "MouseWorldPosition" );
+		m_blueprint.RemoveQuery( "MouseWorldPosition" );
 	}
 
 	public override void Update()
@@ -44,19 +44,19 @@ public class DInputModule : Device
 		// Keyboard / mouse keys events
 		if( Input.GetKeyDown(m_keyCode) )
 		{
-			DeviceTrigger onPressed = GetTrigger("OnInputPressed");
+			DeviceTrigger onPressed = m_blueprint.GetTrigger("OnInputPressed");
 			if( onPressed != null )
 				onPressed();
 		}
 		if( Input.GetKeyUp(m_keyCode) )
 		{
-			DeviceTrigger onReleased = GetTrigger("OnInputReleased");
+			DeviceTrigger onReleased = m_blueprint.GetTrigger("OnInputReleased");
 			if( onReleased != null )
 				onReleased();
 		}
 		if( Input.GetKey(m_keyCode) )
 		{
-			DeviceTrigger onHeld = GetTrigger("OnInputHeld");
+			DeviceTrigger onHeld = m_blueprint.GetTrigger("OnInputHeld");
 			if( onHeld != null )
 				onHeld();
 		}

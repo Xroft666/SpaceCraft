@@ -34,31 +34,26 @@ public class DEngine : Device
 	{
 		base.OnDeviceInstalled();
 
-		AddAction("MoveForward", MoveForward );
+		m_blueprint.AddAction("MoveForward", MoveForward );
 	}
 
 	public override void OnDeviceUninstalled()
 	{
 		base.OnDeviceUninstalled();
 		
-		RemoveAction("MoveForward" );
+		m_blueprint.RemoveAction("MoveForward" );
 	}
 
 
 	public override void Initialize()
 	{
-		m_rigidbody = m_containerAttachedTo.View.gameObject.GetComponent<Rigidbody>();
+		m_rigidbody = m_container.View.gameObject.GetComponent<Rigidbody>();
 	}
 		
 	public override void Update()
 	{
 		if( m_isActive )
 			ApplyForce();
-	}
-
-	public override void Destroy()
-	{
-	
 	}
 
 	#endregion
@@ -69,7 +64,7 @@ public class DEngine : Device
 
 		Vector3 dir = m_lookDirection.normalized;
 		if( m_space == Space.Self )
-			dir = m_containerAttachedTo.View.transform.TransformDirection( m_lookDirection ).normalized;
+			dir = m_container.View.transform.TransformDirection( m_lookDirection ).normalized;
 
 		m_rigidbody.AddForce( dir * speed * Time.deltaTime, ForceMode.Force);
 	}

@@ -13,6 +13,11 @@ namespace BehaviourScheme
 		public string m_actionName;
 		public BSQuery m_queryNode;
 
+		public override BSNode GetCopy ()
+		{
+			return new BSAction ();
+		}
+
 		public void ConnectToQuery( BSQuery query )
 		{
 			m_queryNode = query;
@@ -35,7 +40,7 @@ namespace BehaviourScheme
 			{
 				queryDevice = m_queryNode.m_device;
 				queryName = m_queryNode.m_queryName;
-				queryData = queryDevice.GetQuery (queryName);
+				queryData = queryDevice.m_blueprint.GetQuery (queryName);
 			}
 
 			if (onEventFired != null)

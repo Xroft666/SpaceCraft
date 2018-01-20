@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace BehaviourScheme
 {
-	public class BSNode 
+	public abstract class BSNode 
 	{
 		public NodeView m_view;
 
@@ -20,6 +20,8 @@ namespace BehaviourScheme
 			m_parents = new List<BSNode>();
         	m_children = new List<BSNode>();
 		}
+
+		public abstract BSNode GetCopy ();
 		
 		public void AddChild( BSNode node )
 		{

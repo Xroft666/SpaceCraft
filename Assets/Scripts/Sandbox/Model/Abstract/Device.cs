@@ -15,63 +15,67 @@ namespace SpaceSandbox
 	/// devices inside
 	/// </summary>
 
-	public class Device : Entity
+	public class Device : Entity, IDestroyable, IUpdatable
 	{
-		public Ship m_containerAttachedTo = null;
+		public Ship m_container = null;
 		public bool m_isActive = true;
 
 		/// <summary>
 		/// The m_blueprint. The blueprint logic scheme storage.
 		/// </summary>
-		public BlueprintScheme Blueprint { get; private set; }
-		public TasksRunner TasksRunner { get; private set; }
+		public BlueprintScheme m_blueprint { get; private set; }
 
 		/// <summary>
 		/// The m_integrated devices. If the device is compud, this list will
 		/// store all the simplier devices in it
 		/// </summary>
-		public List<Device> m_integratedDevices;
+		public List<Device> m_devices = new List<Device>();
 
-		public Dictionary<string, DeviceAction> m_actions;
-		public Dictionary<string, DeviceTrigger> m_triggers;
-		public Dictionary<string, BSEntry> m_entries;
-		public Dictionary<string, DeviceCheck> m_checks;
-		public Dictionary<string, DeviceQuery> m_queries;
+
 	
 
 		public Device()
 		{
-			Blueprint = new BlueprintScheme();
-			TasksRunner = new TasksRunner ();
 
-			m_integratedDevices = new List<Device>();
+		}
 
-			m_actions = new Dictionary<string, DeviceAction>();
-          	m_triggers = new Dictionary<string, DeviceTrigger>();
-			m_entries = new Dictionary<string, BSEntry>();
-			m_checks = new Dictionary<string, DeviceCheck>();
-          	m_queries = new Dictionary<string, DeviceQuery>();
+		public Device(Device other)
+		{
+			foreach (var childDevice in other.m_devices)
+				m_devices.Add (new Device (childDevice));
+
+			m_blueprint = new BlueprintScheme (other.m_blueprint);
 		}
 
 		public void AssignContainer( Ship container )
 		{
-			m_containerAttachedTo = container;
-			foreach( Device device in m_integratedDevices )
+			m_container = container;
+			foreach( Device device in m_devices )
 				device.AssignContainer( container );
 		}
 
 		public void UnassignContainer( )
 		{
-			m_containerAttachedTo = null;
-			foreach( Device device in m_integratedDevices )
+			m_container = null;
+			foreach( Device device in m_devices )
 				device.UnassignContainer( );
+		}
+
+		public void PlugBlueprintScheme(BlueprintScheme scheme)
+		{
+			m_blueprint = scheme;
+		}
+
+		public void UnplugBlueprintScheme()
+		{
+			m_blueprint = null;
 		}
 
 		public void GetCompleteActionsList( string hierarchy, ref Dictionary<string, DeviceAction> functionsList )
 		{
 			hierarchy += "/" + EntityName;
 			
-			foreach( KeyValuePair<string, DeviceAction> function in m_actions )
+			foreach( KeyValuePair<string, DeviceAction> function in m_blueprint.m_actions )
 			{
 				string key = hierarchy + "." + function.Key;
 				if( functionsList.ContainsKey( key ) )
@@ -82,7 +86,7 @@ namespace SpaceSandbox
 				functionsList.Add(key, function.Value);
 			}
 			
-			foreach( Device device in m_integratedDevices )
+			foreach( Device device in m_devices )
 				device.GetCompleteActionsList(hierarchy, ref functionsList);		
 		}
 
@@ -90,7 +94,7 @@ namespace SpaceSandbox
 		{
 			hierarchy += "/" + EntityName;
 
-			foreach( KeyValuePair<string, DeviceTrigger> function in m_triggers )
+			foreach( KeyValuePair<string, DeviceTrigger> function in m_blueprint.m_triggers )
 			{
 				string key = hierarchy + "." + function.Key;
 				if( functionsList.ContainsKey( key ) )
@@ -102,7 +106,7 @@ namespace SpaceSandbox
 				functionsList.Add( key, function.Value);
 			}
 					
-			foreach( Device device in m_integratedDevices )
+			foreach( Device device in m_devices )
 				device.GetCompleteTriggersList(hierarchy, ref functionsList);		
 		}
 
@@ -110,7 +114,7 @@ namespace SpaceSandbox
 		{
 			hierarchy += "/" + EntityName;
 			
-			foreach( KeyValuePair<string, DeviceQuery> function in m_queries )
+			foreach( KeyValuePair<string, DeviceQuery> function in m_blueprint.m_queries )
 			{
 				string key = hierarchy + "." + function.Key;
 				if( functionsList.ContainsKey( key ) )
@@ -122,7 +126,7 @@ namespace SpaceSandbox
 				functionsList.Add( key, function.Value);
 			}
 			
-			foreach( Device device in m_integratedDevices )
+			foreach( Device device in m_devices )
 				device.GetCompleteQueriesList(hierarchy, ref functionsList);		
 		}
 
@@ -130,7 +134,7 @@ namespace SpaceSandbox
 		{
 			hierarchy += "/" + EntityName;
 			
-			foreach( KeyValuePair<string, DeviceCheck> function in m_checks )
+			foreach( KeyValuePair<string, DeviceCheck> function in m_blueprint.m_checks )
 			{
 				string key = hierarchy + "." + function.Key;
 				if( functionsList.ContainsKey( key ) )
@@ -142,7 +146,7 @@ namespace SpaceSandbox
 				functionsList.Add( key, function.Value);
 			}
 			
-			foreach( Device device in m_integratedDevices )
+			foreach( Device device in m_devices )
 				device.GetCompleteChecksList(hierarchy, ref functionsList);		
 		}
 
@@ -150,7 +154,7 @@ namespace SpaceSandbox
 		{
 			hierarchy += "/" + EntityName;
 			
-			foreach( KeyValuePair<string, BSEntry> function in m_entries )
+			foreach( KeyValuePair<string, BSEntry> function in m_blueprint.m_entries )
 			{
 				string key = hierarchy + "." + function.Key;
 				if( functionsList.ContainsKey( key ) )
@@ -162,7 +166,7 @@ namespace SpaceSandbox
 				functionsList.Add( key, function.Value);
 			}
 			
-			foreach( Device device in m_integratedDevices )
+			foreach( Device device in m_devices )
 				device.GetCompleteExitsList(hierarchy, ref functionsList);		
 		}
 
@@ -177,7 +181,7 @@ namespace SpaceSandbox
 			for( int i = 0; i < hierarchy.Length; i++ )
 			{
 				existenceFlag = false;
-				foreach( Device inclusiveDevice in device.m_integratedDevices )
+				foreach( Device inclusiveDevice in device.m_devices )
 				{
 					if( inclusiveDevice.EntityName.ToLower().Equals( hierarchy[i].ToLower() ) )
 					{
@@ -194,154 +198,39 @@ namespace SpaceSandbox
 			return device;
 		}
 
-
-
-		public void AddAction ( string name, DeviceAction function )
-		{
-			m_actions.Add( name, null );
-			m_actions[name] += function;
-		}
-
-		public DeviceAction GetFunction ( string name )
-		{
-			if( !m_actions.ContainsKey(name) )
-				return null;
-
-			return m_actions[name];
-		}
-
-		public void RemoveAction ( string name )
-		{
-			m_actions.Remove( name );
-		}
-
-
-		public void AddQuery ( string name, DeviceQuery query )
-		{
-			m_queries.Add( name, query );
-		}
-		
-		public DeviceQuery GetQuery ( string name )
-		{
-			if( !m_queries.ContainsKey(name) )
-				return null;
-
-			return m_queries[name];
-		}
-		
-		public void RemoveQuery ( string name )
-		{
-			m_queries.Remove( name );
-		}
-
-
-		public void AddTrigger ( string name, DeviceTrigger trigger )
-		{
-			if( m_triggers.ContainsKey(name) )
-				m_triggers[name] += trigger ;
-			else
-				m_triggers.Add(name, trigger);
-		}
-
-		public DeviceTrigger GetTrigger( string name )
-		{
-			if( !m_triggers.ContainsKey(name) )
-				return null;
-
-			return m_triggers[name];
-		}
-		
-		public void RemoveTrigger ( string name )
-		{
-			m_triggers.Remove( name );
-		}
-
-		public void AddEntry ( string name, BSEntry trigger )
-		{
-			m_entries.Add(name, trigger);
-		}
-
-		public BSEntry GetEntry( string name )
-		{
-			if( !m_entries.ContainsKey(name) )
-				return null;
-			
-			return m_entries[name];
-		}
-		
-		public void RemoveEntry ( string name )
-		{
-			m_entries.Remove( name );
-		}
-
-		// Predecates
-
-		public void AddCheck( string name, DeviceCheck check )
-		{
-			m_checks.Add( name, check );
-		}
-
-		public DeviceCheck GetCheck( string name )
-		{
-			if( !m_checks.ContainsKey(name) )
-				return null;
-
-			return m_checks[name];
-		}
-		
-		public void RemoveCheck ( string name )
-		{
-			m_checks.Remove( name );
-		}
-
-
 		public void InstallDevices( List<Device> devices )
 		{
-			m_integratedDevices.AddRange( devices );
+			m_devices.AddRange( devices );
 			foreach( Device device in devices )
 			{
-				device.AssignContainer( m_containerAttachedTo );
+				device.AssignContainer( m_container );
 				device.OnDeviceInstalled();
 			}
 		}
 
 		public void InstallDevice( Device device )
 		{
-			device.AssignContainer( m_containerAttachedTo );
-			m_integratedDevices.Add( device );
+			device.AssignContainer( m_container );
+			m_devices.Add( device );
 			device.OnDeviceInstalled();
 		}
 
 		public void UninstallDevice( Device device )
 		{
 			device.UnassignContainer( );
-			m_integratedDevices.Remove( device );
+			m_devices.Remove( device );
 			device.OnDeviceUninstalled();
 		}
 
 		public List<Device> GetDevicesList()
 		{
-			return m_integratedDevices;
-		}
-
-		public void ExecuteLogic()
-		{
-			if( !m_isActive )
-				return;
-
-			if( !TasksRunner.IsRunning )
-			{
-				var entry = GetEntry ("RootEntry");
-				entry.Traverse();
-
-				TasksRunner.ExecuteTasksQeue();
-			}
+			return m_devices;
 		}
 
 		public void FireEvent( string actionName, DeviceQuery query )
 		{
-			DeviceAction evt = GetFunction( actionName );
-			TasksRunner.ScheduleEvent( evt, query );
+			DeviceAction evt = m_blueprint.GetFunction( actionName );
+			m_container.m_tasksRunner.ScheduleEvent( evt, query );
 		}
 
 		#region Common events and function
@@ -362,7 +251,7 @@ namespace SpaceSandbox
 		{
 			m_isActive = true;
 
-			foreach (var device in m_integratedDevices)
+			foreach (var device in m_devices)
 				device.ActivateDevice ();
 		}
 
@@ -370,7 +259,7 @@ namespace SpaceSandbox
 		{
 			m_isActive = false;
 
-			foreach (var device in m_integratedDevices)
+			foreach (var device in m_devices)
 				device.DeactivateDevice ();
 		}
 
@@ -385,20 +274,20 @@ namespace SpaceSandbox
 		/// </summary>
 		public virtual void OnDeviceInstalled() 
 		{
-			AddAction ("ActivateDevice", ActivateDevice);
-			AddAction ("DeactivateDevice", DeactivateDevice);
+			m_blueprint.AddAction ("ActivateDevice", ActivateDevice);
+			m_blueprint.AddAction ("DeactivateDevice", DeactivateDevice);
 		}
 
 		public virtual void OnDeviceUninstalled()
 		{
-			RemoveAction ("ActivateDevice");
-			RemoveAction ("DeactivateDevice");
+			m_blueprint.RemoveAction ("ActivateDevice");
+			m_blueprint.RemoveAction ("DeactivateDevice");
 		}
 
 		public virtual void Initialize() 
 		{
-			foreach( Device device in m_integratedDevices )
-				device.Initialize();
+			foreach( Device device in m_devices )
+				(device as IUpdatable).Initialize();
 		}
 
 		public virtual void Update() 
@@ -406,14 +295,14 @@ namespace SpaceSandbox
 			if( !m_isActive )
 				return;
 
-			foreach( Device device in m_integratedDevices )
-				device.Update();
+			foreach( Device device in m_devices )
+				(device as IUpdatable).Update();
 		}
 
-		public override void Destroy() 
+		public virtual void Destroy() 
 		{
-			foreach( Device device in m_integratedDevices )
-				device.Destroy();
+			foreach( Device device in m_devices )
+				(device as IDestroyable).Destroy();
 		}
 
 		#endregion

@@ -35,33 +35,33 @@ public class Cargo : Entity
 			m_items.Add(slot);
 		}
 
-		switch( item.Type )
-		{
-		case Entity.EntityType.Item:
-			
-			slot.curItemCount ++;
-			slot.resources.Add(item);
-			
-			break;
-			
-		case Entity.EntityType.Liquid:
-		case Entity.EntityType.Crumby:
-			
-			slot.curVolume += item.Volume;
-
-			if( slot.resources.Count > 0 )
-			{
-				slot.resources[0].Volume += item.Volume;
-			}
-			else
-			{
-				slot.resources.Add(item);
-			}
-			
-			break;
-		}
-
-		SpaceTaken += item.Volume;
+		//switch( item.Type )
+		//{
+		//case Entity.EntityType.Item:
+		//	
+		//	slot.curItemCount ++;
+		//	slot.resources.Add(item);
+		//	
+		//	break;
+		//	
+		//case Entity.EntityType.Liquid:
+		//case Entity.EntityType.Crumby:
+		//	
+		//	slot.curVolume += item.Volume;
+		//
+		//	if( slot.resources.Count > 0 )
+		//	{
+		//		slot.resources[0].Volume += item.Volume;
+		//	}
+		//	else
+		//	{
+		//		slot.resources.Add(item);
+		//	}
+		//	
+		//	break;
+		//}
+		//
+		//SpaceTaken += item.Volume;
 
 		return true;
 	}
@@ -72,32 +72,32 @@ public class Cargo : Entity
 		if( slot == null )
 			return false;
 
-		SpaceTaken -= slot.resources[0].Volume;
-
-		switch( slot.resources[0].Type )
-		{
-		case Entity.EntityType.Item:
-
-
-			slot.curItemCount --;
-			slot.resources.RemoveAt(0);
-
-
-			if( slot.curItemCount == 0 )
-			{
-				m_items.Remove(slot);
-			}
-
-			break;
-			
-		case Entity.EntityType.Liquid:
-		case Entity.EntityType.Crumby:
-
-			slot.resources.RemoveAt(0);
-			m_items.Remove(slot);
-			
-			break;
-		}
+		//SpaceTaken -= slot.resources[0].Volume;
+		//
+		//switch( slot.resources[0].Type )
+		//{
+		//case Entity.EntityType.Item:
+		//
+		//
+		//	slot.curItemCount --;
+		//	slot.resources.RemoveAt(0);
+		//
+		//
+		//	if( slot.curItemCount == 0 )
+		//	{
+		//		m_items.Remove(slot);
+		//	}
+		//
+		//	break;
+		//	
+		//case Entity.EntityType.Liquid:
+		//case Entity.EntityType.Crumby:
+		//
+		//	slot.resources.RemoveAt(0);
+		//	m_items.Remove(slot);
+		//	
+		//	break;
+		//}
 
 		return true;
 	}
