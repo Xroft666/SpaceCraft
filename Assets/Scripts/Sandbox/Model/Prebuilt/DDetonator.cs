@@ -71,4 +71,8 @@ public class DDetonator : Device
 		rigid.AddForce( outwardsDir.normalized * detonateForce * outwardsDir.magnitude / explosionRadius, ForceMode.Impulse);
 	}
 
+    public override string ToString()
+    {
+        return "Detonator";
+    }
 }

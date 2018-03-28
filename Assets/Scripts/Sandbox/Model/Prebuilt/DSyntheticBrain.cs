@@ -6,6 +6,9 @@ using SpaceSandbox;
 
 public class DSyntheticBrain : Device
 {
-
+    public override string ToString()
+    {
+        return "Brain";
+    }
 }
 

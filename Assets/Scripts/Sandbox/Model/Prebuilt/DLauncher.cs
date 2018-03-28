@@ -87,5 +87,10 @@ public class DLauncher : Device
 
 	}
 
-	#endregion
+    #endregion
+
+    public override string ToString()
+    {
+        return "Launcher";
+    }
 }

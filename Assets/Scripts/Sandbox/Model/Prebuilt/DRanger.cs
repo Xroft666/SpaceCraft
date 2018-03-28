@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -176,4 +176,9 @@ public class DRanger : Device
 		// check all the colliders on the container
 		return m_container.View.gameObject == collider.transform.root.gameObject;
 	}
+
+    public override string ToString()
+    {
+        return "Ranger";
+    }
 }

@@ -6,16 +6,21 @@ using UnityEngine.Events;
 
 using SpaceSandbox;
 
-/// <summary>
-/// Timer Device. Counts to the specified second and triggers the event
-/// </summary>
 public class DTradeComputer : Device 
 {
+	private string m_receiver = "Uknown";
 
-	private IEnumerator LoadItemsFrom ( DeviceQuery qry )//EventArgs args )
+	//private IEnumerator RequestReceiver(DeviceQuery qry)
+	//{
+	//	var args = qry.Invoke() as CommArgs;
+	//	m_receiver = args.commReceiver;
+	//}
+
+	private IEnumerator LoadItemsFrom ( DeviceQuery qry )
 	{
 		TradingArgs tArgs = qry.Invoke() as TradingArgs;
-		Cargo clientCargo = tArgs.requestSender.m_cargo;
+		var ship = WorldManager.RequestContainerData(tArgs.commSender);
+		Cargo clientCargo = ship.m_cargo;
 
 		yield return new WaitForSeconds(2f);
 
@@ -28,10 +33,11 @@ public class DTradeComputer : Device
 		}
 	} 
 	
-	private IEnumerator UnloadItemsTo( DeviceQuery qry )//EventArgs args )
+	private IEnumerator UnloadItemsTo( DeviceQuery qry )
 	{
 		TradingArgs tArgs = qry.Invoke() as TradingArgs;
-		Cargo clientCargo = tArgs.requestSender.m_cargo;
+		var ship = WorldManager.RequestContainerData(tArgs.commSender);
+		Cargo clientCargo = ship.m_cargo;
 
 		yield return new WaitForSeconds(2f);
 
@@ -47,12 +53,14 @@ public class DTradeComputer : Device
 
 	public override void OnDeviceInstalled()
 	{
+		//m_blueprint.AddAction("IniateTradingComm", RequestReceiver);
 		m_blueprint.AddAction("LoadItemsFrom", LoadItemsFrom);
 		m_blueprint.AddAction("UnloadItemsTo", UnloadItemsTo);
 	}
 
 	public override void OnDeviceUninstalled()
 	{
+		//m_blueprint.RemoveAction("IniateTradingComm");
 		m_blueprint.RemoveAction("LoadItemsFrom");
 		m_blueprint.RemoveAction("UnloadItemsTo");
 	}
@@ -72,4 +80,8 @@ public class DTradeComputer : Device
 
 	}
 
+    public override string ToString()
+    {
+        return "Trade";
+    }
 }

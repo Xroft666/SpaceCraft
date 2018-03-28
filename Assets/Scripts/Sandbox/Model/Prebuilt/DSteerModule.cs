@@ -80,5 +80,10 @@ public class DSteerModule : Device
 
 	}
 
-	#endregion
+    #endregion
+
+    public override string ToString()
+    {
+        return "Steer";
+    }
 }

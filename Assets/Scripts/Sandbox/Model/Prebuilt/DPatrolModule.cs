@@ -173,4 +173,9 @@ public class DPatrolModule : Device
 		currentTargetIdx = (int) Mathf.Repeat( currentTargetIdx + 1, m_patrolPoints.Length );
 		m_targetPosition = m_patrolPoints[currentTargetIdx];
 	}
+
+    public override string ToString()
+    {
+        return "Patrol";
+    }
 }

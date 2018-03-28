@@ -20,23 +20,12 @@ namespace SpaceSandbox
 		public Ship m_container = null;
 		public bool m_isActive = true;
 
-		/// <summary>
-		/// The m_blueprint. The blueprint logic scheme storage.
-		/// </summary>
-		public BlueprintScheme m_blueprint { get; private set; }
-
-		/// <summary>
-		/// The m_integrated devices. If the device is compud, this list will
-		/// store all the simplier devices in it
-		/// </summary>
+		public BlueprintScheme m_blueprint;
 		public List<Device> m_devices = new List<Device>();
-
-
-	
 
 		public Device()
 		{
-
+			m_blueprint = new BlueprintScheme();
 		}
 
 		public Device(Device other)
@@ -59,16 +48,6 @@ namespace SpaceSandbox
 			m_container = null;
 			foreach( Device device in m_devices )
 				device.UnassignContainer( );
-		}
-
-		public void PlugBlueprintScheme(BlueprintScheme scheme)
-		{
-			m_blueprint = scheme;
-		}
-
-		public void UnplugBlueprintScheme()
-		{
-			m_blueprint = null;
 		}
 
 		public void GetCompleteActionsList( string hierarchy, ref Dictionary<string, DeviceAction> functionsList )

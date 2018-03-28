@@ -31,8 +31,14 @@ namespace SpaceSandbox
 		public int itemCount;
 		public float resourceVolume;
 		public float credits;	
-		public Ship requestSender;
+		public string commReceiver;
+		public string commSender;
 	}
+
+	//public class CommArgs : EventArgs
+	//{
+	//	public string commReceiver;
+	//}
 
 	public class ArgsObject : EventArgs
 	{

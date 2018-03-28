@@ -141,17 +141,18 @@ public class Cargo : Entity
 		return SpaceTaken > 0;
 	}
 
-	public TradingArgs ComposeTradeOffer( string name )
+	public TradingArgs ComposeTradeOffer( string item, string sender, string receiver )
 	{
-		CargoSlot slot = GetSlot(name);
+		CargoSlot slot = GetSlot(item);
 
 		return new TradingArgs()
 		{
-			itemName = name,
+			itemName = item,
 			itemCount = slot.curItemCount,
 			resourceVolume = slot.curVolume,
 			credits = 0f,
-			requestSender = m_containerAttachedTo
+			commSender = sender,
+			commReceiver = receiver
 		};
 	}
 }

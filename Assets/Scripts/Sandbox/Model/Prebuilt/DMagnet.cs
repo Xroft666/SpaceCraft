@@ -178,4 +178,9 @@ public class DMagnet : Device
 	//		}
 	//	}
 	}
+
+    public override string ToString()
+    {
+        return "Magnet";
+    }
 }

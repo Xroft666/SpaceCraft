@@ -119,13 +119,13 @@ public static class TemplatesGenerator
 		AssetDatabase.SaveAssets();
 	}
 
-	[MenuItem("Sandbox Assets/Blueprint Templates/Fighter")]
+	[MenuItem("Sandbox Assets/Blueprint Templates/Fighter Blueprint")]
 	public static void SetUpFightingBlueprint()
 	{
 
 	}
 
-	[MenuItem("Sandbox Assets/Blueprint Templates/Miner")]
+	[MenuItem("Sandbox Assets/Blueprint Templates/Miner Blueprint")]
 	public static void SetupMiningBlueprint()
 	{
 

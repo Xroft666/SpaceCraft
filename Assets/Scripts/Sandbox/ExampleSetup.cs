@@ -35,8 +35,6 @@ public class ExampleSetup : MonoBehaviour
 		m_timerTemplate,
 		m_tradeComputerTemplate;
 
-		
-
 	private void Start()
 	{
 		WorldManager.SpawnContainer (
@@ -97,24 +95,7 @@ public class ExampleSetup : MonoBehaviour
 			(Random.insideUnitCircle + Vector2.one) * (Camera.main.orthographicSize - 1f), 
 			Quaternion.identity );
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+		
 	public static Ship GenerateMissile()
 	{
 		Ship missile = new Ship(2){ EntityName = "Missile" };
@@ -135,7 +116,6 @@ public class ExampleSetup : MonoBehaviour
 
 		timeBomb.DeactivateDevice();
 		heatSeeker.DeactivateDevice();
-
 
 		BSEntry onTimer = missile.m_device.m_blueprint.CreateTrigger( "OnTimerComplete", activeTimer );
 		BSAction toActivateWarhead = missile.m_device.m_blueprint.CreateAction( "ActivateDevice", timeBomb );
@@ -233,7 +213,6 @@ public class ExampleSetup : MonoBehaviour
 
 		patrolSequence.AddChild(nextPoint);
 		patrolSequence.AddChild(moveToWaypoint);
-
 	}
 
 	public static void SetupMiningBlueprint( Device device )
@@ -277,26 +256,27 @@ public class ExampleSetup : MonoBehaviour
 
 		device.m_blueprint.AddQuery("TradeAsteroid", () =>
 			{
-				return device.m_container.m_cargo.ComposeTradeOffer("Asteroid");
+				return device.m_container.m_cargo.ComposeTradeOffer("Asteroid", device.m_container.EntityName, "MotherBase");
 			});
 
 		device.m_blueprint.AddQuery("BasePosition", () =>
 			{
-				return new ArgsObject(){ obj = WorldManager.RequestContainerData("MotherBase").View.transform.position};
+				var receiverShip = WorldManager.RequestContainerData("MotherBase");
+				return new ArgsObject(){ obj = receiverShip.View.transform.position };
 			});
 
 		BSQuery tradeAsteroid = device.m_blueprint.CreateQuery( "TradeAsteroid", device );
 		BSQuery motherBasePosition = device.m_blueprint.CreateQuery("BasePosition", device );
 
-		Device stationTrader = WorldManager.RequestContainerData("MotherBase").m_device.GetInternalDevice("trader");
+		//Device stationTrader = WorldManager.RequestContainerData("MotherBase").m_device.GetInternalDevice("trader");
 
 
 		BSSequence goingHomeSequence = device.m_blueprint.CreateSequence("Home");
 		BSAction setTargetStation = device.m_blueprint.CreateAction( "SetTargetPosition", device.GetInternalDevice("navigator/patrol") );
 		setTargetStation.ConnectToQuery(motherBasePosition);
 		BSExit moveToStation = device.m_blueprint.CreateExit("MoveTo", device.GetInternalDevice("navigator") );
-		BSAction sellResouces = device.m_blueprint.CreateAction( "LoadItemsFrom", stationTrader );
-		sellResouces.ConnectToQuery( tradeAsteroid );
+		//BSAction sellResouces = device.m_blueprint.CreateAction( "LoadItemsFrom", stationTrader );
+		//sellResouces.ConnectToQuery( tradeAsteroid );
 
 		rootEntry.AddChild( rootDecision );
 
@@ -331,7 +311,7 @@ public class ExampleSetup : MonoBehaviour
 
 		goingHomeSequence.AddChild(setTargetStation);
 		goingHomeSequence.AddChild(moveToStation);
-		goingHomeSequence.AddChild(sellResouces);
+		//goingHomeSequence.AddChild(sellResouces);
 	}
 
 	public static Device GeneratePilotCockpit()

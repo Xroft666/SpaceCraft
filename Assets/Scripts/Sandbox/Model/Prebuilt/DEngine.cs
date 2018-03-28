@@ -68,4 +68,9 @@ public class DEngine : Device
 
 		m_rigidbody.AddForce( dir * speed * Time.deltaTime, ForceMode.Force);
 	}
+
+    public override string ToString()
+    {
+        return "Engine";
+    }
 }

@@ -99,5 +99,10 @@ public class DTimer : Device
 		GameObject.Destroy( m_timeText.gameObject );
 	}
 
-	#endregion
+    #endregion
+
+    public override string ToString()
+    {
+        return "DTimer";
+    }
 }

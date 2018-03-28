@@ -75,6 +75,10 @@ public class DInputModule : Device
 		return new ArgsObject() { obj = Camera.main.ScreenToWorldPoint(mousePos)};
 	}
 
-	#endregion
+    #endregion
 
+    public override string ToString()
+    {
+        return "Input";
+    }
 }
